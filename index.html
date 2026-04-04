@@ -588,7 +588,7 @@ html,body{height:100%;overflow:hidden}body{font-family:-apple-system,BlinkMacSys
 .patient-viewport #chat-input-bar { position:absolute !important }
 .bottom-nav{ left:0 !important; right:0 !important; bottom:0 !important; z-index:9000 !important }
 
-/* ── PC ≥1024px: columna 680px centrada, fondo oscuro ── */
+/* ── PC ≥1024px: columna 680px centrada, escala de contenido ── */
 @media(min-width:1024px){
   .patient-panel{ background:#0f172a !important;
                   display:flex !important; flex-direction:column !important;
@@ -600,6 +600,63 @@ html,body{height:100%;overflow:hidden}body{font-family:-apple-system,BlinkMacSys
   .patient-viewport .screen{ width:680px !important }
   .bottom-nav{ width:680px !important; left:50% !important;
                transform:translateX(-50%) !important }
+
+  /* ── Escala de tipografía y componentes para 680px ── */
+  /* La app fue diseñada en 375px → factor ~1.8x */
+  .patient-viewport{ font-size:18px }
+
+  /* Hero y títulos */
+  .hero-h1{ font-size:52px !important; letter-spacing:-2px !important }
+  .hero-dark h2{ font-size:26px !important }
+  .hero-dark p{ font-size:15px !important }
+  .hero-body{ font-size:17px !important }
+  .hero-eyebrow{ font-size:13px !important; padding:7px 16px !important }
+  .hero-stat{ padding:13px 24px !important }
+  .hero-stat-val{ font-size:22px !important }
+  .hero-stat-lbl{ font-size:14px !important }
+  .btn-hero-main{ height:64px !important; font-size:18px !important; border-radius:16px !important }
+  .btn-hero-sec{ height:54px !important; font-size:16px !important }
+
+  /* Dashboard */
+  .dash-greeting-name{ font-size:24px !important }
+  .dash-greeting-time{ font-size:14px !important }
+  .stat-card-val{ font-size:32px !important }
+  .stat-card-label{ font-size:13px !important }
+  .btn-new-claim{ height:60px !important; font-size:17px !important }
+  .dash-logo .name{ font-size:18px !important }
+  .notif-btn{ width:44px !important; height:44px !important; font-size:20px !important }
+  .dash-avatar{ width:44px !important; height:44px !important; font-size:18px !important }
+
+  /* Cards y forms */
+  .card-head h3{ font-size:17px !important }
+  .field label{ font-size:13px !important }
+  .field input,.field select{ height:54px !important; font-size:16px !important; border-radius:12px !important }
+  .btn-primary{ height:60px !important; font-size:17px !important; border-radius:14px !important }
+  .btn-outline{ height:54px !important; font-size:16px !important }
+
+  /* Top bar */
+  .top-title{ font-size:20px !important }
+  .back-btn{ width:44px !important; height:44px !important; font-size:18px !important }
+  .step-counter{ font-size:14px !important; padding:5px 14px !important }
+
+  /* Bottom nav */
+  .bottom-nav .nav-item .ni{ font-size:26px !important }
+  .bottom-nav .nav-item .nl{ font-size:12px !important }
+
+  /* Auth */
+  #auth-hero-title{ font-size:30px !important }
+  .auth-tab{ height:48px !important; font-size:16px !important }
+
+  /* Claims tracker */
+  .tracker-dot{ width:32px !important; height:32px !important; font-size:13px !important }
+  .claim-amount-val{ font-size:28px !important }
+  .claim-procedure{ font-size:18px !important }
+
+  /* Sections */
+  .sec-title{ font-size:32px !important }
+  .step-title{ font-size:17px !important }
+  .step-text{ font-size:15px !important }
+  .step-amount{ font-size:24px !important }
 }
 @media(max-width:599px){
   .patient-label{display:none}
