@@ -568,98 +568,239 @@ html,body{height:100%;overflow:hidden}body{font-family:-apple-system,BlinkMacSys
 .tap-hint-badge{animation:tapPulseWhite 2s infinite;border-radius:20px}
 .tap-hint-badge-dark{animation:tapPulse 2s infinite;border-radius:20px}
 
-/* ── Todos los tamaños: quitar demo shell ── */
+/* ═══════════════════════════════════════════════════════════════
+   PC / FULL-SCREEN LAYOUT — todas las resoluciones
+   Objetivo: panel-a-panel igual que móvil, sin frame, sin scroll
+   del body. El scroll ocurre DENTRO de cada .screen cuando el
+   contenido lo necesita.
+═══════════════════════════════════════════════════════════════ */
+
+/* 1. Eliminar demo shell por completo */
 .demo-topbar  { display:none !important }
-.demo-panels  { position:fixed !important; inset:0 !important; overflow:hidden !important }
-.patient-panel{ background:var(--bg) !important; padding:0 !important;
-                width:100% !important; height:100% !important;
-                align-items:stretch !important; justify-content:stretch !important }
-.phone-frame  { width:100% !important; height:100% !important;
-                border-radius:0 !important; box-shadow:none !important;
-                background:var(--bg) !important }
-.phone-notch  { display:none !important }
+.demo-badge   { display:none !important }
 .patient-label{ display:none !important }
-.patient-viewport        { width:100% !important; height:100% !important;
-                           overflow:hidden !important; position:relative !important }
-.patient-viewport .screen{ width:100% !important; height:100% !important;
-                            overflow-y:auto !important; overflow-x:hidden !important;
-                            -webkit-overflow-scrolling:touch !important }
+.phone-notch  { display:none !important }
+
+/* 2. El contenedor raíz ocupa toda la ventana */
+html, body    { height:100%; overflow:hidden }
+.demo-wrapper { height:100%; display:flex; flex-direction:column }
+.demo-panels  { flex:1; position:relative; overflow:hidden }
+
+/* 3. El panel-patient llena todo */
+.patient-panel{
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  padding:0 !important;
+  background:var(--bg) !important;
+  align-items:stretch !important;
+  justify-content:stretch !important;
+  overflow:hidden !important;
+}
+
+/* 4. El frame de teléfono desaparece — el viewport ES la página */
+.phone-frame{
+  width:100% !important;
+  height:100% !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+  overflow:hidden !important;
+}
+
+/* 5. El patient-viewport llena todo el frame */
+.patient-viewport{
+  width:100% !important;
+  height:100% !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+
+/* 6. Cada screen ocupa toda la ventana, posicionada absolute
+      (igual que en móvil). El scroll INTERNO se habilita aquí. */
+.patient-viewport .screen{
+  position:absolute !important;
+  top:0 !important; left:0 !important;
+  width:100% !important;
+  height:100% !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+
+/* 7. Bottom nav y chat bar: absolute dentro del viewport */
 .patient-viewport .bottom-nav,
-.patient-viewport #chat-input-bar { position:absolute !important }
-.bottom-nav{ left:0 !important; right:0 !important; bottom:0 !important; z-index:9000 !important }
+.patient-viewport #chat-input-bar{
+  position:absolute !important;
+}
+.bottom-nav{
+  left:0 !important; right:0 !important;
+  bottom:0 !important;
+  z-index:9000 !important;
+  width:100% !important;
+}
+#chat-input-bar{
+  left:0 !important; right:0 !important;
+  bottom:0 !important;
+  z-index:9000 !important;
+}
 
-/* ── PC ≥1024px: columna 680px centrada, escala de contenido ── */
-@media(min-width:1024px){
-  .patient-panel{ background:#0f172a !important;
-                  display:flex !important; flex-direction:column !important;
-                  align-items:center !important; justify-content:center !important }
-  .phone-frame  { width:680px !important; max-width:680px !important;
-                  height:100% !important; flex-shrink:0 !important;
-                  box-shadow:0 0 60px rgba(0,0,0,.5) !important }
-  .patient-viewport        { width:680px !important }
-  .patient-viewport .screen{ width:680px !important }
-  .bottom-nav{ width:680px !important; left:50% !important;
-               transform:translateX(-50%) !important }
+/* 8. El panel admin también llena todo cuando está activo */
+.admin-panel{
+  width:100% !important;
+  height:100% !important;
+}
 
-  /* ── Escala de tipografía y componentes para 680px ── */
-  /* La app fue diseñada en 375px → factor ~1.8x */
-  .patient-viewport{ font-size:18px }
+/* ── CORRECCIÓN: s-checklist scroll desde arriba ──
+   El wrapper interno usa height:100%/display:block que empuja
+   el contenido. Lo corregimos aquí. */
+#s-checklist > div[style*="overflow-y:auto"]{
+  position:relative !important;
+  height:100% !important;
+  overflow-y:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
 
-  /* Hero y títulos */
-  .hero-h1{ font-size:52px !important; letter-spacing:-2px !important }
-  .hero-dark h2{ font-size:26px !important }
-  .hero-dark p{ font-size:15px !important }
-  .hero-body{ font-size:17px !important }
+/* ── LAYOUT PC ≥ 900px: columna centrada con max-width ────────
+   En pantallas anchas centramos el contenido igual que mobile
+   pero sin frame visible — solo un max-width elegante.         */
+@media(min-width:900px){
+
+  /* Centra el contenido dentro del viewport */
+  .patient-viewport{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    background:#0f172a !important;
+  }
+
+  /* El contenido de cada screen se centra con max-width */
+  .patient-viewport .screen{
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    max-width:640px !important;
+    width:min(640px, 100%) !important;
+    /* Sombra sutil que separa del fondo oscuro */
+    box-shadow:0 0 80px rgba(0,0,0,.6) !important;
+  }
+
+  /* Bottom nav centrada igual */
+  .bottom-nav{
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    width:min(640px, 100%) !important;
+    max-width:640px !important;
+  }
+  #chat-input-bar{
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    width:min(640px, 100%) !important;
+    max-width:640px !important;
+  }
+
+  /* Ajuste body-card y dash-body para que no tengan bottom-padding
+     excesivo en PC — el scroll es interno a la screen */
+  .body-card{ flex:1; min-height:0; }
+  .dash-body{ padding-bottom:100px; }
+
+  /* ── Escala de tipografía ── */
+  /* La app fue diseñada a 375px → ahora 640px → factor ≈1.7× */
+  .patient-viewport{ font-size:17px }
+
+  /* Landing */
+  .hero-h1{ font-size:50px !important; letter-spacing:-2px !important }
+  .hero-body{ font-size:16px !important; max-width:480px !important }
   .hero-eyebrow{ font-size:13px !important; padding:7px 16px !important }
   .hero-stat{ padding:13px 24px !important }
   .hero-stat-val{ font-size:22px !important }
   .hero-stat-lbl{ font-size:14px !important }
-  .btn-hero-main{ height:64px !important; font-size:18px !important; border-radius:16px !important }
-  .btn-hero-sec{ height:54px !important; font-size:16px !important }
+  .btn-hero-main{ height:62px !important; font-size:18px !important; border-radius:16px !important }
+  .btn-hero-sec{ height:52px !important; font-size:16px !important }
+  .sec-title{ font-size:28px !important }
+  .step-title{ font-size:16px !important }
+  .step-text{ font-size:14px !important }
+  .step-amount{ font-size:22px !important }
+  .stat-val{ font-size:32px !important }
+  .stat-lbl{ font-size:13px !important }
+  .testi-quote{ font-size:14px !important }
 
-  /* Dashboard */
-  .dash-greeting-name{ font-size:24px !important }
-  .dash-greeting-time{ font-size:14px !important }
-  .stat-card-val{ font-size:32px !important }
-  .stat-card-label{ font-size:13px !important }
-  .btn-new-claim{ height:60px !important; font-size:17px !important }
-  .dash-logo .name{ font-size:18px !important }
-  .notif-btn{ width:44px !important; height:44px !important; font-size:20px !important }
-  .dash-avatar{ width:44px !important; height:44px !important; font-size:18px !important }
-
-  /* Cards y forms */
-  .card-head h3{ font-size:17px !important }
-  .field label{ font-size:13px !important }
-  .field input,.field select{ height:54px !important; font-size:16px !important; border-radius:12px !important }
-  .btn-primary{ height:60px !important; font-size:17px !important; border-radius:14px !important }
-  .btn-outline{ height:54px !important; font-size:16px !important }
+  /* Hero dark (screens internas) */
+  .hero-dark h2{ font-size:24px !important }
+  .hero-dark p{ font-size:14px !important }
 
   /* Top bar */
-  .top-title{ font-size:20px !important }
-  .back-btn{ width:44px !important; height:44px !important; font-size:18px !important }
-  .step-counter{ font-size:14px !important; padding:5px 14px !important }
+  .top-title{ font-size:19px !important }
+  .back-btn{ width:42px !important; height:42px !important; font-size:17px !important }
+  .step-counter{ font-size:13px !important; padding:5px 13px !important }
+
+  /* Dashboard */
+  .dash-greeting-name{ font-size:22px !important }
+  .dash-greeting-time{ font-size:13px !important }
+  .stat-card-val{ font-size:28px !important }
+  .stat-card-label{ font-size:12px !important }
+  .btn-new-claim{ height:58px !important; font-size:16px !important }
+  .dash-logo .name{ font-size:17px !important }
+  .notif-btn{ width:42px !important; height:42px !important; font-size:19px !important }
+  .dash-avatar{ width:42px !important; height:42px !important; font-size:17px !important }
+
+  /* Cards y forms */
+  .card-head h3{ font-size:16px !important }
+  .field label{ font-size:12px !important }
+  .field input,.field select{
+    height:52px !important;
+    font-size:15px !important;
+    border-radius:11px !important;
+  }
+  .btn-primary{ height:58px !important; font-size:16px !important; border-radius:13px !important }
+  .btn-outline{ height:52px !important; font-size:15px !important }
+  .btn-act{ height:50px !important; font-size:14px !important }
+  .card-preview{ height:180px !important }
 
   /* Bottom nav */
-  .bottom-nav .nav-item .ni{ font-size:26px !important }
-  .bottom-nav .nav-item .nl{ font-size:12px !important }
+  .bottom-nav .nav-item .ni{ font-size:24px !important }
+  .bottom-nav .nav-item .nl{ font-size:11px !important }
 
   /* Auth */
-  #auth-hero-title{ font-size:30px !important }
-  .auth-tab{ height:48px !important; font-size:16px !important }
+  #auth-hero-title{ font-size:28px !important }
+  .auth-tab{ height:46px !important; font-size:15px !important }
 
   /* Claims tracker */
-  .tracker-dot{ width:32px !important; height:32px !important; font-size:13px !important }
-  .claim-amount-val{ font-size:28px !important }
-  .claim-procedure{ font-size:18px !important }
+  .tracker-dot{ width:30px !important; height:30px !important; font-size:12px !important }
+  .claim-amount-val{ font-size:26px !important }
+  .claim-procedure{ font-size:17px !important }
 
-  /* Sections */
-  .sec-title{ font-size:32px !important }
-  .step-title{ font-size:17px !important }
-  .step-text{ font-size:15px !important }
-  .step-amount{ font-size:24px !important }
+  /* Support chat */
+  .chat-bubble{ font-size:14px !important; padding:12px 16px !important }
 }
+
+/* ── PANTALLAS MUY ANCHAS ≥ 1440px ── */
+@media(min-width:1440px){
+  .patient-viewport .screen{
+    max-width:700px !important;
+    width:700px !important;
+  }
+  .bottom-nav,#chat-input-bar{
+    max-width:700px !important;
+    width:700px !important;
+  }
+  .hero-h1{ font-size:56px !important }
+}
+
+/* ── Animaciones de transición adaptadas al layout centrado ── */
+@media(min-width:900px){
+  @keyframes slideIn{
+    from{ opacity:0; transform:translateX(-50%) translateX(20px) }
+    to  { opacity:1; transform:translateX(-50%) translateX(0)     }
+  }
+  @keyframes slideBack{
+    from{ opacity:0; transform:translateX(-50%) translateX(-20px) }
+    to  { opacity:1; transform:translateX(-50%) translateX(0)      }
+  }
+}
+
 @media(max-width:599px){
-  .patient-label{display:none}
+  .patient-label{ display:none }
 }
 
 .time-btn.active{background:var(--teal);color:white;border-color:var(--teal)}
@@ -1093,7 +1234,7 @@ html,body{height:100%;overflow:hidden}body{font-family:-apple-system,BlinkMacSys
      SCREEN: WHAT YOU'LL NEED (s-checklist)
 ══════════════════════════════════════ -->
 
-<div class="screen" id="s-checklist" style="background:linear-gradient(160deg,#0f172a 0%,#1e293b 100%)"><div style="overflow-y:auto;height:100%;display:block">
+<div class="screen" id="s-checklist" style="background:linear-gradient(160deg,#0f172a 0%,#1e293b 100%);display:flex;flex-direction:column"><div style="overflow-y:auto;flex:1;display:flex;flex-direction:column;min-height:0">
 
 <div style="padding:16px 20px 0;display:flex;align-items:center">
   <div class="back-btn" data-oc="goBack()" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:white">←</div>
@@ -2027,7 +2168,7 @@ function goTo(id, param) {
   next.classList.add('active');
   next.scrollTop = 0;
   var inner = next.firstElementChild;
-  if(inner) inner.scrollTop = 0;
+  if(inner) { inner.scrollTop = 0; inner.style.scrollBehavior='auto'; }
   requestAnimationFrame(function() {
     var pp = document.querySelector('.patient-panel');
     if(pp) pp.scrollTop = 0;
