@@ -23,7 +23,7 @@ input,select,textarea{font-size:16px !important;-webkit-text-size-adjust:100%}
 
 /* SCREENS */
 .patient-viewport .screen{display:none;flex-direction:column;overflow:hidden;position:absolute;width:100%;top:0;left:0;height:100%}
-.screen.active{display:flex;flex-direction:column;align-items:stretch;animation:slideIn .25s cubic-bezier(.16,1,.3,1)}
+.screen.active{display:flex;flex-direction:column;align-items:stretch;animation:slideIn .25s cubic-bezier(.16,1,.3,1);overflow-x:hidden;overflow-y:auto}
 .screen.back{animation:slideBack .25s cubic-bezier(.16,1,.3,1)}
 @keyframes slideIn{from{transform:translateX(24px);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes slideBack{from{transform:translateX(-24px);opacity:0}to{transform:translateX(0);opacity:1}}
@@ -83,7 +83,7 @@ SCREEN: LANDING
 ═══════════════════════════════════════ */
 #s-landing{background:linear-gradient(175deg,#0f172a 0%,#134e4a 55%,#0D9488 100%)}
 .landing-inner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 28px 28px;text-align:center;position:relative;z-index:1}
-.landing-inner::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;background:radial-gradient(circle,rgba(13,148,136,.2) 0%,transparent 70%);border-radius:50%}
+.landing-inner::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;background:radial-gradient(circle,rgba(13,148,136,.2) 0%,transparent 70%);border-radius:50%;pointer-events:none}
 .nav-logo-badge{background:var(--slate);border-radius:12px;padding:8px 14px 8px 10px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.3);margin-bottom:28px}
 .nav-logo-icon{width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
 .nav-logo-name{font-family:'Georgia',serif;font-size:18px;font-weight:600;color:white;letter-spacing:-.3px}
@@ -605,7 +605,7 @@ html, body    { height:100%; overflow:hidden }
   border-radius:0 !important;
   box-shadow:none !important;
   background:transparent !important;
-  overflow:hidden !important;
+  overflow:visible !important;
 }
 
 /* 5. El patient-viewport llena todo el frame */
@@ -682,10 +682,22 @@ html, body    { height:100%; overflow:hidden }
   #chat-input-bar{ left:0 !important; transform:none !important; width:100% !important; max-width:none !important }
 
   /* Centrado de contenido interno */
-  .landing-inner{ max-width:560px !important; margin:0 auto !important }
+  .landing-inner{
+    max-width:560px !important;
+    margin:0 auto !important;
+    justify-content:flex-start !important;
+    padding-top:60px !important;
+  }
   .how-section{ max-width:640px !important; margin:0 auto !important }
   .testi-section{ max-width:640px !important; margin:0 auto !important }
-  .stat-band{ padding:40px 48px !important }
+  .stat-band{
+    padding:40px 48px !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr 1fr 1fr !important;
+  }
+  /* Fix stat-val/stat-lbl color conflict with admin panel override */
+  .stat-band .stat-val{ color:#5eead4 !important; font-size:32px !important }
+  .stat-band .stat-lbl{ color:rgba(255,255,255,.45) !important; font-size:13px !important }
   .final-cta{ padding-left:48px !important; padding-right:48px !important }
   .auth-form-card{ max-width:420px !important; margin:0 auto !important }
   #form-register > div,#form-login > div{ max-width:420px !important; margin:0 auto !important }
@@ -765,6 +777,177 @@ html, body    { height:100%; overflow:hidden }
 
 @media(max-width:599px){
   .patient-label{ display:none }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   PC SIDEBAR LAYOUT — TurboTax-inspired
+   Aplica a las 4 pantallas post-login con bottom-nav:
+   s-dashboard, s-claims, s-support, s-profile
+   En PC (≥900px): layout de dos columnas — sidebar izquierda fija
+   + área de contenido principal derecha que scrollea.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Sidebar styles ── */
+.pc-sidebar{
+  display:none; /* hidden on mobile */
+  width:220px;
+  flex-shrink:0;
+  background:linear-gradient(180deg,#0f172a 0%,#0f2027 100%);
+  border-right:1px solid rgba(255,255,255,.06);
+  flex-direction:column;
+  position:relative;
+  z-index:10;
+}
+.pc-sidebar-logo{
+  padding:22px 20px 16px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.pc-sidebar-logo-icon{
+  width:32px;height:32px;background:var(--teal);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+}
+.pc-sidebar-logo-name{
+  font-family:'Georgia',serif;font-size:17px;font-weight:600;color:white;letter-spacing:-.3px;
+}
+.pc-sidebar-logo-name span{color:#5eead4}
+.pc-sidebar-logo-sub{
+  font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,255,255,.3);display:block;margin-top:1px;
+}
+.pc-sidebar-user{
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:10px;
+}
+.pc-sidebar-avatar{
+  width:36px;height:36px;background:var(--teal);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:white;border:2px solid rgba(255,255,255,.2);
+  flex-shrink:0;
+}
+.pc-sidebar-uname{font-size:13px;font-weight:600;color:white;line-height:1.2}
+.pc-sidebar-email{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
+.pc-sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
+.pc-sidebar-nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 20px;
+  font-size:13px;font-weight:600;color:rgba(255,255,255,.45);
+  cursor:pointer;transition:all .15s;border-left:3px solid transparent;
+  user-select:none;
+}
+.pc-sidebar-nav-item:hover{
+  background:rgba(255,255,255,.05);color:rgba(255,255,255,.8);
+}
+.pc-sidebar-nav-item.active{
+  background:rgba(13,148,136,.15);color:white;
+  border-left-color:var(--teal);
+}
+.pc-sidebar-nav-item .sni{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.pc-sidebar-nav-item .snl{flex:1}
+.pc-sidebar-nav-item .sn-badge{
+  background:var(--teal);color:white;font-size:10px;font-weight:700;
+  padding:1px 6px;border-radius:10px;
+}
+.pc-sidebar-section-label{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,255,255,.2);padding:14px 20px 6px;
+}
+.pc-sidebar-footer{
+  padding:14px 16px;border-top:1px solid rgba(255,255,255,.06);
+}
+.pc-sidebar-footer-item{
+  display:flex;align-items:center;gap:10px;padding:8px 4px;
+  font-size:12px;color:rgba(255,255,255,.35);cursor:pointer;transition:color .15s;
+}
+.pc-sidebar-footer-item:hover{color:rgba(255,255,255,.65)}
+.pc-sidebar-footer-item .sni{font-size:15px;width:20px;text-align:center}
+
+/* ── PC layout container for nav-screens ── */
+.pc-layout{
+  display:contents; /* mobile: transparent passthrough */
+}
+.pc-main{
+  flex:1;overflow-y:auto;min-width:0;
+  display:flex;flex-direction:column;
+}
+
+@media(min-width:900px){
+  /* Sidebar: fixed on left, full height */
+  .pc-sidebar{
+    display:flex !important;
+    position:fixed !important;
+    left:0 !important; top:0 !important;
+    width:220px !important; height:100vh !important;
+    z-index:1000 !important;
+    /* Hidden until a nav screen is active */
+    transform:translateX(-100%) !important;
+    transition:transform .2s ease !important;
+  }
+  /* Show sidebar when any nav-screen is active */
+  #s-dashboard.active ~ * .pc-sidebar,
+  .pc-sidebar.sb-visible{
+    transform:translateX(0) !important;
+  }
+  /* Nav screens: push content right when sidebar visible */
+  .pc-has-sidebar{
+    flex-direction:column !important;
+  }
+  .pc-has-sidebar .dash-header{
+    display:none !important;
+  }
+  .pc-has-sidebar .pc-main{
+    margin-left:220px !important;
+    flex:1 !important;
+    overflow-y:auto !important;
+    background:var(--bg) !important;
+    height:100% !important;
+  }
+  .pc-has-sidebar .dash-body{
+    max-width:none !important;
+    margin:0 !important;
+    padding:28px 32px 40px !important;
+    width:100% !important;
+  }
+  .pc-main-header{
+    display:flex !important;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 32px 0;
+    flex-shrink:0;
+  }
+  .pc-main-header-title{
+    font-family:'Georgia',serif;
+    font-size:26px;font-weight:600;color:var(--slate);letter-spacing:-.5px;
+  }
+  .pc-main-header-sub{
+    font-size:13px;color:var(--slate-light);margin-top:2px;
+  }
+  .pc-main-header-right{ display:flex;gap:10px;align-items:center }
+  /* Also push non-dashboard nav screens right */
+  #s-claims.active,#s-support.active,#s-profile.active{
+    padding-left:220px !important;
+    box-sizing:border-box !important;
+  }
+  /* hide bottom-nav on PC */
+  #s-dashboard.active ~ #bottom-nav,
+  #s-claims.active ~ #bottom-nav,
+  #s-support.active ~ #bottom-nav,
+  #s-profile.active ~ #bottom-nav{
+    display:none !important;
+  }
+  #bottom-nav{ display:none !important }
+}
+@media(max-width:899px){
+  /* mobile: sidebar hidden, pc-main is transparent */
+  .pc-sidebar{ display:none !important }
+  .pc-main{ display:contents }
+  .pc-main-header{ display:none !important }
+  .pc-has-sidebar .dash-header{ display:block !important }
 }
 
 .time-btn.active{background:var(--teal);color:white;border-color:var(--teal)}
@@ -1919,7 +2102,54 @@ html, body    { height:100%; overflow:hidden }
      SCREEN: DASHBOARD
 ══════════════════════════════════════ -->
 
-<div class="screen" id="s-dashboard" style="background:white">
+<!-- ══════════════════════════════════════
+     PC SIDEBAR (shared, hidden on mobile)
+══════════════════════════════════════ -->
+
+<nav class="pc-sidebar" id="pc-sidebar">
+  <div class="pc-sidebar-logo">
+    <div class="pc-sidebar-logo-icon">⚕</div>
+    <div>
+      <div class="pc-sidebar-logo-name">CREDI<span>MED</span></div>
+      <span class="pc-sidebar-logo-sub">Insurance Claims</span>
+    </div>
+  </div>
+  <div class="pc-sidebar-user">
+    <div class="pc-sidebar-avatar" id="sb-avatar">J</div>
+    <div>
+      <div class="pc-sidebar-uname" id="sb-name">Juan</div>
+      <div class="pc-sidebar-email" id="sb-email">juan@email.com</div>
+    </div>
+  </div>
+  <div class="pc-sidebar-nav">
+    <div class="pc-sidebar-section-label">My Account</div>
+    <div class="pc-sidebar-nav-item active" id="sb-home" data-oc="navTo('s-dashboard','nav-home');sbActive('sb-home')">
+      <span class="sni">🏠</span><span class="snl">Home</span>
+    </div>
+    <div class="pc-sidebar-nav-item" id="sb-claims" data-oc="navTo('s-claims','nav-claims');sbActive('sb-claims')">
+      <span class="sni">📋</span><span class="snl">My Claims</span><span class="sn-badge">1</span>
+    </div>
+    <div class="pc-sidebar-nav-item" id="sb-new" data-oc="startNewClaim();sbActive('sb-new')">
+      <span class="sni">➕</span><span class="snl">New Claim</span>
+    </div>
+    <div class="pc-sidebar-section-label">Help</div>
+    <div class="pc-sidebar-nav-item" id="sb-support" data-oc="navTo('s-support','nav-support');sbActive('sb-support')">
+      <span class="sni">💬</span><span class="snl">Support</span>
+    </div>
+    <div class="pc-sidebar-nav-item" id="sb-profile" data-oc="navTo('s-profile','nav-profile');sbActive('sb-profile')">
+      <span class="sni">👤</span><span class="snl">Profile</span>
+    </div>
+  </div>
+  <div class="pc-sidebar-footer">
+    <div class="pc-sidebar-footer-item" data-oc="doLogout()">
+      <span class="sni">🚪</span> Sign out
+    </div>
+  </div>
+</nav>
+
+<div class="screen pc-has-sidebar" id="s-dashboard" style="background:white">
+  <div class="pc-main" id="pc-main-content">
+  <div class="pc-main-header"><div><div class="pc-main-header-title" id="pc-dash-title">Good morning ☀️</div><div class="pc-main-header-sub" id="pc-dash-sub">Here's your claim status</div></div><div class="pc-main-header-right"><div class="notif-btn" style="width:36px;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;position:relative">🔔<div class="notif-dot"></div></div></div></div>
   <div class="dash-header">
     <div class="dash-header-top">
       <div class="dash-logo"><div class="icon">⚕</div><div class="name">CREDI<span>MED</span></div></div>
@@ -1978,6 +2208,8 @@ html, body    { height:100%; overflow:hidden }
 
   </div>
 </div>
+
+  </div><!-- /pc-main for s-dashboard -->
 
 <!-- BOTTOM NAV -->
 
@@ -2157,6 +2389,18 @@ function goTo(id, param) {
   }
   const navScreens = ['s-dashboard','s-claims','s-support','s-profile'];
   document.getElementById('bottom-nav').classList.toggle('show', navScreens.includes(id)); document.getElementById('bottom-nav').style.position='absolute';
+  // PC sidebar: show on nav screens, hide otherwise
+  var sb = document.getElementById('pc-sidebar');
+  if(sb){
+    if(navScreens.includes(id)){
+      sb.classList.add('sb-visible');
+      // Sync sidebar active item
+      var map={'s-dashboard':'sb-home','s-claims':'sb-claims','s-support':'sb-support','s-profile':'sb-profile'};
+      if(map[id]) sbActive(map[id]);
+    } else {
+      sb.classList.remove('sb-visible');
+    }
+  }
   } catch(e) { console.warn('goTo error:', e); }
 }
 function goBack() {
@@ -2175,6 +2419,20 @@ function goBack() {
   if(bn) bn.classList.toggle('show', navScreens.includes(prev));
   } catch(e) {}
 }
+function sbActive(id) {
+  try {
+    document.querySelectorAll('.pc-sidebar-nav-item').forEach(el => el.classList.remove('active'));
+    var el = document.getElementById(id);
+    if(el) el.classList.add('active');
+    // Sync sidebar user info
+    if(currentUser) {
+      var n = document.getElementById('sb-name'); if(n) n.textContent = (currentUser.first||'') + ' ' + (currentUser.last||'');
+      var e = document.getElementById('sb-email'); if(e) e.textContent = currentUser.email||'';
+      var a = document.getElementById('sb-avatar'); if(a) a.textContent = (currentUser.first||'?')[0].toUpperCase();
+      var t = document.getElementById('pc-dash-title'); if(t) { var h=new Date().getHours(); t.textContent=(h<12?'Good morning':'h<17?Good afternoon':'Good evening') + ' ' + (currentUser.first||'') + ' ☀️'; }
+    }
+  } catch(e){}
+}
 function navTo(screenId, navId) {
   try {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -2190,8 +2448,12 @@ function navTo(screenId, navId) {
   next.scrollTop = 0;
   if (screenId === 's-profile') initProfile();
   if (screenId === 's-dashboard') initDashboard();
-  document.getElementById('bottom-nav').classList.show = true;
   document.getElementById('bottom-nav').classList.add('show');
+  // Sync sidebar
+  var map={'s-dashboard':'sb-home','s-claims':'sb-claims','s-support':'sb-support','s-profile':'sb-profile'};
+  if(map[screenId]) sbActive(map[screenId]);
+  var sb2 = document.getElementById('pc-sidebar');
+  if(sb2) sb2.classList.add('sb-visible');
   } catch(e) {}
 }
 function startNewClaim() {
@@ -2212,6 +2474,7 @@ function doLogout() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('s-landing').classList.add('active');
   document.getElementById('bottom-nav').classList.remove('show');
+  var sb3=document.getElementById('pc-sidebar'); if(sb3) sb3.classList.remove('sb-visible');
 }
 function initProfile() {
   if (!currentUser) return;
