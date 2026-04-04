@@ -569,251 +569,88 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tap-hint-badge-dark{animation:tapPulse 2s infinite;border-radius:20px}
 
 @media(min-width:600px){
+  /* Tablet: keep phone frame centered */
   .patient-panel{background:#1e293b !important;align-items:center !important;padding:24px 0 !important}
   .phone-frame{width:375px !important;height:812px !important;border-radius:44px !important;box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 8px #0f172a,0 0 0 10px #334155 !important}
   .patient-viewport{width:375px !important;height:812px !important}
   .patient-viewport .screen{width:375px !important;height:812px !important}
 }
 
-/* ═══════════════════════════════════════
-   PC FULL-SCREEN LAYOUT (≥1024px)
-   Eliminates phone frame — app fills 100vw × 100vh
-   Panel content centered at 480px max-width
-═══════════════════════════════════════ */
+/* ════════════════════════════════════════════════
+   PC FULL-SCREEN — SOLO modifica el shell, nunca
+   la estructura interna de los screens.
+   El app corre exactamente igual, solo sin frame.
+════════════════════════════════════════════════ */
 @media(min-width:1024px){
-  /* Hide demo shell chrome */
-  .demo-topbar{display:none !important}
-  .demo-panels{position:fixed !important;inset:0 !important;overflow:hidden !important}
-  .panel.active{position:absolute !important;inset:0 !important;display:block !important}
 
-  /* Patient panel: full screen, no padding */
+  /* 1. Ocultar barra demo */
+  .demo-topbar{display:none !important}
+
+  /* 2. Panel ocupa toda la ventana */
+  .demo-panels{
+    position:fixed !important;
+    inset:0 !important;
+    overflow:hidden !important;
+  }
+  .panel{position:absolute !important;inset:0 !important}
+  .panel.active{display:flex !important;flex-direction:column !important}
+
+  /* 3. Patient panel: sin padding, sin fondo gris */
   .patient-panel{
     background:var(--bg) !important;
+    padding:0 !important;
     align-items:stretch !important;
     justify-content:stretch !important;
-    padding:0 !important;
-    overflow:hidden !important;
-    position:absolute !important;
-    inset:0 !important;
   }
 
-  /* Kill phone frame visuals — make it a transparent full-screen container */
+  /* 4. Phone-frame: invisible, ocupa todo */
   .phone-frame{
     width:100% !important;
     height:100% !important;
-    max-width:none !important;
     border-radius:0 !important;
     box-shadow:none !important;
-    border:none !important;
-    outline:none !important;
     background:transparent !important;
-    position:absolute !important;
-    inset:0 !important;
+    flex:1 !important;
     flex-shrink:1 !important;
+    overflow:hidden !important;
   }
 
-  /* Hide notch */
+  /* 5. Ocultar notch y label */
   .phone-notch{display:none !important}
-
-  /* Patient label (e.g. "Patient App") hidden */
   .patient-label{display:none !important}
 
-  /* Viewport: full screen */
+  /* 6. Viewport: 100% del frame */
   .patient-viewport{
     width:100% !important;
     height:100% !important;
-    max-width:none !important;
     overflow:hidden !important;
-    position:absolute !important;
-    inset:0 !important;
+    position:relative !important;
   }
 
-  /* Every screen: full screen, no fixed mobile size */
+  /* 7. Screens: 100% del viewport, scroll interno */
   .patient-viewport .screen{
     width:100% !important;
     height:100% !important;
-    max-width:none !important;
-    position:absolute !important;
-    inset:0 !important;
-  }
-
-  /* ── Content width constraint ──
-     All inner content max-width centered, like a web app */
-  .landing-inner{
-    max-width:560px !important;
-    margin:0 auto !important;
-    padding:64px 40px 40px !important;
-  }
-
-  .hero-h1{font-size:48px !important;letter-spacing:-2px !important}
-  .hero-body{font-size:16px !important;max-width:420px !important}
-  .hero-ctas{max-width:380px !important}
-  .btn-hero-main{height:60px !important;font-size:18px !important}
-  .hero-stat{padding:12px 28px !important}
-
-  /* ── AUTH SCREEN: full-bleed background, centered card column ── */
-  #s-auth{
-    overflow-y:auto !important;
-    background:linear-gradient(160deg,#0f172a 0%,#134e4a 50%,#0D9488 100%) !important;
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:center !important;
-  }
-  /* Auth hero: full width, generous padding */
-  .auth-hero{
-    width:100% !important;
-    max-width:none !important;
-    padding:40px 40px 28px !important;
-    text-align:center !important;
-  }
-  /* Tabs bar: constrain width + center */
-  #s-auth > div[style*="background:#0f172a"]{
-    width:100% !important;
-    max-width:none !important;
-    display:flex !important;
-    justify-content:center !important;
-    padding:8px 0 0 !important;
-  }
-  #s-auth > div[style*="background:#0f172a"] > div {
-    width:min(480px,90%) !important;
-  }
-  /* Form containers: centered column */
-  #form-register,
-  #form-login{
-    width:100% !important;
-    max-width:none !important;
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:center !important;
-    padding:20px 20px 60px !important;
-    background:#0f172a !important;
-  }
-  /* White form card: max-width centered */
-  #form-register > div:first-child,
-  #form-login > div:first-child {
-    width:min(480px,92%) !important;
-    max-width:480px !important;
-    margin-left:auto !important;
-    margin-right:auto !important;
-  }
-  /* "Already have account" links row */
-  #form-register > div:not(:first-child),
-  #form-login > div:not(:first-child) {
-    width:min(480px,92%) !important;
-  }
-  .auth-form-card{max-width:480px !important;width:min(480px,92%) !important}
-  #auth-hero-title{font-size:28px !important}
-
-  /* ── FLOW SCREENS: all center their content in a max-width column ── */
-
-  /* Every screen scrolls vertically, full bleed */
-  .patient-viewport .screen{
     overflow-y:auto !important;
     overflow-x:hidden !important;
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:stretch !important;
+    -webkit-overflow-scrolling:touch !important;
   }
 
-  /* Top bar: full width, content centered via padding */
-  .top-bar{
-    width:100% !important;
-    padding-left:max(16px, calc(50% - 300px)) !important;
-    padding-right:max(16px, calc(50% - 300px)) !important;
-    padding-top:10px !important;
+  /* 8. Bottom-nav y chat-input: fixed reales en PC */
+  .patient-viewport .bottom-nav,
+  .patient-viewport #chat-input-bar{
+    position:fixed !important;
   }
-
-  /* Hero dark sections: full bleed */
-  .hero-dark{max-width:none !important;width:100% !important}
-  .hero-dark h2,.hero-dark p{max-width:560px !important;margin-left:auto !important;margin-right:auto !important}
-
-  /* Body card: centered column, capped width */
-  .body-card{
-    max-width:620px !important;
-    width:100% !important;
-    margin-left:auto !important;
-    margin-right:auto !important;
-    padding:20px 20px 0 !important;
-  }
-
-  /* Dashboard */
-  .dash-header{width:100% !important}
-  .dash-header-top,.dash-greeting-time,.dash-greeting-name,.dash-stat-card{
-    max-width:620px !important;margin-left:auto !important;margin-right:auto !important;
-  }
-  .dash-body{
-    max-width:none !important;
-    padding:16px max(16px,calc(50% - 310px)) 100px !important;
-  }
-
-  /* Checklist screen */
-  #s-checklist > .hero-dark{width:100% !important}
-  #s-checklist > *:not(.hero-dark){
-    max-width:640px !important;
-    width:100% !important;
-    margin-left:auto !important;
-    margin-right:auto !important;
-  }
-
-  /* Step screens (upload, info, review, etc.) */
-  #s-step1 > *:not(.top-bar),
-  #s-step2 > *:not(.top-bar),
-  #s-step3 > *:not(.top-bar),
-  #s-step4 > *:not(.top-bar),
-  #s-step5 > *:not(.top-bar){
-    max-width:640px !important;
-    width:100% !important;
-    margin-left:auto !important;
-    margin-right:auto !important;
-  }
-
-  /* Generic inner content areas: centered */
-  .body-card{max-width:620px !important;margin-left:auto !important;margin-right:auto !important;width:100% !important}
-
-  /* Bottom nav: full-width bar, content centered */
   .bottom-nav{
-    position:fixed !important;
-    left:0 !important;right:0 !important;bottom:0 !important;
-    width:100% !important;
-    justify-content:center !important;
-    gap:0 !important;
+    left:0 !important;
+    right:0 !important;
+    bottom:0 !important;
+    z-index:9000 !important;
   }
-  .bottom-nav .nav-item{max-width:100px !important}
-
-  /* Chat input bar */
   #chat-input-bar{
-    position:fixed !important;
-    left:50% !important;
-    transform:translateX(-50%) !important;
-    width:min(600px, 100%) !important;
+    bottom:0 !important;
+    z-index:9001 !important;
   }
-
-  /* Landing hero centering */
-  #s-landing{
-    overflow-y:auto !important;
-    align-items:center !important;
-  }
-  .how-section,.testi-section,.stat-band,.final-cta,.landing-footer{
-    width:100% !important;
-    max-width:none !important;
-  }
-  .how-section,.testi-section{
-    padding:48px calc(50% - 280px) !important;
-  }
-  .stat-band{padding:40px calc(50% - 280px) !important;grid-template-columns:1fr 1fr 1fr 1fr !important}
-  .stat-cell:nth-child(1),.stat-cell:nth-child(2){border-bottom:none !important}
-  .stat-cell:nth-child(odd){border-right:1px solid rgba(255,255,255,.08) !important}
-
-  /* Testi list: 2 columns on PC */
-  .testi-list{display:grid !important;grid-template-columns:1fr 1fr !important;gap:16px !important;margin:20px calc(50% - 280px) 0 !important}
-
-  /* Final CTA */
-  .final-cta{padding:60px 40px !important}
-  .final-cta h2{font-size:38px !important}
-  .btn-final{max-width:360px !important;height:58px !important;font-size:18px !important}
-
-  /* Admin panel full */
-  .admin-panel{width:100% !important}
 }
 @media(max-width:599px){
   .patient-label{display:none}
@@ -3865,26 +3702,6 @@ return `<div style="width:100%;max-width:360px;border-radius:20px;overflow:hidde
 
   </div>`;
 }
-
-// —— PC MODE: restore position:fixed for bottom-nav and chat-input ————————————
-(function() {
-function isPC() { return window.innerWidth >= 1024; }
-function applyPCFixes() {
-if (!isPC()) return;
-var bn = document.querySelector(’.bottom-nav’);
-if (bn) { bn.style.position = ‘fixed’; bn.style.bottom = ‘0’; bn.style.left = ‘0’; bn.style.right = ‘0’; bn.style.zIndex = ‘9000’; }
-var ci = document.getElementById(‘chat-input-bar’);
-if (ci) { ci.style.position = ‘fixed’; ci.style.bottom = ‘0’; ci.style.left = ‘50%’; ci.style.transform = ‘translateX(-50%)’; ci.style.width = ‘min(600px,100%)’; ci.style.zIndex = ‘9001’; }
-}
-document.addEventListener(‘DOMContentLoaded’, function() {
-setTimeout(applyPCFixes, 200);
-var orig = window.goTo;
-if (typeof orig === ‘function’) {
-window.goTo = function() { orig.apply(this, arguments); setTimeout(applyPCFixes, 80); };
-}
-});
-window.addEventListener(‘resize’, applyPCFixes);
-})();
 
 // Wire up finance section init — defer until after all functions are defined
 window.addEventListener(‘load’, () => {
