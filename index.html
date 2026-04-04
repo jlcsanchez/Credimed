@@ -569,23 +569,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tap-hint-badge-dark{animation:tapPulse 2s infinite;border-radius:20px}
 
 @media(min-width:600px){
-  .patient-panel{background:var(--bg) !important;align-items:stretch !important;justify-content:flex-start !important;padding:0 !important;min-height:calc(100vh - 56px) !important;overflow-y:auto !important}
-  .phone-frame{width:100% !important;height:auto !important;min-height:calc(100vh - 56px) !important;border-radius:0 !important;box-shadow:none !important;flex-shrink:0 !important;overflow-y:auto !important;overflow-x:hidden !important}
+  /* Patient panel fills full screen */
+  .patient-panel{background:var(--bg) !important;align-items:stretch !important;justify-content:flex-start !important;padding:0 !important;height:calc(100vh - 56px) !important;overflow:hidden !important}
+  /* Remove phone frame styling */
+  .phone-frame{width:100% !important;height:calc(100vh - 56px) !important;border-radius:0 !important;box-shadow:none !important;overflow:hidden !important;position:relative !important;background:var(--bg) !important}
   .phone-notch{display:none !important}
-  .patient-viewport{width:100% !important;height:auto !important;min-height:calc(100vh - 56px) !important;overflow-y:auto !important;overflow-x:hidden !important}
-  .patient-viewport .screen{width:100% !important;height:auto !important;min-height:calc(100vh - 56px) !important;overflow-y:auto !important;position:relative !important}
-  .demo-panels{min-height:calc(100vh - 56px)}
   .patient-label{display:none !important}
-  /* Make landing page content wider on desktop */
-  .landing-inner{max-width:600px;margin:0 auto}
-  .how-section{max-width:600px;margin:0 auto}
-  .stat-band{max-width:100%}
-  .testi-section{max-width:600px;margin:0 auto}
-  .final-cta{padding:64px 40px}
-  /* Wider content areas for inner screens */
-  .body-card{max-width:600px;margin-left:auto;margin-right:auto;width:100%}
-  .hero-dark{max-width:100%}
-  .top-bar{max-width:100%}
+  /* Viewport fills screen, screens behave as full-page panels */
+  .patient-viewport{width:100% !important;height:calc(100vh - 56px) !important;overflow:hidden !important;position:relative !important}
+  .patient-viewport .screen{width:100% !important;height:calc(100vh - 56px) !important;overflow-y:auto !important;position:absolute !important}
+  /* Center content with max-width on wide screens */
+  .landing-inner{max-width:700px;margin:0 auto}
+  .top-bar{padding:12px 32px 0}
+  .hero-dark{padding:24px 40px 40px}
+  .body-card{padding:20px 32px 0;max-width:760px;margin:0 auto;width:100%}
+  .bottom-nav{left:0 !important;right:0 !important;width:100% !important}
+  .card{max-width:680px;margin-left:auto;margin-right:auto}
+  .demo-panels{height:calc(100vh - 56px);overflow:hidden}
 }
 @media(max-width:599px){
   .patient-label{display:none}
