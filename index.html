@@ -588,16 +588,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .patient-viewport #chat-input-bar { position:absolute !important }
 .bottom-nav { left:0 !important; right:0 !important; bottom:0 !important; z-index:9000 !important }
 
-/* ─── PC ≥1024px: columna 680px centrada, fondo oscuro ─ */
+/* ─── PC ≥1024px: columna 680px centrada, 100% alto ─── */
 @media(min-width:1024px){
   .patient-panel { background:#0f172a !important;
                    align-items:center !important;
-                   justify-content:center !important }
+                   justify-content:center !important;
+                   height:100vh !important }
   .phone-frame   { width:680px !important; max-width:680px !important;
+                   height:100vh !important;
                    flex-shrink:0 !important; flex-grow:0 !important;
                    box-shadow:0 0 60px rgba(0,0,0,.6) !important }
-  .patient-viewport { width:680px !important }
-  .patient-viewport .screen { width:680px !important }
+  .patient-viewport { width:680px !important; height:100vh !important }
+  .patient-viewport .screen { width:680px !important; height:100vh !important }
   .bottom-nav { width:680px !important; left:50% !important;
                 transform:translateX(-50%) !important }
 }
