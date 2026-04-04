@@ -662,47 +662,36 @@ html, body    { height:100%; overflow:hidden }
   flex-direction:column !important;
 }
 
-/* ── LAYOUT PC ≥ 900px: columna centrada con max-width ────────
-   En pantallas anchas centramos el contenido igual que mobile
-   pero sin frame visible — solo un max-width elegante.         */
+/* ── PC ≥ 900px: PANTALLA COMPLETA, full-bleed, sin laterales ── */
 @media(min-width:900px){
 
-  /* Centra el contenido dentro del viewport */
-  .patient-viewport{
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:center !important;
-    background:#0f172a !important;
-  }
+  /* Viewport sin color lateral */
+  .patient-viewport{ background:transparent !important }
 
-  /* El contenido de cada screen se centra con max-width */
+  /* Screens: 100% ancho, sin columna centrada */
   .patient-viewport .screen{
-    left:50% !important;
-    transform:translateX(-50%) !important;
-    max-width:640px !important;
-    width:min(640px, 100%) !important;
-    /* Sombra sutil que separa del fondo oscuro */
-    box-shadow:0 0 80px rgba(0,0,0,.6) !important;
+    left:0 !important;
+    transform:none !important;
+    width:100% !important;
+    max-width:none !important;
+    box-shadow:none !important;
   }
 
-  /* Bottom nav centrada igual */
-  .bottom-nav{
-    left:50% !important;
-    transform:translateX(-50%) !important;
-    width:min(640px, 100%) !important;
-    max-width:640px !important;
-  }
-  #chat-input-bar{
-    left:50% !important;
-    transform:translateX(-50%) !important;
-    width:min(640px, 100%) !important;
-    max-width:640px !important;
-  }
+  /* Bottom nav y chat: full width */
+  .bottom-nav{ left:0 !important; transform:none !important; width:100% !important; max-width:none !important }
+  #chat-input-bar{ left:0 !important; transform:none !important; width:100% !important; max-width:none !important }
 
-  /* Ajuste body-card y dash-body para que no tengan bottom-padding
-     excesivo en PC — el scroll es interno a la screen */
-  .body-card{ flex:1; min-height:0; }
-  .dash-body{ padding-bottom:100px; }
+  /* Centrado de contenido interno */
+  .landing-inner{ max-width:560px !important; margin:0 auto !important }
+  .how-section{ max-width:640px !important; margin:0 auto !important }
+  .testi-section{ max-width:640px !important; margin:0 auto !important }
+  .stat-band{ padding:40px 48px !important }
+  .final-cta{ padding-left:48px !important; padding-right:48px !important }
+  .auth-form-card{ max-width:420px !important; margin:0 auto !important }
+  #form-register > div,#form-login > div{ max-width:420px !important; margin:0 auto !important }
+  .body-card{ max-width:640px !important; margin-left:auto !important; margin-right:auto !important; width:100% !important }
+  .dash-header{ padding-left:max(24px,calc(50% - 300px)) !important; padding-right:max(24px,calc(50% - 300px)) !important }
+  .dash-body{ max-width:640px !important; margin:0 auto !important; padding-bottom:100px !important; width:100% !important }
 
   /* ── Escala de tipografía ── */
   /* La app fue diseñada a 375px → ahora 640px → factor ≈1.7× */
@@ -772,31 +761,6 @@ html, body    { height:100%; overflow:hidden }
 
   /* Support chat */
   .chat-bubble{ font-size:14px !important; padding:12px 16px !important }
-}
-
-/* ── PANTALLAS MUY ANCHAS ≥ 1440px ── */
-@media(min-width:1440px){
-  .patient-viewport .screen{
-    max-width:700px !important;
-    width:700px !important;
-  }
-  .bottom-nav,#chat-input-bar{
-    max-width:700px !important;
-    width:700px !important;
-  }
-  .hero-h1{ font-size:56px !important }
-}
-
-/* ── Animaciones de transición adaptadas al layout centrado ── */
-@media(min-width:900px){
-  @keyframes slideIn{
-    from{ opacity:0; transform:translateX(-50%) translateX(20px) }
-    to  { opacity:1; transform:translateX(-50%) translateX(0)     }
-  }
-  @keyframes slideBack{
-    from{ opacity:0; transform:translateX(-50%) translateX(-20px) }
-    to  { opacity:1; transform:translateX(-50%) translateX(0)      }
-  }
 }
 
 @media(max-width:599px){
