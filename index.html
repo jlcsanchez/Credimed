@@ -471,7 +471,7 @@ input[type=file]{display:none}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:var(--slate);min-height:100vh;overflow-x:hidden}
 
 .demo-wrapper{height:100vh;display:flex;flex-direction:column;overflow:hidden}
-.demo-topbar{background:linear-gradient(90deg,#0f172a 0%,#134e4a 100%);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:9999;flex-shrink:0;gap:8px}
+.demo-topbar{display:none}
 .demo-logo{display:none;align-items:center;gap:8px;flex-shrink:0}
 @media(min-width:480px){.demo-logo{display:flex}}
 .demo-logo-icon{width:28px;height:28px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
@@ -484,15 +484,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .demo-badge{background:rgba(13,148,136,.2);border:1px solid rgba(13,148,136,.35);color:#5eead4;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;display:none}
 @media(min-width:600px){.demo-badge{display:block}}
 
-.demo-panels{flex:1;display:flex;overflow:hidden;width:100%;position:relative;min-height:0}
+.demo-panels{flex:1;display:flex;overflow:hidden;width:100%;height:100vh;position:relative;min-height:0}
 .panel{display:none;width:100%;flex-direction:column;overflow:hidden;flex-shrink:0}
 .panel.active{display:flex}
 
 /* ── PATIENT PANEL ── */
 .patient-panel{background:#1e293b;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 0 24px;overflow-y:auto;width:100%;min-height:0}
-.phone-frame{width:min(375px,100vw);height:min(812px,calc(100vw * 812/375));background:#0f172a;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 8px #0f172a,0 0 0 10px #334155;flex-shrink:0}
+.phone-frame{width:100%;height:100%;overflow:hidden;position:relative;flex-shrink:0}
 .phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:140px;height:28px;background:#0f172a;border-radius:0 0 18px 18px;z-index:100}
-.patient-viewport{width:min(375px,100vw);height:min(812px,calc(100svh - 120px));overflow-x:hidden;overflow-y:hidden;position:relative;background:#0f172a}
+.patient-viewport{width:100%;height:100vh;overflow-x:hidden;overflow-y:hidden;position:relative;background:#0f172a}
 .patient-label{margin-top:16px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3)}
 
 /* ── ADMIN PANEL ── */
@@ -602,7 +602,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 @media(min-width:600px){
   .patient-panel{background:#1e293b !important;align-items:center !important;padding:24px 0 !important}
-  .phone-frame{width:375px !important;height:812px !important;border-radius:44px !important;box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 8px #0f172a,0 0 0 10px #334155 !important}
+  .phone-frame{width:100% !important;height:100% !important;border-radius:0 !important;box-shadow:none !important}
   .patient-viewport{width:375px !important;height:812px !important}
   .patient-viewport .screen{width:375px !important;position:absolute !important}
 }
@@ -1753,7 +1753,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         </div>
       </div>
     </div>
-    <div class="card" id="c-sig-card" style="opacity:.5;pointer-events:none;transition:opacity .3s;margin-bottom:0">
+    <div class="card" id="c-sig-card" style="transition:opacity .3s;margin-bottom:0">
       <div class="card-head"><h3>✍️ Electronic Signature</h3></div>
       <div class="card-body">
         <div class="sig-row">
@@ -2370,17 +2370,18 @@ let s1Scanned=false;
 function s1HandleFile(inp){
   if(!inp.files||!inp.files[0])return;
   var file=inp.files[0];
-  if(file.type.startsWith('image/')){
+  var isImg=file.type.startsWith('image/');
+  if(isImg){
     var r=new FileReader();
     r.onload=function(e){
       var img=document.getElementById('s1-img');
       if(img) img.src=e.target.result;
-      s1StartScan(e.target.result);
     };
     r.readAsDataURL(file);
-  } else { s1StartScan(null); }
+  }
+  s1StartScan();
 }
-function s1StartScan(imageData){
+function s1StartScan(){
   var ph=document.getElementById('s1-ph'); if(ph) ph.style.display='none';
   var prev=document.getElementById('s1-preview'); if(prev) prev.style.display='block';
   var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='flex';
@@ -2389,21 +2390,10 @@ function s1StartScan(imageData){
   const fill=document.getElementById('s1-ocr-fill');
   const steps=[{p:20,t:'Detecting card...',s:'Analyzing image'},{p:55,t:'Reading text...',s:'Extracting details'},{p:85,t:'Identifying insurer...',s:'Cross-referencing'},{p:100,t:'Done!',s:'Details extracted'}];
   let i=0;const iv=setInterval(()=>{if(i<steps.length){const st=steps[i++];fill.style.width=st.p+'%';document.getElementById('s1-ocr-title').textContent=st.t;document.getElementById('s1-ocr-sub').textContent=st.s}},480);
-  if(!imageData){setTimeout(()=>{clearInterval(iv);s1ShowExtracted({})},2100);return;}
-  (async function(){
-    try{
-      const b64=imageData.split(',')[1],mt=imageData.split(';')[0].split(':')[1];
-      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:'OCR tool. Return ONLY JSON: {"provider":"","memberId":"","groupId":"","plan":""}',messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mt,data:b64}},{type:'text',text:'Extract insurance card info.'}]}]})});
-      const data=await res.json();
-      clearInterval(iv);
-      let p={};try{p=JSON.parse((data.content[0].text||'{}').replace(/```json|```/g,'').trim());}catch(e){}
-      s1ShowExtracted(p);
-    }catch(e){clearInterval(iv);s1ShowExtracted({});}
-  })();
+  setTimeout(()=>{clearInterval(iv);s1ShowExtracted()},2100);
 }
-function s1ShowExtracted(ai){
-  const _fb=s1Insurers[Math.floor(Math.random()*s1Insurers.length)];
-  const d={provider:(ai&&ai.provider)||_fb.provider,member:(ai&&ai.memberId)||_fb.member,group:(ai&&ai.groupId)||_fb.group,plan:(ai&&ai.plan)||_fb.plan};
+function s1ShowExtracted(){
+  const d=s1Insurers[Math.floor(Math.random()*s1Insurers.length)];
   var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
   document.getElementById('s1-provider').textContent=d.provider;
   document.getElementById('s1-member').textContent=d.member;
@@ -2579,6 +2569,7 @@ function s2HandleFile(inp){
   if(!inp.files||!inp.files[0])return;
   var file=inp.files[0];
   var isImg=file.type.startsWith('image/');
+  // Hide upload area, show file state
   var empty=document.getElementById('s2-empty'); if(empty) empty.style.display='none';
   var fileState=document.getElementById('s2-file-state'); if(fileState) fileState.style.display='block';
   if(isImg){
@@ -2587,19 +2578,18 @@ function s2HandleFile(inp){
       var img=document.getElementById('s2-img');
       if(img){ img.src=e.target.result; img.style.display='block'; }
       var rc=document.getElementById('s2-receipt-card'); if(rc) rc.style.display='none';
-      s2RunOCR(e.target.result);
     };
     r.readAsDataURL(file);
   } else {
+    // PDF -- show receipt card placeholder
     var img=document.getElementById('s2-img'); if(img) img.style.display='none';
     var rc=document.getElementById('s2-receipt-card'); if(rc) rc.style.display='block';
-    s2RunOCR(null);
   }
+  s2RunOCR();
 }
 
-function s2RunOCR(imageData){
+function s2RunOCR(){
   const d = s2Demos[Math.floor(Math.random()*s2Demos.length)];
-  if(imageData){ s2RunOCRAI(imageData); return; }
   const ocr = document.getElementById('s2-ocr');
   const fill = document.getElementById('s2-ocr-fill');
 
@@ -2700,43 +2690,6 @@ function s2RunOCR(imageData){
   }, 1800);
 }
 
-async function s2RunOCRAI(imageData){
-  const ocr=document.getElementById('s2-ocr'),fill=document.getElementById('s2-ocr-fill');
-  ['s2-dentist','s2-date','s2-proc','s2-amount','s2-city'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';el.classList.remove('prefilled','ocr-typing');}});
-  document.getElementById('s2-auto').classList.remove('show');
-  var sf=document.getElementById('s2-fields');if(sf)sf.style.display='none';
-  ocr.classList.add('show');
-  var steps=[{p:20,t:'📄 Reading document...',s:'Detecting receipt'},{p:50,t:'🔍 Extracting data...',s:'Running OCR'},{p:80,t:'🦷 Matching procedure...',s:'CDT codes'},{p:100,t:'✅ Done!',s:'Fields extracted'}];
-  var si=0,iv=setInterval(function(){if(si<steps.length){fill.style.width=steps[si].p+'%';document.getElementById('s2-ocr-title').textContent=steps[si].t;document.getElementById('s2-ocr-sub').textContent=steps[si].s;si++;}},400);
-  try{
-    const b64=imageData.split(',')[1],mt=imageData.split(';')[0].split(':')[1];
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:'OCR tool. Return ONLY JSON: {"dentist":"","procedure":"Crown|Implant|Root Canal|Extraction|Bridge|Cleaning|Whitening|Veneer|Partial Denture|Other","amount":"","city":"","date":"YYYY-MM-DD"}',messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mt,data:b64}},{type:'text',text:'Extract dental receipt info.'}]}]})});
-    const data=await res.json();
-    clearInterval(iv);ocr.classList.remove('show');
-    let p={};try{p=JSON.parse((data.content[0].text||'{}').replace(/```json|```/g,'').trim());}catch(e){}
-    const fb=s2Demos[Math.floor(Math.random()*s2Demos.length)];
-    const d={dentist:p.dentist||fb.dentist,proc:p.procedure||fb.proc,amount:p.amount||fb.amount,city:p.city||fb.city,date:p.date||fb.date};
-    _s2Fill(d);
-  }catch(e){clearInterval(iv);ocr.classList.remove('show');_s2Fill(s2Demos[Math.floor(Math.random()*s2Demos.length)]);}
-}
-function _s2Fill(d){
-  var dentistEl=document.getElementById('s2-dentist');if(dentistEl){dentistEl.value=d.dentist;dentistEl.classList.add('prefilled');}
-  var procEl=document.getElementById('s2-proc');if(procEl){for(var o=0;o<procEl.options.length;o++){if(procEl.options[o].text===d.proc||procEl.options[o].value===d.proc){procEl.selectedIndex=o;break;}}procEl.classList.add('prefilled');}
-  var amtEl=document.getElementById('s2-amount');if(amtEl){amtEl.value=d.amount;amtEl.classList.add('prefilled');}
-  var cityEl=document.getElementById('s2-city');if(cityEl){cityEl.value=d.city;cityEl.classList.add('prefilled');}
-  var dateEl=document.getElementById('s2-date');if(dateEl){dateEl.value=d.date;dateEl.classList.add('prefilled');}
-  var s2fields=document.getElementById('s2-fields');if(s2fields)s2fields.style.display='block';
-  var autoEl=document.getElementById('s2-auto');if(autoEl)autoEl.classList.add('show');
-  var rcD=document.getElementById('s2-rc-dentist');if(rcD)rcD.textContent=d.dentist.split('--')[0].trim();
-  var rcP=document.getElementById('s2-rc-proc');if(rcP)rcP.textContent=d.proc;
-  var rcA=document.getElementById('s2-rc-amount');if(rcA)rcA.textContent='$'+d.amount;
-  var rcDt=document.getElementById('s2-rc-date');if(rcDt)rcDt.textContent=d.date?new Date(d.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'--';
-  var imgEl=document.getElementById('s2-img'),rcCard=document.getElementById('s2-receipt-card');
-  if(imgEl&&imgEl.src&&imgEl.style.display!=='none'){if(rcCard)rcCard.style.display='none';}else{if(rcCard)rcCard.style.display='block';}
-  var s2bodyOCR=document.getElementById('s2-card-body');if(s2bodyOCR){s2bodyOCR.style.pointerEvents='none';s2bodyOCR.style.opacity='0.75';}
-  var s2btn=document.getElementById('s2-continue-btn');if(s2btn)s2btn.disabled=true;
-  var s2banner=document.getElementById('s2-confirm-banner');if(s2banner){s2banner.style.display='flex';setTimeout(function(){s2banner.scrollIntoView({behavior:'smooth',block:'nearest'});},150);}
-}
 function s2TypeField(id, text, delay, cb){
   setTimeout(()=>{
     const el=document.getElementById(id);
@@ -2898,7 +2851,7 @@ function setupScrollTracker(){
     if(max <= 10) unlockCbs(); // can't scroll -- unlock
   }, 800);
 }
-function onCb(){const ids=['cb1','cb2','cb3','cb4','cb5'];ids.forEach(id=>{const w=document.getElementById(id).closest('.cb-item');document.getElementById(id).checked?w.classList.add('checked'):w.classList.remove('checked')});cAllChecked=ids.every(id=>document.getElementById(id).checked);var sc=document.getElementById('c-sig-card');if(sc){sc.style.opacity='1';sc.style.pointerEvents='auto';}checkSubmit();}
+function onCb(){const ids=['cb1','cb2','cb3','cb4','cb5'];ids.forEach(id=>{const w=document.getElementById(id).closest('.cb-item');document.getElementById(id).checked?w.classList.add('checked'):w.classList.remove('checked')});cAllChecked=ids.every(id=>document.getElementById(id).checked);checkSubmit()}
 function onSigInput(){
   const val = document.getElementById('sig-name')?.value.trim() || '';
   cSigTyped = val.length >= 2;
