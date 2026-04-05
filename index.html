@@ -2923,15 +2923,18 @@ function setupScrollTracker(){
     if(max <= 10) unlockCbs(); // can't scroll -- unlock
   }, 800);
 }
-function onCb(){const ids=['cb1','cb2','cb3','cb4','cb5'];ids.forEach(id=>{const w=document.getElementById(id).closest('.cb-item');document.getElementById(id).checked?w.classList.add('checked'):w.classList.remove('checked')});cAllChecked=ids.every(id=>document.getElementById(id).checked);checkSubmit()}
-function onSigInput(){
+window.onCb = function onCb(){const ids=['cb1','cb2','cb3','cb4','cb5'];ids.forEach(id=>{const w=document.getElementById(id).closest('.cb-item');document.getElementById(id).checked?w.classList.add('checked'):w.classList.remove('checked')});cAllChecked=ids.every(id=>document.getElementById(id).checked);checkSubmit()}
+window.onSigInput = function onSigInput(){
   const val = document.getElementById('sig-name')?.value.trim() || '';
   cSigTyped = val.length >= 2;
   updateSigBtn();
   // User must click Confirm button explicitly -- no auto-confirm
 }
-function updateSigBtn(){document.getElementById('sig-confirm-btn').disabled=!cSigTyped}
-function resetSigBtn(){
+window.updateSigBtn = function updateSigBtn(){
+  var btn = document.getElementById('sig-confirm-btn');
+  if(btn) btn.disabled = !cSigTyped;
+}
+window.resetSigBtn = function resetSigBtn(){
   const btn=document.getElementById('sig-confirm-btn');
   btn.classList.remove('confirmed');
   btn.innerHTML='✍️ Confirm Signature';
@@ -2944,7 +2947,7 @@ function resetSigBtn(){
   nameInp.style.color='';
   document.querySelector('.canvas-wrap').classList.remove('locked');
 }
-function confirmSig(){
+window.confirmSig = function confirmSig(){
   const name = document.getElementById('sig-name')?.value.trim() || '';
   if(name.length < 2) return;
   cSigConfirmed = true;
@@ -2972,7 +2975,7 @@ function confirmSig(){
   checkSubmit();
 }
 
-function checkSubmit(){const btn=document.getElementById('c-submit-btn');if(btn)btn.disabled=!cSigConfirmed}
+window.checkSubmit = function checkSubmit(){const btn=document.getElementById('c-submit-btn');if(btn)btn.disabled=!cSigConfirmed}
 function cSubmit(){
   const routing=document.getElementById('routing').value.replace(/\D/g,'');
   const account=document.getElementById('account').value.replace(/\D/g,'');
@@ -3023,8 +3026,8 @@ function initCanvas(){
   canvas.addEventListener('touchend', end);
 }
 
-function onDraw(){document.getElementById('canvas-ph').style.display='none';document.getElementById('canvas-clr').classList.add('show');cSigDrawn=true;updateSigBtn()}
-function clearCanvas(){
+window.onDraw = function onDraw(){document.getElementById('canvas-ph').style.display='none';document.getElementById('canvas-clr').classList.add('show');cSigDrawn=true;updateSigBtn()}
+window.clearCanvas = function clearCanvas(){
   const canvas = document.getElementById('sig-canvas');
   if(canvas){ const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); }
   // Reset canvas UI
@@ -3639,8 +3642,7 @@ function triggerUpload(id) {
 window.triggerUpload = triggerUpload;
 if(typeof s1HandleFile==='function') window.s1HandleFile = s1HandleFile;
 if(typeof s2HandleFile==='function') window.s2HandleFile = s2HandleFile;
-if(typeof onCb==='function') window.onCb = onCb;
-if(typeof confirmSig==='function') window.confirmSig = confirmSig;
+// onCb and confirmSig now directly exposed as window.XXX above
 if(typeof cSubmit==='function') window.cSubmit = cSubmit;
 if(typeof doPayment==='function') window.doPayment = doPayment;
 if(typeof runCounters==='function') window.runCounters = runCounters;
@@ -3732,17 +3734,13 @@ if(typeof s2Continue==='function') window.s2Continue = s2Continue;
 if(typeof s2CheckFields==='function') window.s2CheckFields = s2CheckFields;
 // s2Confirm moved to Script 1
 if(typeof s2Reset==='function') window.s2Reset = s2Reset;
-if(typeof confirmSig==='function') window.confirmSig = confirmSig;
-if(typeof clearCanvas==='function') window.clearCanvas = clearCanvas;
+// confirmSig and clearCanvas now directly exposed as window.XXX above
 if(typeof showCardForm==='function') window.showCardForm = showCardForm;
 if(typeof hideCardForm==='function') window.hideCardForm = hideCardForm;
 if(typeof doPayment==='function') window.doPayment = doPayment;
 if(typeof sendChat==='function') window.sendChat = sendChat;
 if(typeof sendQuick==='function') window.sendQuick = sendQuick;
-if(typeof onCb==='function') window.onCb = onCb;
-if(typeof onSigInput==='function') window.onSigInput = onSigInput;
-if(typeof updateSigBtn==='function') window.updateSigBtn = updateSigBtn;
-if(typeof resetSigBtn==='function') window.resetSigBtn = resetSigBtn;
+// All sig functions now directly exposed as window.XXX above
 if(typeof cSubmit==='function') window.cSubmit = cSubmit;
 if(typeof initCanvas==='function') window.initCanvas = initCanvas;
 if(typeof initDashboard==='function') window.initDashboard = initDashboard;
