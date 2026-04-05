@@ -6965,7 +6965,7 @@ panel.innerHTML = docs[type] || ‘<div style="padding:16px;font-size:13px;color
 // ── TAP HINT ANIMATION ───────────────────────
 
 // ── DOCUMENT LIGHTBOX ────────────────────────
-function openLightbox(type) {
+window.openLightbox = function openLightbox(type) {
 const existing = document.getElementById(‘inline-lightbox’);
 if(existing) existing.remove();
 
