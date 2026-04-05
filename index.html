@@ -575,18 +575,22 @@ html,body{height:100%;overflow:hidden}body{font-family:-apple-system,BlinkMacSys
    contenido lo necesita.
 ═══════════════════════════════════════════════════════════════ */
 
-/* 1. Eliminar demo shell por completo */
-.demo-topbar  { display:none !important }
-.demo-badge   { display:none !important }
-.patient-label{ display:none !important }
-.phone-notch  { display:none !important }
+/* 1. Eliminar demo shell por completo — máxima especificidad */
+body .demo-wrapper .demo-topbar { display:none !important }
+body .demo-wrapper .demo-badge  { display:none !important }
+body .demo-wrapper .patient-label{ display:none !important }
+body .demo-wrapper .phone-notch { display:none !important }
+/* Anular también los overrides de radio CSS que pueden reactivar el topbar */
+#radio-admin:checked   ~ .demo-topbar,
+#radio-patient:checked ~ .demo-topbar { display:none !important }
 
 /* 2. El contenedor raíz ocupa toda la ventana */
 html, body    { height:100%; overflow:hidden }
 .demo-wrapper { height:100%; display:flex; flex-direction:column }
-.demo-panels  { flex:1; position:relative; overflow:hidden }
+/* demo-panels: sin topbar, ocupa todo el alto */
+.demo-panels  { flex:1; position:relative; overflow:hidden; height:100% }
 
-/* 3. El panel-patient llena todo */
+/* 3. El panel-patient llena todo — sin padding, sin centering */
 .patient-panel{
   display:flex !important;
   width:100% !important;
@@ -596,6 +600,7 @@ html, body    { height:100%; overflow:hidden }
   align-items:stretch !important;
   justify-content:stretch !important;
   overflow:hidden !important;
+  position:relative !important;
 }
 
 /* 4. El frame de teléfono desaparece — el viewport ES la página */
@@ -605,7 +610,9 @@ html, body    { height:100%; overflow:hidden }
   border-radius:0 !important;
   box-shadow:none !important;
   background:transparent !important;
-  overflow:visible !important;
+  overflow:hidden !important; /* must stay hidden — screens use position:absolute */
+  position:relative !important;
+  flex-shrink:0 !important;
 }
 
 /* 5. El patient-viewport llena todo el frame */
@@ -1177,7 +1184,7 @@ html, body    { height:100%; overflow:hidden }
 
   <input type="radio" name="panel-switch" id="radio-patient" style="display:none" checked>
   <input type="radio" name="panel-switch" id="radio-admin" style="display:none">
-  <div class="demo-topbar">
+  <div class="demo-topbar" style="display:none!important">
     <div class="demo-logo">
       <div class="demo-logo-icon">⚕</div>
       <div>
