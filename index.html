@@ -1759,7 +1759,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="sig-row">
           <div>
             <div class="sig-label">Type your name <span style="color:var(--red)">*</span></div>
-            <input type="text" class="sig-name-inp" id="sig-name" placeholder="Sign by typing your name" data-oi="onSigInput()">
+            <input type="text" class="sig-name-inp" id="sig-name" placeholder="Sign by typing your name" data-oi="onSigInput()" oninput="window.onSigInput&&window.onSigInput()">
             <div style="font-size:10px;color:var(--slate-light);margin-top:4px">Legally binding electronic signature</div>
           </div>
           <div>
@@ -1772,7 +1772,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           </div>
         </div>
         <div class="ts-block">🕐 <span>Timestamp: <strong id="c-ts"></strong></span></div>
-        <button class="sig-confirm-btn" id="sig-confirm-btn" data-oc="confirmSig()" onclick="window.confirmSig&&window.confirmSig()" disabled>✍️ Confirm Signature</button>
+        <button class="sig-confirm-btn" id="sig-confirm-btn" data-oc="confirmSig()" onclick="window.confirmSig&&window.confirmSig()">✍️ Confirm Signature</button>
         <div class="sig-confirmed-badge" id="sig-confirmed-badge"><span>✅</span><span>Signature confirmed — <strong id="sig-confirmed-name"></strong></span></div>
       </div>
     </div>
@@ -6283,41 +6283,41 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
       <div class="th">Claims</div>
       <div class="th">Recovered</div>
     </div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Maria González</div><div class="td" style="font-size:11px;color:var(--slate-mid)">maria.g@gmail.com</div><div class="td">Delta Dental</div><div class="td" style="text-align:center">3</div><div class="td" style="color:var(--teal);font-weight:600">$3,200</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Patricia Vega</div><div class="td" style="font-size:11px;color:var(--slate-mid)">pvega@outlook.com</div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">James Wilson</div><div class="td" style="font-size:11px;color:var(--slate-mid)">jwilson@gmail.com</div><div class="td">Aetna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Sandra Flores</div><div class="td" style="font-size:11px;color:var(--slate-mid)">sandra.f@yahoo.com</div><div class="td">MetLife</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Valentina Cruz</div><div class="td" style="font-size:11px;color:var(--slate-mid)">vcruz@hotmail.com</div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Daniel Kim</div><div class="td" style="font-size:11px;color:var(--slate-mid)">dkim@gmail.com</div><div class="td">MetLife</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Camila Ortega</div><div class="td" style="font-size:11px;color:var(--slate-mid)">cortega@gmail.com</div><div class="td">Guardian</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Ana Ramírez</div><div class="td" style="font-size:11px;color:var(--slate-mid)">ana.r@gmail.com</div><div class="td">Cigna</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$620</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">David Chen</div><div class="td" style="font-size:11px;color:var(--slate-mid)">dchen@gmail.com</div><div class="td">Guardian</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Roberto Silva</div><div class="td" style="font-size:11px;color:var(--slate-mid)">rsilva@hotmail.com</div><div class="td">MetLife</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$2,100</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Gabriela Peña</div><div class="td" style="font-size:11px;color:var(--slate-mid)">gpena@gmail.com</div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Jason Miller</div><div class="td" style="font-size:11px;color:var(--slate-mid)">jmiller@gmail.com</div><div class="td">Aetna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Isabel Torres</div><div class="td" style="font-size:11px;color:var(--slate-mid)">isabel.t@gmail.com</div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Kevin Martínez</div><div class="td" style="font-size:11px;color:var(--slate-mid)">kevin.m@gmail.com</div><div class="td">Humana</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Laura Soto</div><div class="td" style="font-size:11px;color:var(--slate-mid)">lsoto@gmail.com</div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Sofía Hernández</div><div class="td" style="font-size:11px;color:var(--slate-mid)">sofia.h@gmail.com</div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Ryan O'Brien</div><div class="td" style="font-size:11px;color:var(--slate-mid)">robrien@gmail.com</div><div class="td">Aetna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Mariana Delgado</div><div class="td" style="font-size:11px;color:var(--slate-mid)">mdelgado@gmail.com</div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Paola Jiménez</div><div class="td" style="font-size:11px;color:var(--slate-mid)">pjimenez@hotmail.com</div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Carlos Mendoza</div><div class="td" style="font-size:11px;color:var(--slate-mid)">carlos.m@gmail.com</div><div class="td">Aetna</div><div class="td" style="text-align:center">3</div><div class="td" style="color:var(--teal);font-weight:600">$1,560</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Miguel Herrera</div><div class="td" style="font-size:11px;color:var(--slate-mid)">miguel.h@hotmail.com</div><div class="td">Aetna</div><div class="td" style="text-align:center">4</div><div class="td" style="color:var(--teal);font-weight:600">$2,840</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Jennifer Lopez</div><div class="td" style="font-size:11px;color:var(--slate-mid)">jlopez@gmail.com</div><div class="td">Delta Dental</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$1,100</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Thomas Rivera</div><div class="td" style="font-size:11px;color:var(--slate-mid)">trivera@gmail.com</div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$740</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Alicia Moreno</div><div class="td" style="font-size:11px;color:var(--slate-mid)">amoreno@yahoo.com</div><div class="td">MetLife</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$190</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Brian Johnson</div><div class="td" style="font-size:11px;color:var(--slate-mid)">bjohnson@gmail.com</div><div class="td">Aetna</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$1,850</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Carmen Ruiz</div><div class="td" style="font-size:11px;color:var(--slate-mid)">cruiz@gmail.com</div><div class="td">Delta Dental</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$2,400</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Diana Castillo</div><div class="td" style="font-size:11px;color:var(--slate-mid)">dcastillo@outlook.com</div><div class="td">Humana</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$1,380</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Steve Park</div><div class="td" style="font-size:11px;color:var(--slate-mid)">spark@gmail.com</div><div class="td">Guardian</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$960</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Mark Thompson</div><div class="td" style="font-size:11px;color:var(--slate-mid)">mthompson@gmail.com</div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$290</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Fernanda López</div><div class="td" style="font-size:11px;color:var(--slate-mid)">flopez@gmail.com</div><div class="td">Humana</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$760</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Andrew Scott</div><div class="td" style="font-size:11px;color:var(--slate-mid)">ascott@outlook.com</div><div class="td">Guardian</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$1,120</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Lucía Vázquez</div><div class="td" style="font-size:11px;color:var(--slate-mid)">lvazquez@yahoo.com</div><div class="td">Cigna</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$1,480</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Eric Nguyen</div><div class="td" style="font-size:11px;color:var(--slate-mid)">anguyen@gmail.com</div><div class="td">MetLife</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$680</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Chris Anderson</div><div class="td" style="font-size:11px;color:var(--slate-mid)">canderson@outlook.com</div><div class="td">Humana</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$420</div></div>
-    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Nathan Brooks</div><div class="td" style="font-size:11px;color:var(--slate-mid)">nbrooks@gmail.com</div><div class="td">Aetna</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$2,100</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Maria González</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f29f93809b93dc95b2959f939b9edc919d9f">[email&#160;protected]</a></div><div class="td">Delta Dental</div><div class="td" style="text-align:center">3</div><div class="td" style="color:var(--teal);font-weight:600">$3,200</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Patricia Vega</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9eeee8fbf9ffdef1ebeaf2f1f1f5b0fdf1f3">[email&#160;protected]</a></div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">James Wilson</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b110c12170814153b1c161a121755181416">[email&#160;protected]</a></div><div class="td">Aetna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Sandra Flores</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa899b949e889bd49cba839b929595d4999597">[email&#160;protected]</a></div><div class="td">MetLife</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Valentina Cruz</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b1d08191e112b03041f060a020745080406">[email&#160;protected]</a></div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Daniel Kim</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dbbfb0b2b69bbcb6bab2b7f5b8b4b6">[email&#160;protected]</a></div><div class="td">MetLife</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Camila Ortega</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ceada1bcbaaba9af8ea9a3afa7a2e0ada1a3">[email&#160;protected]</a></div><div class="td">Guardian</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Ana Ramírez</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f7e717e316d5f78727e7673317c7072">[email&#160;protected]</a></div><div class="td">Cigna</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$620</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">David Chen</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="781c1b101d16381f15191114561b1715">[email&#160;protected]</a></div><div class="td">Guardian</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Roberto Silva</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="deacadb7b2a8bf9eb6b1aab3bfb7b2f0bdb1b3">[email&#160;protected]</a></div><div class="td">MetLife</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$2,100</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Gabriela Peña</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9dfaedf8f3fcddfaf0fcf4f1b3fef2f0">[email&#160;protected]</a></div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Jason Miller</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89e3e4e0e5e5ecfbc9eee4e8e0e5a7eae6e4">[email&#160;protected]</a></div><div class="td">Aetna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Isabel Torres</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9d0cad8dbdcd597cdf9ded4d8d0d597dad6d4">[email&#160;protected]</a></div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Kevin Martínez</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1e757b68777030735e79737f7772307d7173">[email&#160;protected]</a></div><div class="td">Humana</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Laura Soto</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5b9a6baa1ba95b2b8b4bcb9fbb6bab8">[email&#160;protected]</a></div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Sofía Hernández</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="92e1fdf4fbf3bcfad2f5fff3fbfebcf1fdff">[email&#160;protected]</a></div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Ryan O'Brien</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="abd9c4c9d9c2cec5ebccc6cac2c785c8c4c6">[email&#160;protected]</a></div><div class="td">Aetna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Mariana Delgado</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bad7dedfd6dddbded5faddd7dbd3d694d9d5d7">[email&#160;protected]</a></div><div class="td">Delta Dental</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Paola Jiménez</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cabaa0a3a7afa4afb08aa2a5bea7aba3a6e4a9a5a7">[email&#160;protected]</a></div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--slate-light)">—</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Carlos Mendoza</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddbebcafb1b2aef3b09dbab0bcb4b1f3beb2b0">[email&#160;protected]</a></div><div class="td">Aetna</div><div class="td" style="text-align:center">3</div><div class="td" style="color:var(--teal);font-weight:600">$1,560</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Miguel Herrera</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="64090d031101084a0c240c0b1009050d084a070b09">[email&#160;protected]</a></div><div class="td">Aetna</div><div class="td" style="text-align:center">4</div><div class="td" style="color:var(--teal);font-weight:600">$2,840</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Jennifer Lopez</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b6167647b6e714b6c666a626725686466">[email&#160;protected]</a></div><div class="td">Delta Dental</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$1,100</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Thomas Rivera</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acd8dec5dac9decdeccbc1cdc5c082cfc3c1">[email&#160;protected]</a></div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$740</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Alicia Moreno</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dabbb7b5a8bfb4b59aa3bbb2b5b5f4b9b5b7">[email&#160;protected]</a></div><div class="td">MetLife</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$190</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Brian Johnson</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6e0c040106001d01002e09030f0702400d0103">[email&#160;protected]</a></div><div class="td">Aetna</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$1,850</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Carmen Ruiz</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="741706011d0e341319151d185a171b19">[email&#160;protected]</a></div><div class="td">Delta Dental</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$2,400</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Diana Castillo</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cbafa8aab8bfa2a7a7a48ba4bebfa7a4a4a0e5a8a4a6">[email&#160;protected]</a></div><div class="td">Humana</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$1,380</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Steve Park</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b383b2a39200b2c262a222765282426">[email&#160;protected]</a></div><div class="td">Guardian</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$960</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Mark Thompson</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f021b0700021f1c00012f08020e0603410c0002">[email&#160;protected]</a></div><div class="td">Cigna</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$290</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Fernanda López</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e5852514e5b447e59535f5752105d5153">[email&#160;protected]</a></div><div class="td">Humana</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$760</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Andrew Scott</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9dfceefef2e9e9ddf2e8e9f1f2f2f6b3fef2f0">[email&#160;protected]</a></div><div class="td">Guardian</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$1,120</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Lucía Vázquez</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cca0baadb6bdb9a9b68cb5ada4a3a3e2afa3a1">[email&#160;protected]</a></div><div class="td">Cigna</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$1,480</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Eric Nguyen</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="74151a13010d111a341319151d185a171b19">[email&#160;protected]</a></div><div class="td">MetLife</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$680</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Chris Anderson</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87e4e6e9e3e2f5f4e8e9c7e8f2f3ebe8e8eca9e4e8ea">[email&#160;protected]</a></div><div class="td">Humana</div><div class="td" style="text-align:center">1</div><div class="td" style="color:var(--teal);font-weight:600">$420</div></div>
+    <div class="tbl-row" style="grid-template-columns:1.5fr 1.5fr 1fr .6fr 1fr"><div class="td name">Nathan Brooks</div><div class="td" style="font-size:11px;color:var(--slate-mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7618140419191d0536111b171f1a5815191b">[email&#160;protected]</a></div><div class="td">Aetna</div><div class="td" style="text-align:center">2</div><div class="td" style="color:var(--teal);font-weight:600">$2,100</div></div>
   </div>
 </div>
 
@@ -6403,7 +6403,7 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
 
   </div>
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 function switchPanel(w) {
 // Show correct panel - set display directly for iOS WebView compatibility
@@ -7040,113 +7040,4 @@ return `<div style="width:100%;max-width:360px;border-radius:20px;overflow:hidde
 <div style="background:#f0fdf4;border:2px solid #6ee7b7;border-radius:10px;padding:12px 14px;position:relative;margin-top:10px">
 <div style="position:absolute;top:-9px;left:12px;background:#059669;border-radius:4px;padding:2px 8px;font-size:8px;font-weight:800;color:white">⭐ WE NEED THIS</div>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
-<div><div style="font-size:13px;font-weight:700;color:#1e293b;text-transform:uppercase">TOTAL PAID</div><div style="font-size:9px;color:#64748b">Look for this at the bottom</div></div>
-<div style="font-size:22px;font-weight:700;color:#0D9488">$X,XXX USD</div>
-</div>
-</div>
-</div>
-<div style="text-align:center;padding-top:10px;border-top:1px solid #e2e8f0">
-<div style="font-size:10px;color:#94a3b8">📷 Photo or PDF · We read it automatically</div>
-<div style="font-size:9px;color:#cbd5e1;margin-top:3px">Tap outside to close</div>
-</div>
-</div>
-
-  </div>`;
-}
-
-// Wire up panel switching and chart init
-// No load wrapper needed – switchPanel handles everything directly
-window.addEventListener(‘resize’, function() {
-var adminPanel = document.getElementById(‘panel-admin’);
-if (adminPanel && adminPanel.classList.contains(‘active’)) {
-try { drawChart(currentRange); } catch(e) {}
-try { drawFinChart(finRange); } catch(e) {}
-}
-});
-
-// Make all functions globally accessible
-
-// Expose Script 2 functions globally
-window.aN = aN;
-window.closeLightbox = closeLightbox;
-window.drawChart = drawChart;
-window.drawFinChart = drawFinChart;
-window.fChip = fChip;
-window.fChipTx = fChipTx;
-window.finFilter = finFilter;
-window.getInsuranceCardHTML = getInsuranceCardHTML;
-window.getReceiptHTML = getReceiptHTML;
-window.openLightbox = openLightbox;
-window.previewDoc = previewDoc;
-window.selClaim = selClaim;
-window.setFinRange = setFinRange;
-window.setRange = setRange;
-window.switchPanel = switchPanel;
-
-// ── Event Dispatcher ──
-(function() {
-function parseArgs(raw) {
-if (!raw.trim()) return [];
-var args=[], cur=’’, depth=0, inQ=false, qChar=’’;
-for (var i=0; i<raw.length; i++) {
-var c=raw[i];
-if (!inQ && (c===’”’||c===”’”)) { inQ=true; qChar=c; cur+=c; }
-else if (inQ && c===qChar) { inQ=false; cur+=c; }
-else if (!inQ && c===’(’) { depth++; cur+=c; }
-else if (!inQ && c===’)’) { depth–; cur+=c; }
-else if (!inQ && depth===0 && c===’,’) { args.push(cur.trim()); cur=’’; }
-else { cur+=c; }
-}
-if (cur.trim()) args.push(cur.trim());
-return args.map(function(a) {
-if ((a[0]===”’”&&a.slice(-1)===”’”)||(a[0]===’”’&&a.slice(-1)===’”’)) return a.slice(1,-1);
-if (a===‘this’||a===‘this_el’) return ‘**EL**’;
-if (a===‘null’) return null;
-if (!isNaN(a)&&a!==’’) return Number(a);
-return a;
-});
-}
-
-function dispatch(el, attr, e, exprOverride) {
-var expr = exprOverride || (el.getAttribute(attr)||’’).trim();
-if (!expr) return;
-if (expr.indexOf(‘stopPropagation’)!==-1) { if(e)e.stopPropagation(); return; }
-if (expr.indexOf(’.remove()’)!==-1) { var t=el.closest(’.notif-banner-item’); if(t)t.remove(); return; }
-var idm = expr.match(/getElementById(’([^’]+)’).click/);
-if (idm) { var el2=document.getElementById(idm[1]); if(el2)el2.click(); return; }
-var m = expr.match(/^([\w.]+)\s*((.*))\s*;?$/s);
-if (!m) return;
-var fnName = m[1];
-var fn = window[fnName];
-if (!fn || typeof fn !== ‘function’) { console.warn(‘No handler:’, fnName); return; }
-var rawArgs = m[2].trim(); if(rawArgs[0]===’(’) rawArgs=rawArgs.slice(1); if(rawArgs[rawArgs.length-1]===’)’) rawArgs=rawArgs.slice(0,-1); var args = parseArgs(rawArgs).map(function(a){ return a===’**EL**’?el:a; });
-try { fn.apply(el, args); } catch(err) { console.warn(fnName+’:’, err.message); }
-}
-
-document.addEventListener(‘click’, function(e) {
-var el = e.target.closest(’[data-oc]’);
-if (el) { dispatch(el, ‘data-oc’, e); }
-});
-document.addEventListener(‘input’, function(e) {
-if (e.target.hasAttribute(‘data-oi’)) {
-var stmts = (e.target.getAttribute(‘data-oi’)||’’).split(’;’).map(function(s){return s.trim();}).filter(Boolean);
-stmts.forEach(function(stmt){ dispatch(e.target, ‘data-oi’, e, stmt); });
-}
-});
-document.addEventListener(‘change’, function(e) {
-if (e.target.hasAttribute(‘data-och’)) dispatch(e.target, ‘data-och’, e);
-});
-document.addEventListener(‘keydown’, function(e) {
-if (e.target.hasAttribute(‘data-okd’)) dispatch(e.target, ‘data-okd’, e);
-});
-document.addEventListener(‘focusin’, function(e) {
-if (e.target.hasAttribute(‘data-of’)) dispatch(e.target, ‘data-of’, e);
-});
-document.addEventListener(‘focusout’, function(e) {
-if (e.target.hasAttribute(‘data-ob’)) dispatch(e.target, ‘data-ob’, e);
-});
-})();
-
-</script>
-</body>
-</html>
+<div><div style="font-size:13px;font-weight:700;color:#1e293b;text-transform:uppercase">TOTAL PAID</div><div style="f
