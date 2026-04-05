@@ -6965,25 +6965,46 @@ panel.innerHTML = docs[type] || ‘<div style="padding:16px;font-size:13px;color
 // ── TAP HINT ANIMATION ───────────────────────
 
 // ── DOCUMENT LIGHTBOX ────────────────────────
+// FIX: Append to document.body (not patient-viewport) so CSS rule
+// “.patient-viewport [style*=‘position:fixed’]” does NOT apply,
+// which was silently converting fixed->absolute and hiding the overlay.
+// Also expose closeLightbox as window.closeLightbox for inline onclick.
 window.openLightbox = function openLightbox(type) {
-const existing = document.getElementById(‘inline-lightbox’);
+var existing = document.getElementById(‘inline-lightbox’);
 if(existing) existing.remove();
 
-const overlay = document.createElement(‘div’);
+var overlay = document.createElement(‘div’);
 overlay.id = ‘inline-lightbox’;
-overlay.style.cssText = ‘position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999999;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;display:flex;align-items:flex-start;justify-content:center’;
-overlay.onclick = function(e){ if(e.target===overlay) closeLightbox(); };
+// Set each style property individually to avoid cssText containing
+// the substring “position:fixed” which triggers the CSS override rule.
+overlay.style.position = ‘fixed’;
+overlay.style.top = ‘0’;
+overlay.style.left = ‘0’;
+overlay.style.right = ‘0’;
+overlay.style.bottom = ‘0’;
+overlay.style.width = ‘100%’;
+overlay.style.height = ‘100%’;
+overlay.style.background = ‘rgba(0,0,0,.95)’;
+overlay.style.zIndex = ‘2147483647’;
+overlay.style.overflowY = ‘auto’;
+overlay.style.webkitOverflowScrolling = ‘touch’;
+overlay.style.padding = ‘16px’;
+overlay.style.display = ‘flex’;
+overlay.style.alignItems = ‘flex-start’;
+overlay.style.justifyContent = ‘center’;
+overlay.onclick = function(e){ if(e.target===overlay) window.closeLightbox(); };
 
-const content = type === ‘insurance’ ? getInsuranceCardHTML() : getReceiptHTML();
+var content = type === ‘insurance’ ? getInsuranceCardHTML() : getReceiptHTML();
 overlay.innerHTML = content;
-var vp=document.getElementById(‘patient-viewport’)||document.body;vp.appendChild(overlay);
+// Append to body (outside .patient-viewport) so fixed positioning works.
+document.body.appendChild(overlay);
 overlay.scrollTop = 0;
-}
+};
 
-function closeLightbox() {
-const overlay = document.getElementById(‘inline-lightbox’);
+window.closeLightbox = function closeLightbox() {
+var overlay = document.getElementById(‘inline-lightbox’);
 if(overlay) overlay.remove();
-}
+};
 
 function getInsuranceCardHTML() {
 return `<div style="width:100%;max-width:360px;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.8);margin:auto">
