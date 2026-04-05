@@ -2383,8 +2383,8 @@ function switchTab(tab) {
 function vName(inp){const ok=inp.value.trim().length>=2;inp.style.borderColor=inp.value?ok?'var(--teal)':'var(--red)':'var(--border)'}
 function vEmail(){const v=document.getElementById('r-email').value.trim();const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);const msg=document.getElementById('msg-email');msg.className='field-msg '+(v?(ok?'ok':'err'):'');msg.textContent=v?(ok?'✓ Email looks good':'Please enter a valid email, e.g. yourname@gmail.com'):'';return ok}
 window.getLada = function getLada(){const s=document.getElementById('r-lada');const o=s.options[s.selectedIndex];return{d:parseInt(o.getAttribute('data-d')),m:o.getAttribute('data-m')}}
-function onLada(){const inp=document.getElementById('r-phone');const cfg=getLada();inp.value='';inp.placeholder=cfg.m;inp.maxLength=cfg.m.length}
-function fmtPhone(inp){const cfg=getLada();const mask=cfg.m;let digits=inp.value.replace(/\D/g,'').slice(0,cfg.d);let result='';let di=0;for(let i=0;i<mask.length&&di<digits.length;i++){if(mask[i]==='#')result+=digits[di++];else result+=mask[i]}inp.value=result;const ok=digits.length===cfg.d;const msg=document.getElementById('msg-phone');msg.className='field-msg '+(digits.length?(ok?'ok':'err'):'');msg.textContent=digits.length?(ok?'✓ Confirmed':`${digits.length} of ${cfg.d} digits`):'';}
+window.onLada = function onLada((){const inp=document.getElementById('r-phone');const cfg=getLada();inp.value='';inp.placeholder=cfg.m;inp.maxLength=cfg.m.length}
+window.fmtPhone = function fmtPhone((inp){const cfg=getLada();const mask=cfg.m;let digits=inp.value.replace(/\D/g,'').slice(0,cfg.d);let result='';let di=0;for(let i=0;i<mask.length&&di<digits.length;i++){if(mask[i]==='#')result+=digits[di++];else result+=mask[i]}inp.value=result;const ok=digits.length===cfg.d;const msg=document.getElementById('msg-phone');msg.className='field-msg '+(digits.length?(ok?'ok':'err'):'');msg.textContent=digits.length?(ok?'✓ Confirmed':`${digits.length} of ${cfg.d} digits`):'';}
 function checkStrAndMatch(){ try{checkStr();}catch(e){} try{checkMatch();}catch(e){} }
 window.checkStrAndMatch = checkStrAndMatch;
 function checkStr(){const pw=document.getElementById('r-pass').value;const segs=[document.getElementById('ps1'),document.getElementById('ps2'),document.getElementById('ps3'),document.getElementById('ps4')];const lbl=document.getElementById('ps-lbl');segs.forEach(s=>{s.className='pw-seg'});if(!pw){lbl.textContent='';return}let sc=0;if(pw.length>=8)sc++;if(/[A-Z]/.test(pw))sc++;if(/[0-9]/.test(pw))sc++;if(/[^A-Za-z0-9]/.test(pw))sc++;const cls=sc<=1?'weak':sc<=2?'fair':'good';const txt=sc<=1?'Weak':sc<=2?'Fair':sc===3?'Good':'Strong';const fill=sc<=1?1:sc<=2?2:sc===3?3:4;for(let i=0;i<fill;i++)segs[i].classList.add(cls);lbl.className='pw-str-lbl '+cls;lbl.textContent=txt}
@@ -2830,7 +2830,7 @@ function s2Summary(){
   }
 }
 
-function s2CheckFields(){
+window.s2CheckFields = function s2CheckFields((){
   const dentist = document.getElementById('s2-dentist')?.value.trim();
   const proc    = document.getElementById('s2-proc')?.value;
   const amount  = parseFloat(document.getElementById('s2-amount')?.value) || 0;
@@ -3428,20 +3428,24 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
     'Refund estimate ready ✓',
   ];
 
-  // Show checks with animation
-  checks.forEach((c, i) => {
+  // Show checks with animation — rc1..rc4 are the DOM elements
+  const checkIds = ['rc1','rc2','rc3','rc4'];
+  checks.forEach((checkText, i) => {
     const delay = 400 + i * 700;
     setTimeout(() => {
-      const el = document.getElementById(c.id);
+      const el = document.getElementById(checkIds[i]);
       if(!el) return;
       el.style.opacity = '1';
       const spans = el.querySelectorAll('span');
       if(spans[0]) spans[0].textContent = '✅';
-      if(spans[1]) { spans[1].textContent = c.text; spans[1].style.color = 'rgba(255,255,255,.8)'; }
+      if(spans[1]) {
+        spans[1].textContent = typeof checkText === 'string' ? checkText : (checkText.text || checkText);
+        spans[1].style.color = 'rgba(255,255,255,.85)';
+      }
     }, delay);
   });
   // Show result after all checks done
-  setTimeout(showRefundResult, 600 + checks.length * 900 + 600);
+  setTimeout(showRefundResult, 400 + checks.length * 700 + 800);
 
 
 
