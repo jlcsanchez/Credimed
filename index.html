@@ -1469,8 +1469,8 @@ html, body    { height:100%; overflow:hidden }
   </div>
   <div class="body-card" style="padding-bottom:100px">
 
-```
 <!-- ══ SECTION 1: INSURANCE CARD ══ -->
+
 <div style="margin-bottom:24px">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
     <div style="width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;flex-shrink:0">1</div>
@@ -1482,7 +1482,9 @@ html, body    { height:100%; overflow:hidden }
   </div>
 
   <!-- Upload / preview -->
+
   <!-- Upload area — active/next indicator -->
+
   <div id="s1-ph" data-oc="document.getElementById('s1-camera').click()" style="display:flex;gap:0;margin-bottom:10px;background:white;border:2.5px dashed var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .3s,box-shadow .3s" id="s1-upload-area">
     <div style="flex:1;padding:18px 14px;display:flex;align-items:center;gap:14px">
       <div style="width:44px;height:44px;background:var(--teal-xlight);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">💳</div>
@@ -1517,9 +1519,11 @@ html, body    { height:100%; overflow:hidden }
   </div>
 
   <!-- OCR bar -->
+
   <div class="ocr-card" id="s1-ocr"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title" id="s1-ocr-title">Reading card...</div><div class="ocr-sub-txt" id="s1-ocr-sub">Analyzing image</div><div class="ocr-progress"><div class="ocr-fill" id="s1-ocr-fill"></div></div></div></div>
 
   <!-- Editable fields (shown after OCR, locked until Edit) -->
+
   <div id="s1-fields" style="display:none">
     <div class="card" style="margin-bottom:10px">
       <div class="card-head">
@@ -1548,6 +1552,7 @@ html, body    { height:100%; overflow:hidden }
   </div>
 
   <!-- Manual entry fallback -->
+
   <div style="text-align:center;margin-top:6px">
     <span id="s1-manual-toggle" data-oc="s1ToggleManual()" style="font-size:12px;color:var(--teal);font-weight:600;cursor:pointer">✏️ Enter manually instead</span>
   </div>
@@ -1565,6 +1570,7 @@ html, body    { height:100%; overflow:hidden }
 <div style="height:1px;background:var(--border);margin-bottom:24px"></div>
 
 <!-- ══ SECTION 2: DENTAL RECEIPT ══ -->
+
 <div style="margin-bottom:20px">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
     <div style="width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;flex-shrink:0">2</div>
@@ -1576,7 +1582,9 @@ html, body    { height:100%; overflow:hidden }
   </div>
 
   <!-- Upload / preview -->
+
   <!-- Upload area -->
+
   <div id="s2-empty" data-oc="document.getElementById('s2-camera').click()" style="display:flex;gap:0;margin-bottom:10px;background:white;border:2.5px dashed var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .3s,box-shadow .3s">
     <div style="flex:1;padding:18px 14px;display:flex;align-items:center;gap:14px">
       <div style="width:44px;height:44px;background:var(--teal-xlight);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🧾</div>
@@ -1591,6 +1599,7 @@ html, body    { height:100%; overflow:hidden }
   </div>
 
   <!-- Receipt visual card (shown after upload) -->
+
   <div id="s2-file-state" style="display:none;height:150px;border-radius:12px;overflow:hidden;margin-bottom:10px;position:relative">
     <!-- If image, show it; if PDF show receipt card -->
     <img id="s2-img" style="display:none;width:100%;height:150px;object-fit:cover">
@@ -1608,9 +1617,11 @@ html, body    { height:100%; overflow:hidden }
   </div>
 
   <!-- OCR bar -->
+
   <div class="ocr-card" id="s2-ocr"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title" id="s2-ocr-title">Reading receipt...</div><div class="ocr-sub-txt" id="s2-ocr-sub">Extracting details</div><div class="ocr-progress"><div class="ocr-fill" id="s2-ocr-fill"></div></div></div></div>
 
   <!-- Editable fields (shown after OCR) -->
+
   <div id="s2-fields" style="display:none">
     <div class="card" style="margin-bottom:10px">
       <div class="card-head">
@@ -1645,7 +1656,6 @@ html, body    { height:100%; overflow:hidden }
     <div class="err-banner" id="s2-err"><span>⚠️</span><span id="s2-err-txt"></span></div>
   </div>
 </div>
-```
 
   </div>
 
@@ -2172,8 +2182,8 @@ html, body    { height:100%; overflow:hidden }
   </div>
   <div class="dash-body">
 
-```
 <button class="btn-new-claim" data-oc="startNewClaim()">＋ Submit New Claim</button>
+
 <div class="sec-label">Active Claim <a>View details</a></div>
 <div class="active-claim-card">
   <div class="active-claim-head"><h3>🦷 <span id="dash-claim-title">Crown — Dr. Pérez</span></h3><div class="active-tag">Active</div></div>
@@ -2208,7 +2218,6 @@ html, body    { height:100%; overflow:hidden }
 <div class="sec-label">Past Claims <a>See all</a></div>
 <div class="past-claim-item"><div class="past-claim-icon paid">💰</div><div class="past-claim-info"><div class="past-claim-title">Implant — Dr. Ramírez</div><div class="past-claim-sub">Delta Dental · Jan 2026</div></div><div style="text-align:right"><div class="past-claim-amount">+$480</div><div class="status-pill paid">Paid</div></div></div>
 <div class="past-claim-item"><div class="past-claim-icon review">🔍</div><div class="past-claim-info"><div class="past-claim-title">Root Canal — Dr. López</div><div class="past-claim-sub">Aetna · Feb 2026</div></div><div style="text-align:right"><div class="past-claim-amount pending">Pending</div><div class="status-pill review">In Review</div></div></div>
-```
 
   </div>
 </div>
@@ -3828,8 +3837,8 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
   </div>
   <div class="admin-body">
 
-```
 <!-- OVERVIEW -->
+
 <div id="sec-overview" class="admin-sec">
   <div class="stats-row">
     <div class="stat-card"><div class="stat-top"><div class="stat-icon teal">📋</div><div class="stat-trend up">+12%</div></div><div class="stat-val">247</div><div class="stat-lbl">Total Claims</div></div>
@@ -3839,7 +3848,6 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
   </div>
   <div style="display:flex;flex-direction:column;gap:12px">
     <input type="radio" name="chart-range" id="cr-1d" style="display:none">
-```
 
 <input type="radio" name="chart-range" id="cr-1w" style="display:none">
 <input type="radio" name="chart-range" id="cr-1m" style="display:none">
@@ -4002,17 +4010,19 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
 </svg></div>
 
 ```
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Claims by Insurer</div><div class="chart-sub">Distribution this year</div>
-      <div class="ins-list">
-        <div class="ins-row"><div class="ins-name">Delta Dental</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:78%"></div></div><div class="ins-pct">78%</div></div>
-        <div class="ins-row"><div class="ins-name">Aetna</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:52%;background:#0891b2"></div></div><div class="ins-pct">52%</div></div>
-        <div class="ins-row"><div class="ins-name">Cigna</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:38%;background:#7c3aed"></div></div><div class="ins-pct">38%</div></div>
-        <div class="ins-row"><div class="ins-name">MetLife</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:25%;background:#f59e0b"></div></div><div class="ins-pct">25%</div></div>
-        <div class="ins-row"><div class="ins-name">Other</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:15%;background:#94a3b8"></div></div><div class="ins-pct">15%</div></div>
-      </div>
-    </div>
+</div>
+<div class="chart-card">
+  <div class="chart-title">Claims by Insurer</div><div class="chart-sub">Distribution this year</div>
+  <div class="ins-list">
+    <div class="ins-row"><div class="ins-name">Delta Dental</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:78%"></div></div><div class="ins-pct">78%</div></div>
+    <div class="ins-row"><div class="ins-name">Aetna</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:52%;background:#0891b2"></div></div><div class="ins-pct">52%</div></div>
+    <div class="ins-row"><div class="ins-name">Cigna</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:38%;background:#7c3aed"></div></div><div class="ins-pct">38%</div></div>
+    <div class="ins-row"><div class="ins-name">MetLife</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:25%;background:#f59e0b"></div></div><div class="ins-pct">25%</div></div>
+    <div class="ins-row"><div class="ins-name">Other</div><div class="ins-bar-wrap"><div class="ins-bar" style="width:15%;background:#94a3b8"></div></div><div class="ins-pct">15%</div></div>
+  </div>
+</div>
+```
+
   </div>
   <div class="sec-head" style="margin-bottom:10px"><h3>Recent Activity</h3></div>
   <div class="activity-card">
@@ -4024,6 +4034,7 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
 </div>
 
 <!-- CLAIMS -->
+
 <div id="sec-claims" class="admin-sec" style="display:none">
   <div class="sec-head"><h3>All Claims</h3><div style="display:flex;gap:7px"><button class="btn-sm out">Export CSV</button><button class="btn-sm teal">+ New Claim</button></div></div>
   <div style="margin-bottom:6px;display:flex;gap:6px;flex-wrap:wrap">
@@ -4105,7 +4116,6 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
   <button style="flex:1;height:34px;background:var(--teal);border:none;border-radius:8px;color:white;font-size:11px;font-weight:700;cursor:pointer">📤 Send Update</button>
   <button style="flex:1;height:34px;background:white;border:1.5px solid #e2e8f0;border-radius:8px;color:#1e293b;font-size:11px;font-weight:600;cursor:pointer">📋 View Full</button>
 </div>
-```
 
   </div>
 <label for="acc-1" class="tbl-row" data-status="awaiting response" style="cursor:pointer">
@@ -6289,12 +6299,14 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
 </div>
 
 ```
-    </div>
-    <div id="detail-box"><div class="detail-card" style="text-align:center;padding:28px;color:var(--slate-light);font-size:13px"><div style="font-size:28px;margin-bottom:8px">👆</div>Select a claim to view details</div></div>
+</div>
+<div id="detail-box"><div class="detail-card" style="text-align:center;padding:28px;color:var(--slate-light);font-size:13px"><div style="font-size:28px;margin-bottom:8px">👆</div>Select a claim to view details</div></div>
+```
+
   </div>
 
-
 <!-- PATIENTS -->
+
 <div id="sec-patients" class="admin-sec">
   <div class="sec-head"><h3>Patients</h3><button class="btn-sm teal">+ Add Patient</button></div>
   <div class="claims-card">
@@ -6371,7 +6383,6 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
       <div style="margin-left:auto"><div style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:#dcfce7;color:#16a34a">↑ +41%</div></div>
     </div>
     <div style="margin-bottom:4px"><svg viewBox="0 0 320 150" width="100%" height="150" style="display:block;overflow:visible">
-```
 
 <defs><linearGradient id="finAG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(34,197,94,.18)"/><stop offset="100%" stop-color="rgba(34,197,94,.02)"/></linearGradient></defs>
 <line x1="44" y1="98.5" x2="310" y2="98.5" stroke="#e2e8f0" stroke-width="0.5"/><text x="41" y="101.5" font-size="8" fill="#94a3b8" text-anchor="end">$13k</text><line x1="44" y1="69.0" x2="310" y2="69.0" stroke="#e2e8f0" stroke-width="0.5"/><text x="41" y="72.0" font-size="8" fill="#94a3b8" text-anchor="end">$27k</text><line x1="44" y1="39.5" x2="310" y2="39.5" stroke="#e2e8f0" stroke-width="0.5"/><text x="41" y="42.5" font-size="8" fill="#94a3b8" text-anchor="end">$41k</text><line x1="44" y1="10.0" x2="310" y2="10.0" stroke="#e2e8f0" stroke-width="0.5"/><text x="41" y="13.0" font-size="8" fill="#94a3b8" text-anchor="end">$54k</text><path d="M 44,128 L 44.0,119.8 L 68.2,116.8 L 92.4,114.2 L 116.5,115.9 L 140.7,109.9 L 164.9,106.9 L 189.1,102.1 L 213.3,97.4 L 237.5,92.2 L 261.6,79.7 L 285.8,50.4 L 310.0,29.7 L 310.0,128 Z" fill="url(#finAG)"/>
@@ -6398,7 +6409,6 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
 </div>
 </div>
 
-```
 <div id="sec-settings" class="admin-sec" style="display:none">
   <div class="two-col">
     <div class="chart-card">
@@ -6420,7 +6430,6 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
     </div>
   </div>
 </div></div></div></div>
-```
 
   </div>
 </div>      </div>
