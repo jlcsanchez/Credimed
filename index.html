@@ -1140,14 +1140,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="form-register" style="background:white;flex:1;overflow-y:auto;overflow-x:hidden;width:100%;padding:12px 16px 0;display:flex;flex-direction:column;align-items:stretch">
     <div style="background:white;border-radius:0;padding:18px 16px 32px;width:100%;flex:1">
       <div class="field-row">
-        <div class="field"><label>First Name <span class="req">*</span></label><input type="text" id="r-first" placeholder="John" data-oi="vName(this)"><div class="field-msg" id="msg-first"></div></div>
-        <div class="field"><label>Last Name <span class="req">*</span></label><input type="text" id="r-last" placeholder="Smith" data-oi="vName(this)"><div class="field-msg" id="msg-last"></div></div>
+        <div class="field"><label>First Name <span class="req">*</span></label><input type="text" id="r-first" placeholder="John" data-oi="vName(this)" oninput="window.vName&&window.vName(this)"><div class="field-msg" id="msg-first"></div></div>
+        <div class="field"><label>Last Name <span class="req">*</span></label><input type="text" id="r-last" placeholder="Smith" data-oi="vName(this)" oninput="window.vName&&window.vName(this)"><div class="field-msg" id="msg-last"></div></div>
       </div>
-      <div class="field"><label>Email <span class="req">*</span></label><input type="email" id="r-email" placeholder="you@email.com" data-oi="vEmail()"><div class="field-msg" id="msg-email"></div></div>
+      <div class="field"><label>Email <span class="req">*</span></label><input type="email" id="r-email" placeholder="you@email.com" data-oi="vEmail()" oninput="window.vEmail&&window.vEmail()"><div class="field-msg" id="msg-email"></div></div>
       <div class="field">
         <label>WhatsApp <span class="req">*</span></label>
         <div class="phone-row">
-          <select class="lada-select" id="r-lada" data-och="onLada()">
+          <select class="lada-select" id="r-lada" data-och="onLada()" onchange="window.onLada&&window.onLada()">
             <option value="+52" data-d="10" data-m="## #### ####">🇲🇽 +52</option>
             <option value="+1" data-d="10" data-m="(###) ###-####">🇺🇸 +1</option>
             <option value="+1c" data-d="10" data-m="(###) ###-####">🇨🇦 +1</option>
@@ -1159,12 +1159,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             <option value="+51" data-d="9" data-m="### ### ###">🇵🇪 +51</option>
             <option value="+55" data-d="11" data-m="## # #### ####">🇧🇷 +55</option>
           </select>
-          <input type="tel" class="phone-input" id="r-phone" placeholder="## #### ####" data-oi="fmtPhone(this)" maxlength="14">
+          <input type="tel" class="phone-input" id="r-phone" placeholder="## #### ####" data-oi="fmtPhone(this)" oninput="window.fmtPhone&&window.fmtPhone(this)" maxlength="14">
         </div>
         <div class="field-msg" id="msg-phone"><span style="color:var(--slate-light);font-size:11px">For claim status notifications</span></div>
       </div>
-      <div class="field"><label>Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="r-pass" placeholder="Create a password" data-oi="checkStr();checkMatch()"><button class="pw-toggle" type="button" data-oc="tPw('r-pass',this)" onclick="window.tPw&&window.tPw('r-pass',this)">👁</button></div><div class="pw-strength"><div class="pw-seg" id="ps1"></div><div class="pw-seg" id="ps2"></div><div class="pw-seg" id="ps3"></div><div class="pw-seg" id="ps4"></div></div><div class="pw-str-lbl" id="ps-lbl"></div></div>
-      <div class="field"><label>Confirm Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="r-pass2" placeholder="Repeat password" data-oi="checkMatch()"><button class="pw-toggle" type="button" data-oc="tPw('r-pass2',this)" onclick="window.tPw&&window.tPw('r-pass2',this)">👁</button></div><div class="pw-match" id="pw-match"></div></div>
+      <div class="field"><label>Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="r-pass" placeholder="Create a password" data-oi="checkStr();checkMatch()" oninput="(window.checkStr&&window.checkStr())||(window.checkMatch&&window.checkMatch())"><button class="pw-toggle" type="button" data-oc="tPw('r-pass',this)" onclick="window.tPw&&window.tPw('r-pass',this)">👁</button></div><div class="pw-strength"><div class="pw-seg" id="ps1"></div><div class="pw-seg" id="ps2"></div><div class="pw-seg" id="ps3"></div><div class="pw-seg" id="ps4"></div></div><div class="pw-str-lbl" id="ps-lbl"></div></div>
+      <div class="field"><label>Confirm Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="r-pass2" placeholder="Repeat password" data-oi="checkMatch()" oninput="window.checkMatch&&window.checkMatch()"><button class="pw-toggle" type="button" data-oc="tPw('r-pass2',this)" onclick="window.tPw&&window.tPw('r-pass2',this)">👁</button></div><div class="pw-match" id="pw-match"></div></div>
       <div class="err-banner" id="reg-err"><span>⚠️</span><span id="reg-err-txt"></span></div>
       <button class="btn-primary" data-oc="doRegister()" onclick="window.doRegister&&window.doRegister()" style="margin-top:4px">Create my account →</button>
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:var(--slate-mid);line-height:1.5;text-align:center">By signing up you agree to our <a href="#" style="color:var(--teal);font-weight:600" data-oc="showTerms()" onclick="window.showTerms&&window.showTerms()">Terms</a> and authorize Credimed to charge a <strong>10% commission</strong> on successful refunds.</div>
@@ -1340,9 +1340,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="auto-badge" id="s1-auto">✓ Auto-filled</div>
       </div>
       <div class="card-body" id="s1-card-body">
-        <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-ins-provider" placeholder="e.g. Delta Dental, Aetna..." data-oi="s1CheckManual()"></div>
+        <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-ins-provider" placeholder="e.g. Delta Dental, Aetna..." data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
         <div class="field-row">
-          <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-ins-member" placeholder="Member ID" data-oi="s1CheckManual()"></div>
+          <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-ins-member" placeholder="Member ID" data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
           <div class="field"><label>Group #</label><input type="text" id="s1-ins-group" placeholder="Group #"></div>
         </div>
       </div>
@@ -1367,9 +1367,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div id="s1-manual" style="display:none;margin-top:10px">
     <div class="card"><div class="card-head"><h3>Enter manually</h3></div><div class="card-body">
-      <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-m-provider" placeholder="e.g. Delta Dental, Aetna..." data-oi="s1CheckManual()"></div>
+      <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-m-provider" placeholder="e.g. Delta Dental, Aetna..." data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
       <div class="field-row">
-        <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-m-member" placeholder="Member ID" data-oi="s1CheckManual()"></div>
+        <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-m-member" placeholder="Member ID" data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
         <div class="field"><label>Group #</label><input type="text" id="s1-m-group" placeholder="Group #"></div>
       </div>
     </div></div>
@@ -1438,7 +1438,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="auto-badge" id="s2-auto">✓ Auto-filled</div>
       </div>
       <div class="card-body" id="s2-card-body">
-        <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="e.g. Dr. Pérez — Los Cabos Dental" data-oi="s2CheckFields()"></div>
+        <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="e.g. Dr. Pérez — Los Cabos Dental" data-oi="s2CheckFields()" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
         <div class="field-row">
           <div class="field"><label>Treatment Date <span class="req">*</span></label><input type="date" id="s2-date"></div>
           <div class="field"><label>Procedure <span class="req">*</span></label>
@@ -1447,7 +1447,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             </select>
           </div>
         </div>
-        <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label><div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" data-oi="s2CheckFields()"></div></div>
+        <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label><div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" data-oi="s2CheckFields()" oninput="window.s2CheckFields&&window.s2CheckFields()"></div></div>
         <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
       </div>
     </div>
@@ -1712,8 +1712,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="divider-line"></div>
         <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);margin-bottom:12px">Bank Account for Reimbursement</p>
         <div class="field-row">
-          <div class="field"><label>Routing # <span class="req">*</span></label><input type="tel" inputmode="numeric" id="routing" class="numpad-field" placeholder="9 digits" maxlength="9" data-oi="sanitizeAndCheck(this)"></div>
-          <div class="field"><label>Account # <span class="req">*</span></label><input type="tel" inputmode="numeric" id="account" class="numpad-field" placeholder="Up to 17 digits" maxlength="17" data-oi="sanitizeAndCheck(this)"></div>
+          <div class="field"><label>Routing # <span class="req">*</span></label><input type="tel" inputmode="numeric" id="routing" class="numpad-field" placeholder="9 digits" maxlength="9" data-oi="sanitizeAndCheck(this)" oninput="window.sanitizeAndCheck&&window.sanitizeAndCheck(this)"></div>
+          <div class="field"><label>Account # <span class="req">*</span></label><input type="tel" inputmode="numeric" id="account" class="numpad-field" placeholder="Up to 17 digits" maxlength="17" data-oi="sanitizeAndCheck(this)" oninput="window.sanitizeAndCheck&&window.sanitizeAndCheck(this)"></div>
         </div>
         <div class="field-row">
           <div class="field"><label>Account Holder</label><input type="text" id="c-holder" class="prefilled"></div>
@@ -1858,14 +1858,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <div class="field" style="margin-bottom:12px">
             <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Card Number</label>
             <div style="position:relative">
-              <input type="tel" id="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" data-oi="fmtCard(this)" style="width:100%;height:46px;padding:0 48px 0 14px;border:1.5px solid var(--border);border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:500;color:var(--slate);background:white;outline:none;letter-spacing:1px;transition:border-color .15s" data-of="focusBorder(this)" data-ob="blurBorder(this)">
+              <input type="tel" id="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" data-oi="fmtCard(this)" oninput="window.fmtCard&&window.fmtCard(this)" style="width:100%;height:46px;padding:0 48px 0 14px;border:1.5px solid var(--border);border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:500;color:var(--slate);background:white;outline:none;letter-spacing:1px;transition:border-color .15s" data-of="focusBorder(this)" data-ob="blurBorder(this)">
               <div id="cc-brand" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:20px;pointer-events:none">💳</div>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
             <div class="field" style="margin-bottom:0">
               <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Expiry</label>
-              <input type="tel" id="cc-exp" placeholder="MM / YY" maxlength="7" data-oi="fmtExp(this)" style="width:100%;height:46px;padding:0 14px;border:1.5px solid var(--border);border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:500;color:var(--slate);background:white;outline:none;transition:border-color .15s" data-of="focusBorder(this)" data-ob="blurBorder(this)">
+              <input type="tel" id="cc-exp" placeholder="MM / YY" maxlength="7" data-oi="fmtExp(this)" oninput="window.fmtExp&&window.fmtExp(this)" style="width:100%;height:46px;padding:0 14px;border:1.5px solid var(--border);border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:500;color:var(--slate);background:white;outline:none;transition:border-color .15s" data-of="focusBorder(this)" data-ob="blurBorder(this)">
             </div>
             <div class="field" style="margin-bottom:0">
               <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">CVC</label>
@@ -2068,7 +2068,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <!-- Input bar -->
   <div style="position:sticky;bottom:0;background:white;border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:flex-end;z-index:10" id="chat-input-bar">
-    <textarea id="chat-input" placeholder="Ask anything about your claim..." rows="1" data-oi="autoResize(this)" data-okd="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" style="flex:1;border:1.5px solid var(--border);border-radius:20px;padding:10px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--slate);resize:none;outline:none;line-height:1.4;max-height:100px;overflow-y:auto;transition:border-color .15s" data-of="focusBorder(this)" data-ob="blurBorder(this)"></textarea>
+    <textarea id="chat-input" placeholder="Ask anything about your claim..." rows="1" data-oi="autoResize(this)" oninput="window.autoResize&&window.autoResize(this)" data-okd="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" style="flex:1;border:1.5px solid var(--border);border-radius:20px;padding:10px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--slate);resize:none;outline:none;line-height:1.4;max-height:100px;overflow-y:auto;transition:border-color .15s" data-of="focusBorder(this)" data-ob="blurBorder(this)"></textarea>
     <button data-oc="sendChat()" onclick="window.sendChat&&window.sendChat()" id="chat-send-btn" style="width:40px;height:40px;background:var(--teal);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s" data-omo="this.style.background='var(--teal-dark)'" data-omout="this.style.background='var(--teal)'">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14.5 8L1.5 1.5L5 8L1.5 14.5L14.5 8Z" fill="white"/></svg>
     </button>
@@ -3014,7 +3014,7 @@ function hideCardForm(){
   document.getElementById('stripe-note').style.display='block';
   document.querySelector('#s-step5 p').style.display='block';
 }
-function fmtCard(inp){
+window.fmtCard = function fmtCard(inp){
   let v=inp.value.replace(/\D/g,'').slice(0,16);
   let out='';for(let i=0;i<v.length;i++){if(i>0&&i%4===0)out+=' ';out+=v[i]}
   inp.value=out;
@@ -3024,7 +3024,7 @@ function fmtCard(inp){
   else if(v.startsWith('34')||v.startsWith('37'))brand.textContent='💳';
   else brand.textContent='💳';
 }
-function fmtExp(inp){
+window.fmtExp = function fmtExp(inp){
   let v=inp.value.replace(/\D/g,'').slice(0,4);
   if(v.length>=3)inp.value=v.slice(0,2)+' / '+v.slice(2);
   else inp.value=v;
