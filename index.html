@@ -2433,7 +2433,7 @@ function sbActive(id) {
       var n = document.getElementById('sb-name'); if(n) n.textContent = (currentUser.first||'') + ' ' + (currentUser.last||'');
       var e = document.getElementById('sb-email'); if(e) e.textContent = currentUser.email||'';
       var a = document.getElementById('sb-avatar'); if(a) a.textContent = (currentUser.first||'?')[0].toUpperCase();
-      var t = document.getElementById('pc-dash-title'); if(t) { var h=new Date().getHours(); t.textContent=(h<12?'Good morning':'h<17?Good afternoon':'Good evening') + ' ' + (currentUser.first||'') + ' ☀️'; }
+      var t = document.getElementById('pc-dash-title'); if(t) { var h=new Date().getHours(); t.textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening') + ' ' + (currentUser.first||'') + ' ☀️'; }
     }
   } catch(e){}
 }
