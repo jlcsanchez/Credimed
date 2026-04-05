@@ -2154,6 +2154,12 @@ function goTo(id, param) {
     if(pp) pp.scrollTop = 0;
   });
   if (id === 's-auth') { try { initAuth(param); } catch(e){} }
+  // Update theme-color to match screen background
+  var tc = document.querySelector('meta[name=theme-color]');
+  if(tc){
+    var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step2','s-step3','s-step4','s-step5','s-refund','s-ready'];
+    tc.setAttribute('content', darkScreens.includes(id) ? '#0a0f1e' : '#ffffff');
+  }
   if (id === 's-step4') { try { initContract(); } catch(e){} }
   if (id === 's-dashboard') { try { initDashboard(); } catch(e){} }
   try { updateHelpBtn(id); } catch(e){}
