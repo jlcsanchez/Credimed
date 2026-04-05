@@ -2309,11 +2309,28 @@ function initProfile() {
 // ═══════════════════════════════════════
 // LANGUAGE
 // ═══════════════════════════════════════
-function setLang(l) {
+window.setLang = function setLang(l) {
   lang = l;
-  document.getElementById('btn-en').classList.toggle('active', l==='en');
-  document.getElementById('btn-es').classList.toggle('active', l==='es');
-  document.querySelectorAll('[data-en]').forEach(el => { const t=el.getAttribute('data-'+l); if(t)el.textContent=t; });
+  var btnEn = document.getElementById('btn-en');
+  var btnEs = document.getElementById('btn-es');
+  if(btnEn) btnEn.classList.toggle('active', l==='en');
+  if(btnEs) btnEs.classList.toggle('active', l==='es');
+  document.querySelectorAll('[data-en]').forEach(function(el) {
+    var t = el.getAttribute('data-' + l);
+    if (!t) return;
+    // Use innerHTML if content has HTML tags, textContent otherwise
+    if (t.indexOf('<') !== -1) {
+      el.innerHTML = t;
+    } else {
+      el.textContent = t;
+    }
+  });
+  // Also update button/input values where data-en is on a button
+  document.querySelectorAll('button[data-en], input[data-en]').forEach(function(el) {
+    var t = el.getAttribute('data-' + l);
+    if (t && el.tagName === 'INPUT') el.value = t;
+    else if (t) el.textContent = t;
+  });
 }
 
 // ═══════════════════════════════════════
@@ -2334,7 +2351,7 @@ function switchTab(tab) {
 }
 function vName(inp){const ok=inp.value.trim().length>=2;inp.style.borderColor=inp.value?ok?'var(--teal)':'var(--red)':'var(--border)'}
 function vEmail(){const v=document.getElementById('r-email').value.trim();const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);const msg=document.getElementById('msg-email');msg.className='field-msg '+(v?(ok?'ok':'err'):'');msg.textContent=v?(ok?'✓ Email looks good':'Please enter a valid email, e.g. yourname@gmail.com'):'';return ok}
-function getLada(){const s=document.getElementById('r-lada');const o=s.options[s.selectedIndex];return{d:parseInt(o.getAttribute('data-d')),m:o.getAttribute('data-m')}}
+window.getLada = function getLada(){const s=document.getElementById('r-lada');const o=s.options[s.selectedIndex];return{d:parseInt(o.getAttribute('data-d')),m:o.getAttribute('data-m')}}
 function onLada(){const inp=document.getElementById('r-phone');const cfg=getLada();inp.value='';inp.placeholder=cfg.m;inp.maxLength=cfg.m.length}
 function fmtPhone(inp){const cfg=getLada();const mask=cfg.m;let digits=inp.value.replace(/\D/g,'').slice(0,cfg.d);let result='';let di=0;for(let i=0;i<mask.length&&di<digits.length;i++){if(mask[i]==='#')result+=digits[di++];else result+=mask[i]}inp.value=result;const ok=digits.length===cfg.d;const msg=document.getElementById('msg-phone');msg.className='field-msg '+(digits.length?(ok?'ok':'err'):'');msg.textContent=digits.length?(ok?'✓ Confirmed':`${digits.length} of ${cfg.d} digits`):'';}
 function checkStrAndMatch(){ try{checkStr();}catch(e){} try{checkMatch();}catch(e){} }
@@ -3642,7 +3659,7 @@ if(typeof goBack==='function') window.goBack = goBack;
 if(typeof navTo==='function') window.navTo = navTo;
 if(typeof startNewClaim==='function') window.startNewClaim = startNewClaim;
 if(typeof doLogout==='function') window.doLogout = doLogout;
-if(typeof setLang==='function') window.setLang = setLang;
+// window.setLang already exposed above
 if(typeof initAuth==='function') window.initAuth = initAuth;
 if(typeof switchTab==='function') window.switchTab = switchTab;
 if(typeof vName==='function') window.vName = vName;
@@ -6983,54 +7000,31 @@ panel.innerHTML = docs[type] || ‘<div style="padding:16px;font-size:13px;color
 // Also expose closeLightbox as window.closeLightbox for inline onclick.
 window.openLightbox = function openLightbox(type) {
 var existing = document.getElementById(‘inline-lightbox’);
-if(existing) existing.remove();
+if (existing) existing.remove();
 
-// iOS Safari fix: body has position:fixed which can cause fixed children
-// to misbehave. Use absolute positioning relative to a full-screen portal
-// div that we insert at the document root level (after <body> open).
-// We also temporarily unlock body scroll.
-var portal = document.getElementById(‘lightbox-portal’);
-if (!portal) {
-portal = document.createElement(‘div’);
-portal.id = ‘lightbox-portal’;
-// Position absolutely to cover the entire viewport
-// using top/left/width/height instead of fixed to avoid iOS fixed bugs
-portal.style.cssText = [
-‘position:absolute’,
-‘top:0’,‘left:0’,
-‘width:100%’,‘height:100%’,
-‘z-index:2147483647’,
-‘pointer-events:none’
-].join(’;’);
-document.body.appendChild(portal);
-}
-
-var overlay = document.createElement(‘div’);
-overlay.id = ‘inline-lightbox’;
-overlay.style.cssText = [
-‘position:fixed’,
-‘top:0’,‘left:0’,‘right:0’,‘bottom:0’,
-‘background:rgba(0,0,0,.93)’,
-‘z-index:2147483647’,
-‘overflow-y:auto’,
-‘-webkit-overflow-scrolling:touch’,
-‘padding:20px 16px’,
-‘display:flex’,
-‘align-items:flex-start’,
-‘justify-content:center’,
-‘pointer-events:auto’
-].join(’;’);
-overlay.addEventListener(‘click’, function(e){
-if(e.target===overlay) window.closeLightbox();
+// Create overlay via innerHTML on a wrapper so style is in the HTML attribute
+// (avoids JS cssText issues on iOS Safari, and avoids the
+//  .patient-viewport [style*=“position:fixed”] CSS override)
+var wrapper = document.createElement(‘div’);
+wrapper.id = ‘inline-lightbox’;
+// Inline style as HTML attribute — most reliable on iOS
+wrapper.setAttribute(‘style’,
+‘position:fixed;top:0;left:0;width:100%;height:100%;’ +
+‘background:rgba(0,0,0,.93);z-index:2147483647;’ +
+‘overflow-y:auto;-webkit-overflow-scrolling:touch;’ +
+‘display:flex;align-items:flex-start;justify-content:center;’ +
+‘padding:20px 16px;box-sizing:border-box;’ +
+‘-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);’
+);
+wrapper.addEventListener(‘click’, function(e) {
+if (e.target === wrapper) window.closeLightbox();
 });
 
-var content = type === ‘insurance’ ? getInsuranceCardHTML() : getReceiptHTML();
-overlay.innerHTML = content;
+var html = type === ‘insurance’ ? getInsuranceCardHTML() : getReceiptHTML();
+wrapper.innerHTML = html;
 
-// Append DIRECTLY to <html> element to escape all body constraints
-// This is the most reliable way on iOS Safari with body:fixed
-document.documentElement.appendChild(overlay);
-overlay.scrollTop = 0;
+// Append to <html> (documentElement) — above body:fixed context on iOS
+document.documentElement.appendChild(wrapper);
 };
 
 window.closeLightbox = function closeLightbox() {
