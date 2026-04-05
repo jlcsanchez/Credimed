@@ -459,7 +459,18 @@ input[type=file]{display:none}
 .patient-viewport #chat-input-bar,
 #chat-input-bar {position:sticky !important; bottom:0;}
 #s-support:not(.active) #chat-input-bar { display:none !important; }
-.patient-viewport [style*="position:fixed"] {position:absolute !important;}
+/* Only convert fixed→absolute for elements INSIDE patient-viewport screens
+   (not for top-level overlays appended to <html> or <body>) */
+.patient-viewport .screen [style*="position:fixed"] {position:absolute !important;}
+/* Lightbox overlay — ensure it paints above everything on iOS */
+#inline-lightbox {
+  position: fixed !important;
+  top: 0 !important; left: 0 !important;
+  right: 0 !important; bottom: 0 !important;
+  z-index: 2147483647 !important;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
 
 /* ─── DEMO SHELL ─── */
 :root{
@@ -6974,31 +6985,51 @@ window.openLightbox = function openLightbox(type) {
 var existing = document.getElementById(‘inline-lightbox’);
 if(existing) existing.remove();
 
+// iOS Safari fix: body has position:fixed which can cause fixed children
+// to misbehave. Use absolute positioning relative to a full-screen portal
+// div that we insert at the document root level (after <body> open).
+// We also temporarily unlock body scroll.
+var portal = document.getElementById(‘lightbox-portal’);
+if (!portal) {
+portal = document.createElement(‘div’);
+portal.id = ‘lightbox-portal’;
+// Position absolutely to cover the entire viewport
+// using top/left/width/height instead of fixed to avoid iOS fixed bugs
+portal.style.cssText = [
+‘position:absolute’,
+‘top:0’,‘left:0’,
+‘width:100%’,‘height:100%’,
+‘z-index:2147483647’,
+‘pointer-events:none’
+].join(’;’);
+document.body.appendChild(portal);
+}
+
 var overlay = document.createElement(‘div’);
 overlay.id = ‘inline-lightbox’;
-// Set each style property individually to avoid cssText containing
-// the substring “position:fixed” which triggers the CSS override rule.
-overlay.style.position = ‘fixed’;
-overlay.style.top = ‘0’;
-overlay.style.left = ‘0’;
-overlay.style.right = ‘0’;
-overlay.style.bottom = ‘0’;
-overlay.style.width = ‘100%’;
-overlay.style.height = ‘100%’;
-overlay.style.background = ‘rgba(0,0,0,.95)’;
-overlay.style.zIndex = ‘2147483647’;
-overlay.style.overflowY = ‘auto’;
-overlay.style.webkitOverflowScrolling = ‘touch’;
-overlay.style.padding = ‘16px’;
-overlay.style.display = ‘flex’;
-overlay.style.alignItems = ‘flex-start’;
-overlay.style.justifyContent = ‘center’;
-overlay.onclick = function(e){ if(e.target===overlay) window.closeLightbox(); };
+overlay.style.cssText = [
+‘position:fixed’,
+‘top:0’,‘left:0’,‘right:0’,‘bottom:0’,
+‘background:rgba(0,0,0,.93)’,
+‘z-index:2147483647’,
+‘overflow-y:auto’,
+‘-webkit-overflow-scrolling:touch’,
+‘padding:20px 16px’,
+‘display:flex’,
+‘align-items:flex-start’,
+‘justify-content:center’,
+‘pointer-events:auto’
+].join(’;’);
+overlay.addEventListener(‘click’, function(e){
+if(e.target===overlay) window.closeLightbox();
+});
 
 var content = type === ‘insurance’ ? getInsuranceCardHTML() : getReceiptHTML();
 overlay.innerHTML = content;
-// Append to body (outside .patient-viewport) so fixed positioning works.
-document.body.appendChild(overlay);
+
+// Append DIRECTLY to <html> element to escape all body constraints
+// This is the most reliable way on iOS Safari with body:fixed
+document.documentElement.appendChild(overlay);
 overlay.scrollTop = 0;
 };
 
