@@ -1460,49 +1460,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         </div>
         <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label><div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" data-oi="s2CheckFields()" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)"></div></div>
 
-<!-- ── LIVE REFUND ESTIMATOR PILL (TurboTax style) ── -->
-
-<div id="live-refund-pill" style="display:none;background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:14px 16px;margin-top:8px;margin-bottom:4px">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-    <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">💰 Estimated Refund</div>
-    <div style="font-size:10px;color:rgba(255,255,255,.3)">75% OON avg.</div>
+```
+    <!-- ── LIVE REFUND ESTIMATOR PILL ── -->
+    <div id="live-refund-pill" style="display:none;background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:14px 16px;margin-top:2px;margin-bottom:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">💰 Estimated Refund</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3)">75% OON avg.</div>
+      </div>
+      <div style="font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:10px" id="pill-big-number">$0</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:7px">
+          <span style="font-size:12px;color:rgba(255,255,255,.5)">You paid</span>
+          <span style="font-size:12px;font-weight:700;color:white" id="pill-paid">$0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.25);border-radius:7px">
+          <span style="font-size:12px;color:#5eead4">Insurance reimburses (~75%)</span>
+          <span style="font-size:12px;font-weight:700;color:#5eead4" id="pill-insures">$0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:7px">
+          <span style="font-size:12px;color:rgba(255,255,255,.4)">Credimed fee (10% + $25)</span>
+          <span style="font-size:12px;color:rgba(255,255,255,.4)" id="pill-fee">−$0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:7px 10px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:7px">
+          <span style="font-size:13px;font-weight:700;color:#4ade80">Your net refund</span>
+          <span style="font-size:13px;font-weight:700;color:#4ade80" id="pill-net">$0</span>
+        </div>
+      </div>
+      <div style="margin-top:7px;font-size:10px;color:rgba(255,255,255,.25);text-align:center">Estimate · depends on your deductible &amp; annual max</div>
+    </div>
+    <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
   </div>
-  <div style="font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:10px" id="pill-big-number">$0</div>
-  <div style="display:flex;flex-direction:column;gap:5px">
-    <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:7px">
-      <span style="font-size:12px;color:rgba(255,255,255,.5)">You paid</span>
-      <span style="font-size:12px;font-weight:700;color:white" id="pill-paid">$0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.25);border-radius:7px">
-      <span style="font-size:12px;color:#5eead4">Insurance reimburses</span>
-      <span style="font-size:12px;font-weight:700;color:#5eead4" id="pill-insures">$0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:7px">
-      <span style="font-size:12px;color:rgba(255,255,255,.4)">Credimed fee (10% + $25)</span>
-      <span style="font-size:12px;color:rgba(255,255,255,.4)" id="pill-fee">−$0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:7px 10px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:7px">
-      <span style="font-size:13px;font-weight:700;color:#4ade80">Your net refund</span>
-      <span style="font-size:13px;font-weight:700;color:#4ade80" id="pill-net">$0</span>
-    </div>
-  </div>
-  <div style="margin-top:7px;font-size:10px;color:rgba(255,255,255,.25);text-align:center">Estimate · depends on deductible &amp; annual max</div>
 </div>
-        <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
-      </div>
-    </div>
-    <!-- Confirm banner -->
-    <div id="s2-confirm-banner" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:14px 16px;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
-      <div>
-        <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px">✅ Details look correct?</div>
-        <div style="font-size:11px;color:#6b7280">Review and confirm to continue</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-shrink:0">
-        <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" data-oc="s2EditFields()" onclick="window.s2EditFields&&window.s2EditFields()">✏️ Edit</button>
-        <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" data-oc="s2Confirm()" onclick="window.s2Confirm&&window.s2Confirm()">✓ Confirm →</button>
-      </div>
-    </div>
-    <div class="err-banner" id="s2-err"><span>⚠️</span><span id="s2-err-txt"></span></div>
+<!-- Confirm banner -->
+<div id="s2-confirm-banner" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:14px 16px;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
+  <div>
+    <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px">✅ Details look correct?</div>
+    <div style="font-size:11px;color:#6b7280">Review and confirm to continue</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0">
+    <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" data-oc="s2EditFields()" onclick="window.s2EditFields&&window.s2EditFields()">✏️ Edit</button>
+    <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" data-oc="s2Confirm()" onclick="window.s2Confirm&&window.s2Confirm()">✓ Confirm →</button>
+  </div>
+</div>
+<div class="err-banner" id="s2-err"><span>⚠️</span><span id="s2-err-txt"></span></div>
+```
+
   </div>
 </div>
 
