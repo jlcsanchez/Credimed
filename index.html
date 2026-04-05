@@ -6976,7 +6976,7 @@ overlay.onclick = function(e){ if(e.target===overlay) closeLightbox(); };
 
 const content = type === ‘insurance’ ? getInsuranceCardHTML() : getReceiptHTML();
 overlay.innerHTML = content;
-document.body.appendChild(overlay);
+var vp=document.getElementById(‘patient-viewport’)||document.body;vp.appendChild(overlay);
 overlay.scrollTop = 0;
 }
 
