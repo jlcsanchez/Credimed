@@ -883,11 +883,10 @@ html, body    { height:100%; overflow:hidden }
   /* Sidebar: fixed on left, full height */
   .pc-sidebar{
     display:flex !important;
-    position:fixed !important;
+    position:absolute !important;
     left:0 !important; top:0 !important;
-    width:220px !important; height:100vh !important;
-    z-index:1000 !important;
-    /* Hidden until a nav screen is active */
+    width:220px !important; height:100% !important;
+    z-index:100 !important;
     transform:translateX(-100%) !important;
     transition:transform .2s ease !important;
     pointer-events:none !important;
@@ -1233,8 +1232,8 @@ html, body    { height:100%; overflow:hidden }
       <span class="hero-stat-lbl" data-en="avg. refund per treatment" data-es="reembolso promedio">avg. refund per treatment</span>
     </div>
     <div class="hero-ctas" style="position:relative;z-index:10">
-      <button class="btn-hero-main" data-oc="goTo('s-auth','register')" data-en="Get my refund →" data-es="Quiero mi reembolso →">Get my refund →</button>
-      <button class="btn-hero-sec" data-oc="goTo('s-auth','login')" data-en="I already have an account" data-es="Ya tengo una cuenta">I already have an account</button>
+      <button class="btn-hero-main" onclick="goTo('s-auth','register')" data-oc="goTo('s-auth','register')" data-en="Get my refund →" data-es="Quiero mi reembolso →">Get my refund →</button>
+      <button class="btn-hero-sec" onclick="goTo('s-auth','login')" data-oc="goTo('s-auth','login')" data-en="I already have an account" data-es="Ya tengo una cuenta">I already have an account</button>
     </div>
   </div>
   <!-- How it works -->
