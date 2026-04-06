@@ -1379,34 +1379,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- Continue button -->
 
-<div style="margin-top:16px">
-  <button class="btn-primary" id="s1-next-btn" onclick="window.s1GoToReceipt&&window.s1GoToReceipt()" style="height:52px;font-size:15px" disabled>
-    Continue — Add Receipt →
-  </button>
-</div>
-
 <div id="s1-badge" style="display:none"></div>
 
-  </div>
+<!-- ─── DIVIDER ─── -->
 
-  <input type="file" id="s1-camera" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
-  <input type="file" id="s1-upload" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
+<div style="display:flex;align-items:center;gap:10px;margin:20px 4px 10px">
+  <div style="flex:1;height:2px;background:var(--border)"></div>
+  <div style="font-size:12px;font-weight:700;color:var(--teal);letter-spacing:1px;padding:0 8px">🧾 STEP 2 — DENTAL RECEIPT</div>
+  <div style="flex:1;height:2px;background:var(--border)"></div>
 </div>
-
-<!-- ══════════════════════════════════════
-     SCREEN: STEP 1b — DENTAL RECEIPT
-══════════════════════════════════════ -->
-
-<div class="screen" id="s-step1b" style="background:var(--bg)">
-  <div class="top-bar">
-    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">Step 2 · 50% done</div></div>
-    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
-  </div>
-  <div class="hero-dark">
-    <h2>🧾 Dental Receipt</h2>
-    <p>Upload your receipt or enter the treatment details manually</p>
-  </div>
-  <div class="body-card" style="padding-bottom:100px">
 
 <!-- ─── PANEL 1: SCAN RECEIPT (optional) ─── -->
 
@@ -1521,8 +1502,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </button>
 </div>
 
+<div style="margin-top:16px">
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px">
+    Submit Claim →
+  </button>
+</div>
+
   </div>
 
+  <input type="file" id="s1-camera" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
+  <input type="file" id="s1-upload" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
   <input type="file" id="s2-camera" accept="image/*" data-och="s2HandleFile(this)" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
   <input type="file" id="s2-upload" accept="image/*,application/pdf" data-och="s2HandleFile(this)" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
 </div>
@@ -6555,23 +6544,17 @@ bigNum.dataset.current = target;
 };
 
 window.s1GoToReceipt = function s1GoToReceipt() {
-// Read values — unlock fields first to ensure iOS returns value correctly
 var provEl = document.getElementById(‘s1-ins-provider’);
 var memEl  = document.getElementById(‘s1-ins-member’);
-var grpEl  = document.getElementById(‘s1-ins-group’);
-// Temporarily ensure readOnly is off so .value is readable on all browsers
 if(provEl) provEl.readOnly = false;
 if(memEl)  memEl.readOnly  = false;
 var provider = (provEl && provEl.value.trim()) || (currentUser && currentUser.insurer) || ‘’;
 var member   = (memEl  && memEl.value.trim())  || (currentUser && currentUser.memberId) || ‘’;
-var group    = (grpEl  && grpEl.value.trim())  || ‘’;
-if (!provider) {
-if(provEl){ provEl.style.borderColor=‘var(–red)’; provEl.placeholder=‘Required — e.g. Delta Dental’; }
-return;
-}
-if (currentUser) { currentUser.insurer = provider; currentUser.memberId = member; currentUser.group = group; }
+if(currentUser){ if(provider) currentUser.insurer=provider; if(member) currentUser.memberId=member; }
 window._s1CardOk = true;
-if (window.goTo) window.goTo(‘s-step1b’);
+// Scroll to receipt section
+var receiptSection = document.getElementById(‘s2-empty’) || document.getElementById(‘s2-manual-card’);
+if(receiptSection) receiptSection.scrollIntoView({behavior:‘smooth’, block:‘start’});
 };
 
 window.runProcessingDone = function() {
