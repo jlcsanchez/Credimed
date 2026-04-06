@@ -1517,7 +1517,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Continue button -->
 
 <div style="margin-top:16px">
-  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1GoToReceipt&&window.s1GoToReceipt()" style="height:52px;font-size:15px" disabled>
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px">
     Continue — Add Receipt →
   </button>
 </div>
@@ -2509,26 +2509,27 @@ function s1Reset(){
   s1TryEnableContinue();
 }
 function s1UseCard(){
-  var provider=document.getElementById('s1-ins-provider')?.value.trim()||'';
-  var member=document.getElementById('s1-ins-member')?.value.trim()||'';
+  var provEl=document.getElementById('s1-ins-provider');
+  var memEl=document.getElementById('s1-ins-member');
+  if(provEl) provEl.readOnly=false;
+  if(memEl)  memEl.readOnly=false;
+  var provider=(provEl&&provEl.value.trim())||(currentUser&&currentUser.insurer)||'';
+  var member=(memEl&&memEl.value.trim())||(currentUser&&currentUser.memberId)||'';
   if(!provider||!member){return;}
   if(currentUser){currentUser.insurer=provider;currentUser.memberId=member;}
-  // Lock the visible manual-entry fields
   ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
     var el=document.getElementById(id);
     if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.8';}
   });
-  // Hide confirm banner, mark done
   var banner=document.getElementById('s1-confirm-banner');
   if(banner) banner.style.display='none';
   var badge=document.getElementById('s1-badge');
   if(badge) badge.style.display='block';
-  // Enable Continue button
   window._s1CardOk=true;
   var nextBtn=document.getElementById('s1-next-btn');
   if(nextBtn) nextBtn.disabled=false;
-  s1EnableContinue();
 }
+
 function s1EditFields(){
   // Unlock the visible manual-entry fields
   ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
@@ -2646,15 +2647,15 @@ function s1Continue(){
     return;
   }
 
-  // Collect insurance data
-  var provider = (document.getElementById('s1-ins-provider') && document.getElementById('s1-ins-provider').value.trim()) ||
-                 (document.getElementById('s1-m-provider') && document.getElementById('s1-m-provider').value.trim()) || '';
-  var member   = (document.getElementById('s1-ins-member') && document.getElementById('s1-ins-member').value.trim()) ||
-                 (document.getElementById('s1-m-member') && document.getElementById('s1-m-member').value.trim()) || '';
+  // Collect insurance data — unlock fields first (iOS Safari readOnly returns empty)
+  var p1=document.getElementById('s1-ins-provider'); if(p1) p1.readOnly=false;
+  var m1=document.getElementById('s1-ins-member');   if(m1) m1.readOnly=false;
+  var provider = (p1&&p1.value.trim()) || (currentUser&&currentUser.insurer) || '';
+  var member   = (m1&&m1.value.trim()) || (currentUser&&currentUser.memberId) || '';
 
   if (currentUser) {
-    currentUser.insurer   = provider;
-    currentUser.memberId  = member;
+    currentUser.insurer   = provider || currentUser.insurer;
+    currentUser.memberId  = member  || currentUser.memberId;
     currentUser.procedure = proc;
     currentUser.dentist   = dentist;
     currentUser.amount    = amount;
@@ -6550,21 +6551,25 @@ bigNum.dataset.current = target;
 };
 
 window.s1GoToReceipt = function s1GoToReceipt() {
-// Read values — unlock fields first to ensure iOS returns value correctly
 var provEl = document.getElementById(‘s1-ins-provider’);
 var memEl  = document.getElementById(‘s1-ins-member’);
 var grpEl  = document.getElementById(‘s1-ins-group’);
-// Temporarily ensure readOnly is off so .value is readable on all browsers
 if(provEl) provEl.readOnly = false;
 if(memEl)  memEl.readOnly  = false;
+if(grpEl)  grpEl.readOnly  = false;
 var provider = (provEl && provEl.value.trim()) || (currentUser && currentUser.insurer) || ‘’;
 var member   = (memEl  && memEl.value.trim())  || (currentUser && currentUser.memberId) || ‘’;
 var group    = (grpEl  && grpEl.value.trim())  || ‘’;
+if (currentUser) {
+if(provider) currentUser.insurer = provider;
+if(member)   currentUser.memberId = member;
+if(group)    currentUser.group = group;
+}
+provider = provider || (currentUser && currentUser.insurer) || ‘’;
 if (!provider) {
-if(provEl){ provEl.style.borderColor=‘var(–red)’; provEl.placeholder=‘Required — e.g. Delta Dental’; }
+if(provEl){ provEl.style.borderColor=‘var(–red)’; provEl.focus(); }
 return;
 }
-if (currentUser) { currentUser.insurer = provider; currentUser.memberId = member; currentUser.group = group; }
 window._s1CardOk = true;
 if (window.goTo) window.goTo(‘s-step1b’);
 };
