@@ -1389,11 +1389,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<div style="height:1px;background:var(--border);margin-bottom:24px"></div>
-
 <!-- ══ SECTION 2: DENTAL RECEIPT ══ -->
 
-<div style="margin-bottom:20px">
+<div id="s2-section" style="margin-bottom:20px;display:none">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
     <div style="width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;flex-shrink:0">2</div>
     <div style="flex:1">
@@ -1460,7 +1458,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             </select>
           </div>
         </div>
-        <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label><div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" data-oi="s2CheckFields()" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)"></div></div>
+        <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label><div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" data-oi="s2CheckFields()" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)"></div></div>
 
 ```
 <!-- ── LIVE REFUND ESTIMATOR PILL ── -->
@@ -1527,101 +1525,67 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-processing" style="background:linear-gradient(160deg,#0f172a 0%,#134e4a 60%,#0f172a 100%);display:flex;flex-direction:column">
 
-<!-- Phase 1: Checks animation -->
+<!-- PHASE 1: Animated checks -->
 
-<div id="proc-phase1" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
-
-  <!-- Logo -->
-
-  <div style="margin-bottom:20px;filter:drop-shadow(0 4px 24px rgba(13,148,136,.4))">
-    <svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/>
-      <path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-      <path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/>
-      <rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/>
-      <rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/>
-    </svg>
-  </div>
-
-  <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;margin-bottom:6px">Calculating your refund</div>
-  <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:32px" id="proc-sub">Reviewing your coverage...</div>
-
-  <!-- 4 animated check items -->
-
-  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
-    <div id="pc1" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
-      <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📋</div>
-      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Preparing ADA claim form</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="pc1-sub">Analyzing...</div></div>
-      <div id="pc1-check" style="opacity:0;font-size:20px;transition:opacity .3s">✅</div>
+<div id="proc-phase1" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;text-align:center">
+  <div style="margin-bottom:18px;filter:drop-shadow(0 4px 20px rgba(13,148,136,.4))"><svg width="68" height="68" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
+  <div style="font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:700;color:white;margin-bottom:4px">Calculating your refund</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:28px" id="proc-sub">Reviewing your coverage...</div>
+  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px">
+    <div id="pc1" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
+      <div style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">📋</div>
+      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Preparing ADA claim form</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc1-sub">Analyzing...</div></div>
+      <div id="pc1-check" style="opacity:0;font-size:18px;transition:opacity .3s">✅</div>
     </div>
-    <div id="pc2" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
-      <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🦷</div>
-      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Attaching treatment details</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="pc2-sub">Analyzing...</div></div>
-      <div id="pc2-check" style="opacity:0;font-size:20px;transition:opacity .3s">✅</div>
+    <div id="pc2" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
+      <div style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🦷</div>
+      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Attaching treatment details</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc2-sub">Analyzing...</div></div>
+      <div id="pc2-check" style="opacity:0;font-size:18px;transition:opacity .3s">✅</div>
     </div>
-    <div id="pc3" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
-      <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🔍</div>
-      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Verifying CDT codes</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="pc3-sub">Analyzing...</div></div>
-      <div id="pc3-check" style="opacity:0;font-size:20px;transition:opacity .3s">✅</div>
+    <div id="pc3" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
+      <div style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🔍</div>
+      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Verifying CDT codes</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc3-sub">Analyzing...</div></div>
+      <div id="pc3-check" style="opacity:0;font-size:18px;transition:opacity .3s">✅</div>
     </div>
-    <div id="pc4" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
-      <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">💰</div>
-      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Estimating your refund</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="pc4-sub">Analyzing...</div></div>
-      <div id="pc4-check" style="opacity:0;font-size:20px;transition:opacity .3s">✅</div>
+    <div id="pc4" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
+      <div style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">💰</div>
+      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Estimating your refund</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc4-sub">Analyzing...</div></div>
+      <div id="pc4-check" style="opacity:0;font-size:18px;transition:opacity .3s">✅</div>
     </div>
   </div>
 </div>
 
-<!-- Phase 2: Big refund reveal -->
+<!-- PHASE 2: Big refund reveal -->
 
 <div id="proc-phase2" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
-
-  <!-- Confetti emoji burst -->
-
-  <div style="font-size:36px;margin-bottom:16px;animation:popIn .5s cubic-bezier(.16,1,.3,1)">🎉</div>
-
-  <div style="font-size:14px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">We estimate you'll get back</div>
-
-  <!-- THE BIG NUMBER -->
-
-  <div id="proc-big-number" style="font-family:'Playfair Display',Georgia,serif;font-size:72px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:4px;transition:transform .25s ease">$0</div>
-  <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:24px">from your insurance plan</div>
-
-  <!-- Breakdown lines — appear one by one -->
-
-  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
-    <div id="pb1" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:10px;opacity:0;transition:opacity .4s">
-      <span style="font-size:13px;color:rgba(255,255,255,.55)">You paid</span>
-      <span style="font-size:14px;font-weight:700;color:white" id="pb1-val">$0</span>
+  <div style="font-size:34px;margin-bottom:14px;animation:popIn .5s cubic-bezier(.16,1,.3,1)">🎉</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">We estimate you'll get back</div>
+  <div id="proc-big-number" style="font-family:'Playfair Display',Georgia,serif;font-size:68px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:4px;transition:transform .25s ease">$0</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:22px">from your insurance plan</div>
+  <div style="width:100%;max-width:310px;display:flex;flex-direction:column;gap:7px;margin-bottom:20px">
+    <div id="pb1" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.05);border-radius:9px;opacity:0;transition:opacity .4s">
+      <span style="font-size:13px;color:rgba(255,255,255,.5)">You paid</span>
+      <span style="font-size:13px;font-weight:700;color:white" id="pb1-val">$0</span>
     </div>
-    <div id="pb2" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:10px;opacity:0;transition:opacity .4s">
+    <div id="pb2" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:9px;opacity:0;transition:opacity .4s">
       <span style="font-size:13px;color:#5eead4">Insurance reimburses (~75%)</span>
-      <span style="font-size:14px;font-weight:700;color:#5eead4" id="pb2-val">$0</span>
+      <span style="font-size:13px;font-weight:700;color:#5eead4" id="pb2-val">$0</span>
     </div>
-    <div id="pb3" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.04);border-radius:10px;opacity:0;transition:opacity .4s">
-      <span style="font-size:13px;color:rgba(255,255,255,.4)">Credimed fee (10%)</span>
-      <span style="font-size:13px;color:rgba(255,255,255,.4)" id="pb3-val">−$0</span>
+    <div id="pb3" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.04);border-radius:9px;opacity:0;transition:opacity .4s">
+      <span style="font-size:12px;color:rgba(255,255,255,.35)">Credimed fee (10%)</span>
+      <span style="font-size:12px;color:rgba(255,255,255,.35)" id="pb3-val">−$0</span>
     </div>
-    <div id="pb4" style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:10px;opacity:0;transition:opacity .4s">
+    <div id="pb4" style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:9px;opacity:0;transition:opacity .4s">
       <span style="font-size:14px;font-weight:700;color:#4ade80">Your net refund</span>
-      <span style="font-size:15px;font-weight:700;color:#4ade80" id="pb4-val">$0</span>
+      <span style="font-size:14px;font-weight:700;color:#4ade80" id="pb4-val">$0</span>
+    </div>
+    <div id="proc-cdt-row" style="display:flex;justify-content:space-between;padding:7px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;opacity:0;transition:opacity .4s">
+      <span style="font-size:11px;color:rgba(255,255,255,.3)">CDT Code assigned</span>
+      <span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:1px 8px;border-radius:5px" id="proc-cdt-val">D2750</span>
     </div>
   </div>
-
-  <!-- CDT code badge -->
-
-  <div id="proc-cdt-row" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 14px;width:100%;max-width:320px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;opacity:0;transition:opacity .4s">
-    <span style="font-size:11px;color:rgba(255,255,255,.35)">CDT Code assigned by Credimed</span>
-    <span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:2px 10px;border-radius:6px" id="proc-cdt-val">D2750</span>
-  </div>
-
-  <!-- CTA -->
-
-  <button class="btn-primary" style="width:100%;max-width:320px;background:var(--teal);font-size:16px;height:56px;box-shadow:0 8px 28px rgba(13,148,136,.45)" data-oc="goTo('s-step3')" onclick="window.goTo&&window.goTo('s-step3')">
-    Yes — Start my claim →
-  </button>
-  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.3)">10% commission · Only when you get paid · No win, no fee</div>
-
+  <button class="btn-primary" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" data-oc="goTo('s-step3')" onclick="window.goTo&&window.goTo('s-step3')">Yes — Start my claim →</button>
+  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">10% only when you get paid · No win, no fee</div>
 </div>
 
 </div>
@@ -1787,7 +1751,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="screen" id="s-step4" style="background:#0f172a;min-height:100%">
   <div class="top-bar">
     <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Service Agreement</div><div class="step-counter">4 of 4</div></div>
-    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div></div>
+    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg active"></div></div>
   </div>
   <div class="body-card" style="margin-top:0;border-radius:0;padding-top:20px">
     <div class="card">
@@ -1815,7 +1779,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
     <div class="card">
-      <div class="card-head"><h3>📄 Service Agreement v4.3</h3></div>
+      <div class="card-head"><h3>📋 Terms & Conditions <span style="font-size:11px;font-weight:400;color:var(--slate-light)">v4.3</span></h3></div>
       <div class="card-body">
         <p style="font-size:12px;color:var(--slate-mid);margin-bottom:10px">Scroll to the bottom to enable the checkboxes.</p>
         <div class="contract-scroll" id="c-scroll">
@@ -1987,8 +1951,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="success-screen" id="s5-success" style="min-height:100%;background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%)">
     <div class="success-circle"><svg width="80" height="80" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
-    <div class="success-title">Claim Submitted!</div>
-    <div class="success-sub" style="margin-bottom:20px">Your claim is being processed now</div>
+    <div class="success-title">Payment Received!</div>
+    <div class="success-sub" style="margin-bottom:20px">Your claim is being submitted now</div>
     <div style="width:100%;max-width:280px;background:rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:left">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim filed</span><span style="color:#4ade80">Free ✓</span></div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim status</span><span style="color:#5eead4">Submitting...</span></div>
@@ -2278,7 +2242,8 @@ function goTo(id, param) {
     if(!currentUser) { goTo('s-auth','register'); return; }
     // Reset upload areas to initial state
     window._s1CardOk = false; window._s2ReceiptOk = false;
-    var s1ph = document.getElementById('s1-ph'); if(s1ph) s1ph.style.display='flex';
+    var s2sec = document.getElementById('s2-section'); if(s2sec) s2sec.style.display='none';
+  var s1ph = document.getElementById('s1-ph'); if(s1ph) s1ph.style.display='flex';
     var s1prev = document.getElementById('s1-preview'); if(s1prev) s1prev.style.display='none';
     var s2emp = document.getElementById('s2-empty'); if(s2emp) s2emp.style.display='flex';
     var s2fs = document.getElementById('s2-file-state'); if(s2fs) s2fs.style.display='none';
@@ -2638,6 +2603,14 @@ function s2ConfirmForStep1(){
 function s1EnableContinue(){
   window._s1CardOk=true;
   s1TryEnableContinue();
+  // Reveal section 2 with smooth scroll
+  var s2 = document.getElementById('s2-section');
+  if (s2) {
+    s2.style.display = 'block';
+    setTimeout(function() {
+      s2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  }
   // Highlight s2 upload as next step
   var s2area=document.getElementById('s2-empty');
   if(s2area){ s2area.style.borderColor='var(--teal)'; s2area.style.boxShadow='0 0 0 3px rgba(13,148,136,.15)'; }
@@ -3585,115 +3558,106 @@ function runReadyScreen() {
 }
 
 function runProcessing() {
-  // ── Reset both phases ───────────────────────────────────────────────────
+  // ── Reset ──────────────────────────────────────────────────────────────
   var phase1 = document.getElementById('proc-phase1');
   var phase2 = document.getElementById('proc-phase2');
-  if (phase1) { phase1.style.display = 'flex'; }
-  if (phase2) { phase2.style.display = 'none'; }
-
-  // Reset check items
+  if (phase1) phase1.style.display = 'flex';
+  if (phase2) phase2.style.display = 'none';
   ['pc1','pc2','pc3','pc4'].forEach(function(id) {
     var el = document.getElementById(id);
-    if (el) { el.style.opacity = '0'; el.style.transform = 'translateY(8px)'; }
-    var ck = document.getElementById(id + '-check');
+    if (el) { el.style.opacity='0'; el.style.transform='translateY(8px)'; }
+    var ck = document.getElementById(id+'-check');
     if (ck) ck.style.opacity = '0';
   });
-  // Reset breakdown
   ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.style.opacity = '0';
+    var el = document.getElementById(id); if (el) el.style.opacity = '0';
   });
-  var bigNum = document.getElementById('proc-big-number');
-  if (bigNum) bigNum.textContent = '$0';
+  var bn = document.getElementById('proc-big-number');
+  if (bn) bn.textContent = '$0';
 
-  // ── Get claim data ──────────────────────────────────────────────────────
-  var amtEl   = document.getElementById('s2-amount');
-  var procEl  = document.getElementById('s2-proc');
-  var ins1El  = document.getElementById('s1-ins-provider');
-  var ins2El  = document.getElementById('s1-m-provider');
-  var amt     = parseFloat(amtEl && amtEl.value) || parseFloat(currentUser && currentUser.amount) || 850;
-  var proc    = (procEl && procEl.value) || (currentUser && currentUser.procedure) || 'Crown';
-  var insurer = (ins1El && ins1El.value) || (ins2El && ins2El.value) || (currentUser && currentUser.insurer) || 'Delta Dental';
+  // ── Claim data ─────────────────────────────────────────────────────────
+  var amtEl  = document.getElementById('s2-amount');
+  var procEl = document.getElementById('s2-proc');
+  var ins1   = document.getElementById('s1-ins-provider');
+  var ins2   = document.getElementById('s1-m-provider');
+  var amt     = parseFloat(amtEl&&amtEl.value) || parseFloat(currentUser&&currentUser.amount) || 850;
+  var proc    = (procEl&&procEl.value) || (currentUser&&currentUser.procedure) || 'Crown';
+  var insurer = (ins1&&ins1.value)||(ins2&&ins2.value)||(currentUser&&currentUser.insurer)||'Delta Dental';
   var cdtMap  = {'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
-  var cdt     = cdtMap[proc] || 'D2750';
-  var refund  = Math.round(amt * 0.75);
-  var fee     = Math.round(refund * 0.10);
-  var net     = Math.max(0, refund - fee);
+  var cdt    = cdtMap[proc] || 'D2750';
+  var refund = Math.round(amt * 0.75);
+  var fee    = Math.round(refund * 0.10);
+  var net    = Math.max(0, refund - fee);
+  var sub    = document.getElementById('proc-sub');
 
-  var subEl = document.getElementById('proc-sub');
-
-  // ── Step data ────────────────────────────────────────────────────────────
-  var steps = [
-    { id:'pc1', sub:'ADA form ready ✓',          check: true, delay: 400  },
-    { id:'pc2', sub: proc + ' attached ✓',        check: true, delay: 1100 },
-    { id:'pc3', sub: cdt + ' verified ✓',         check: true, delay: 1800 },
-    { id:'pc4', sub: 'Refund: $' + refund.toLocaleString() + ' estimated ✓', check: true, delay: 2500 },
+  // ── Phase 1: Checks appear one by one ─────────────────────────────────
+  var checks = [
+    { id:'pc1', done:'ADA form ready ✓' },
+    { id:'pc2', done: proc + ' — ' + cdt + ' attached ✓' },
+    { id:'pc3', done:'PPO out-of-network verified ✓' },
+    { id:'pc4', done:'Refund $' + refund.toLocaleString() + ' estimated ✓' },
   ];
+  if (sub) sub.textContent = 'Analyzing your ' + insurer + ' PPO claim...';
 
-  // ── Animate checks one by one ───────────────────────────────────────────
-  steps.forEach(function(s) {
-    // Show card
+  checks.forEach(function(c, i) {
+    var delay = 300 + i * 700;
     setTimeout(function() {
-      var el = document.getElementById(s.id);
-      if (el) { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }
-      if (subEl) subEl.textContent = 'Analyzing your ' + insurer + ' PPO claim...';
-    }, s.delay);
-    // Show checkmark
+      var el = document.getElementById(c.id);
+      if (el) { el.style.opacity='1'; el.style.transform='translateY(0)'; }
+    }, delay);
     setTimeout(function() {
-      var ck = document.getElementById(s.id + '-check');
+      var ck = document.getElementById(c.id+'-check');
       if (ck) ck.style.opacity = '1';
-      var subId = document.getElementById(s.id + '-sub');
-      if (subId) subId.textContent = s.sub;
-      if (subId) subId.style.color = '#5eead4';
-    }, s.delay + 600);
+      var sb = document.getElementById(c.id+'-sub');
+      if (sb) { sb.textContent = c.done; sb.style.color = '#5eead4'; }
+    }, delay + 550);
   });
 
-  // ── Transition to Phase 2: Big number reveal ─────────────────────────────
-  var revealDelay = 2500 + 600 + 500; // after last check completes
+  // ── Phase 2: Big number reveal ─────────────────────────────────────────
+  var revealAt = 300 + checks.length * 700 + 400;
   setTimeout(function() {
-    if (subEl) subEl.textContent = 'Analysis complete!';
-
-    // Swap phases
     if (phase1) phase1.style.display = 'none';
-    if (phase2) { phase2.style.display = 'flex'; }
+    if (phase2) phase2.style.display = 'flex';
 
-    // Fill static values
-    var pb1 = document.getElementById('pb1-val'); if(pb1) pb1.textContent = '$' + Math.round(amt).toLocaleString();
-    var pb2 = document.getElementById('pb2-val'); if(pb2) pb2.textContent = '$' + refund.toLocaleString();
-    var pb3 = document.getElementById('pb3-val'); if(pb3) pb3.textContent = '−$' + fee.toLocaleString();
-    var pb4 = document.getElementById('pb4-val'); if(pb4) pb4.textContent = '$' + net.toLocaleString();
-    var cdtV = document.getElementById('proc-cdt-val'); if(cdtV) cdtV.textContent = cdt;
+    // Fill values
+    var vals = {
+      'pb1-val': '$' + Math.round(amt).toLocaleString(),
+      'pb2-val': '$' + refund.toLocaleString(),
+      'pb3-val': '−$' + fee.toLocaleString(),
+      'pb4-val': '$' + net.toLocaleString(),
+      'proc-cdt-val': cdt
+    };
+    Object.keys(vals).forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.textContent = vals[id];
+    });
 
-    // ── Big number counts up (the exciting moment!) ──────────────────────
-    var bn = document.getElementById('proc-big-number');
-    if (bn) {
-      bn.style.transition = 'transform .25s ease';
-      var step = 0, steps2 = 60, dur = 2200;
+    // Count up the big number
+    var bigEl = document.getElementById('proc-big-number');
+    if (bigEl) {
+      bigEl.style.transition = 'transform .25s ease';
+      var step = 0, steps = 60, dur = 2200;
       var timer = setInterval(function() {
         step++;
-        var eased = 1 - Math.pow(1 - step / steps2, 3);
-        bn.textContent = '$' + Math.round(refund * eased).toLocaleString();
-        if (step >= steps2) {
+        var e = 1 - Math.pow(1 - step/steps, 3);
+        bigEl.textContent = '$' + Math.round(refund * e).toLocaleString();
+        if (step >= steps) {
           clearInterval(timer);
-          bn.textContent = '$' + refund.toLocaleString();
-          // Pulse at the end
-          bn.style.transform = 'scale(1.12)';
-          setTimeout(function() { bn.style.transform = 'scale(1)'; }, 300);
-          // Fade in breakdown rows
-          ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id, i) {
-            setTimeout(function() {
-              var el = document.getElementById(id);
-              if (el) el.style.opacity = '1';
-            }, i * 150);
-          });
+          bigEl.textContent = '$' + refund.toLocaleString();
+          bigEl.style.transform = 'scale(1.1)';
+          setTimeout(function() {
+            bigEl.style.transform = 'scale(1)';
+            // Fade breakdown rows in sequence
+            ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id, i) {
+              setTimeout(function() {
+                var el = document.getElementById(id); if(el) el.style.opacity='1';
+              }, i * 120);
+            });
+          }, 280);
         }
-      }, dur / steps2);
+      }, dur / steps);
     }
-
-    // Save to user
-    if (currentUser) { currentUser.cdtCode = cdt; currentUser.estimatedRefund = refund; }
-
-  }, revealDelay);
+    if (currentUser) { currentUser.cdtCode=cdt; currentUser.estimatedRefund=refund; }
+  }, revealAt);
 }
 
 
