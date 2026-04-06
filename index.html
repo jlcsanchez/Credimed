@@ -6610,55 +6610,43 @@ if (window.goTo) window.goTo(‘s-step1b’);
 };
 
 window.s1Submit = function s1Submit() {
-// Unlock ALL fields before reading (iOS readOnly bug)
-document.querySelectorAll(’#s-step1 input, #s-step1 select’).forEach(function(el){
-el.readOnly = false; el.disabled = false;
-});
+// Read directly — no readOnly unlocking needed, s1Submit ignores lock state
+var prov = document.getElementById(‘s1-ins-provider’);
+var mem  = document.getElementById(‘s1-ins-member’);
+var grp  = document.getElementById(‘s1-ins-group’);
+var den  = document.getElementById(‘s2-dentist’);
+var prc  = document.getElementById(‘s2-proc’);
+var amt  = document.getElementById(‘s2-amount’);
+var dte  = document.getElementById(‘s2-date’);
+var cty  = document.getElementById(‘s2-city’);
 
-var provider = (document.getElementById(‘s1-ins-provider’) || {}).value || ‘’;
-provider = provider.trim() || (currentUser && currentUser.insurer) || ‘’;
+// Temporarily remove readOnly/disabled to read values
+[prov,mem,grp,den,prc,amt,dte,cty].forEach(function(el){ if(el){ el.readOnly=false; el.disabled=false; } });
 
-var member   = ((document.getElementById(‘s1-ins-member’) || {}).value || ‘’).trim()
-|| (currentUser && currentUser.memberId) || ‘’;
-var group    = ((document.getElementById(‘s1-ins-group’)  || {}).value || ‘’).trim();
-var dentist  = ((document.getElementById(‘s2-dentist’)    || {}).value || ‘’).trim();
-var proc     = ((document.getElementById(‘s2-proc’)       || {}).value || ‘’).trim();
-var amount   = parseFloat((document.getElementById(‘s2-amount’) || {}).value) || 0;
-var date     = ((document.getElementById(‘s2-date’)       || {}).value || ‘’).trim();
-var city     = ((document.getElementById(‘s2-city’)       || {}).value || ‘’).trim();
+var provider = (prov && prov.value.trim()) || (currentUser && currentUser.insurer) || ‘’;
+var member   = (mem  && mem.value.trim())  || (currentUser && currentUser.memberId) || ‘’;
+var group    = (grp  && grp.value.trim())  || ‘’;
+var dentist  = (den  && den.value.trim())  || ‘’;
+var proc     = (prc  && prc.value.trim())  || ‘’;
+var amount   = parseFloat(amt && amt.value) || 0;
+var date     = (dte  && dte.value.trim())  || ‘’;
+var city     = (cty  && cty.value.trim())  || ‘’;
 
-// Validate
-if (!provider) {
-var el = document.getElementById(‘s1-ins-provider’);
-if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
-return;
-}
-if (!dentist) {
-var el = document.getElementById(‘s2-dentist’);
-if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
-return;
-}
-if (!proc) {
-var el = document.getElementById(‘s2-proc’);
-if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
-return;
-}
-if (!amount) {
-var el = document.getElementById(‘s2-amount’);
-if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
-return;
-}
+// Validate missing fields
+if (!provider) { if(prov){ prov.style.borderColor=’#ef4444’; prov.scrollIntoView({behavior:‘smooth’,block:‘center’}); prov.focus(); } return; }
+if (!dentist)  { if(den){  den.style.borderColor=’#ef4444’;  den.scrollIntoView({behavior:‘smooth’,block:‘center’});  den.focus();  } return; }
+if (!proc)     { if(prc){  prc.style.borderColor=’#ef4444’;  prc.scrollIntoView({behavior:‘smooth’,block:‘center’});  prc.focus();  } return; }
+if (!amount)   { if(amt){  amt.style.borderColor=’#ef4444’;  amt.scrollIntoView({behavior:‘smooth’,block:‘center’});  amt.focus();  } return; }
 
-// Save
+// Save to currentUser
 if (currentUser) {
-currentUser.insurer = provider; currentUser.memberId = member;
-currentUser.group = group; currentUser.procedure = proc;
-currentUser.dentist = dentist; currentUser.amount = amount;
-currentUser.date = date; currentUser.city = city;
+currentUser.insurer=provider; currentUser.memberId=member; currentUser.group=group;
+currentUser.dentist=dentist; currentUser.procedure=proc; currentUser.amount=amount;
+currentUser.date=date; currentUser.city=city;
 }
-window._s1CardOk = true; window._s2ReceiptOk = true;
+
+// Navigate
 if (window.goTo) window.goTo(‘s-processing’);
-setTimeout(function(){ try { (window.runProcessing||runProcessing)(); } catch(e) { console.error(‘runProcessing:’, e); } }, 50);
 };
 
 window.runProcessingDone = function() {
