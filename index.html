@@ -3844,6 +3844,15 @@ if(typeof cSubmit==='function') window.cSubmit = cSubmit;
 if(typeof initCanvas==='function') window.initCanvas = initCanvas;
 if(typeof initDashboard==='function') window.initDashboard = initDashboard;
 if(typeof autoResize==='function') window.autoResize = autoResize;
+if(typeof runProcessing==='function') window.runProcessing = runProcessing;
+if(typeof runProcessingDone==='function') window.runProcessingDone = runProcessingDone;
+
+// Expose currentUser getter/setter so cross-script code can read & write it
+Object.defineProperty(window, 'currentUser', {
+  get: function() { return typeof currentUser !== 'undefined' ? currentUser : null; },
+  set: function(v) { currentUser = v; },
+  configurable: true
+});
 
 </script>
 
@@ -6643,74 +6652,67 @@ if (window.goTo) window.goTo(‘s-step1b’);
 };
 
 window.s1Submit = function s1Submit() {
-// Collect insurance — unlock readOnly so value is always readable
-var provEl = document.getElementById(‘s1-ins-provider’);
-var memEl = document.getElementById(‘s1-ins-member’);
-var grpEl = document.getElementById(‘s1-ins-group’);
-if(provEl) provEl.readOnly = false;
-if(memEl) memEl.readOnly = false;
-var provider = (provEl && provEl.value.trim()) ||
-(document.getElementById(‘s1-m-provider’) && document.getElementById(‘s1-m-provider’).value.trim()) ||
-(currentUser && currentUser.insurer) || ‘’;
-var member = (memEl && memEl.value.trim()) ||
-(document.getElementById(‘s1-m-member’) && document.getElementById(‘s1-m-member’).value.trim()) ||
-(currentUser && currentUser.memberId) || ‘’;
-var group = (grpEl && grpEl.value.trim()) || ‘’;
-// Collect receipt — unlock any locked fields before reading
-var dentistEl = document.getElementById(‘s2-dentist’);
-var procEl = document.getElementById(‘s2-proc’);
+// Unlock all fields so iOS/Safari returns correct values
+var provEl   = document.getElementById(‘s1-ins-provider’);
+var memEl    = document.getElementById(‘s1-ins-member’);
+var grpEl    = document.getElementById(‘s1-ins-group’);
+var dentistEl= document.getElementById(‘s2-dentist’);
+var procEl   = document.getElementById(‘s2-proc’);
 var amountEl = document.getElementById(‘s2-amount’);
-var dateEl = document.getElementById(‘s2-date’);
-var cityEl = document.getElementById(‘s2-city’);
-if(dentistEl) dentistEl.readOnly = false;
-if(amountEl) amountEl.readOnly = false;
-if(cityEl) cityEl.readOnly = false;
-if(dateEl) dateEl.readOnly = false;
+var dateEl   = document.getElementById(‘s2-date’);
+var cityEl   = document.getElementById(‘s2-city’);
+[provEl,memEl,grpEl,dentistEl,amountEl,cityEl,dateEl].forEach(function(e){if(e)e.readOnly=false;});
 if(procEl) procEl.disabled = false;
-var dentist = (dentistEl && dentistEl.value.trim()) || ‘’;
-var proc = (procEl && procEl.value) || ‘’;
-var amount = parseFloat(amountEl && amountEl.value) || 0;
-var date = (dateEl && dateEl.value) || ‘’;
-var city = (cityEl && cityEl.value.trim()) || ‘’;
-// Clear any previous error borders
-[provEl, dentistEl, procEl, amountEl].forEach(function(el){ if(el) el.style.borderColor = ‘’; });
-// Validate
-if (!provider) {
-if(provEl){ provEl.style.borderColor=’#ef4444’; provEl.focus(); provEl.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+
+var cu = window.currentUser;
+// Read values — fall back to currentUser if fields empty
+var provider = (provEl&&provEl.value.trim())||(document.getElementById(‘s1-m-provider’)&&document.getElementById(‘s1-m-provider’).value.trim())||(cu&&cu.insurer)||’’;
+var member   = (memEl&&memEl.value.trim())||(document.getElementById(‘s1-m-member’)&&document.getElementById(‘s1-m-member’).value.trim())||(cu&&cu.memberId)||’’;
+var group    = (grpEl&&grpEl.value.trim())||’’;
+var dentist  = (dentistEl&&dentistEl.value.trim())||’’;
+var proc     = (procEl&&procEl.value)||’’;
+var amount   = parseFloat(amountEl&&amountEl.value)||0;
+var date     = (dateEl&&dateEl.value)||’’;
+var city     = (cityEl&&cityEl.value.trim())||’’;
+
+// Validate only required Treatment fields
+[dentistEl,procEl,amountEl].forEach(function(e){if(e)e.style.borderColor=’’;});
+if(!dentist){
+if(dentistEl){dentistEl.style.borderColor=’#ef4444’;dentistEl.focus();dentistEl.scrollIntoView({behavior:‘smooth’,block:‘center’});}
 return;
 }
-if (!dentist) {
-if(dentistEl){ dentistEl.style.borderColor=’#ef4444’; dentistEl.focus(); dentistEl.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+if(!proc){
+if(procEl){procEl.style.borderColor=’#ef4444’;procEl.focus();procEl.scrollIntoView({behavior:‘smooth’,block:‘center’});}
 return;
 }
-if (!proc) {
-if(procEl){ procEl.style.borderColor=’#ef4444’; procEl.focus(); procEl.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+if(!amount){
+if(amountEl){amountEl.style.borderColor=’#ef4444’;amountEl.focus();amountEl.scrollIntoView({behavior:‘smooth’,block:‘center’});}
 return;
 }
-if (!amount) {
-if(amountEl){ amountEl.style.borderColor=’#ef4444’; amountEl.focus(); amountEl.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
-return;
-}
-// Auto-confirm both sections — user may skip the “Confirm” banner, that’s fine
-window._s1CardOk = true;
+
+// Auto-confirm both sections
+window._s1CardOk    = true;
 window._s2ReceiptOk = true;
-var s1banner = document.getElementById(‘s1-confirm-banner’);
-var s2banner = document.getElementById(‘s2-confirm-banner’);
-if(s1banner) s1banner.style.display = ‘none’;
-if(s2banner) s2banner.style.display = ‘none’;
-// Save to currentUser
-if (currentUser) {
-currentUser.insurer = provider;
-currentUser.memberId = member;
-currentUser.group = group;
-currentUser.procedure = proc;
-currentUser.dentist = dentist;
-currentUser.amount = amount;
-currentUser.date = date;
-currentUser.city = city;
-}
-if (window.goTo) window.goTo(‘s-processing’);
-try { runProcessing(); } catch(e) {}
+var s1b=document.getElementById(‘s1-confirm-banner’);
+var s2b=document.getElementById(‘s2-confirm-banner’);
+if(s1b) s1b.style.display=‘none’;
+if(s2b) s2b.style.display=‘none’;
+
+// Save to currentUser (create if null)
+if(!cu) cu = {};
+cu.insurer   = provider||‘Delta Dental’;
+cu.memberId  = member;
+cu.group     = group;
+cu.procedure = proc;
+cu.dentist   = dentist;
+cu.amount    = amount;
+cu.date      = date;
+cu.city      = city;
+window.currentUser = cu;
+
+// Navigate
+if(window.goTo) window.goTo(‘s-processing’);
+setTimeout(function(){ try{ window.runProcessing ? window.runProcessing() : runProcessing(); }catch(e){ console.warn(e); } }, 100);
 };
 
 window.runProcessingDone = function() {
