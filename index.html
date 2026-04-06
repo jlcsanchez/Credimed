@@ -853,6 +853,130 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #acc-32:checked ~ #acc-body-32 { display:block !important; }
 #acc-33:checked ~ #acc-body-33 { display:block !important; }
 
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE DESKTOP LAYOUT
+   On screens >= 900px: show full website layout with
+   phone mockup on the right and content on the left.
+═══════════════════════════════════════════════════════ */
+
+@media (min-width: 900px) {
+  /* Reset mobile-only locks */
+  html, body {
+    overflow: auto !important;
+    position: static !important;
+    height: auto !important;
+  }
+
+  /* Demo wrapper becomes a normal page flow */
+  .demo-wrapper {
+    position: static !important;
+    display: block !important;
+    min-height: 100vh;
+    background: #060d14;
+    overflow: visible !important;
+  }
+
+  /* Show the top nav bar */
+  .demo-topbar {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 40px;
+    background: rgba(0,0,0,.4);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  /* Demo panels become a full-width container */
+  .demo-panels {
+    display: block !important;
+    overflow: visible !important;
+    min-height: 0 !important;
+  }
+
+  /* Patient panel: side-by-side layout */
+  .patient-panel {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh;
+    background: #060d14 !important;
+    position: relative;
+    overflow: visible !important;
+  }
+
+  /* Left side: marketing / hero content */
+  .desktop-hero {
+    flex: 1;
+    max-width: 520px;
+    padding: 80px 48px 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 70px);
+  }
+
+  /* Right side: phone frame */
+  .phone-frame {
+    width: 390px !important;
+    min-width: 390px !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    box-shadow: -2px 0 40px rgba(0,0,0,.5) !important;
+    background: #0a0f1e;
+    position: sticky !important;
+    top: 0 !important;
+    flex-shrink: 0;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+  }
+
+  .patient-viewport {
+    width: 390px !important;
+    height: 100vh !important;
+    position: relative !important;
+  }
+
+  .patient-viewport .screen {
+    width: 390px !important;
+  }
+
+  .phone-notch { display: none !important; }
+  .patient-label { display: none !important; }
+
+  /* Admin panel full width */
+  .admin-panel {
+    min-height: calc(100vh - 62px);
+  }
+}
+
+/* Wide screens: more breathing room */
+@media (min-width: 1280px) {
+  .desktop-hero {
+    max-width: 600px;
+    padding: 80px 60px 80px 80px;
+  }
+  .phone-frame {
+    width: 420px !important;
+    min-width: 420px !important;
+  }
+  .patient-viewport {
+    width: 420px !important;
+  }
+  .patient-viewport .screen {
+    width: 420px !important;
+  }
+}
+
 </style>
 
 </head>
@@ -881,6 +1005,44 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- PATIENT PANEL -->
 
 <div class="panel patient-panel active" id="panel-patient">
+  <!-- Desktop hero content (hidden on mobile via CSS) -->
+  <div class="desktop-hero" style="display:none">
+    <div style="font-size:11px;font-weight:700;letter-spacing:3px;color:#5eead4;text-transform:uppercase;margin-bottom:20px">Dental Insurance Claims</div>
+    <h1 style="font-family:'Playfair Display',Georgia,serif;font-size:52px;font-weight:900;color:white;line-height:1.08;margin-bottom:16px;letter-spacing:-1px">Got dental<br>work in<br>Mexico?</h1>
+    <p style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-style:italic;font-weight:700;color:#5eead4;line-height:1.2;margin-bottom:28px">Your insurance<br>owes you money.</p>
+    <p style="font-size:16px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:36px;max-width:420px">Most US PPO plans reimburse out-of-network dental work — even in Mexico. Credimed files the claim for you. You get the check. We take 10% only after you're paid.</p>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:28px;height:28px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="11" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span style="font-size:16px;color:rgba(255,255,255,.9)">A <strong style="color:#5eead4">US PPO dental plan</strong></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:28px;height:28px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="11" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span style="font-size:16px;color:rgba(255,255,255,.9)">Dental work done <strong style="color:#5eead4">in Mexico</strong></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:28px;height:28px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="11" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span style="font-size:16px;color:rgba(255,255,255,.9)">A receipt showing <strong style="color:#5eead4">what you paid</strong></span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:24px;padding-top:28px;border-top:1px solid rgba(255,255,255,.1)">
+      <div style="text-align:center">
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:700;color:#5eead4">$1,100</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;text-transform:uppercase;letter-spacing:1px">Avg. refund</div>
+      </div>
+      <div style="width:1px;height:48px;background:rgba(255,255,255,.1)"></div>
+      <div style="text-align:center">
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:700;color:#5eead4">10%</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;text-transform:uppercase;letter-spacing:1px">Only if you win</div>
+      </div>
+      <div style="width:1px;height:48px;background:rgba(255,255,255,.1)"></div>
+      <div style="text-align:center">
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:700;color:#5eead4">3 min</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;text-transform:uppercase;letter-spacing:1px">To start</div>
+      </div>
+    </div>
+  </div>
+
  <div class="phone-frame">
 
 <div class="patient-viewport" id="patient-viewport">
@@ -944,15 +1106,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">You qualify if you have…</div>
  <div style="display:flex;flex-direction:column;gap:9px">
  <div style="display:flex;align-items:center;gap:10px">
- <div style="width:22px;height:22px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;flex-shrink:0">&#10003;</div>
+ <div style="width:22px;height:22px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
  <span style="font-size:14px;color:rgba(255,255,255,.9)">A <strong style="color:#5eead4">US PPO dental plan</strong></span>
  </div>
  <div style="display:flex;align-items:center;gap:10px">
- <div style="width:22px;height:22px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;flex-shrink:0">&#10003;</div>
+ <div style="width:22px;height:22px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
  <span style="font-size:14px;color:rgba(255,255,255,.9)">Dental work done <strong style="color:#5eead4">in Mexico</strong></span>
  </div>
  <div style="display:flex;align-items:center;gap:10px">
- <div style="width:22px;height:22px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;flex-shrink:0">&#10003;</div>
+ <div style="width:22px;height:22px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
  <span style="font-size:14px;color:rgba(255,255,255,.9)">A receipt showing <strong style="color:#5eead4">what you paid</strong></span>
  </div>
  <div style="width:100%;height:1px;background:rgba(94,234,212,.15);margin:2px 0"></div>
@@ -1532,7 +1694,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- SUBMIT BUTTON -->
 
 <div style="margin-top:20px;padding-bottom:8px">
- <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:56px;font-size:16px;font-weight:700">
+ <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:56px;font-size:16px;font-weight:700;background:#94a3b8;box-shadow:none;cursor:default">
  Step 1: confirm your insurance card
  </button>
 </div>
@@ -2660,9 +2822,17 @@ function s1TryEnableContinue(){
  var both = cardOk && receiptOk;
 
  if(btn) {
- // Never disable — always let user click and get validation feedback
  btn.disabled = false;
  btn.textContent = both ? 'Submit my claim →' : (cardOk ? 'Next: confirm your receipt →' : 'Step 1: confirm your insurance card');
+ if(both) {
+   btn.style.background = 'var(--teal)';
+   btn.style.boxShadow = '0 4px 20px rgba(13,148,136,.35)';
+   btn.style.cursor = 'pointer';
+ } else {
+   btn.style.background = '#94a3b8';
+   btn.style.boxShadow = 'none';
+   btn.style.cursor = 'default';
+ }
  }
  // Show section badges
  var b1 = document.getElementById('s1-section-badge');
@@ -7383,3 +7553,17 @@ return `<div style="width:100%;max-width:360px;border-radius:20px;overflow:hidde
 <div style="position:absolute;top:-9px;left:12px;background:#059669;border-radius:4px;padding:2px 8px;font-size:8px;font-weight:800;color:white"> WE NEED THIS</div>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
 <div><div style="font-size:13px;font-weight:700;color:#1e293b;text-transform:uppercase">TOTAL PAID</div><div style="f
+</div></div></div></div></div></script></div></div>
+<script>
+(function() {
+  function applyDesktopHero() {
+    var hero = document.querySelector('.desktop-hero');
+    if (!hero) return;
+    hero.style.display = window.innerWidth >= 900 ? 'flex' : 'none';
+  }
+  applyDesktopHero();
+  window.addEventListener('resize', applyDesktopHero);
+})();
+</script>
+
+</html>
