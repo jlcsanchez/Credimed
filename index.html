@@ -2476,13 +2476,13 @@ function s1ShowExtracted(){
     var el=document.getElementById(id);
     if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.85';}
   });
-  // Show confirm banner so user can still edit if needed
+  // Hide confirm banner — scan already auto-confirms
   var banner=document.getElementById('s1-confirm-banner');
-  if(banner){
-    banner.style.display='flex';
-    setTimeout(function(){banner.scrollIntoView({behavior:'smooth',block:'nearest'});},200);
-  }
-  // Enable the Continue button
+  if(banner) banner.style.display='none';
+  // Enable the Continue button immediately
+  window._s1CardOk=true;
+  var nextBtn=document.getElementById('s1-next-btn');
+  if(nextBtn) nextBtn.disabled=false;
   s1EnableContinue();
   s1Scanned=true;
 }
@@ -2609,15 +2609,12 @@ function s1CheckManual(){
   var banner = document.getElementById('s1-confirm-banner');
   var badge  = document.getElementById('s1-badge');
   if(p && m){
-    // Only show the confirm banner if the card hasn't already been confirmed
-    if(!window._s1CardOk){
-      if(banner) {
-        banner.style.display = 'flex';
-        setTimeout(function(){ banner.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 150);
-      }
-    }
+    // Auto-enable Continue as soon as both fields have values
+    window._s1CardOk = true;
+    if(currentUser){ currentUser.insurer = p; currentUser.memberId = m; }
+    if(banner) banner.style.display = 'none';
+    s1TryEnableContinue();
   } else {
-    // Fields cleared — reset confirmed state and hide banner/badge
     window._s1CardOk = false;
     if(banner) banner.style.display = 'none';
     if(badge)  badge.style.display  = 'none';
