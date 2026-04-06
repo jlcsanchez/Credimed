@@ -83,6 +83,7 @@ input,select,textarea{font-size:16px !important;-webkit-text-size-adjust:100%}
 .btn-primary:hover{background:var(--teal-dark);transform:translateY(-1px)}
 .btn-primary:active{transform:scale(.98)}
 .btn-primary:disabled{background:#94a3b8;cursor:not-allowed;box-shadow:none;transform:none}
+#s1-continue-btn{background:var(--teal) !important;cursor:pointer !important;box-shadow:0 4px 20px rgba(13,148,136,.35) !important;opacity:1 !important;pointer-events:auto !important}
 .btn-outline{width:100%;height:46px;background:transparent;color:var(--teal);border:1.5px solid var(--teal);border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-outline:hover{background:var(--teal-xlight)}
 .btn-ghost{width:100%;height:46px;background:white;color:var(--slate);border:1.5px solid var(--border);border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s}
@@ -2197,6 +2198,8 @@ function goTo(id, param) {
   next.classList.add('active');
   next.style.display = 'block';
   next.scrollTop = 0;
+  // Always ensure submit button is enabled
+  if(id === 's-step1'){ var sb=document.getElementById('s1-continue-btn'); if(sb){ sb.disabled=false; sb.removeAttribute('disabled'); } }
   var inner = next.firstElementChild;
   if(inner) inner.scrollTop = 0;
   requestAnimationFrame(function() {
