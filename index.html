@@ -1532,8 +1532,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- ─── SUBMIT BUTTON ─── -->
 
 <div style="margin-top:20px;padding-bottom:8px">
-  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:56px;font-size:16px;font-weight:700" disabled>
-    Step 1: confirm your insurance card
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:56px;font-size:16px;font-weight:700">
+    🚀 Submit my claim →
   </button>
 </div>
 
@@ -2622,13 +2622,7 @@ function s1EnableContinue(){
   if(s2area){ s2area.style.borderColor='var(--teal)'; s2area.style.boxShadow='0 0 0 3px rgba(13,148,136,.15)'; }
 }
 function s1TryEnableContinue(){
-  var btn = document.getElementById('s1-continue-btn');
-  var both = window._s1CardOk && window._s2ReceiptOk;
-  if(btn) {
-    btn.disabled = !both;
-    btn.textContent = both ? '🚀 Submit my claim →' : (window._s1CardOk ? 'Next: confirm your receipt →' : 'Step 1: confirm your insurance card');
-  }
-  // Show section badges
+  // Button always enabled — s1Submit does its own validation
   var b1 = document.getElementById('s1-section-badge');
   var b2 = document.getElementById('s2-section-badge');
   if(b1) b1.style.display = window._s1CardOk ? 'block' : 'none';
@@ -6613,26 +6607,24 @@ if (window.goTo) window.goTo(‘s-step1b’);
 };
 
 window.s1Submit = function s1Submit() {
-// Helper: safely read element value, unlocking readOnly first
-function val(id) {
-var el = document.getElementById(id);
-if (!el) return ‘’;
-el.readOnly = false;
-el.disabled = false;
-return (el.value || ‘’).trim();
-}
-// Collect all fields
-var provider = val(‘s1-ins-provider’) || (currentUser && currentUser.insurer) || ‘’;
-var member   = val(‘s1-ins-member’)   || (currentUser && currentUser.memberId) || ‘’;
-var group    = val(‘s1-ins-group’);
-var dentist  = val(‘s2-dentist’);
-var proc     = val(‘s2-proc’);
-var amountStr = val(‘s2-amount’);
-var amount   = parseFloat(amountStr) || 0;
-var date     = val(‘s2-date’);
-var city     = val(‘s2-city’);
+// Unlock ALL fields before reading (iOS readOnly bug)
+document.querySelectorAll(’#s-step1 input, #s-step1 select’).forEach(function(el){
+el.readOnly = false; el.disabled = false;
+});
 
-// Validate — scroll to first missing field
+var provider = (document.getElementById(‘s1-ins-provider’) || {}).value || ‘’;
+provider = provider.trim() || (currentUser && currentUser.insurer) || ‘’;
+
+var member   = ((document.getElementById(‘s1-ins-member’) || {}).value || ‘’).trim()
+|| (currentUser && currentUser.memberId) || ‘’;
+var group    = ((document.getElementById(‘s1-ins-group’)  || {}).value || ‘’).trim();
+var dentist  = ((document.getElementById(‘s2-dentist’)    || {}).value || ‘’).trim();
+var proc     = ((document.getElementById(‘s2-proc’)       || {}).value || ‘’).trim();
+var amount   = parseFloat((document.getElementById(‘s2-amount’) || {}).value) || 0;
+var date     = ((document.getElementById(‘s2-date’)       || {}).value || ‘’).trim();
+var city     = ((document.getElementById(‘s2-city’)       || {}).value || ‘’).trim();
+
+// Validate
 if (!provider) {
 var el = document.getElementById(‘s1-ins-provider’);
 if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
@@ -6653,19 +6645,15 @@ var el = document.getElementById(‘s2-amount’);
 if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
 return;
 }
-// Save to user
+
+// Save
 if (currentUser) {
-currentUser.insurer   = provider;
-currentUser.memberId  = member;
-currentUser.group     = group;
-currentUser.procedure = proc;
-currentUser.dentist   = dentist;
-currentUser.amount    = amount;
-currentUser.date      = date;
-currentUser.city      = city;
+currentUser.insurer = provider; currentUser.memberId = member;
+currentUser.group = group; currentUser.procedure = proc;
+currentUser.dentist = dentist; currentUser.amount = amount;
+currentUser.date = date; currentUser.city = city;
 }
-window._s1CardOk    = true;
-window._s2ReceiptOk = true;
+window._s1CardOk = true; window._s2ReceiptOk = true;
 if (window.goTo) window.goTo(‘s-processing’);
 try { runProcessing(); } catch(e) { console.error(‘runProcessing:’, e); }
 };
