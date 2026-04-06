@@ -6613,40 +6613,44 @@ if (window.goTo) window.goTo(‘s-step1b’);
 };
 
 window.s1Submit = function s1Submit() {
-// Collect insurance
-var provEl = document.getElementById(‘s1-ins-provider’);
-var memEl  = document.getElementById(‘s1-ins-member’);
-var grpEl  = document.getElementById(‘s1-ins-group’);
-if(provEl) provEl.readOnly = false;
-if(memEl)  memEl.readOnly  = false;
-var provider = (provEl && provEl.value.trim()) || (currentUser && currentUser.insurer) || ‘’;
-var member   = (memEl  && memEl.value.trim())  || (currentUser && currentUser.memberId) || ‘’;
-var group    = (grpEl  && grpEl.value.trim())  || ‘’;
-// Collect receipt
-var dentist = (document.getElementById(‘s2-dentist’) && document.getElementById(‘s2-dentist’).value.trim()) || ‘’;
-var proc    = (document.getElementById(‘s2-proc’) && document.getElementById(‘s2-proc’).value) || ‘’;
-var amount  = parseFloat(document.getElementById(‘s2-amount’) && document.getElementById(‘s2-amount’).value) || 0;
-var date    = (document.getElementById(‘s2-date’) && document.getElementById(‘s2-date’).value) || ‘’;
-var city    = (document.getElementById(‘s2-city’) && document.getElementById(‘s2-city’).value.trim()) || ‘’;
-// Validate
+// Helper: safely read element value, unlocking readOnly first
+function val(id) {
+var el = document.getElementById(id);
+if (!el) return ‘’;
+el.readOnly = false;
+el.disabled = false;
+return (el.value || ‘’).trim();
+}
+// Collect all fields
+var provider = val(‘s1-ins-provider’) || (currentUser && currentUser.insurer) || ‘’;
+var member   = val(‘s1-ins-member’)   || (currentUser && currentUser.memberId) || ‘’;
+var group    = val(‘s1-ins-group’);
+var dentist  = val(‘s2-dentist’);
+var proc     = val(‘s2-proc’);
+var amountStr = val(‘s2-amount’);
+var amount   = parseFloat(amountStr) || 0;
+var date     = val(‘s2-date’);
+var city     = val(‘s2-city’);
+
+// Validate — scroll to first missing field
 if (!provider) {
 var el = document.getElementById(‘s1-ins-provider’);
-if(el){ el.style.borderColor=’#ef4444’; el.focus(); el.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
 return;
 }
 if (!dentist) {
 var el = document.getElementById(‘s2-dentist’);
-if(el){ el.style.borderColor=’#ef4444’; el.focus(); el.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
 return;
 }
 if (!proc) {
 var el = document.getElementById(‘s2-proc’);
-if(el){ el.style.borderColor=’#ef4444’; el.focus(); el.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
 return;
 }
 if (!amount) {
 var el = document.getElementById(‘s2-amount’);
-if(el){ el.style.borderColor=’#ef4444’; el.focus(); el.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+if(el){ el.style.borderColor=’#ef4444’; el.scrollIntoView({behavior:‘smooth’,block:‘center’}); el.focus(); }
 return;
 }
 // Save to user
@@ -6663,7 +6667,7 @@ currentUser.city      = city;
 window._s1CardOk    = true;
 window._s2ReceiptOk = true;
 if (window.goTo) window.goTo(‘s-processing’);
-try { runProcessing(); } catch(e) {}
+try { runProcessing(); } catch(e) { console.error(‘runProcessing:’, e); }
 };
 
 window.runProcessingDone = function() {
