@@ -1532,7 +1532,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- ─── SUBMIT BUTTON ─── -->
 
 <div style="margin-top:20px;padding-bottom:8px">
-  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:56px;font-size:16px;font-weight:700" disabled>
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:56px;font-size:16px;font-weight:700">
     Step 1: confirm your insurance card
   </button>
 </div>
@@ -2660,7 +2660,8 @@ function s1TryEnableContinue(){
   var both = cardOk && receiptOk;
 
   if(btn) {
-    btn.disabled = !both;
+    // Never disable — always let user click and get validation feedback
+    btn.disabled = false;
     btn.textContent = both ? '🚀 Submit my claim →' : (cardOk ? 'Next: confirm your receipt →' : 'Step 1: confirm your insurance card');
   }
   // Show section badges
