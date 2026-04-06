@@ -2220,7 +2220,6 @@ function goTo(id, param) {
     var s2flds = document.getElementById('s2-fields'); if(s2flds) s2flds.style.display='none';
     var s1flds = document.getElementById('s1-fields'); if(s1flds) s1flds.style.display='none';
     var cbtn = document.getElementById('s1-continue-btn'); if(cbtn) cbtn.disabled=true;
-    var nbtn = document.getElementById('s1-next-btn'); if(nbtn) nbtn.disabled=true;
   }
   const navScreens = ['s-dashboard','s-claims','s-support','s-profile'];
   var bn = document.getElementById('bottom-nav');
@@ -2477,12 +2476,14 @@ function s1ShowExtracted(){
     var el=document.getElementById(id);
     if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.85';}
   });
-  // Show confirm banner so user can review before continuing
+  // Show confirm banner so user can still edit if needed
   var banner=document.getElementById('s1-confirm-banner');
   if(banner){
     banner.style.display='flex';
     setTimeout(function(){banner.scrollIntoView({behavior:'smooth',block:'nearest'});},200);
   }
+  // Enable the Continue button
+  s1EnableContinue();
   s1Scanned=true;
 }
 function s1Reset(){
@@ -2509,29 +2510,26 @@ function s1Reset(){
   s1TryEnableContinue();
 }
 function s1UseCard(){
-  var provEl=document.getElementById('s1-ins-provider');
-  var memEl=document.getElementById('s1-ins-member');
-  if(provEl) provEl.readOnly=false;
-  if(memEl)  memEl.readOnly=false;
-  var provider=(provEl&&provEl.value.trim())||(currentUser&&currentUser.insurer)||'';
-  var member=(memEl&&memEl.value.trim())||(currentUser&&currentUser.memberId)||'';
-  if(currentUser){
-    if(provider) currentUser.insurer=provider;
-    if(member)   currentUser.memberId=member;
-  }
+  var provider=document.getElementById('s1-ins-provider')?.value.trim()||'';
+  var member=document.getElementById('s1-ins-member')?.value.trim()||'';
+  if(!provider||!member){return;}
+  if(currentUser){currentUser.insurer=provider;currentUser.memberId=member;}
+  // Lock the visible manual-entry fields
   ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
     var el=document.getElementById(id);
     if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.8';}
   });
+  // Hide confirm banner, mark done
   var banner=document.getElementById('s1-confirm-banner');
   if(banner) banner.style.display='none';
   var badge=document.getElementById('s1-badge');
   if(badge) badge.style.display='block';
+  // Enable Continue button
   window._s1CardOk=true;
   var nextBtn=document.getElementById('s1-next-btn');
   if(nextBtn) nextBtn.disabled=false;
+  s1EnableContinue();
 }
-
 function s1EditFields(){
   // Unlock the visible manual-entry fields
   ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
@@ -2611,13 +2609,15 @@ function s1CheckManual(){
   var banner = document.getElementById('s1-confirm-banner');
   var badge  = document.getElementById('s1-badge');
   if(p && m){
+    // Only show the confirm banner if the card hasn't already been confirmed
     if(!window._s1CardOk){
-      if(banner){
-        banner.style.display='flex';
-        setTimeout(function(){ banner.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 150);
+      if(banner) {
+        banner.style.display = 'flex';
+        setTimeout(function(){ banner.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 150);
       }
     }
   } else {
+    // Fields cleared — reset confirmed state and hide banner/badge
     window._s1CardOk = false;
     if(banner) banner.style.display = 'none';
     if(badge)  badge.style.display  = 'none';
@@ -2649,15 +2649,15 @@ function s1Continue(){
     return;
   }
 
-  // Collect insurance data — unlock fields first (iOS Safari readOnly returns empty)
-  var p1=document.getElementById('s1-ins-provider'); if(p1) p1.readOnly=false;
-  var m1=document.getElementById('s1-ins-member');   if(m1) m1.readOnly=false;
-  var provider = (p1&&p1.value.trim()) || (currentUser&&currentUser.insurer) || '';
-  var member   = (m1&&m1.value.trim()) || (currentUser&&currentUser.memberId) || '';
+  // Collect insurance data
+  var provider = (document.getElementById('s1-ins-provider') && document.getElementById('s1-ins-provider').value.trim()) ||
+                 (document.getElementById('s1-m-provider') && document.getElementById('s1-m-provider').value.trim()) || '';
+  var member   = (document.getElementById('s1-ins-member') && document.getElementById('s1-ins-member').value.trim()) ||
+                 (document.getElementById('s1-m-member') && document.getElementById('s1-m-member').value.trim()) || '';
 
   if (currentUser) {
-    currentUser.insurer   = provider || currentUser.insurer;
-    currentUser.memberId  = member  || currentUser.memberId;
+    currentUser.insurer   = provider;
+    currentUser.memberId  = member;
     currentUser.procedure = proc;
     currentUser.dentist   = dentist;
     currentUser.amount    = amount;
@@ -6553,25 +6553,21 @@ bigNum.dataset.current = target;
 };
 
 window.s1GoToReceipt = function s1GoToReceipt() {
+// Read values — unlock fields first to ensure iOS returns value correctly
 var provEl = document.getElementById(‘s1-ins-provider’);
 var memEl  = document.getElementById(‘s1-ins-member’);
 var grpEl  = document.getElementById(‘s1-ins-group’);
+// Temporarily ensure readOnly is off so .value is readable on all browsers
 if(provEl) provEl.readOnly = false;
 if(memEl)  memEl.readOnly  = false;
-if(grpEl)  grpEl.readOnly  = false;
 var provider = (provEl && provEl.value.trim()) || (currentUser && currentUser.insurer) || ‘’;
 var member   = (memEl  && memEl.value.trim())  || (currentUser && currentUser.memberId) || ‘’;
 var group    = (grpEl  && grpEl.value.trim())  || ‘’;
-if (currentUser) {
-if(provider) currentUser.insurer = provider;
-if(member)   currentUser.memberId = member;
-if(group)    currentUser.group = group;
-}
-provider = provider || (currentUser && currentUser.insurer) || ‘’;
 if (!provider) {
-if(provEl){ provEl.style.borderColor=‘var(–red)’; provEl.focus(); }
+if(provEl){ provEl.style.borderColor=‘var(–red)’; provEl.placeholder=‘Required — e.g. Delta Dental’; }
 return;
 }
+if (currentUser) { currentUser.insurer = provider; currentUser.memberId = member; currentUser.group = group; }
 window._s1CardOk = true;
 if (window.goTo) window.goTo(‘s-step1b’);
 };
