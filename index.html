@@ -1380,7 +1380,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Continue button -->
 
 <div style="margin-top:16px">
-  <button class="btn-primary" id="s1-next-btn" onclick="window.s1GoToReceipt&&window.s1GoToReceipt()" style="height:52px;font-size:15px">
+  <button class="btn-primary" id="s1-next-btn" onclick="window.s1GoToReceipt&&window.s1GoToReceipt()" style="height:52px;font-size:15px" disabled>
     Continue — Add Receipt →
   </button>
 </div>
@@ -2464,12 +2464,27 @@ function s1ShowExtracted(){
   // Show Auto-filled badge in scan panel header
   var autoBadge=document.getElementById('s1-auto');
   if(autoBadge) autoBadge.style.display='inline';
-  // Show confirm banner and scroll to it
+  // Auto-confirm after scan — mark card OK and show success state
+  if(currentUser){
+    var pv=document.getElementById('s1-ins-provider');
+    var mv=document.getElementById('s1-ins-member');
+    if(pv&&mv){ currentUser.insurer=pv.value; currentUser.memberId=mv.value; }
+  }
+  window._s1CardOk=true;
+  // Lock fields to prevent accidental edits
+  ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.85';}
+  });
+  // Show confirm banner so user can still edit if needed
   var banner=document.getElementById('s1-confirm-banner');
   if(banner){
     banner.style.display='flex';
     setTimeout(function(){banner.scrollIntoView({behavior:'smooth',block:'nearest'});},200);
   }
+  // Enable the Continue button right away
+  var nextBtn=document.getElementById('s1-next-btn');
+  if(nextBtn) nextBtn.disabled=false;
   s1Scanned=true;
 }
 function s1Reset(){
@@ -2510,6 +2525,10 @@ function s1UseCard(){
   if(banner) banner.style.display='none';
   var badge=document.getElementById('s1-badge');
   if(badge) badge.style.display='block';
+  // Enable Continue button
+  window._s1CardOk=true;
+  var nextBtn=document.getElementById('s1-next-btn');
+  if(nextBtn) nextBtn.disabled=false;
   s1EnableContinue();
 }
 function s1EditFields(){
@@ -2590,9 +2609,17 @@ window.s2ConfirmForStep1=s2ConfirmForStep1;
 window.s1EnableContinue=s1EnableContinue;
 window.s1TryEnableContinue=s1TryEnableContinue;
 function s1CheckManual(){
-  const p = document.getElementById('s1-m-provider')?.value.trim();
-  const m = document.getElementById('s1-m-member')?.value.trim();
-  if(p && m) s1EnableContinue();
+  const p = document.getElementById('s1-ins-provider')?.value.trim();
+  const m = document.getElementById('s1-ins-member')?.value.trim();
+  if(p && m){
+    window._s1CardOk=true;
+    var nextBtn=document.getElementById('s1-next-btn');
+    if(nextBtn) nextBtn.disabled=false;
+  } else {
+    window._s1CardOk=false;
+    var nextBtn=document.getElementById('s1-next-btn');
+    if(nextBtn) nextBtn.disabled=true;
+  }
 }
 function s1ToggleManual(){const m=document.getElementById('s1-manual');const open=m.style.display==='block';m.style.display=open?'none':'block';document.getElementById('s1-manual-toggle').textContent=open?'✏️ Enter manually':'× Hide manual entry';if(!open)m.scrollIntoView({behavior:'smooth',block:'start'})}
 function s1Continue(){
