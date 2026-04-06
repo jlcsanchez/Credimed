@@ -1280,241 +1280,205 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- ── LIGHTBOX ──────────────────────────── -->
 
+<!-- ══════════════════════════════════════
+     SCREEN: STEP 1a — INSURANCE CARD
+══════════════════════════════════════ -->
+
 <div class="screen" id="s-step1" style="background:var(--bg)">
   <div class="top-bar">
     <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">Step 1 · 25% done</div></div>
     <div class="prog-row"><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
   </div>
   <div class="hero-dark">
-    <h2>📋 Upload your documents</h2>
-    <p>Take a photo of each document — we'll read everything automatically.</p>
+    <h2>💳 Insurance Card</h2>
+    <p>Enter your US PPO insurance details — Member ID &amp; Group #</p>
   </div>
   <div class="body-card" style="padding-bottom:100px">
 
-<!-- ══ SECTION 1: INSURANCE CARD ══ -->
-
-<div style="margin-bottom:24px">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-    <div style="width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;flex-shrink:0">1</div>
-    <div style="flex:1">
-      <div style="font-size:15px;font-weight:700;color:var(--slate)">Insurance Card</div>
-      <div style="font-size:11px;color:var(--slate-light)">Front side only · Member ID & Group #</div>
-    </div>
-    <div id="s1-badge" style="display:none;background:#dcfce7;color:#16a34a;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">✓ Done</div>
-  </div>
-
-  <!-- Upload / preview -->
-
-  <!-- Upload area — active/next indicator -->
-
-  <div id="s1-ph" data-oc="triggerUpload('s1-camera')" onclick="window.triggerUpload&&window.triggerUpload('s1-camera')" style="display:flex;gap:0;margin-bottom:10px;background:white;border:2.5px dashed var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .3s,box-shadow .3s" id="s1-upload-area">
-    <div style="flex:1;padding:18px 14px;display:flex;align-items:center;gap:14px">
-      <div style="width:44px;height:44px;background:var(--teal-xlight);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">💳</div>
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--slate);margin-bottom:2px">Tap to add your insurance card</div>
-        <div style="font-size:11px;color:var(--slate-light)">📷 Camera &nbsp;·&nbsp; 🖼 Photo &nbsp;·&nbsp; 📄 PDF</div>
-      </div>
-    </div>
-    <div style="width:44px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0">
-      <span style="color:white;font-size:18px">→</span>
-    </div>
-  </div>
-  <!-- Photo preview after scan -->
-  <div id="s1-preview" style="display:none;border-radius:12px;overflow:hidden;margin-bottom:10px;position:relative;border:2px solid var(--teal)">
-    <img id="s1-img" style="width:100%;height:150px;object-fit:cover;display:block">
-    <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:8px 12px">
-      <div style="font-size:11px;color:white;font-weight:600" id="s1-vis-label">📷 Insurance card uploaded</div>
-    </div>
-    <button data-oc="s1Reset()" onclick="window.s1Reset&&window.s1Reset()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.4);border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:white;cursor:pointer">✕ Remove</button>
-    <div class="scan-overlay" id="s1-scan-overlay" style="display:none"><div class="scan-line"></div></div>
-    <div id="s1-vis" style="display:none"></div>
-    <div class="ins-card-vis" id="s1-vis" style="display:none;height:150px">
-      <div class="ins-provider" id="s1-provider">Your Insurance</div>
-      <div class="ins-fields">
-        <div class="ins-field"><div class="lbl">Member ID</div><div class="val" id="s1-member">—</div></div>
-        <div class="ins-field"><div class="lbl">Group #</div><div class="val" id="s1-group">—</div></div>
-        <div class="ins-field"><div class="lbl">Name</div><div class="val" id="s1-name-vis">—</div></div>
-        <div class="ins-field"><div class="lbl">Plan</div><div class="val" id="s1-plan-vis">—</div></div>
-      </div>
-      <div class="scan-overlay" id="s1-scan-overlay" style="display:none"><div class="scan-line"></div></div>
-    </div>
-  </div>
-
-  <!-- OCR bar -->
-
-  <div class="ocr-card" id="s1-ocr"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title" id="s1-ocr-title">Reading card...</div><div class="ocr-sub-txt" id="s1-ocr-sub">Analyzing image</div><div class="ocr-progress"><div class="ocr-fill" id="s1-ocr-fill"></div></div></div></div>
-
-  <!-- Editable fields (shown after OCR, locked until Edit) -->
-
-  <div id="s1-fields" style="display:none">
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-head">
-        <h3>🏥 Insurance Details</h3>
-        <div class="auto-badge" id="s1-auto">✓ Auto-filled</div>
-      </div>
-      <div class="card-body" id="s1-card-body">
-        <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-ins-provider" placeholder="e.g. Delta Dental, Aetna..." data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
-        <div class="field-row">
-          <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-ins-member" placeholder="Member ID" data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
-          <div class="field"><label>Group #</label><input type="text" id="s1-ins-group" placeholder="Group #"></div>
-        </div>
-      </div>
-    </div>
-    <!-- Confirm banner -->
-    <div id="s1-confirm-banner" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:14px 16px;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
-      <div>
-        <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px">✅ Details look correct?</div>
-        <div style="font-size:11px;color:#6b7280">Review and confirm to continue</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-shrink:0">
-        <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" data-oc="s1EditFields()" onclick="window.s1EditFields&&window.s1EditFields()">✏️ Edit</button>
-        <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" data-oc="s1UseCard()" onclick="window.s1UseCard&&window.s1UseCard()">✓ Confirm →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Manual entry fallback -->
-
-  <div style="text-align:center;margin-top:6px">
-    <span id="s1-manual-toggle" data-oc="s1ToggleManual()" onclick="window.s1ToggleManual&&window.s1ToggleManual()" style="font-size:12px;color:var(--teal);font-weight:600;cursor:pointer">✏️ Enter manually instead</span>
-  </div>
-  <div id="s1-manual" style="display:none;margin-top:10px">
-    <div class="card"><div class="card-head"><h3>Enter manually</h3></div><div class="card-body">
-      <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-m-provider" placeholder="e.g. Delta Dental, Aetna..." data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
-      <div class="field-row">
-        <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-m-member" placeholder="Member ID" data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
-        <div class="field"><label>Group #</label><input type="text" id="s1-m-group" placeholder="Group #"></div>
-      </div>
-    </div></div>
-  </div>
-</div>
-
-<!-- ══ SECTION 2: DENTAL RECEIPT ══ -->
-
-<div id="s2-section" style="margin-bottom:20px;display:none">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-    <div style="width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;flex-shrink:0">2</div>
-    <div style="flex:1">
-      <div style="font-size:15px;font-weight:700;color:var(--slate)">Dental Receipt</div>
-      <div style="font-size:11px;color:var(--slate-light)">Invoice or receipt from your dentist</div>
-    </div>
-    <div id="s2-badge" style="display:none;background:#dcfce7;color:#16a34a;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">✓ Done</div>
-  </div>
-
-  <!-- Upload / preview -->
-
-  <!-- Upload area -->
-
-  <div id="s2-empty" data-oc="triggerUpload('s2-camera')" onclick="window.triggerUpload&&window.triggerUpload('s2-camera')" style="display:flex;gap:0;margin-bottom:10px;background:white;border:2.5px dashed var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .3s,box-shadow .3s">
-    <div style="flex:1;padding:18px 14px;display:flex;align-items:center;gap:14px">
-      <div style="width:44px;height:44px;background:var(--teal-xlight);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🧾</div>
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--slate);margin-bottom:2px">Tap to add your dental receipt</div>
-        <div style="font-size:11px;color:var(--slate-light)">📷 Camera &nbsp;·&nbsp; 🖼 Photo &nbsp;·&nbsp; 📄 PDF</div>
-      </div>
-    </div>
-    <div style="width:44px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0">
-      <span style="color:white;font-size:18px">→</span>
-    </div>
-  </div>
-
-  <!-- Receipt visual card (shown after upload) -->
-
-  <div id="s2-file-state" style="display:none;height:150px;border-radius:12px;overflow:hidden;margin-bottom:10px;position:relative">
-    <!-- If image, show it; if PDF show receipt card -->
-    <img id="s2-img" style="display:none;width:100%;height:150px;object-fit:cover">
-    <div id="s2-receipt-card" style="display:none;width:100%;height:150px;background:linear-gradient(135deg,#1e3a5f 0%,#0D9488 100%);padding:14px 16px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,.06);border-radius:50%"></div>
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px">DENTAL RECEIPT</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div><div style="font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:3px">Dentist</div><div style="font-size:12px;font-weight:600;color:white" id="s2-rc-dentist">—</div></div>
-        <div><div style="font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:3px">Procedure</div><div style="font-size:12px;font-weight:600;color:white" id="s2-rc-proc">—</div></div>
-        <div><div style="font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:3px">Amount</div><div style="font-size:14px;font-weight:700;color:#5eead4" id="s2-rc-amount">—</div></div>
-        <div><div style="font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:3px">Date</div><div style="font-size:12px;font-weight:600;color:white" id="s2-rc-date">—</div></div>
-      </div>
-    </div>
-    <button data-oc="s2Reset()" onclick="window.s2Reset&&window.s2Reset()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.4);border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:white;cursor:pointer">✕ Remove</button>
-  </div>
-
-  <!-- OCR bar -->
-
-  <div class="ocr-card" id="s2-ocr"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title" id="s2-ocr-title">Reading receipt...</div><div class="ocr-sub-txt" id="s2-ocr-sub">Extracting details</div><div class="ocr-progress"><div class="ocr-fill" id="s2-ocr-fill"></div></div></div></div>
-
-  <!-- Editable fields (shown after OCR) -->
-
-  <div id="s2-fields" style="display:none">
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-head">
-        <h3>🦷 Treatment Details</h3>
-        <div class="auto-badge" id="s2-auto">✓ Auto-filled</div>
-      </div>
-      <div class="card-body" id="s2-card-body">
-        <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="e.g. Dr. Pérez — Los Cabos Dental" data-oi="s2CheckFields()" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
-        <div class="field-row">
-          <div class="field"><label>Treatment Date <span class="req">*</span></label><input type="date" id="s2-date"></div>
-          <div class="field"><label>Procedure <span class="req">*</span></label>
-            <select id="s2-proc" data-och="s2CheckFields()">
-              <option value="">Select...</option><option>Crown</option><option>Implant</option><option>Root Canal</option><option>Extraction</option><option>Bridge</option><option>Cleaning</option><option>Whitening</option><option>Veneer</option><option>Partial Denture</option><option>Other</option>
-            </select>
-          </div>
-        </div>
-        <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label><div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" data-oi="s2CheckFields()" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)"></div></div>
-
 ```
-<!-- ── LIVE REFUND ESTIMATOR PILL ── -->
-<div id="live-refund-pill" style="display:none;background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:14px 16px;margin-top:2px;margin-bottom:4px">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-    <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">💰 Estimated Refund</div>
-    <div style="font-size:10px;color:rgba(255,255,255,.3)">75% OON avg.</div>
-  </div>
-  <div style="font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:10px" id="pill-big-number">$0</div>
-  <div style="display:flex;flex-direction:column;gap:5px">
-    <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:7px">
-      <span style="font-size:12px;color:rgba(255,255,255,.5)">You paid</span>
-      <span style="font-size:12px;font-weight:700;color:white" id="pill-paid">$0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.25);border-radius:7px">
-      <span style="font-size:12px;color:#5eead4">Insurance reimburses (~75%)</span>
-      <span style="font-size:12px;font-weight:700;color:#5eead4" id="pill-insures">$0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:7px">
-      <span style="font-size:12px;color:rgba(255,255,255,.4)">Credimed fee (10%)</span>
-      <span style="font-size:12px;color:rgba(255,255,255,.4)" id="pill-fee">−$0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:7px 10px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:7px">
-      <span style="font-size:13px;font-weight:700;color:#4ade80">Your net refund</span>
-      <span style="font-size:13px;font-weight:700;color:#4ade80" id="pill-net">$0</span>
+<!-- Optional: take a photo -->
+<div id="s1-ph" data-oc="triggerUpload('s1-camera')" onclick="window.triggerUpload&&window.triggerUpload('s1-camera')" style="display:flex;gap:0;margin-bottom:16px;background:white;border:2px dashed var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .3s">
+  <div style="flex:1;padding:14px 16px;display:flex;align-items:center;gap:12px">
+    <div style="width:40px;height:40px;background:var(--teal-xlight);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📷</div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--slate);margin-bottom:1px">Tap to scan your card (optional)</div>
+      <div style="font-size:11px;color:var(--slate-light)">We'll read the details automatically</div>
     </div>
   </div>
-  <div style="margin-top:7px;font-size:10px;color:rgba(255,255,255,.25);text-align:center">Estimate · depends on your deductible &amp; annual max</div>
+  <div style="width:40px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0">
+    <span style="color:white;font-size:16px">→</span>
+  </div>
 </div>
-<div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
-```
 
+<!-- Photo preview after scan -->
+<div id="s1-preview" style="display:none;border-radius:12px;overflow:hidden;margin-bottom:12px;position:relative;border:2px solid var(--teal)">
+  <img id="s1-img" style="width:100%;height:120px;object-fit:cover;display:block">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:6px 12px"><div style="font-size:11px;color:white;font-weight:600" id="s1-vis-label">📷 Insurance card uploaded</div></div>
+  <button data-oc="s1Reset()" onclick="window.s1Reset&&window.s1Reset()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.4);border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:white;cursor:pointer">✕ Remove</button>
+  <div class="scan-overlay" id="s1-scan-overlay" style="display:none"><div class="scan-line"></div></div>
+</div>
+
+<!-- OCR bar -->
+<div class="ocr-card" id="s1-ocr"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title" id="s1-ocr-title">Reading card...</div><div class="ocr-sub-txt" id="s1-ocr-sub">Analyzing image</div><div class="ocr-progress"><div class="ocr-fill" id="s1-ocr-fill"></div></div></div></div>
+
+<!-- Manual entry — shown by default -->
+<div class="card" id="s1-manual-card">
+  <div class="card-head"><h3>🏥 Insurance Details</h3><div class="auto-badge" id="s1-auto" style="display:none">✓ Auto-filled</div></div>
+  <div class="card-body">
+    <div class="field">
+      <label>Insurance Provider <span class="req">*</span></label>
+      <input type="text" id="s1-ins-provider" placeholder="e.g. Delta Dental, Aetna, Cigna..." data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()">
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-ins-member" placeholder="Member ID" data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
+      <div class="field"><label>Group #</label><input type="text" id="s1-ins-group" placeholder="Group #"></div>
+    </div>
   </div>
 </div>
+
+<!-- Hidden inputs for backward compat -->
+<div id="s1-fields" style="display:none"></div>
+<div id="s1-manual" style="display:none">
+  <div class="card"><div class="card-head"><h3>Enter manually</h3></div><div class="card-body">
+    <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-m-provider" placeholder="e.g. Delta Dental, Aetna..."></div>
+    <div class="field-row">
+      <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-m-member" placeholder="Member ID"></div>
+      <div class="field"><label>Group #</label><input type="text" id="s1-m-group" placeholder="Group #"></div>
+    </div>
+  </div></div>
+</div>
+
 <!-- Confirm banner -->
-<div id="s2-confirm-banner" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:14px 16px;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
-  <div>
-    <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px">✅ Details look correct?</div>
-    <div style="font-size:11px;color:#6b7280">Review and confirm to continue</div>
+<div id="s1-confirm-banner" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:14px 16px;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;margin-bottom:10px">
+  <div><div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px">✅ Details look correct?</div><div style="font-size:11px;color:#6b7280">Review and confirm to continue</div></div>
+  <div style="display:flex;gap:8px;flex-shrink:0">
+    <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" data-oc="s1EditFields()" onclick="window.s1EditFields&&window.s1EditFields()">✏️ Edit</button>
+    <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" data-oc="s1UseCard()" onclick="window.s1UseCard&&window.s1UseCard()">✓ Confirm →</button>
   </div>
+</div>
+
+<!-- Continue button -->
+<div style="margin-top:16px">
+  <button class="btn-primary" id="s1-next-btn" onclick="window.s1GoToReceipt&&window.s1GoToReceipt()" style="height:52px;font-size:15px">
+    Continue — Add Receipt →
+  </button>
+</div>
+
+<div id="s1-badge" style="display:none"></div>
+```
+
+  </div>
+
+  <input type="file" id="s1-camera" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
+  <input type="file" id="s1-upload" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: STEP 1b — DENTAL RECEIPT
+══════════════════════════════════════ -->
+
+<div class="screen" id="s-step1b" style="background:var(--bg)">
+  <div class="top-bar">
+    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">Step 2 · 50% done</div></div>
+    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
+  </div>
+  <div class="hero-dark">
+    <h2>🧾 Dental Receipt</h2>
+    <p>Upload your receipt or enter the treatment details manually</p>
+  </div>
+  <div class="body-card" style="padding-bottom:100px">
+
+```
+<!-- Upload area -->
+<div id="s2-empty" data-oc="triggerUpload('s2-camera')" onclick="window.triggerUpload&&window.triggerUpload('s2-camera')" style="display:flex;gap:0;margin-bottom:16px;background:white;border:2px dashed var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .3s">
+  <div style="flex:1;padding:14px 16px;display:flex;align-items:center;gap:12px">
+    <div style="width:40px;height:40px;background:var(--teal-xlight);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📷</div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--slate);margin-bottom:1px">Tap to scan your receipt (optional)</div>
+      <div style="font-size:11px;color:var(--slate-light)">📷 Camera &nbsp;·&nbsp; 🖼 Photo &nbsp;·&nbsp; 📄 PDF</div>
+    </div>
+  </div>
+  <div style="width:40px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0"><span style="color:white;font-size:16px">→</span></div>
+</div>
+
+<!-- Photo preview after scan -->
+<div id="s2-file-state" style="display:none;border-radius:12px;overflow:hidden;margin-bottom:12px;position:relative;border:2px solid var(--teal);height:120px">
+  <img id="s2-img" style="display:none;width:100%;height:120px;object-fit:cover">
+  <div id="s2-receipt-card" style="display:none;width:100%;height:120px;background:linear-gradient(135deg,#1e3a5f,#0D9488);padding:12px 14px;position:relative;overflow:hidden">
+    <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:8px">DENTAL RECEIPT</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div><div style="font-size:8px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px">Dentist</div><div style="font-size:11px;font-weight:600;color:white" id="s2-rc-dentist">—</div></div>
+      <div><div style="font-size:8px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px">Procedure</div><div style="font-size:11px;font-weight:600;color:white" id="s2-rc-proc">—</div></div>
+      <div><div style="font-size:8px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px">Amount</div><div style="font-size:13px;font-weight:700;color:#5eead4" id="s2-rc-amount">—</div></div>
+      <div><div style="font-size:8px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px">Date</div><div style="font-size:11px;font-weight:600;color:white" id="s2-rc-date">—</div></div>
+    </div>
+  </div>
+  <button data-oc="s2Reset()" onclick="window.s2Reset&&window.s2Reset()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.4);border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:white;cursor:pointer">✕ Remove</button>
+</div>
+
+<!-- OCR bar -->
+<div class="ocr-card" id="s2-ocr"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title" id="s2-ocr-title">Reading receipt...</div><div class="ocr-sub-txt" id="s2-ocr-sub">Extracting details</div><div class="ocr-progress"><div class="ocr-fill" id="s2-ocr-fill"></div></div></div></div>
+
+<!-- Manual entry — shown by default -->
+<div class="card" id="s2-manual-card">
+  <div class="card-head"><h3>🦷 Treatment Details</h3><div class="auto-badge" id="s2-auto" style="display:none">✓ Auto-filled</div></div>
+  <div class="card-body" id="s2-card-body">
+    <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="e.g. Dr. Pérez — Los Cabos Dental" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
+    <div class="field-row">
+      <div class="field"><label>Treatment Date</label><input type="date" id="s2-date"></div>
+      <div class="field"><label>Procedure <span class="req">*</span></label>
+        <select id="s2-proc" onchange="window.s2CheckFields&&window.s2CheckFields()">
+          <option value="">Select...</option><option>Crown</option><option>Implant</option><option>Root Canal</option><option>Extraction</option><option>Bridge</option><option>Cleaning</option><option>Whitening</option><option>Veneer</option><option>Partial Denture</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label>
+      <div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)"></div>
+    </div>
+
+    <!-- Live refund pill -->
+    <div id="live-refund-pill" style="display:none;background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:12px 14px;margin-top:4px;margin-bottom:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">💰 Estimated Refund</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3)">~75% OON avg.</div>
+      </div>
+      <div style="font-family:'Playfair Display',Georgia,serif;font-size:36px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:8px" id="pill-big-number">$0</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.5)">You paid</span><span style="font-size:12px;font-weight:700;color:white" id="pill-paid">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.25);border-radius:6px"><span style="font-size:12px;color:#5eead4">Insurance reimburses (~75%)</span><span style="font-size:12px;font-weight:700;color:#5eead4" id="pill-insures">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.4)">Credimed fee (10%)</span><span style="font-size:12px;color:rgba(255,255,255,.4)" id="pill-fee">−$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 9px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:6px"><span style="font-size:13px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:13px;font-weight:700;color:#4ade80" id="pill-net">$0</span></div>
+      </div>
+    </div>
+
+    <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
+  </div>
+</div>
+
+<!-- Hidden for compat -->
+<div id="s2-fields" style="display:none"></div>
+
+<!-- Confirm banner -->
+<div id="s2-confirm-banner" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:14px 16px;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;margin-bottom:10px">
+  <div><div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px">✅ Details look correct?</div><div style="font-size:11px;color:#6b7280">Review and confirm to continue</div></div>
   <div style="display:flex;gap:8px;flex-shrink:0">
     <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" data-oc="s2EditFields()" onclick="window.s2EditFields&&window.s2EditFields()">✏️ Edit</button>
     <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" data-oc="s2Confirm()" onclick="window.s2Confirm&&window.s2Confirm()">✓ Confirm →</button>
   </div>
 </div>
 <div class="err-banner" id="s2-err"><span>⚠️</span><span id="s2-err-txt"></span></div>
+<div id="s2-badge" style="display:none"></div>
 
-  </div>
+<!-- Continue button -->
+<div style="margin-top:16px">
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px">
+    See my refund estimate →
+  </button>
 </div>
+```
 
   </div>
 
-  <!-- Continue button removed -->
-
-  <input type="file" id="s1-camera" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
-  <input type="file" id="s1-upload" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
   <input type="file" id="s2-camera" accept="image/*" data-och="s2HandleFile(this)" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
   <input type="file" id="s2-upload" accept="image/*,application/pdf" data-och="s2HandleFile(this)" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
 </div>
@@ -1525,7 +1489,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-processing" style="background:linear-gradient(160deg,#0f172a 0%,#134e4a 60%,#0f172a 100%);display:flex;flex-direction:column">
 <div id="proc-phase1" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;text-align:center">
-  <div style="margin-bottom:18px;filter:drop-shadow(0 4px 20px rgba(13,148,136,.4))"><svg width="68" height="68" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
+  <div style="margin-bottom:18px;filter:drop-shadow(0 4px 20px rgba(13,148,136,.4))"><svg width="68" height="68" viewBox="0 0 72 72"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
   <div style="font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:700;color:white;margin-bottom:4px">Calculating your refund</div>
   <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:28px" id="proc-sub">Reviewing your coverage...</div>
   <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px">
@@ -1547,7 +1511,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="pb4" style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:14px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:14px;font-weight:700;color:#4ade80" id="pb4-val">$0</span></div>
     <div id="proc-cdt-row" style="display:flex;justify-content:space-between;padding:7px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:11px;color:rgba(255,255,255,.3)">CDT Code assigned</span><span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:1px 8px;border-radius:5px" id="proc-cdt-val">D2750</span></div>
   </div>
-  <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" data-oc="goTo('s-step3')" onclick="window.goTo&&window.goTo('s-step3')">Yes — Start my claim →</button>
+  <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" onclick="window.goTo&&window.goTo('s-step3')">Yes — Start my claim →</button>
   <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">10% only when you get paid · No win, no fee</div>
 </div>
 </div>
@@ -2181,7 +2145,7 @@ function goTo(id, param) {
   // Update theme-color to match screen background
   var tc = document.querySelector('meta[name=theme-color]');
   if(tc){
-    var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step2','s-step3','s-step4','s-step5','s-refund','s-ready'];
+    var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step1b','s-step2','s-step3','s-step4','s-refund','s-ready'];
     tc.setAttribute('content', darkScreens.includes(id) ? '#0a0f1e' : '#ffffff');
   }
   if (id === 's-step4') { try { initContract(); } catch(e){} }
@@ -2564,8 +2528,6 @@ function s2ConfirmForStep1(){
 function s1EnableContinue(){
   window._s1CardOk=true;
   s1TryEnableContinue();
-  var s2 = document.getElementById('s2-section');
-  if (s2) { s2.style.display='block'; setTimeout(function(){ s2.scrollIntoView({behavior:'smooth',block:'start'}); }, 150); }
   // Highlight s2 upload as next step
   var s2area=document.getElementById('s2-empty');
   if(s2area){ s2area.style.borderColor='var(--teal)'; s2area.style.boxShadow='0 0 0 3px rgba(13,148,136,.15)'; }
@@ -2593,18 +2555,51 @@ function s1CheckManual(){
 }
 function s1ToggleManual(){const m=document.getElementById('s1-manual');const open=m.style.display==='block';m.style.display=open?'none':'block';document.getElementById('s1-manual-toggle').textContent=open?'✏️ Enter manually':'× Hide manual entry';if(!open)m.scrollIntoView({behavior:'smooth',block:'start'})}
 function s1Continue(){
-  const provider=document.getElementById('s1-ins-provider').value.trim()||document.getElementById('s1-m-provider')?.value.trim()||'';
-  const member=document.getElementById('s1-ins-member').value.trim()||document.getElementById('s1-m-member')?.value.trim()||'';
-  if(currentUser){currentUser.insurer=provider;currentUser.memberId=member}
-  // Get receipt data
-  var dentist=document.getElementById('s2-dentist')?.value.trim()||'';
-  var proc=document.getElementById('s2-proc')?.value||'';
-  var amount=parseFloat(document.getElementById('s2-amount')?.value)||0;
-  var date=document.getElementById('s2-date')?.value||'';
-  var city=document.getElementById('s2-city')?.value.trim()||'';
-  if(currentUser){currentUser.procedure=proc;currentUser.dentist=dentist;currentUser.amount=amount;currentUser.date=date;} try{updateLiveRefund(amount);}catch(e){}
-  goTo('s-processing'); try { runProcessing(); } catch(e) {}
+  // Collect receipt data
+  var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
+  var proc    = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
+  var amount  = parseFloat(document.getElementById('s2-amount') && document.getElementById('s2-amount').value) || 0;
+  var date    = (document.getElementById('s2-date') && document.getElementById('s2-date').value) || '';
+  var city    = (document.getElementById('s2-city') && document.getElementById('s2-city').value.trim()) || '';
+
+  if (!dentist) {
+    var inp = document.getElementById('s2-dentist');
+    if (inp) { inp.style.borderColor='var(--red)'; inp.focus(); }
+    return;
+  }
+  if (!proc) {
+    var sel = document.getElementById('s2-proc');
+    if (sel) { sel.style.borderColor='var(--red)'; sel.focus(); }
+    return;
+  }
+  if (!amount) {
+    var amtInp = document.getElementById('s2-amount');
+    if (amtInp) { amtInp.style.borderColor='var(--red)'; amtInp.focus(); }
+    return;
+  }
+
+  // Collect insurance data
+  var provider = (document.getElementById('s1-ins-provider') && document.getElementById('s1-ins-provider').value.trim()) ||
+                 (document.getElementById('s1-m-provider') && document.getElementById('s1-m-provider').value.trim()) || '';
+  var member   = (document.getElementById('s1-ins-member') && document.getElementById('s1-ins-member').value.trim()) ||
+                 (document.getElementById('s1-m-member') && document.getElementById('s1-m-member').value.trim()) || '';
+
+  if (currentUser) {
+    currentUser.insurer   = provider;
+    currentUser.memberId  = member;
+    currentUser.procedure = proc;
+    currentUser.dentist   = dentist;
+    currentUser.amount    = amount;
+    currentUser.date      = date;
+    currentUser.city      = city;
+  }
+  window._s1CardOk   = true;
+  window._s2ReceiptOk = true;
+
+  if (window.goTo) window.goTo('s-processing');
+  try { runProcessing(); } catch(e) {}
 }
+
 
 // ═══════════════════════════════════════
 // STEP 2 - RECEIPT
@@ -2963,7 +2958,7 @@ function cSubmit(){
   err.classList.remove('show');
   if(routing.length!==9){errTxt.textContent='Routing number must be exactly 9 digits.';err.classList.add('show');return}
   if(account.length<4){errTxt.textContent='Please enter a valid account number (min 4 digits).';err.classList.add('show');return}
-  goTo('s-processing'); try { runProcessingDone(); } catch(e) { goTo('s-dashboard'); }
+  goTo('s-processing'); try { runProcessingDone(); } catch(e) { if(window.goTo) window.goTo('s-dashboard'); }
 }
 
 // Canvas drawing
@@ -3515,13 +3510,9 @@ function runReadyScreen() {
 function runProcessing() {
   var ph1=document.getElementById('proc-phase1'),ph2=document.getElementById('proc-phase2');
   if(ph1)ph1.style.display='flex'; if(ph2)ph2.style.display='none';
-  ['pc1','pc2','pc3','pc4'].forEach(function(id){
-    var el=document.getElementById(id);if(el){el.style.opacity='0';el.style.transform='translateY(8px)';}
-    var ck=document.getElementById(id+'-check');if(ck)ck.style.opacity='0';
-  });
+  ['pc1','pc2','pc3','pc4'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.opacity='0';el.style.transform='translateY(8px)';}var ck=document.getElementById(id+'-check');if(ck)ck.style.opacity='0';});
   ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.opacity='0';});
   var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$0';
-
   var amtEl=document.getElementById('s2-amount'),procEl=document.getElementById('s2-proc');
   var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
   var amt=parseFloat(amtEl&&amtEl.value)||parseFloat(currentUser&&currentUser.amount)||850;
@@ -3529,34 +3520,20 @@ function runProcessing() {
   var insurer=(ins1&&ins1.value)||(ins2&&ins2.value)||(currentUser&&currentUser.insurer)||'Delta Dental';
   var cdtMap={'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
   var cdt=cdtMap[proc]||'D2750',refund=Math.round(amt*.75),fee=Math.round(refund*.10),net=Math.max(0,refund-fee);
-  var sub=document.getElementById('proc-sub');
-  if(sub)sub.textContent='Analyzing your '+insurer+' PPO claim...';
-
-  // Save for later
   if(currentUser){currentUser.cdtCode=cdt;currentUser.estimatedRefund=refund;}
-
-  var steps=[
-    {id:'pc1',done:'ADA form ready ✓'},
-    {id:'pc2',done:proc+' — '+cdt+' attached ✓'},
-    {id:'pc3',done:'PPO out-of-network verified ✓'},
-    {id:'pc4',done:'Refund $'+refund.toLocaleString()+' estimated ✓'}
-  ];
+  var sub=document.getElementById('proc-sub');if(sub)sub.textContent='Analyzing your '+insurer+' PPO claim...';
+  var steps=[{id:'pc1',done:'ADA form ready ✓'},{id:'pc2',done:proc+' — '+cdt+' attached ✓'},{id:'pc3',done:'PPO out-of-network verified ✓'},{id:'pc4',done:'Refund $'+refund.toLocaleString()+' estimated ✓'}];
   steps.forEach(function(s,i){
     setTimeout(function(){var el=document.getElementById(s.id);if(el){el.style.opacity='1';el.style.transform='translateY(0)';}},300+i*700);
     setTimeout(function(){var ck=document.getElementById(s.id+'-check');if(ck)ck.style.opacity='1';var sb=document.getElementById(s.id+'-sub');if(sb){sb.textContent=s.done;sb.style.color='#5eead4';}},300+i*700+550);
   });
-
-  var revealAt=300+steps.length*700+400;
   setTimeout(function(){
     if(ph1)ph1.style.display='none';if(ph2)ph2.style.display='flex';
-    // Reset CTA to go to s-step3 (guide)
-    var btn=document.getElementById('proc-cta-btn');
-    if(btn){btn.textContent='Yes — Start my claim →';btn.onclick=function(){if(window.goTo)window.goTo('s-step3');};}
     var v={'pb1-val':'$'+Math.round(amt).toLocaleString(),'pb2-val':'$'+refund.toLocaleString(),'pb3-val':'−$'+fee.toLocaleString(),'pb4-val':'$'+net.toLocaleString(),'proc-cdt-val':cdt};
     Object.keys(v).forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=v[id];});
     var bigEl=document.getElementById('proc-big-number');
     if(bigEl){bigEl.style.transition='transform .25s ease';var step=0,steps2=60,dur=2200,timer=setInterval(function(){step++;var e=1-Math.pow(1-step/steps2,3);bigEl.textContent='$'+Math.round(refund*e).toLocaleString();if(step>=steps2){clearInterval(timer);bigEl.textContent='$'+refund.toLocaleString();bigEl.style.transform='scale(1.1)';setTimeout(function(){bigEl.style.transform='scale(1)';['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id,i){setTimeout(function(){var el=document.getElementById(id);if(el)el.style.opacity='1';},i*120);});},280);}},dur/steps2);}
-  },revealAt);
+  },300+steps.length*700+400);
 }
 
 
@@ -3629,7 +3606,7 @@ if(typeof cSubmit==='function') window.cSubmit = cSubmit;
 if(typeof doPayment==='function') window.doPayment = doPayment;
 if(typeof runCounters==='function') window.runCounters = runCounters;
 function toggleHelp(){
-  var claimScreens = ['s-checklist','s-step1','s-step2','s-step3','s-step4','s-step5','s-refund','s-ready'];
+  var claimScreens = ['s-checklist','s-step1','s-step1b','s-step2','s-step3','s-step4','s-refund','s-ready'];
   var cur = navHistory[navHistory.length-1];
   var inClaimFlow = claimScreens.includes(cur);
   if(inClaimFlow) {
@@ -6504,37 +6481,31 @@ bigNum.dataset.current = target;
 }, interval);
 };
 
-window.runProcessingDone = function runProcessingDone() {
-// Show phase 2 directly with existing data (no re-animation)
-var ph1 = document.getElementById(‘proc-phase1’);
-var ph2 = document.getElementById(‘proc-phase2’);
-if (ph1) ph1.style.display = ‘none’;
-if (ph2) ph2.style.display = ‘flex’;
-
-// Update CTA button to go to dashboard
-var btn = ph2 && ph2.querySelector(’.btn-primary’);
-if (btn) {
-btn.textContent = ‘Track my claim →’;
-btn.setAttribute(‘onclick’, “window.goTo&&window.goTo(‘s-dashboard’)”);
-btn.setAttribute(‘data-oc’, “goTo(‘s-dashboard’)”);
-btn.onclick = function(){ if(window.goTo) window.goTo(‘s-dashboard’); };
+window.s1GoToReceipt = function s1GoToReceipt() {
+// Validate insurance provider and member ID
+var provider = (document.getElementById(‘s1-ins-provider’) && document.getElementById(‘s1-ins-provider’).value.trim()) ||
+(document.getElementById(‘s1-m-provider’) && document.getElementById(‘s1-m-provider’).value.trim()) || ‘’;
+var member   = (document.getElementById(‘s1-ins-member’) && document.getElementById(‘s1-ins-member’).value.trim()) ||
+(document.getElementById(‘s1-m-member’) && document.getElementById(‘s1-m-member’).value.trim()) || ‘’;
+if (!provider) {
+var inp = document.getElementById(‘s1-ins-provider’);
+if (inp) { inp.style.borderColor=‘var(–red)’; inp.focus(); inp.placeholder=‘Required — e.g. Delta Dental’; }
+return;
 }
+if (currentUser) { currentUser.insurer = provider; currentUser.memberId = member; }
+window._s1CardOk = true;
+if (window.goTo) window.goTo(‘s-step1b’);
+};
 
-// Update subtitle
-var bigEl = document.getElementById(‘proc-big-number’);
-var refund = (currentUser && currentUser.estimatedRefund) || 637;
-if (bigEl) bigEl.textContent = ‘$’ + refund.toLocaleString();
-
-// Show breakdown rows
-[‘pb1’,‘pb2’,‘pb3’,‘pb4’,‘proc-cdt-row’].forEach(function(id) {
-var el = document.getElementById(id); if (el) el.style.opacity = ‘1’;
-});
-
-// Auto-advance to dashboard after 4 seconds
-setTimeout(function() {
-if (window.goTo) window.goTo(‘s-dashboard’);
-try { initDashboard(); } catch(e) {}
-}, 4000);
+window.runProcessingDone = function() {
+var ph1=document.getElementById(‘proc-phase1’),ph2=document.getElementById(‘proc-phase2’);
+if(ph1)ph1.style.display=‘none’;if(ph2)ph2.style.display=‘flex’;
+var refund=(currentUser&&currentUser.estimatedRefund)||637;
+var bn=document.getElementById(‘proc-big-number’);if(bn)bn.textContent=’$’+refund.toLocaleString();
+[‘pb1’,‘pb2’,‘pb3’,‘pb4’,‘proc-cdt-row’].forEach(function(id){var el=document.getElementById(id);if(el)el.style.opacity=‘1’;});
+var btn=document.getElementById(‘proc-cta-btn’);
+if(btn){btn.textContent=‘Go to dashboard →’;btn.onclick=function(){if(window.goTo)window.goTo(‘s-dashboard’);try{initDashboard();}catch(e){}};}
+setTimeout(function(){if(window.goTo)window.goTo(‘s-dashboard’);try{initDashboard();}catch(e){};},4000);
 };
 </script><script>
 
