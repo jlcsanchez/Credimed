@@ -1476,8 +1476,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)"></div>
     </div>
 
-```
 <!-- Live refund pill -->
+
 <div id="live-refund-pill" style="display:none;background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:12px 14px;margin-top:4px;margin-bottom:4px">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
     <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">💰 Estimated Refund</div>
@@ -1493,7 +1493,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
-```
 
   </div>
 </div>
@@ -1518,7 +1517,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div style="margin-top:16px">
   <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px">
-    Continue — Add Receipt →
+    Submit Claim →
   </button>
 </div>
 
@@ -2220,6 +2219,7 @@ function goTo(id, param) {
     var s2flds = document.getElementById('s2-fields'); if(s2flds) s2flds.style.display='none';
     var s1flds = document.getElementById('s1-fields'); if(s1flds) s1flds.style.display='none';
     var cbtn = document.getElementById('s1-continue-btn'); if(cbtn) cbtn.disabled=true;
+    var nbtn = document.getElementById('s1-next-btn'); if(nbtn) nbtn.disabled=true;
   }
   const navScreens = ['s-dashboard','s-claims','s-support','s-profile'];
   var bn = document.getElementById('bottom-nav');
@@ -2512,8 +2512,10 @@ function s1Reset(){
 function s1UseCard(){
   var provider=document.getElementById('s1-ins-provider')?.value.trim()||'';
   var member=document.getElementById('s1-ins-member')?.value.trim()||'';
-  if(!provider||!member){return;}
-  if(currentUser){currentUser.insurer=provider;currentUser.memberId=member;}
+  if(currentUser){
+    if(provider) currentUser.insurer=provider;
+    if(member) currentUser.memberId=member;
+  }
   // Lock the visible manual-entry fields
   ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
     var el=document.getElementById(id);
