@@ -1524,9 +1524,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 ══════════════════════════════════════ -->
 
 <div class="screen" id="s-processing" style="background:linear-gradient(160deg,#0f172a 0%,#134e4a 60%,#0f172a 100%);display:flex;flex-direction:column">
-
-<!-- PHASE 1: Animated checks -->
-
 <div id="proc-phase1" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;text-align:center">
   <div style="margin-bottom:18px;filter:drop-shadow(0 4px 20px rgba(13,148,136,.4))"><svg width="68" height="68" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
   <div style="font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:700;color:white;margin-bottom:4px">Calculating your refund</div>
@@ -1554,40 +1551,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 </div>
-
-<!-- PHASE 2: Big refund reveal -->
-
 <div id="proc-phase2" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
   <div style="font-size:34px;margin-bottom:14px;animation:popIn .5s cubic-bezier(.16,1,.3,1)">🎉</div>
   <div style="font-size:13px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">We estimate you'll get back</div>
   <div id="proc-big-number" style="font-family:'Playfair Display',Georgia,serif;font-size:68px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:4px;transition:transform .25s ease">$0</div>
   <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:22px">from your insurance plan</div>
   <div style="width:100%;max-width:310px;display:flex;flex-direction:column;gap:7px;margin-bottom:20px">
-    <div id="pb1" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.05);border-radius:9px;opacity:0;transition:opacity .4s">
-      <span style="font-size:13px;color:rgba(255,255,255,.5)">You paid</span>
-      <span style="font-size:13px;font-weight:700;color:white" id="pb1-val">$0</span>
-    </div>
-    <div id="pb2" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:9px;opacity:0;transition:opacity .4s">
-      <span style="font-size:13px;color:#5eead4">Insurance reimburses (~75%)</span>
-      <span style="font-size:13px;font-weight:700;color:#5eead4" id="pb2-val">$0</span>
-    </div>
-    <div id="pb3" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.04);border-radius:9px;opacity:0;transition:opacity .4s">
-      <span style="font-size:12px;color:rgba(255,255,255,.35)">Credimed fee (10%)</span>
-      <span style="font-size:12px;color:rgba(255,255,255,.35)" id="pb3-val">−$0</span>
-    </div>
-    <div id="pb4" style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:9px;opacity:0;transition:opacity .4s">
-      <span style="font-size:14px;font-weight:700;color:#4ade80">Your net refund</span>
-      <span style="font-size:14px;font-weight:700;color:#4ade80" id="pb4-val">$0</span>
-    </div>
-    <div id="proc-cdt-row" style="display:flex;justify-content:space-between;padding:7px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;opacity:0;transition:opacity .4s">
-      <span style="font-size:11px;color:rgba(255,255,255,.3)">CDT Code assigned</span>
-      <span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:1px 8px;border-radius:5px" id="proc-cdt-val">D2750</span>
-    </div>
+    <div id="pb1" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.05);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:13px;color:rgba(255,255,255,.5)">You paid</span><span style="font-size:13px;font-weight:700;color:white" id="pb1-val">$0</span></div>
+    <div id="pb2" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:13px;color:#5eead4">Insurance reimburses (~75%)</span><span style="font-size:13px;font-weight:700;color:#5eead4" id="pb2-val">$0</span></div>
+    <div id="pb3" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.04);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:12px;color:rgba(255,255,255,.35)">Credimed fee (10%)</span><span style="font-size:12px;color:rgba(255,255,255,.35)" id="pb3-val">−$0</span></div>
+    <div id="pb4" style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:14px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:14px;font-weight:700;color:#4ade80" id="pb4-val">$0</span></div>
+    <div id="proc-cdt-row" style="display:flex;justify-content:space-between;padding:7px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:11px;color:rgba(255,255,255,.3)">CDT Code assigned</span><span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:1px 8px;border-radius:5px" id="proc-cdt-val">D2750</span></div>
   </div>
   <button class="btn-primary" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" data-oc="goTo('s-step3')" onclick="window.goTo&&window.goTo('s-step3')">Yes — Start my claim →</button>
   <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">10% only when you get paid · No win, no fee</div>
 </div>
-
 </div>
 
 <!-- ══════════════════════════════════════
@@ -1730,8 +1708,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-step3" style="background:var(--bg)">
   <div class="top-bar">
-    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">3 of 5</div></div>
-    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
+    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">3 of 4</div></div>
+    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div></div>
   </div>
   <div class="guide-hero"><h2>Before you sign 💡</h2><p>Here's exactly how Credimed works — no surprises</p></div>
   <div class="guide-body">
@@ -1786,12 +1764,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <h4>CREDIMED — Dental Insurance Reimbursement Services<br><span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:400;color:var(--slate-light)">SERVICE AGREEMENT & PAYMENT AUTHORIZATION — Version 4.3</span></h4>
           <div class="clause"><strong>1. Parties</strong>This Agreement is between Credimed, a U.S.-incorporated company, and the Client identified during registration.</div>
           <div class="clause"><strong>2. Scope of Services</strong>Credimed provides preparation, submission, and management of dental insurance reimbursement claims until full resolution.</div>
-          <div class="clause"><strong>3. Service Fee — 10% on Success Only</strong>Credimed charges <span class="hl">10% of any reimbursement received</span>. No upfront fees — no win, no fee.</div>
+          <div class="clause"><strong>3. Service Fee — 10% on Success Only</strong>Credimed charges <span class="hl">10% of any reimbursement received</span>. No upfront fees. No win, no fee.</div>
           <div class="clause"><strong>4. Success Fee — 10%</strong>Credimed earns <span class="hl">10% of any reimbursement</span>. Client agrees not to change banking instructions without written consent. Fee is charged automatically after deposit verification.</div>
           <div class="clause"><strong>5. Payment Processing</strong>Stored securely via Stripe. Up to 3 retry attempts over 10 days on failed charges.</div>
           <div class="clause"><strong>6. Limited Power of Attorney</strong>Client grants Credimed a limited, irrevocable POA to contact insurer, request EOBs, and collect fees based on historical data if Client fails to report within 48 hours.</div>
           <div class="clause"><strong>7. Non-Reporting</strong>Failure to report reimbursement within 48 hours results in immediate estimated fee charge plus <span class="hl">1.5% monthly interest</span> and collection costs.</div>
-          <div class="clause"><strong>8. No Chargeback</strong>Client will not dispute the authorized 10% success charges. All disputes must be submitted in writing to Credimed within 10 business days.</div>
+          <div class="clause"><strong>8. No Chargeback</strong>Client will not dispute the authorized 10% success fee charges. All disputes must be submitted in writing to Credimed within 10 business days.</div>
           <div class="clause"><strong>9. No Guarantee</strong>Credimed manages claims diligently but does not guarantee insurer approval.</div>
           <div class="clause"><strong>10. Governing Law</strong>Governed by Delaware law. Binding arbitration. Applies to clients receiving dental care in Mexico with US insurance.</div>
         </div>
@@ -2242,8 +2220,7 @@ function goTo(id, param) {
     if(!currentUser) { goTo('s-auth','register'); return; }
     // Reset upload areas to initial state
     window._s1CardOk = false; window._s2ReceiptOk = false;
-    var s2sec = document.getElementById('s2-section'); if(s2sec) s2sec.style.display='none';
-  var s1ph = document.getElementById('s1-ph'); if(s1ph) s1ph.style.display='flex';
+    var s1ph = document.getElementById('s1-ph'); if(s1ph) s1ph.style.display='flex';
     var s1prev = document.getElementById('s1-preview'); if(s1prev) s1prev.style.display='none';
     var s2emp = document.getElementById('s2-empty'); if(s2emp) s2emp.style.display='flex';
     var s2fs = document.getElementById('s2-file-state'); if(s2fs) s2fs.style.display='none';
@@ -2603,14 +2580,8 @@ function s2ConfirmForStep1(){
 function s1EnableContinue(){
   window._s1CardOk=true;
   s1TryEnableContinue();
-  // Reveal section 2 with smooth scroll
   var s2 = document.getElementById('s2-section');
-  if (s2) {
-    s2.style.display = 'block';
-    setTimeout(function() {
-      s2.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
-  }
+  if (s2) { s2.style.display='block'; setTimeout(function(){ s2.scrollIntoView({behavior:'smooth',block:'start'}); }, 150); }
   // Highlight s2 upload as next step
   var s2area=document.getElementById('s2-empty');
   if(s2area){ s2area.style.borderColor='var(--teal)'; s2area.style.boxShadow='0 0 0 3px rgba(13,148,136,.15)'; }
@@ -3244,7 +3215,7 @@ async function sendChat() {
         system: `You are a helpful, warm support assistant for Credimed, a service that helps patients who received dental treatment in Mexico (or abroad) file claims with their US dental insurance to get reimbursed.
 
 Key facts about Credimed:
-- $25 one-time setup fee, then 10% commission ONLY if the patient gets reimbursed (no win, no fee)
+- No upfront cost. 10% commission ONLY if the patient gets reimbursed (no win, no fee)
 - Works with US PPO dental plans (Delta Dental, Aetna, Cigna, MetLife, Guardian, Humana, etc.)
 - HMO plans typically don't cover out-of-network; PPO plans do
 - Processing takes 5--15 business days after submission
@@ -3558,106 +3529,59 @@ function runReadyScreen() {
 }
 
 function runProcessing() {
-  // ── Reset ──────────────────────────────────────────────────────────────
-  var phase1 = document.getElementById('proc-phase1');
-  var phase2 = document.getElementById('proc-phase2');
-  if (phase1) phase1.style.display = 'flex';
-  if (phase2) phase2.style.display = 'none';
-  ['pc1','pc2','pc3','pc4'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) { el.style.opacity='0'; el.style.transform='translateY(8px)'; }
-    var ck = document.getElementById(id+'-check');
-    if (ck) ck.style.opacity = '0';
+  var ph1=document.getElementById('proc-phase1'), ph2=document.getElementById('proc-phase2');
+  if(ph1) ph1.style.display='flex'; if(ph2) ph2.style.display='none';
+  ['pc1','pc2','pc3','pc4'].forEach(function(id){
+    var el=document.getElementById(id); if(el){el.style.opacity='0';el.style.transform='translateY(8px)';}
+    var ck=document.getElementById(id+'-check'); if(ck) ck.style.opacity='0';
   });
-  ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id) {
-    var el = document.getElementById(id); if (el) el.style.opacity = '0';
-  });
-  var bn = document.getElementById('proc-big-number');
-  if (bn) bn.textContent = '$0';
+  ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.opacity='0';});
+  var bn=document.getElementById('proc-big-number'); if(bn) bn.textContent='$0';
 
-  // ── Claim data ─────────────────────────────────────────────────────────
-  var amtEl  = document.getElementById('s2-amount');
-  var procEl = document.getElementById('s2-proc');
-  var ins1   = document.getElementById('s1-ins-provider');
-  var ins2   = document.getElementById('s1-m-provider');
-  var amt     = parseFloat(amtEl&&amtEl.value) || parseFloat(currentUser&&currentUser.amount) || 850;
-  var proc    = (procEl&&procEl.value) || (currentUser&&currentUser.procedure) || 'Crown';
-  var insurer = (ins1&&ins1.value)||(ins2&&ins2.value)||(currentUser&&currentUser.insurer)||'Delta Dental';
-  var cdtMap  = {'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
-  var cdt    = cdtMap[proc] || 'D2750';
-  var refund = Math.round(amt * 0.75);
-  var fee    = Math.round(refund * 0.10);
-  var net    = Math.max(0, refund - fee);
-  var sub    = document.getElementById('proc-sub');
+  var amtEl=document.getElementById('s2-amount'), procEl=document.getElementById('s2-proc');
+  var ins1=document.getElementById('s1-ins-provider'), ins2=document.getElementById('s1-m-provider');
+  var amt=parseFloat(amtEl&&amtEl.value)||parseFloat(currentUser&&currentUser.amount)||850;
+  var proc=(procEl&&procEl.value)||(currentUser&&currentUser.procedure)||'Crown';
+  var insurer=(ins1&&ins1.value)||(ins2&&ins2.value)||(currentUser&&currentUser.insurer)||'Delta Dental';
+  var cdtMap={'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
+  var cdt=cdtMap[proc]||'D2750', refund=Math.round(amt*.75), fee=Math.round(refund*.10), net=Math.max(0,refund-fee);
+  var sub=document.getElementById('proc-sub');
+  if(sub) sub.textContent='Analyzing your '+insurer+' PPO claim...';
 
-  // ── Phase 1: Checks appear one by one ─────────────────────────────────
-  var checks = [
-    { id:'pc1', done:'ADA form ready ✓' },
-    { id:'pc2', done: proc + ' — ' + cdt + ' attached ✓' },
-    { id:'pc3', done:'PPO out-of-network verified ✓' },
-    { id:'pc4', done:'Refund $' + refund.toLocaleString() + ' estimated ✓' },
+  var steps=[
+    {id:'pc1',done:'ADA form ready ✓'},
+    {id:'pc2',done:proc+' — '+cdt+' attached ✓'},
+    {id:'pc3',done:'PPO out-of-network verified ✓'},
+    {id:'pc4',done:'Refund $'+refund.toLocaleString()+' estimated ✓'}
   ];
-  if (sub) sub.textContent = 'Analyzing your ' + insurer + ' PPO claim...';
-
-  checks.forEach(function(c, i) {
-    var delay = 300 + i * 700;
-    setTimeout(function() {
-      var el = document.getElementById(c.id);
-      if (el) { el.style.opacity='1'; el.style.transform='translateY(0)'; }
-    }, delay);
-    setTimeout(function() {
-      var ck = document.getElementById(c.id+'-check');
-      if (ck) ck.style.opacity = '1';
-      var sb = document.getElementById(c.id+'-sub');
-      if (sb) { sb.textContent = c.done; sb.style.color = '#5eead4'; }
-    }, delay + 550);
+  steps.forEach(function(s,i){
+    setTimeout(function(){var el=document.getElementById(s.id);if(el){el.style.opacity='1';el.style.transform='translateY(0)';}},300+i*700);
+    setTimeout(function(){
+      var ck=document.getElementById(s.id+'-check');if(ck)ck.style.opacity='1';
+      var sb=document.getElementById(s.id+'-sub');if(sb){sb.textContent=s.done;sb.style.color='#5eead4';}
+    },300+i*700+550);
   });
 
-  // ── Phase 2: Big number reveal ─────────────────────────────────────────
-  var revealAt = 300 + checks.length * 700 + 400;
-  setTimeout(function() {
-    if (phase1) phase1.style.display = 'none';
-    if (phase2) phase2.style.display = 'flex';
-
-    // Fill values
-    var vals = {
-      'pb1-val': '$' + Math.round(amt).toLocaleString(),
-      'pb2-val': '$' + refund.toLocaleString(),
-      'pb3-val': '−$' + fee.toLocaleString(),
-      'pb4-val': '$' + net.toLocaleString(),
-      'proc-cdt-val': cdt
-    };
-    Object.keys(vals).forEach(function(id) {
-      var el = document.getElementById(id); if (el) el.textContent = vals[id];
-    });
-
-    // Count up the big number
-    var bigEl = document.getElementById('proc-big-number');
-    if (bigEl) {
-      bigEl.style.transition = 'transform .25s ease';
-      var step = 0, steps = 60, dur = 2200;
-      var timer = setInterval(function() {
-        step++;
-        var e = 1 - Math.pow(1 - step/steps, 3);
-        bigEl.textContent = '$' + Math.round(refund * e).toLocaleString();
-        if (step >= steps) {
-          clearInterval(timer);
-          bigEl.textContent = '$' + refund.toLocaleString();
-          bigEl.style.transform = 'scale(1.1)';
-          setTimeout(function() {
-            bigEl.style.transform = 'scale(1)';
-            // Fade breakdown rows in sequence
-            ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id, i) {
-              setTimeout(function() {
-                var el = document.getElementById(id); if(el) el.style.opacity='1';
-              }, i * 120);
-            });
-          }, 280);
-        }
-      }, dur / steps);
+  setTimeout(function(){
+    if(sub) sub.textContent='Analysis complete!';
+    if(ph1) ph1.style.display='none'; if(ph2) ph2.style.display='flex';
+    var v={'pb1-val':'$'+Math.round(amt).toLocaleString(),'pb2-val':'$'+refund.toLocaleString(),'pb3-val':'−$'+fee.toLocaleString(),'pb4-val':'$'+net.toLocaleString(),'proc-cdt-val':cdt};
+    Object.keys(v).forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=v[id];});
+    var bigEl=document.getElementById('proc-big-number');
+    if(bigEl){
+      bigEl.style.transition='transform .25s ease';
+      var step=0,steps2=60,dur=2200,timer=setInterval(function(){
+        step++;var e=1-Math.pow(1-step/steps2,3);
+        bigEl.textContent='$'+Math.round(refund*e).toLocaleString();
+        if(step>=steps2){clearInterval(timer);bigEl.textContent='$'+refund.toLocaleString();
+          bigEl.style.transform='scale(1.1)';
+          setTimeout(function(){bigEl.style.transform='scale(1)';
+            ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id,i){setTimeout(function(){var el=document.getElementById(id);if(el)el.style.opacity='1';},i*120);});
+          },280);}
+      },dur/steps2);
     }
-    if (currentUser) { currentUser.cdtCode=cdt; currentUser.estimatedRefund=refund; }
-  }, revealAt);
+    if(currentUser){currentUser.cdtCode=cdt;currentUser.estimatedRefund=refund;}
+  }, 300+steps.length*700+400);
 }
 
 
@@ -4146,7 +4070,7 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
     <div class="a-item"><div class="a-dot t"></div><div class="a-txt"><strong>Maria González</strong> — Insurer responded with EOB for Crown. Reimbursement $1,120 pending deposit.</div><div class="a-time">2h ago</div></div>
     <div class="a-item"><div class="a-dot g"></div><div class="a-txt"><strong>Carlos Mendoza</strong> — $980 deposited. 10% commission $98 charged via Stripe. ✅</div><div class="a-time">5h ago</div></div>
     <div class="a-item"><div class="a-dot a"></div><div class="a-txt"><strong>Ana Ramírez</strong> — Cigna requested additional docs for Root Canal. WhatsApp sent.</div><div class="a-time">1d ago</div></div>
-    <div class="a-item"><div class="a-dot b"></div><div class="a-txt"><strong>Isabel Torres</strong> — New claim submitted. $25 setup fee collected.</div><div class="a-time">2d ago</div></div>
+    <div class="a-item"><div class="a-dot b"></div><div class="a-txt"><strong>Isabel Torres</strong> — New claim submitted successfully.</div><div class="a-time">2d ago</div></div>
   </div>
 </div>
 
