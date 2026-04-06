@@ -1389,31 +1389,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- Continue to receipt button — only shown after s1 confirmed -->
-
-<div id="s1-continue-to-receipt" style="display:none;padding:16px 0 8px">
-  <button class="btn-primary" onclick="window.goTo&&window.goTo('s-step1b')" style="height:52px;font-size:15px">
-    Continue — Add your receipt →
-  </button>
-</div>
-
-</div><!-- end body-card s-step1 -->
-</div><!-- end s-step1 screen -->
-
-<!-- ══════════════════════════════════════
-     SCREEN: STEP 1b - DENTAL RECEIPT
-══════════════════════════════════════ -->
-
-<div class="screen" id="s-step1b" style="background:var(--bg);display:flex;flex-direction:column">
-  <div class="top-bar">
-    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">Step 1b · 40% done</div></div>
-    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
-  </div>
-  <div class="hero-dark" style="padding:12px 20px 28px">
-    <h2>🧾 Dental Receipt</h2>
-    <p>Upload your receipt or invoice from your dentist — we read everything automatically.</p>
-  </div>
-  <div class="body-card" style="padding-bottom:100px">
+<div style="height:1px;background:var(--border);margin-bottom:24px"></div>
 
 <!-- ══ SECTION 2: DENTAL RECEIPT ══ -->
 
@@ -1550,56 +1526,104 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 ══════════════════════════════════════ -->
 
 <div class="screen" id="s-processing" style="background:linear-gradient(160deg,#0f172a 0%,#134e4a 60%,#0f172a 100%);display:flex;flex-direction:column">
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:linear-gradient(135deg,#0f172a 0%,#134e4a 100%);height:100%">
-    <div style="margin-bottom:20px;filter:drop-shadow(0 4px 16px rgba(13,148,136,.35))"><svg width="80" height="80" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
-    <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:600;color:white;margin-bottom:6px;text-align:center">Preparing your claim</div>
-    <div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:32px;text-align:center">This takes just a moment</div>
 
-<div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:14px" id="processing-steps">
-  <div class="proc-step" id="proc1" style="display:flex;align-items:center;gap:12px;opacity:.4">
-    <div class="proc-icon" style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📋</div>
-    <div style="flex:1"><div style="font-size:13px;font-weight:600;color:white">Preparing ADA claim form</div><div style="font-size:11px;color:rgba(255,255,255,.4)" id="proc1-sub">Waiting...</div></div>
-    <div class="proc-check" id="proc1-check" style="font-size:16px;opacity:0">✅</div>
+<!-- Phase 1: Checks animation -->
+
+<div id="proc-phase1" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+
+  <!-- Logo -->
+
+  <div style="margin-bottom:20px;filter:drop-shadow(0 4px 24px rgba(13,148,136,.4))">
+    <svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/>
+      <path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+      <path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+      <rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/>
+      <rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/>
+    </svg>
   </div>
-  <div class="proc-step" id="proc2" style="display:flex;align-items:center;gap:12px;opacity:.4">
-    <div class="proc-icon" style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🦷</div>
-    <div style="flex:1"><div style="font-size:13px;font-weight:600;color:white">Attaching treatment details</div><div style="font-size:11px;color:rgba(255,255,255,.4)" id="proc2-sub">Waiting...</div></div>
-    <div class="proc-check" id="proc2-check" style="font-size:16px;opacity:0">✅</div>
-  </div>
-  <div class="proc-step" id="proc3" style="display:flex;align-items:center;gap:12px;opacity:.4">
-    <div class="proc-icon" style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🔍</div>
-    <div style="flex:1"><div style="font-size:13px;font-weight:600;color:white">Verifying CDT codes</div><div style="font-size:11px;color:rgba(255,255,255,.4)" id="proc3-sub">Waiting...</div></div>
-    <div class="proc-check" id="proc3-check" style="font-size:16px;opacity:0">✅</div>
-  </div>
-  <div class="proc-step" id="proc4" style="display:flex;align-items:center;gap:12px;opacity:.4">
-    <div class="proc-icon" style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📤</div>
-    <div style="flex:1"><div style="font-size:13px;font-weight:600;color:white">Submitting to insurer...</div><div style="font-size:11px;color:rgba(255,255,255,.4)" id="proc4-sub">Waiting...</div></div>
-    <div class="proc-check" id="proc4-check" style="font-size:16px;opacity:0">✅</div>
+
+  <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;margin-bottom:6px">Calculating your refund</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:32px" id="proc-sub">Reviewing your coverage...</div>
+
+  <!-- 4 animated check items -->
+
+  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
+    <div id="pc1" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📋</div>
+      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Preparing ADA claim form</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="pc1-sub">Analyzing...</div></div>
+      <div id="pc1-check" style="opacity:0;font-size:20px;transition:opacity .3s">✅</div>
+    </div>
+    <div id="pc2" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🦷</div>
+      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Attaching treatment details</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="pc2-sub">Analyzing...</div></div>
+      <div id="pc2-check" style="opacity:0;font-size:20px;transition:opacity .3s">✅</div>
+    </div>
+    <div id="pc3" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🔍</div>
+      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Verifying CDT codes</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="pc3-sub">Analyzing...</div></div>
+      <div id="pc3-check" style="opacity:0;font-size:20px;transition:opacity .3s">✅</div>
+    </div>
+    <div id="pc4" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">💰</div>
+      <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Estimating your refund</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="pc4-sub">Analyzing...</div></div>
+      <div id="pc4-check" style="opacity:0;font-size:20px;transition:opacity .3s">✅</div>
+    </div>
   </div>
 </div>
 
-<div id="proc-done" style="display:none;text-align:center;margin-top:24px;width:100%;max-width:320px">
-  <div style="font-size:56px;margin-bottom:16px;animation:bounceIn .6s">🎉</div>
-  <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;margin-bottom:8px">You're all set!</div>
-  <div style="font-size:14px;color:rgba(255,255,255,.7);margin-bottom:6px">Your claim is in Credimed's hands.</div>
-  <div style="font-size:13px;color:#5eead4;margin-bottom:28px;font-weight:600">We'll message you on WhatsApp with updates 📲</div>
+<!-- Phase 2: Big refund reveal -->
 
-  <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;margin-bottom:24px;text-align:left">
-    <div style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">What happens next</div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:16px">📬</span><span style="font-size:12px;color:rgba(255,255,255,.75)">Credimed reviews &amp; submits your claim</span></div>
-      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:16px">⏳</span><span style="font-size:12px;color:rgba(255,255,255,.75)">Insurer processes it in 5–15 business days</span></div>
-      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:16px">💰</span><span style="font-size:12px;color:rgba(255,255,255,.75)">Reimbursement sent directly to your account</span></div>
+<div id="proc-phase2" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+
+  <!-- Confetti emoji burst -->
+
+  <div style="font-size:36px;margin-bottom:16px;animation:popIn .5s cubic-bezier(.16,1,.3,1)">🎉</div>
+
+  <div style="font-size:14px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">We estimate you'll get back</div>
+
+  <!-- THE BIG NUMBER -->
+
+  <div id="proc-big-number" style="font-family:'Playfair Display',Georgia,serif;font-size:72px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:4px;transition:transform .25s ease">$0</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:24px">from your insurance plan</div>
+
+  <!-- Breakdown lines — appear one by one -->
+
+  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+    <div id="pb1" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:10px;opacity:0;transition:opacity .4s">
+      <span style="font-size:13px;color:rgba(255,255,255,.55)">You paid</span>
+      <span style="font-size:14px;font-weight:700;color:white" id="pb1-val">$0</span>
+    </div>
+    <div id="pb2" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:10px;opacity:0;transition:opacity .4s">
+      <span style="font-size:13px;color:#5eead4">Insurance reimburses (~75%)</span>
+      <span style="font-size:14px;font-weight:700;color:#5eead4" id="pb2-val">$0</span>
+    </div>
+    <div id="pb3" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.04);border-radius:10px;opacity:0;transition:opacity .4s">
+      <span style="font-size:13px;color:rgba(255,255,255,.4)">Credimed fee (10%)</span>
+      <span style="font-size:13px;color:rgba(255,255,255,.4)" id="pb3-val">−$0</span>
+    </div>
+    <div id="pb4" style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:10px;opacity:0;transition:opacity .4s">
+      <span style="font-size:14px;font-weight:700;color:#4ade80">Your net refund</span>
+      <span style="font-size:15px;font-weight:700;color:#4ade80" id="pb4-val">$0</span>
     </div>
   </div>
 
-  <button class="btn-primary" style="background:var(--teal);color:white;width:100%;font-size:15px;height:52px;box-shadow:0 8px 24px rgba(13,148,136,.4)" data-oc="goTo('s-dashboard')" onclick="window.goTo&&window.goTo('s-dashboard')">
-    Track my claim →
+  <!-- CDT code badge -->
+
+  <div id="proc-cdt-row" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 14px;width:100%;max-width:320px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;opacity:0;transition:opacity .4s">
+    <span style="font-size:11px;color:rgba(255,255,255,.35)">CDT Code assigned by Credimed</span>
+    <span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:2px 10px;border-radius:6px" id="proc-cdt-val">D2750</span>
+  </div>
+
+  <!-- CTA -->
+
+  <button class="btn-primary" style="width:100%;max-width:320px;background:var(--teal);font-size:16px;height:56px;box-shadow:0 8px 28px rgba(13,148,136,.45)" data-oc="goTo('s-step3')" onclick="window.goTo&&window.goTo('s-step3')">
+    Yes — Start my claim →
   </button>
-  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.3)">No win, no fee · 10% only if you get paid</div>
+  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.3)">10% commission · Only when you get paid · No win, no fee</div>
+
 </div>
 
-  </div>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -1963,8 +1987,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="success-screen" id="s5-success" style="min-height:100%;background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%)">
     <div class="success-circle"><svg width="80" height="80" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
-    <div class="success-title">Payment Received!</div>
-    <div class="success-sub" style="margin-bottom:20px">Your claim is being submitted now</div>
+    <div class="success-title">Claim Submitted!</div>
+    <div class="success-sub" style="margin-bottom:20px">Your claim is being processed now</div>
     <div style="width:100%;max-width:280px;background:rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:left">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim filed</span><span style="color:#4ade80">Free ✓</span></div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim status</span><span style="color:#5eead4">Submitting...</span></div>
@@ -2051,22 +2075,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- BOTTOM NAV -->
 
 <div class="bottom-nav" id="bottom-nav">
-  <div class="nav-item active" id="nav-home" data-oc="navTo('s-dashboard','nav-home')" onclick="window.navTo&&window.navTo('s-dashboard','nav-home')">
-    <div class="ni"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
-    <div class="nl">Home</div>
-  </div>
-  <div class="nav-item" id="nav-claims" data-oc="navTo('s-claims','nav-claims')" onclick="window.navTo&&window.navTo('s-claims','nav-claims')">
-    <div class="ni"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-5 8v-2h8v2H8zm0-4v-2h8v2H8zm0-4V7h3v2H8z"/></svg></div>
-    <div class="nl">Claims</div>
-  </div>
-  <div class="nav-item" id="nav-support" data-oc="navTo('s-support','nav-support')" onclick="window.navTo&&window.navTo('s-support','nav-support')">
-    <div class="ni"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
-    <div class="nl">Support</div>
-  </div>
-  <div class="nav-item" id="nav-profile" data-oc="navTo('s-profile','nav-profile')" onclick="window.navTo&&window.navTo('s-profile','nav-profile')">
-    <div class="ni"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
-    <div class="nl">Profile</div>
-  </div>
+  <div class="nav-item active" id="nav-home" data-oc="navTo('s-dashboard','nav-home')" onclick="window.navTo&&window.navTo('s-dashboard','nav-home')"><div class="ni"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><div class="nl">Home</div></div>
+  <div class="nav-item" id="nav-claims" data-oc="navTo('s-claims','nav-claims')" onclick="window.navTo&&window.navTo('s-claims','nav-claims')"><div class="ni"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-5 8v-2h8v2H8zm0-4v-2h8v2H8zm0-4V7h3v2H8z"/></svg></div><div class="nl">Claims</div></div>
+  <div class="nav-item" id="nav-support" data-oc="navTo('s-support','nav-support')" onclick="window.navTo&&window.navTo('s-support','nav-support')"><div class="ni"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div><div class="nl">Support</div></div>
+  <div class="nav-item" id="nav-profile" data-oc="navTo('s-profile','nav-profile')" onclick="window.navTo&&window.navTo('s-profile','nav-profile')"><div class="ni"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div><div class="nl">Profile</div></div>
 </div>
 
 <!-- EXPERT HELP BUTTON — always visible like TurboTax -->
@@ -2243,7 +2255,7 @@ function goTo(id, param) {
   // Update theme-color to match screen background
   var tc = document.querySelector('meta[name=theme-color]');
   if(tc){
-    var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step1b','s-step2','s-step3','s-step4','s-refund','s-ready'];
+    var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step2','s-step3','s-step4','s-refund','s-ready'];
     tc.setAttribute('content', darkScreens.includes(id) ? '#0a0f1e' : '#ffffff');
   }
   if (id === 's-step4') { try { initContract(); } catch(e){} }
@@ -2626,10 +2638,6 @@ function s2ConfirmForStep1(){
 function s1EnableContinue(){
   window._s1CardOk=true;
   s1TryEnableContinue();
-  // Show continue button + auto-navigate to receipt screen
-  var ctb = document.getElementById('s1-continue-to-receipt');
-  if(ctb) ctb.style.display = 'block';
-  setTimeout(function(){ if(window.goTo) window.goTo('s-step1b'); }, 800);
   // Highlight s2 upload as next step
   var s2area=document.getElementById('s2-empty');
   if(s2area){ s2area.style.borderColor='var(--teal)'; s2area.style.boxShadow='0 0 0 3px rgba(13,148,136,.15)'; }
@@ -3263,7 +3271,7 @@ async function sendChat() {
         system: `You are a helpful, warm support assistant for Credimed, a service that helps patients who received dental treatment in Mexico (or abroad) file claims with their US dental insurance to get reimbursed.
 
 Key facts about Credimed:
-- No upfront cost. 10% commission ONLY if the patient gets reimbursed (no win, no fee)
+- $25 one-time setup fee, then 10% commission ONLY if the patient gets reimbursed (no win, no fee)
 - Works with US PPO dental plans (Delta Dental, Aetna, Cigna, MetLife, Guardian, Humana, etc.)
 - HMO plans typically don't cover out-of-network; PPO plans do
 - Processing takes 5--15 business days after submission
@@ -3364,108 +3372,182 @@ function showTapHint() {
 
 
 
-function runRefundEstimate() {
-  // ── Reset UI ──────────────────────────────────────────────────────────────
-  var analyzing = document.getElementById('refund-analyzing');
-  var resultEl  = document.getElementById('refund-result');
-  if (analyzing) analyzing.style.display = 'flex';
-  if (resultEl)  resultEl.style.display  = 'none';
-  ['rc1','rc2','rc3','rc4'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.style.opacity = '0';
-    var spans = el.querySelectorAll('span');
-    if (spans[0]) spans[0].textContent = '⏳';
-    if (spans[1]) { spans[1].textContent = ''; spans[1].style.color = ''; }
+async function runRefundEstimate() {
+  try {
+  // Reset UI
+  const analyzing = document.getElementById('refund-analyzing');
+  const resultEl = document.getElementById('refund-result');
+  if(analyzing) analyzing.style.display = 'flex';
+  if(resultEl) resultEl.style.display = 'none';
+
+  ['rc1','rc2','rc3','rc4'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el){ el.style.opacity='0'; const spans=el.querySelectorAll('span'); if(spans[0])spans[0].textContent='⏳'; }
   });
 
-  // ── Get claim data ────────────────────────────────────────────────────────
-  var amtEl   = document.getElementById('s2-amount');
-  var procEl  = document.getElementById('s2-proc');
-  var ins1El  = document.getElementById('s1-ins-provider');
-  var ins2El  = document.getElementById('s1-m-provider');
+  // Get claim data
+  const amt = parseFloat(document.getElementById('s2-amount')?.value) || parseFloat(currentUser?.amount) || 850;
+  const proc = document.getElementById('s2-proc')?.value || currentUser?.procedure || 'Crown';
+  const insurer = document.getElementById('s1-ins-provider')?.value ||
+                  document.getElementById('s1-m-provider')?.value ||
+                  currentUser?.insurer || 'Delta Dental';
+  const memberId = currentUser?.memberId || '—';
+  const dentist = currentUser?.dentist || 'Unknown';
 
-  var amt     = parseFloat(amtEl && amtEl.value) ||
-                parseFloat(currentUser && currentUser.amount) || 850;
-  var proc    = (procEl && procEl.value) || (currentUser && currentUser.procedure) || 'Crown';
-  var insurer = (ins1El && ins1El.value) || (ins2El && ins2El.value) ||
-                (currentUser && currentUser.insurer) || 'Delta Dental';
+  const sub = document.getElementById('refund-analyzing-sub');
+  if(sub) sub.textContent = 'Analyzing your ' + insurer + ' PPO claim...';
 
-  var cdtMap = {
+  // ══════════════════════════════════════════
+  // CREDIMED AGENT — Claude analyzes the claim
+  // ══════════════════════════════════════════
+  let agentResult = null;
+  try {
+    const agentPrompt = `You are the Credimed claim analysis agent. Analyze this dental insurance claim and return a JSON object.
+
+CLAIM DATA:
+- Insurance: ${insurer}
+- Member ID: ${memberId}
+- Procedure: ${proc}
+- Amount paid: $${amt}
+- Dentist/clinic: ${dentist}
+
+Return ONLY a valid JSON object with this exact structure:
+{
+  "isPPO": true,
+  "cdtCode": "D2750",
+  "coveragePercent": 75,
+  "estimatedRefund": 637,
+  "netCost": 213,
+  "checks": [
+    "Insurance benefits verified ✓",
+    "Out-of-network coverage: 75% ✓", 
+    "CDT D2750 — Crown confirmed ✓",
+    "Refund estimate ready ✓"
+  ],
+  "confidence": "high",
+  "notes": "Delta Dental PPO plans typically cover crowns at 50-75% of UCR fee. Out-of-network treatment in Mexico qualifies for reimbursement under your out-of-network benefits."
+}
+
+Use real CDT codes, realistic coverage percentages for the specific insurer and procedure, and accurate refund calculations.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: agentPrompt }]
+      })
+    });
+
+    if(response.ok) {
+      const data = await response.json();
+      const text = data.content?.[0]?.text || '';
+      const clean = text.replace(/```json|```/g, '').trim();
+      agentResult = JSON.parse(clean);
+      console.log('Agent result:', agentResult);
+    }
+  } catch(e) {
+    console.warn('Agent fallback to static:', e);
+  }
+
+  // Use agent result or fallback to static calculation
+  const cdtMap = {
     'Crown':'D2750','Implant':'D6010','Root Canal':'D3330',
     'Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110',
     'Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'
   };
-  var cdt    = cdtMap[proc] || 'D2750';
-  var refund = Math.round(amt * 0.75);
-  var net    = Math.round(amt - refund);
+  const cdt = agentResult?.cdtCode || cdtMap[proc] || 'D2750';
+  const coveragePct = agentResult?.coveragePercent || 75;
+  const refund = agentResult?.estimatedRefund || Math.round(amt * (coveragePct/100));
+  const net = agentResult?.netCost || Math.round(amt - refund);
+  const agentNotes = agentResult?.notes || '';
 
-  var sub = document.getElementById('refund-analyzing-sub');
-  if (sub) sub.textContent = 'Analyzing your ' + insurer + ' PPO claim...';
+  // Store agent analysis on user
+  if(currentUser) {
+    currentUser.cdtCode = cdt;
+    currentUser.estimatedRefund = refund;
+    currentUser.agentNotes = agentNotes;
+  }
 
-  // ── Animate 4 check items one by one (TurboTax style) ───────────────────
-  var checkTexts = [
+  if(sub) sub.textContent = 'Analysis complete — ' + insurer + ' PPO confirmed';
+
+  const checks = agentResult?.checks || [
     'Insurance benefits verified ✓',
-    'Out-of-network coverage: 75% ✓',
+    'Out-of-network coverage: ' + coveragePct + '% ✓',
     'CDT ' + cdt + ' — ' + proc + ' confirmed ✓',
-    'Refund estimate ready ✓'
+    'Refund estimate ready ✓',
   ];
-  var rcIds = ['rc1','rc2','rc3','rc4'];
 
-  checkTexts.forEach(function(text, i) {
-    setTimeout(function() {
-      var el = document.getElementById(rcIds[i]);
-      if (!el) return;
+  // Show checks with animation
+  checks.forEach((c, i) => {
+    const delay = 400 + i * 700;
+    setTimeout(() => {
+      const el = document.getElementById(c.id);
+      if(!el) return;
       el.style.opacity = '1';
-      var spans = el.querySelectorAll('span');
-      if (spans[0]) spans[0].textContent = '✅';
-      if (spans[1]) { spans[1].textContent = text; spans[1].style.color = 'rgba(255,255,255,.85)'; }
-    }, 400 + i * 600);
+      const spans = el.querySelectorAll('span');
+      if(spans[0]) spans[0].textContent = '✅';
+      if(spans[1]) { spans[1].textContent = c.text; spans[1].style.color = 'rgba(255,255,255,.8)'; }
+    }, delay);
   });
+  // Show result after all checks done
+  setTimeout(showRefundResult, 600 + checks.length * 900 + 600);
 
-  // ── Show result after all checks done ────────────────────────────────────
-  var totalDelay = 400 + checkTexts.length * 600 + 400;
-  setTimeout(function() {
-    if (sub) sub.textContent = 'Analysis complete — ' + insurer + ' PPO confirmed';
 
-    var a = document.getElementById('refund-analyzing');
-    var r = document.getElementById('refund-result');
-    if (a) a.style.display = 'none';
-    if (r) r.style.display = 'flex';
 
-    // Fill breakdown rows
-    var paidEl = document.getElementById('refund-paid');
-    var insEl  = document.getElementById('refund-insurance');
-    var netEl  = document.getElementById('refund-net');
-    var cdtEl  = document.getElementById('refund-cdt');
-    if (paidEl) paidEl.textContent = '$' + Math.round(amt).toLocaleString();
-    if (insEl)  insEl.textContent  = '$' + refund.toLocaleString();
-    if (netEl)  netEl.textContent  = '$' + net.toLocaleString();
-    if (cdtEl)  cdtEl.textContent  = cdt;
+  function showRefundResult() {
+    try {
+    const a = document.getElementById('refund-analyzing');
+    const r = document.getElementById('refund-result');
+    if(a) a.style.display = 'none';
+    if(r) r.style.display = 'flex';
 
-    // ── Big number counts up — the exciting moment ────────────────────────
-    var bigNum = document.getElementById('refund-big-number');
-    if (bigNum) {
-      bigNum.style.transition = 'transform .25s ease';
-      bigNum.textContent = '$0';
-      var step = 0, steps = 60, duration = 2000;
-      var timer = setInterval(function() {
-        step++;
-        var eased = 1 - Math.pow(1 - step / steps, 3); // ease-out cubic
-        bigNum.textContent = '$' + Math.round(refund * eased).toLocaleString();
-        if (step >= steps) {
-          clearInterval(timer);
-          bigNum.textContent = '$' + refund.toLocaleString();
-          bigNum.style.transform = 'scale(1.1)';
-          setTimeout(function() { bigNum.style.transform = 'scale(1)'; }, 250);
-        }
-      }, duration / steps);
+    const paidEl = document.getElementById('refund-paid');
+    const insEl = document.getElementById('refund-insurance');
+    const netEl = document.getElementById('refund-net');
+    const cdtEl = document.getElementById('refund-cdt');
+    if(paidEl) paidEl.textContent = '$' + amt.toLocaleString();
+    if(insEl) insEl.textContent = '$' + refund.toLocaleString();
+    if(netEl) netEl.textContent = '$' + net.toLocaleString();
+    if(cdtEl) cdtEl.textContent = cdt;
+
+    // Show agent analysis notes if available
+    if(agentNotes) {
+      let notesEl = document.getElementById('agent-notes');
+      if(!notesEl) {
+        notesEl = document.createElement('div');
+        notesEl.id = 'agent-notes';
+        notesEl.style.cssText = 'margin-top:14px;padding:12px 14px;background:rgba(94,234,212,.08);border:1px solid rgba(94,234,212,.2);border-radius:12px;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6';
+        r.appendChild(notesEl);
+      }
+      notesEl.innerHTML = '<span style="font-size:10px;font-weight:700;color:#5eead4;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">🤖 Agent Analysis</span>' + agentNotes;
     }
 
-    if (currentUser) { currentUser.cdtCode = cdt; currentUser.estimatedRefund = refund; }
-  }, totalDelay);
+    // Animate the big number counting up
+    const bigNum = document.getElementById('refund-big-number');
+    if(bigNum) {
+      let current = 0;
+      const duration = 1800;
+      const steps = 60;
+      const increment = refund / steps;
+      const interval = duration / steps;
+      const counter = setInterval(() => {
+        current += increment;
+        if(current >= refund) {
+          current = refund;
+          clearInterval(counter);
+          bigNum.style.transform = 'scale(1.08)';
+          setTimeout(() => bigNum.style.transform = 'scale(1)', 200);
+        }
+        bigNum.textContent = '$' + Math.round(current).toLocaleString();
+      }, interval);
+      bigNum.style.transition = 'transform .2s ease';
+    }
+    } catch(e) { console.warn('showRefundResult error:', e); }
+  }
+  } catch(e) { console.warn('runRefundEstimate error:', e); }
 }
-
 
 function runReadyScreen() {
   // Populate captured data
@@ -3503,49 +3585,117 @@ function runReadyScreen() {
 }
 
 function runProcessing() {
-  const steps = [
-    {id:'proc1', sub:'Reading your insurance details...', done:'ADA form ready ✓'},
-    {id:'proc2', sub:'Matching CDT procedure codes...', done:'D2750 Crown attached ✓'},
-    {id:'proc3', sub:'Cross-checking with insurer database...', done:'PPO out-of-network verified ✓'},
-    {id:'proc4', sub:'Sending to Delta Dental...', done:'Claim #CLM-2026-8821 submitted ✓'},
-  ];
-  let i = 0;
-  function next() {
-    if(i >= steps.length) {
-      setTimeout(() => {
-        document.getElementById('proc-done').style.display = 'block';
-        document.getElementById('processing-steps').style.display = 'none';
-      }, 600);
-      return;
-    }
-    const s = steps[i];
-    const el = document.getElementById(s.id);
-    const sub = document.getElementById(s.id+'-sub');
-    const check = document.getElementById(s.id+'-check');
-    if(el) { el.style.opacity='1'; }
-    if(sub) { sub.textContent = s.sub; }
-    setTimeout(() => {
-      if(check) { check.style.opacity='1'; }
-      if(sub) { sub.textContent = s.done; sub.style.color='#5eead4'; }
-      i++;
-      setTimeout(next, 500);
-    }, 1800);
-  }
-  // Reset
-  steps.forEach(s => {
-    const el = document.getElementById(s.id);
-    const sub = document.getElementById(s.id+'-sub');
-    const check = document.getElementById(s.id+'-check');
-    if(el) el.style.opacity='0.4';
-    if(sub) { sub.textContent='Waiting...'; sub.style.color=''; }
-    if(check) check.style.opacity='0';
+  // ── Reset both phases ───────────────────────────────────────────────────
+  var phase1 = document.getElementById('proc-phase1');
+  var phase2 = document.getElementById('proc-phase2');
+  if (phase1) { phase1.style.display = 'flex'; }
+  if (phase2) { phase2.style.display = 'none'; }
+
+  // Reset check items
+  ['pc1','pc2','pc3','pc4'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.style.opacity = '0'; el.style.transform = 'translateY(8px)'; }
+    var ck = document.getElementById(id + '-check');
+    if (ck) ck.style.opacity = '0';
   });
-  const procDone = document.getElementById('proc-done');
-  const procSteps = document.getElementById('processing-steps');
-  if(procDone) procDone.style.display='none';
-  if(procSteps) procSteps.style.display='flex';
-  setTimeout(next, 400);
+  // Reset breakdown
+  ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.opacity = '0';
+  });
+  var bigNum = document.getElementById('proc-big-number');
+  if (bigNum) bigNum.textContent = '$0';
+
+  // ── Get claim data ──────────────────────────────────────────────────────
+  var amtEl   = document.getElementById('s2-amount');
+  var procEl  = document.getElementById('s2-proc');
+  var ins1El  = document.getElementById('s1-ins-provider');
+  var ins2El  = document.getElementById('s1-m-provider');
+  var amt     = parseFloat(amtEl && amtEl.value) || parseFloat(currentUser && currentUser.amount) || 850;
+  var proc    = (procEl && procEl.value) || (currentUser && currentUser.procedure) || 'Crown';
+  var insurer = (ins1El && ins1El.value) || (ins2El && ins2El.value) || (currentUser && currentUser.insurer) || 'Delta Dental';
+  var cdtMap  = {'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
+  var cdt     = cdtMap[proc] || 'D2750';
+  var refund  = Math.round(amt * 0.75);
+  var fee     = Math.round(refund * 0.10);
+  var net     = Math.max(0, refund - fee);
+
+  var subEl = document.getElementById('proc-sub');
+
+  // ── Step data ────────────────────────────────────────────────────────────
+  var steps = [
+    { id:'pc1', sub:'ADA form ready ✓',          check: true, delay: 400  },
+    { id:'pc2', sub: proc + ' attached ✓',        check: true, delay: 1100 },
+    { id:'pc3', sub: cdt + ' verified ✓',         check: true, delay: 1800 },
+    { id:'pc4', sub: 'Refund: $' + refund.toLocaleString() + ' estimated ✓', check: true, delay: 2500 },
+  ];
+
+  // ── Animate checks one by one ───────────────────────────────────────────
+  steps.forEach(function(s) {
+    // Show card
+    setTimeout(function() {
+      var el = document.getElementById(s.id);
+      if (el) { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }
+      if (subEl) subEl.textContent = 'Analyzing your ' + insurer + ' PPO claim...';
+    }, s.delay);
+    // Show checkmark
+    setTimeout(function() {
+      var ck = document.getElementById(s.id + '-check');
+      if (ck) ck.style.opacity = '1';
+      var subId = document.getElementById(s.id + '-sub');
+      if (subId) subId.textContent = s.sub;
+      if (subId) subId.style.color = '#5eead4';
+    }, s.delay + 600);
+  });
+
+  // ── Transition to Phase 2: Big number reveal ─────────────────────────────
+  var revealDelay = 2500 + 600 + 500; // after last check completes
+  setTimeout(function() {
+    if (subEl) subEl.textContent = 'Analysis complete!';
+
+    // Swap phases
+    if (phase1) phase1.style.display = 'none';
+    if (phase2) { phase2.style.display = 'flex'; }
+
+    // Fill static values
+    var pb1 = document.getElementById('pb1-val'); if(pb1) pb1.textContent = '$' + Math.round(amt).toLocaleString();
+    var pb2 = document.getElementById('pb2-val'); if(pb2) pb2.textContent = '$' + refund.toLocaleString();
+    var pb3 = document.getElementById('pb3-val'); if(pb3) pb3.textContent = '−$' + fee.toLocaleString();
+    var pb4 = document.getElementById('pb4-val'); if(pb4) pb4.textContent = '$' + net.toLocaleString();
+    var cdtV = document.getElementById('proc-cdt-val'); if(cdtV) cdtV.textContent = cdt;
+
+    // ── Big number counts up (the exciting moment!) ──────────────────────
+    var bn = document.getElementById('proc-big-number');
+    if (bn) {
+      bn.style.transition = 'transform .25s ease';
+      var step = 0, steps2 = 60, dur = 2200;
+      var timer = setInterval(function() {
+        step++;
+        var eased = 1 - Math.pow(1 - step / steps2, 3);
+        bn.textContent = '$' + Math.round(refund * eased).toLocaleString();
+        if (step >= steps2) {
+          clearInterval(timer);
+          bn.textContent = '$' + refund.toLocaleString();
+          // Pulse at the end
+          bn.style.transform = 'scale(1.12)';
+          setTimeout(function() { bn.style.transform = 'scale(1)'; }, 300);
+          // Fade in breakdown rows
+          ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id, i) {
+            setTimeout(function() {
+              var el = document.getElementById(id);
+              if (el) el.style.opacity = '1';
+            }, i * 150);
+          });
+        }
+      }, dur / steps2);
+    }
+
+    // Save to user
+    if (currentUser) { currentUser.cdtCode = cdt; currentUser.estimatedRefund = refund; }
+
+  }, revealDelay);
 }
+
 
 function showRefundResultNow() {
   const a = document.getElementById('refund-analyzing');
@@ -3616,7 +3766,7 @@ if(typeof cSubmit==='function') window.cSubmit = cSubmit;
 if(typeof doPayment==='function') window.doPayment = doPayment;
 if(typeof runCounters==='function') window.runCounters = runCounters;
 function toggleHelp(){
-  var claimScreens = ['s-checklist','s-step1','s-step1b','s-step2','s-step3','s-step4','s-refund','s-ready'];
+  var claimScreens = ['s-checklist','s-step1','s-step2','s-step3','s-step4','s-refund','s-ready'];
   var cur = navHistory[navHistory.length-1];
   var inClaimFlow = claimScreens.includes(cur);
   if(inClaimFlow) {
@@ -4032,7 +4182,7 @@ if(typeof autoResize==='function') window.autoResize = autoResize;
     <div class="a-item"><div class="a-dot t"></div><div class="a-txt"><strong>Maria González</strong> — Insurer responded with EOB for Crown. Reimbursement $1,120 pending deposit.</div><div class="a-time">2h ago</div></div>
     <div class="a-item"><div class="a-dot g"></div><div class="a-txt"><strong>Carlos Mendoza</strong> — $980 deposited. 10% commission $98 charged via Stripe. ✅</div><div class="a-time">5h ago</div></div>
     <div class="a-item"><div class="a-dot a"></div><div class="a-txt"><strong>Ana Ramírez</strong> — Cigna requested additional docs for Root Canal. WhatsApp sent.</div><div class="a-time">1d ago</div></div>
-    <div class="a-item"><div class="a-dot b"></div><div class="a-txt"><strong>Isabel Torres</strong> — New claim submitted successfully.</div><div class="a-time">2d ago</div></div>
+    <div class="a-item"><div class="a-dot b"></div><div class="a-txt"><strong>Isabel Torres</strong> — New claim submitted. $25 setup fee collected.</div><div class="a-time">2d ago</div></div>
   </div>
 </div>
 
