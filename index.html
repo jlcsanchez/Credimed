@@ -1517,7 +1517,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Continue button -->
 
 <div style="margin-top:16px">
-  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px" disabled>
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1GoToReceipt&&window.s1GoToReceipt()" style="height:52px;font-size:15px" disabled>
     Continue — Add Receipt →
   </button>
 </div>
@@ -2594,11 +2594,7 @@ function s1EnableContinue(){
 }
 function s1TryEnableContinue(){
   var btn=document.getElementById('s1-continue-btn');
-  if(btn) btn.disabled=!(window._s1CardOk && window._s2ReceiptOk);
-  // Auto-advance when both docs confirmed
-  if(window._s1CardOk && window._s2ReceiptOk){
-    setTimeout(function(){ try{ s1Continue(); }catch(e){} }, 400);
-  }
+  if(btn) btn.disabled=!window._s1CardOk;
 }
 // Expose all to window
 window.s1UseCard=s1UseCard;
