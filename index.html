@@ -2515,8 +2515,10 @@ function s1UseCard(){
   if(memEl)  memEl.readOnly=false;
   var provider=(provEl&&provEl.value.trim())||(currentUser&&currentUser.insurer)||'';
   var member=(memEl&&memEl.value.trim())||(currentUser&&currentUser.memberId)||'';
-  if(!provider||!member){return;}
-  if(currentUser){currentUser.insurer=provider;currentUser.memberId=member;}
+  if(currentUser){
+    if(provider) currentUser.insurer=provider;
+    if(member)   currentUser.memberId=member;
+  }
   ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
     var el=document.getElementById(id);
     if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.8';}
