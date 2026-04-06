@@ -3837,7 +3837,12 @@ function runProcessing() {
          var p1=document.getElementById('proc-phase1');
          var p2=document.getElementById('proc-phase2');
          if(p1){p1.style.display='none';}
-         if(p2){p2.style.display='flex';p2.style.opacity='1';}
+         if(p2){
+           p2.style.cssText='display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto;';
+         }
+         // Make sure the processing screen itself scrolls
+         var procScreen=document.getElementById('s-processing');
+         if(procScreen){procScreen.style.overflowY='auto';}
          var v={'pb1-val':'$'+Math.round(amt).toLocaleString(),'pb2-val':'$'+refund.toLocaleString(),'pb3-val':'−$'+fee.toLocaleString(),'pb4-val':'$'+net.toLocaleString(),'proc-cdt-val':cdt};
          Object.keys(v).forEach(function(key){var el=document.getElementById(key);if(el)el.textContent=v[key];});
          var bigEl=document.getElementById('proc-big-number');
