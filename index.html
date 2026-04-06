@@ -2366,7 +2366,7 @@ function goTo(id, param) {
  if (id === 's-step4') { try { initContract(); } catch(e){} }
  if (id === 's-dashboard') { try { initDashboard(); } catch(e){} }
  try { updateHelpBtn(id); } catch(e){}
- if (id === 's-processing') setTimeout(function(){ try{ runProcessing(); }catch(e){} }, 300);;
+ if (id === 's-processing' && !window._skipProcessingAnim) setTimeout(function(){ try{ runProcessing(); }catch(e){} }, 300);
  if (id === 's-refund') setTimeout(function(){ try{ runRefundEstimate(); }catch(e){ console.warn('refund error',e); } }, 300);;
  if (id === 's-ready') setTimeout(function(){ try{ runReadyScreen(); }catch(e){} }, 100);
  if (id === 's-step5') {
@@ -3400,12 +3400,11 @@ function doPayment(method){
  }
  document.getElementById('s5-form').style.display='none';
  document.getElementById('s5-success').classList.add('show'); try{launchConfetti();}catch(e){}
- // Start progress bar and auto-advance to processing
- setTimeout(() => {
- const bar = document.getElementById('s5-auto-bar');
- if(bar) bar.style.width = '100%';
- }, 100);
- // removed: was incorrectly routing back to processing after contract
+ // Auto-advance to dashboard after 2.5 seconds
+ setTimeout(function(){
+   if(window.goTo) window.goTo('s-dashboard');
+   try{ initDashboard(); }catch(e){}
+ }, 2500);
 }
 
 // 
