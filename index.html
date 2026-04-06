@@ -2477,14 +2477,9 @@ function s1ShowExtracted(){
     var el=document.getElementById(id);
     if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.85';}
   });
-  // Hide confirm banner — scan already auto-confirms
-  var banner=document.getElementById('s1-confirm-banner');
-  if(banner) banner.style.display='none';
-  // Enable the Continue button immediately
-  window._s1CardOk=true;
+  // Enable Continue button directly after scan — no extra confirm needed
   var nextBtn=document.getElementById('s1-next-btn');
   if(nextBtn) nextBtn.disabled=false;
-  s1EnableContinue();
   s1Scanned=true;
 }
 function s1Reset(){
@@ -2610,11 +2605,12 @@ function s1CheckManual(){
   var banner = document.getElementById('s1-confirm-banner');
   var badge  = document.getElementById('s1-badge');
   if(p && m){
-    // Auto-enable Continue as soon as both fields have values
-    window._s1CardOk = true;
-    if(currentUser){ currentUser.insurer = p; currentUser.memberId = m; }
-    if(banner) banner.style.display = 'none';
-    s1TryEnableContinue();
+    if(!window._s1CardOk){
+      if(banner){
+        banner.style.display='flex';
+        setTimeout(function(){ banner.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 150);
+      }
+    }
   } else {
     window._s1CardOk = false;
     if(banner) banner.style.display = 'none';
