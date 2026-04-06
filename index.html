@@ -1286,16 +1286,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-step1" style="background:var(--bg)">
   <div class="top-bar">
-    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">Step 1 · 25% done</div></div>
+    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">Step 1 of 3</div></div>
     <div class="prog-row"><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
   </div>
   <div class="hero-dark">
-    <h2>💳 Insurance Card</h2>
-    <p>Enter your US PPO insurance details — Member ID &amp; Group #</p>
+    <h2>📋 Your Documents</h2>
+    <p>Insurance card + dental receipt — we handle the rest</p>
   </div>
   <div class="body-card" style="padding-bottom:100px">
 
-<!-- ─── PANEL 1: SCAN CARD (optional) ─── -->
+<!-- ─── SECTION 1: INSURANCE CARD ─── -->
+
+<div style="display:flex;align-items:center;gap:8px;margin:4px 0 10px"><div style="width:28px;height:28px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">1</div><div style="font-size:14px;font-weight:700;color:var(--slate)">Insurance Card</div><div style="flex:1;height:1px;background:var(--border)"></div><div id="s1-section-badge" style="display:none;font-size:11px;font-weight:700;color:#059669;background:#dcfce7;padding:2px 10px;border-radius:20px">✓ Done</div></div>
 
 <div style="background:white;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:6px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
   <div style="background:linear-gradient(135deg,#f0fdfa 0%,#fafffe 100%);border-bottom:1px solid #99f6e4;padding:11px 16px;display:flex;align-items:center;gap:8px">
@@ -1379,16 +1381,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- Continue button -->
 
-<div id="s1-badge" style="display:none"></div>
-
-<!-- ─── DIVIDER ─── -->
-
-<div style="display:flex;align-items:center;gap:10px;margin:20px 4px 10px">
-  <div style="flex:1;height:2px;background:var(--border)"></div>
-  <div style="font-size:12px;font-weight:700;color:var(--teal);letter-spacing:1px;padding:0 8px">🧾 STEP 2 — DENTAL RECEIPT</div>
-  <div style="flex:1;height:2px;background:var(--border)"></div>
+<div style="margin-top:16px">
+  <button class="btn-primary" id="s1-next-btn" onclick="window.s1GoToReceipt&&window.s1GoToReceipt()" style="height:52px;font-size:15px" disabled>
+    Continue — Add Receipt →
+  </button>
 </div>
 
+<div id="s1-badge" style="display:none"></div>
+
+  </div>
+
+  <input type="file" id="s1-camera" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
+  <input type="file" id="s1-upload" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: STEP 1b — DENTAL RECEIPT
+══════════════════════════════════════ -->
+
+<div class="screen" id="s-step1b" style="background:var(--bg)">
+  <div class="top-bar">
+    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">Step 2 · 50% done</div></div>
+    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
+  </div>
+  <div class="hero-dark">
+    <h2>🧾 Dental Receipt</h2>
+    <p>Upload your receipt or enter the treatment details manually</p>
+  </div>
+  <div class="body-card" style="padding-bottom:100px">
+
+<!-- ─── SECTION 2: DENTAL RECEIPT ─── -->
+
+<div style="display:flex;align-items:center;gap:8px;margin:18px 0 10px"><div style="width:28px;height:28px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">2</div><div style="font-size:14px;font-weight:700;color:var(--slate)">Dental Receipt</div><div style="flex:1;height:1px;background:var(--border)"></div><div id="s2-section-badge" style="display:none;font-size:11px;font-weight:700;color:#059669;background:#dcfce7;padding:2px 10px;border-radius:20px">✓ Done</div></div>
 <!-- ─── PANEL 1: SCAN RECEIPT (optional) ─── -->
 
 <div style="background:white;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:6px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
@@ -1457,8 +1481,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)"></div>
     </div>
 
+```
 <!-- Live refund pill -->
-
 <div id="live-refund-pill" style="display:none;background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:12px 14px;margin-top:4px;margin-bottom:4px">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
     <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">💰 Estimated Refund</div>
@@ -1474,6 +1498,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
+```
 
   </div>
 </div>
@@ -1497,21 +1522,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Continue button -->
 
 <div style="margin-top:16px">
-  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px">
-    Submit Claim →
-  </button>
-</div>
-
-<div style="margin-top:16px">
-  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px">
-    Submit Claim →
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:52px;font-size:15px" disabled>
+    Submit my claim →
   </button>
 </div>
 
   </div>
 
-  <input type="file" id="s1-camera" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
-  <input type="file" id="s1-upload" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
   <input type="file" id="s2-camera" accept="image/*" data-och="s2HandleFile(this)" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
   <input type="file" id="s2-upload" accept="image/*,application/pdf" data-och="s2HandleFile(this)" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
 </div>
@@ -2208,7 +2225,6 @@ function goTo(id, param) {
     var s2flds = document.getElementById('s2-fields'); if(s2flds) s2flds.style.display='none';
     var s1flds = document.getElementById('s1-fields'); if(s1flds) s1flds.style.display='none';
     var cbtn = document.getElementById('s1-continue-btn'); if(cbtn) cbtn.disabled=true;
-    var nbtn = document.getElementById('s1-next-btn'); if(nbtn) nbtn.disabled=true;
   }
   const navScreens = ['s-dashboard','s-claims','s-support','s-profile'];
   var bn = document.getElementById('bottom-nav');
@@ -2474,6 +2490,11 @@ function s1ShowExtracted(){
   // Enable the Continue button
   s1EnableContinue();
   s1Scanned=true;
+  // Scroll user to receipt section
+  setTimeout(function(){
+    var s2empty = document.getElementById('s2-empty');
+    if(s2empty) s2empty.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 600);
 }
 function s1Reset(){
   s1Scanned=false;
@@ -2501,10 +2522,8 @@ function s1Reset(){
 function s1UseCard(){
   var provider=document.getElementById('s1-ins-provider')?.value.trim()||'';
   var member=document.getElementById('s1-ins-member')?.value.trim()||'';
-  if(currentUser){
-    if(provider) currentUser.insurer=provider;
-    if(member) currentUser.memberId=member;
-  }
+  if(!provider||!member){return;}
+  if(currentUser){currentUser.insurer=provider;currentUser.memberId=member;}
   // Lock the visible manual-entry fields
   ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
     var el=document.getElementById(id);
@@ -2517,9 +2536,14 @@ function s1UseCard(){
   if(badge) badge.style.display='block';
   // Enable Continue button
   window._s1CardOk=true;
-  var nextBtn=document.getElementById('s1-next-btn');
-  if(nextBtn) nextBtn.disabled=false;
   s1EnableContinue();
+  // Scroll user down to receipt section
+  setTimeout(function(){
+    var s2sec = document.getElementById('s2-section-badge');
+    if(s2sec) s2sec.closest && s2sec.closest('[style]') && s2sec.scrollIntoView({behavior:'smooth',block:'start'});
+    var s2empty = document.getElementById('s2-empty');
+    if(s2empty) s2empty.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 300);
 }
 function s1EditFields(){
   // Unlock the visible manual-entry fields
@@ -2552,6 +2576,9 @@ function s2Confirm(){
   var badge=document.getElementById('s2-badge');
   if(badge) badge.style.display='block';
   s2ConfirmForStep1();
+  // Update section badge
+  var b2 = document.getElementById('s2-section-badge');
+  if(b2) b2.style.display = 'block';
   // Scroll to Continue button
   setTimeout(function(){
     var btn=document.getElementById('s1-continue-btn');
@@ -2583,8 +2610,17 @@ function s1EnableContinue(){
   if(s2area){ s2area.style.borderColor='var(--teal)'; s2area.style.boxShadow='0 0 0 3px rgba(13,148,136,.15)'; }
 }
 function s1TryEnableContinue(){
-  var btn=document.getElementById('s1-next-btn');
-  if(btn) btn.disabled=!window._s1CardOk;
+  var btn = document.getElementById('s1-continue-btn');
+  var both = window._s1CardOk && window._s2ReceiptOk;
+  if(btn) {
+    btn.disabled = !both;
+    btn.textContent = both ? '🚀 Submit my claim →' : (window._s1CardOk ? 'Next: confirm your receipt →' : 'Step 1: confirm your insurance card');
+  }
+  // Show section badges
+  var b1 = document.getElementById('s1-section-badge');
+  var b2 = document.getElementById('s2-section-badge');
+  if(b1) b1.style.display = window._s1CardOk ? 'block' : 'none';
+  if(b2) b2.style.display = window._s2ReceiptOk ? 'block' : 'none';
 }
 // Expose all to window
 window.s1UseCard=s1UseCard;
@@ -3728,6 +3764,7 @@ if(typeof tPw==='function') window.tPw = tPw;
 if(typeof doRegister==='function') window.doRegister = doRegister;
 if(typeof doLogin==='function') window.doLogin = doLogin;
 if(typeof s1Continue==='function') window.s1Continue = s1Continue;
+if(typeof s1Submit==='function') window.s1Submit = s1Submit;
 if(typeof s1Reset==='function') window.s1Reset = s1Reset;
 if(typeof s1ToggleManual==='function') window.s1ToggleManual = s1ToggleManual;
 if(typeof s1UseCard==='function') window.s1UseCard = s1UseCard;
@@ -6544,17 +6581,77 @@ bigNum.dataset.current = target;
 };
 
 window.s1GoToReceipt = function s1GoToReceipt() {
+// Read values — unlock fields first to ensure iOS returns value correctly
 var provEl = document.getElementById(‘s1-ins-provider’);
 var memEl  = document.getElementById(‘s1-ins-member’);
+var grpEl  = document.getElementById(‘s1-ins-group’);
+// Temporarily ensure readOnly is off so .value is readable on all browsers
 if(provEl) provEl.readOnly = false;
 if(memEl)  memEl.readOnly  = false;
 var provider = (provEl && provEl.value.trim()) || (currentUser && currentUser.insurer) || ‘’;
 var member   = (memEl  && memEl.value.trim())  || (currentUser && currentUser.memberId) || ‘’;
-if(currentUser){ if(provider) currentUser.insurer=provider; if(member) currentUser.memberId=member; }
+var group    = (grpEl  && grpEl.value.trim())  || ‘’;
+if (!provider) {
+if(provEl){ provEl.style.borderColor=‘var(–red)’; provEl.placeholder=‘Required — e.g. Delta Dental’; }
+return;
+}
+if (currentUser) { currentUser.insurer = provider; currentUser.memberId = member; currentUser.group = group; }
 window._s1CardOk = true;
-// Scroll to receipt section
-var receiptSection = document.getElementById(‘s2-empty’) || document.getElementById(‘s2-manual-card’);
-if(receiptSection) receiptSection.scrollIntoView({behavior:‘smooth’, block:‘start’});
+if (window.goTo) window.goTo(‘s-step1b’);
+};
+
+window.s1Submit = function s1Submit() {
+// Collect insurance
+var provEl = document.getElementById(‘s1-ins-provider’);
+var memEl  = document.getElementById(‘s1-ins-member’);
+var grpEl  = document.getElementById(‘s1-ins-group’);
+if(provEl) provEl.readOnly = false;
+if(memEl)  memEl.readOnly  = false;
+var provider = (provEl && provEl.value.trim()) || (currentUser && currentUser.insurer) || ‘’;
+var member   = (memEl  && memEl.value.trim())  || (currentUser && currentUser.memberId) || ‘’;
+var group    = (grpEl  && grpEl.value.trim())  || ‘’;
+// Collect receipt
+var dentist = (document.getElementById(‘s2-dentist’) && document.getElementById(‘s2-dentist’).value.trim()) || ‘’;
+var proc    = (document.getElementById(‘s2-proc’) && document.getElementById(‘s2-proc’).value) || ‘’;
+var amount  = parseFloat(document.getElementById(‘s2-amount’) && document.getElementById(‘s2-amount’).value) || 0;
+var date    = (document.getElementById(‘s2-date’) && document.getElementById(‘s2-date’).value) || ‘’;
+var city    = (document.getElementById(‘s2-city’) && document.getElementById(‘s2-city’).value.trim()) || ‘’;
+// Validate
+if (!provider) {
+var el = document.getElementById(‘s1-ins-provider’);
+if(el){ el.style.borderColor=’#ef4444’; el.focus(); el.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+return;
+}
+if (!dentist) {
+var el = document.getElementById(‘s2-dentist’);
+if(el){ el.style.borderColor=’#ef4444’; el.focus(); el.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+return;
+}
+if (!proc) {
+var el = document.getElementById(‘s2-proc’);
+if(el){ el.style.borderColor=’#ef4444’; el.focus(); el.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+return;
+}
+if (!amount) {
+var el = document.getElementById(‘s2-amount’);
+if(el){ el.style.borderColor=’#ef4444’; el.focus(); el.scrollIntoView({behavior:‘smooth’,block:‘center’}); }
+return;
+}
+// Save to user
+if (currentUser) {
+currentUser.insurer   = provider;
+currentUser.memberId  = member;
+currentUser.group     = group;
+currentUser.procedure = proc;
+currentUser.dentist   = dentist;
+currentUser.amount    = amount;
+currentUser.date      = date;
+currentUser.city      = city;
+}
+window._s1CardOk    = true;
+window._s2ReceiptOk = true;
+if (window.goTo) window.goTo(‘s-processing’);
+try { runProcessing(); } catch(e) {}
 };
 
 window.runProcessingDone = function() {
