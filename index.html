@@ -1379,41 +1379,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- Continue button -->
-
-<div style="margin-top:16px">
-  <button class="btn-primary" id="s1-next-btn" onclick="window.s1GoToReceipt&&window.s1GoToReceipt()" style="height:52px;font-size:15px" disabled>
-    Continue — Add Receipt →
-  </button>
-</div>
-
 <div id="s1-badge" style="display:none"></div>
-
-  </div>
-
-  <input type="file" id="s1-camera" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
-  <input type="file" id="s1-upload" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
-</div>
-
-<!-- ══════════════════════════════════════
-     SCREEN: STEP 1b — DENTAL RECEIPT
-══════════════════════════════════════ -->
-
-<div class="screen" id="s-step1b" style="background:var(--bg)">
-  <div class="top-bar">
-    <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">Step 2 · 50% done</div></div>
-    <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
-  </div>
-  <div class="hero-dark">
-    <h2>🧾 Dental Receipt</h2>
-    <p>Upload your receipt or enter the treatment details manually</p>
-  </div>
-  <div class="body-card" style="padding-bottom:100px">
 
 <!-- ─── SECTION 2: DENTAL RECEIPT ─── -->
 
-<div style="display:flex;align-items:center;gap:8px;margin:18px 0 10px"><div style="width:28px;height:28px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">2</div><div style="font-size:14px;font-weight:700;color:var(--slate)">Dental Receipt</div><div style="flex:1;height:1px;background:var(--border)"></div><div id="s2-section-badge" style="display:none;font-size:11px;font-weight:700;color:#059669;background:#dcfce7;padding:2px 10px;border-radius:20px">✓ Done</div></div>
-<!-- ─── PANEL 1: SCAN RECEIPT (optional) ─── -->
+<div style="display:flex;align-items:center;gap:8px;margin:18px 0 10px">
+  <div style="width:28px;height:28px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;color:white;font-weight:700;flex-shrink:0">2</div>
+  <div style="font-size:14px;font-weight:700;color:var(--slate)">Dental Receipt</div>
+  <div style="flex:1;height:1px;background:var(--border)"></div>
+  <div id="s2-section-badge" style="display:none;font-size:11px;font-weight:700;color:#059669;background:#dcfce7;padding:2px 10px;border-radius:20px">✓ Done</div>
+</div>
+
+<!-- ─── SCAN RECEIPT (optional) ─── -->
 
 <div style="background:white;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:6px;box-shadow:0 2px 10px rgba(0,0,0,.05)">
   <div style="background:linear-gradient(135deg,#f0fdfa 0%,#fafffe 100%);border-bottom:1px solid #99f6e4;padding:11px 16px;display:flex;align-items:center;gap:8px">
@@ -1425,8 +1402,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="auto-badge" id="s2-auto" style="display:none">✓ Auto-filled</div>
   </div>
   <div style="padding:14px 16px">
-    <!-- Upload tap target -->
-    <div id="s2-empty" data-oc="triggerUpload('s2-camera')" onclick="window.triggerUpload&&window.triggerUpload('s2-camera')" style="display:flex;gap:0;background:var(--bg);border:2px dashed var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .2s,background .2s">
+    <div id="s2-empty" data-oc="triggerUpload('s2-camera')" onclick="window.triggerUpload&&window.triggerUpload('s2-camera')" style="display:flex;background:var(--bg);border:2px dashed var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .2s">
       <div style="flex:1;padding:12px 14px;display:flex;align-items:center;gap:12px">
         <div style="width:38px;height:38px;background:var(--teal-xlight);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🧾</div>
         <div>
@@ -1436,10 +1412,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
       <div style="width:40px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0"><span style="color:white;font-size:16px">→</span></div>
     </div>
-    <!-- Photo preview after scan -->
     <div id="s2-file-state" style="display:none;border-radius:10px;overflow:hidden;margin-top:10px;position:relative;border:2px solid var(--teal);height:110px">
       <img id="s2-img" style="display:none;width:100%;height:110px;object-fit:cover">
-      <div id="s2-receipt-card" style="display:none;width:100%;height:110px;background:linear-gradient(135deg,#1e3a5f,#0D9488);padding:12px 14px;position:relative;overflow:hidden">
+      <div id="s2-receipt-card" style="display:none;width:100%;height:110px;background:linear-gradient(135deg,#1e3a5f,#0D9488);padding:12px 14px">
         <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:8px">DENTAL RECEIPT</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
           <div><div style="font-size:8px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2px">Dentist</div><div style="font-size:11px;font-weight:600;color:white" id="s2-rc-dentist">—</div></div>
@@ -1450,12 +1425,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
       <button data-oc="s2Reset()" onclick="window.s2Reset&&window.s2Reset()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.4);border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:white;cursor:pointer">✕ Remove</button>
     </div>
-    <!-- OCR progress bar -->
     <div class="ocr-card" id="s2-ocr" style="margin-top:10px;margin-bottom:0"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title" id="s2-ocr-title">Reading receipt...</div><div class="ocr-sub-txt" id="s2-ocr-sub">Extracting details</div><div class="ocr-progress"><div class="ocr-fill" id="s2-ocr-fill"></div></div></div></div>
   </div>
 </div>
 
-<!-- Visual divider with "OR" -->
+<!-- OR divider -->
 
 <div style="display:flex;align-items:center;gap:10px;margin:10px 4px">
   <div style="flex:1;height:1px;background:var(--border)"></div>
@@ -1463,10 +1437,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div style="flex:1;height:1px;background:var(--border)"></div>
 </div>
 
-<!-- ─── PANEL 2: MANUAL ENTRY (always visible) ─── -->
+<!-- ─── MANUAL RECEIPT ENTRY ─── -->
 
 <div class="card" id="s2-manual-card" style="margin-bottom:0">
-  <div class="card-head"><h3>🦷 Treatment Details</h3><div class="auto-badge" id="s2-auto" style="display:none">✓ Auto-filled</div></div>
+  <div class="card-head"><h3>🦷 Treatment Details</h3><div class="auto-badge" id="s2-auto-2" style="display:none">✓ Auto-filled</div></div>
   <div class="card-body" id="s2-card-body">
     <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="e.g. Dr. Pérez — Los Cabos Dental" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
     <div class="field-row">
@@ -1480,57 +1454,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label>
       <div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" oninput="window.s2CheckFields&&window.s2CheckFields();window.updateRefundPill&&window.updateRefundPill(parseFloat(this.value)||0)"></div>
     </div>
-
-```
-<!-- Live refund pill -->
-<div id="live-refund-pill" style="display:none;background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:12px 14px;margin-top:4px;margin-bottom:4px">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-    <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">💰 Estimated Refund</div>
-    <div style="font-size:10px;color:rgba(255,255,255,.3)">~75% OON avg.</div>
-  </div>
-  <div style="font-family:'Playfair Display',Georgia,serif;font-size:36px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:8px" id="pill-big-number">$0</div>
-  <div style="display:flex;flex-direction:column;gap:4px">
-    <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.5)">You paid</span><span style="font-size:12px;font-weight:700;color:white" id="pill-paid">$0</span></div>
-    <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.25);border-radius:6px"><span style="font-size:12px;color:#5eead4">Insurance reimburses (~75%)</span><span style="font-size:12px;font-weight:700;color:#5eead4" id="pill-insures">$0</span></div>
-    <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.4)">Credimed fee (10%)</span><span style="font-size:12px;color:rgba(255,255,255,.4)" id="pill-fee">−$0</span></div>
-    <div style="display:flex;justify-content:space-between;padding:6px 9px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:6px"><span style="font-size:13px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:13px;font-weight:700;color:#4ade80" id="pill-net">$0</span></div>
-  </div>
-</div>
-
-<div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
-```
-
+    <div id="live-refund-pill" style="display:none;background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:12px 14px;margin-top:4px;margin-bottom:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">💰 Estimated Refund</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3)">~75% OON avg.</div>
+      </div>
+      <div style="font-family:'Playfair Display',Georgia,serif;font-size:36px;font-weight:700;color:#5eead4;line-height:1;margin-bottom:8px" id="pill-big-number">$0</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.5)">You paid</span><span style="font-size:12px;font-weight:700;color:white" id="pill-paid">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.25);border-radius:6px"><span style="font-size:12px;color:#5eead4">Insurance reimburses (~75%)</span><span style="font-size:12px;font-weight:700;color:#5eead4" id="pill-insures">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.4)">Credimed fee (10%)</span><span style="font-size:12px;color:rgba(255,255,255,.4)" id="pill-fee">−$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 9px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:6px"><span style="font-size:13px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:13px;font-weight:700;color:#4ade80" id="pill-net">$0</span></div>
+      </div>
+    </div>
+    <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana..."></div>
   </div>
 </div>
-
-<!-- Hidden for compat -->
 
 <div id="s2-fields" style="display:none"></div>
 
-<!-- Confirm banner -->
+<!-- Receipt confirm banner -->
 
 <div id="s2-confirm-banner" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:14px 16px;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;margin-bottom:10px">
   <div><div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px">✅ Details look correct?</div><div style="font-size:11px;color:#6b7280">Review and confirm to continue</div></div>
   <div style="display:flex;gap:8px;flex-shrink:0">
-    <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" data-oc="s2EditFields()" onclick="window.s2EditFields&&window.s2EditFields()">✏️ Edit</button>
-    <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" data-oc="s2Confirm()" onclick="window.s2Confirm&&window.s2Confirm()">✓ Confirm →</button>
+    <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" onclick="window.s2EditFields&&window.s2EditFields()">✏️ Edit</button>
+    <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" onclick="window.s2Confirm&&window.s2Confirm()">✓ Confirm →</button>
   </div>
 </div>
 <div class="err-banner" id="s2-err"><span>⚠️</span><span id="s2-err-txt"></span></div>
 <div id="s2-badge" style="display:none"></div>
 
-<!-- Continue button -->
+<!-- ─── SUBMIT BUTTON ─── -->
 
-<div style="margin-top:16px">
-  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:52px;font-size:15px" disabled>
-    Submit my claim →
+<div style="margin-top:20px;padding-bottom:8px">
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Submit&&window.s1Submit()" style="height:56px;font-size:16px;font-weight:700" disabled>
+    Step 1: confirm your insurance card
   </button>
 </div>
 
   </div>
 
-  <input type="file" id="s2-camera" accept="image/*" data-och="s2HandleFile(this)" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
-  <input type="file" id="s2-upload" accept="image/*,application/pdf" data-och="s2HandleFile(this)" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
+  <input type="file" id="s1-camera" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
+  <input type="file" id="s1-upload" accept="image/*" data-och="s1HandleFile(this)" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
+  <input type="file" id="s2-camera" accept="image/*" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
+  <input type="file" id="s2-upload" accept="image/*,application/pdf" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
 </div>
 
 <!-- ══════════════════════════════════════
