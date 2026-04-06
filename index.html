@@ -1517,8 +1517,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Continue button -->
 
 <div style="margin-top:16px">
-  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px">
-    See my refund estimate →
+  <button class="btn-primary" id="s1-continue-btn" onclick="window.s1Continue&&window.s1Continue()" style="height:52px;font-size:15px" disabled>
+    Continue — Add Receipt →
   </button>
 </div>
 
@@ -2609,16 +2609,24 @@ window.s2ConfirmForStep1=s2ConfirmForStep1;
 window.s1EnableContinue=s1EnableContinue;
 window.s1TryEnableContinue=s1TryEnableContinue;
 function s1CheckManual(){
-  const p = document.getElementById('s1-ins-provider')?.value.trim();
-  const m = document.getElementById('s1-ins-member')?.value.trim();
+  var p = document.getElementById('s1-ins-provider')?.value.trim();
+  var m = document.getElementById('s1-ins-member')?.value.trim();
+  var banner = document.getElementById('s1-confirm-banner');
+  var badge  = document.getElementById('s1-badge');
   if(p && m){
-    window._s1CardOk=true;
-    var nextBtn=document.getElementById('s1-next-btn');
-    if(nextBtn) nextBtn.disabled=false;
+    // Only show the confirm banner if the card hasn't already been confirmed
+    if(!window._s1CardOk){
+      if(banner) {
+        banner.style.display = 'flex';
+        setTimeout(function(){ banner.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 150);
+      }
+    }
   } else {
-    window._s1CardOk=false;
-    var nextBtn=document.getElementById('s1-next-btn');
-    if(nextBtn) nextBtn.disabled=true;
+    // Fields cleared — reset confirmed state and hide banner/badge
+    window._s1CardOk = false;
+    if(banner) banner.style.display = 'none';
+    if(badge)  badge.style.display  = 'none';
+    s1TryEnableContinue();
   }
 }
 function s1ToggleManual(){const m=document.getElementById('s1-manual');const open=m.style.display==='block';m.style.display=open?'none':'block';document.getElementById('s1-manual-toggle').textContent=open?'✏️ Enter manually':'× Hide manual entry';if(!open)m.scrollIntoView({behavior:'smooth',block:'start'})}
