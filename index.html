@@ -3771,6 +3771,7 @@ if(typeof doRegister==='function') window.doRegister = doRegister;
 if(typeof doLogin==='function') window.doLogin = doLogin;
 if(typeof s1Continue==='function') window.s1Continue = s1Continue;
 if(typeof s1Submit==='function') window.s1Submit = s1Submit;
+if(typeof runProcessing==='function') window.runProcessing = runProcessing;
 if(typeof s1Reset==='function') window.s1Reset = s1Reset;
 if(typeof s1ToggleManual==='function') window.s1ToggleManual = s1ToggleManual;
 if(typeof s1UseCard==='function') window.s1UseCard = s1UseCard;
@@ -6655,7 +6656,7 @@ currentUser.date = date; currentUser.city = city;
 }
 window._s1CardOk = true; window._s2ReceiptOk = true;
 if (window.goTo) window.goTo(‘s-processing’);
-try { runProcessing(); } catch(e) { console.error(‘runProcessing:’, e); }
+setTimeout(function(){ try { (window.runProcessing||runProcessing)(); } catch(e) { console.error(‘runProcessing:’, e); } }, 50);
 };
 
 window.runProcessingDone = function() {
