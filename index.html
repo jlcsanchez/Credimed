@@ -2450,80 +2450,76 @@ function s1StartScan(){
 }
 function s1ShowExtracted(){
   const d=s1Insurers[Math.floor(Math.random()*s1Insurers.length)];
+  // Hide scan overlay
   var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
-  document.getElementById('s1-provider').textContent=d.provider;
-  document.getElementById('s1-member').textContent=d.member;
-  document.getElementById('s1-group').textContent=d.group;
-  document.getElementById('s1-name-vis').textContent=currentUser?(currentUser.first+' '+currentUser.last):'--';
-  document.getElementById('s1-plan-vis').textContent=d.plan;
-  document.getElementById('s1-ins-provider').value=d.provider;
-  document.getElementById('s1-ins-member').value=d.member;
-  document.getElementById('s1-ins-group').value=d.group;
-  ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(id=>document.getElementById(id).classList.add('prefilled'));
+  // Hide OCR progress bar
   document.getElementById('s1-ocr').classList.remove('show');
-  // Fill the editable fields
-  var provEl = document.getElementById('s1-ins-provider');
-  var memEl  = document.getElementById('s1-ins-member');
-  var grpEl  = document.getElementById('s1-ins-group');
-  if(provEl) provEl.value = d.provider;
-  if(memEl)  memEl.value  = d.member;
-  if(grpEl)  grpEl.value  = d.group;
-  // Lock the card body
-  var s1body=document.getElementById('s1-card-body');
-  if(s1body){ s1body.style.pointerEvents='none'; s1body.style.opacity='0.75'; }
-  // Show fields card + confirm banner
-  var fields = document.getElementById('s1-fields');
-  if(fields) fields.style.display = 'block';
-  var banner = document.getElementById('s1-confirm-banner');
+  // Fill visible manual-entry fields
+  var provEl=document.getElementById('s1-ins-provider');
+  var memEl=document.getElementById('s1-ins-member');
+  var grpEl=document.getElementById('s1-ins-group');
+  if(provEl){provEl.value=d.provider;provEl.classList.add('prefilled');}
+  if(memEl){memEl.value=d.member;memEl.classList.add('prefilled');}
+  if(grpEl){grpEl.value=d.group;grpEl.classList.add('prefilled');}
+  // Show Auto-filled badge in scan panel header
+  var autoBadge=document.getElementById('s1-auto');
+  if(autoBadge) autoBadge.style.display='inline';
+  // Show confirm banner and scroll to it
+  var banner=document.getElementById('s1-confirm-banner');
   if(banner){
-    banner.style.display = 'flex';
-    setTimeout(function(){ banner.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 150);
+    banner.style.display='flex';
+    setTimeout(function(){banner.scrollIntoView({behavior:'smooth',block:'nearest'});},200);
   }
-  var tog2=document.getElementById('s1-manual-toggle'); if(tog2) tog2.style.display='none';
   s1Scanned=true;
 }
 function s1Reset(){
   s1Scanned=false;
-  window._s1CardOk = false;
+  window._s1CardOk=false;
+  // Restore scan panel upload button
   var ph=document.getElementById('s1-ph'); if(ph) ph.style.display='flex';
   var prev=document.getElementById('s1-preview'); if(prev) prev.style.display='none';
   var img=document.getElementById('s1-img'); if(img) img.src='';
-  var man=document.getElementById('s1-manual'); if(man) man.style.display='none';
-  var tog=document.getElementById('s1-manual-toggle'); if(tog){tog.style.display='block';tog.textContent='✏️ Enter manually';}
+  // Hide OCR bar and confirm banner and badge
+  var ocr=document.getElementById('s1-ocr'); if(ocr) ocr.classList.remove('show');
   var banner=document.getElementById('s1-confirm-banner'); if(banner) banner.style.display='none';
   var badge=document.getElementById('s1-badge'); if(badge) badge.style.display='none';
+  // Clear and unlock the visible manual-entry fields
+  ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.value='';el.readOnly=false;el.style.pointerEvents='';el.style.opacity='';el.classList.remove('prefilled');}
+  });
+  // Hide auto-filled badge
+  var autoBadge=document.getElementById('s1-auto'); if(autoBadge) autoBadge.style.display='none';
+  // Clear file inputs
   var cam=document.getElementById('s1-camera'); if(cam) cam.value='';
   var upl=document.getElementById('s1-upload'); if(upl) upl.value='';
   s1TryEnableContinue();
 }
 function s1UseCard(){
-  var provider = document.getElementById('s1-ins-provider')?.value.trim()||'';
-  var member   = document.getElementById('s1-ins-member')?.value.trim()||'';
-  if(!provider || !member){ return; }
-  if(currentUser){ currentUser.insurer=provider; currentUser.memberId=member; }
-  // Lock card body
-  var s1body=document.getElementById('s1-card-body');
-  if(s1body){ s1body.style.pointerEvents='none'; s1body.style.opacity='0.75'; }
-  // Hide confirm banner, show done badge
+  var provider=document.getElementById('s1-ins-provider')?.value.trim()||'';
+  var member=document.getElementById('s1-ins-member')?.value.trim()||'';
+  if(!provider||!member){return;}
+  if(currentUser){currentUser.insurer=provider;currentUser.memberId=member;}
+  // Lock the visible manual-entry fields
+  ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.8';}
+  });
+  // Hide confirm banner, mark done
   var banner=document.getElementById('s1-confirm-banner');
   if(banner) banner.style.display='none';
   var badge=document.getElementById('s1-badge');
   if(badge) badge.style.display='block';
   s1EnableContinue();
-  // Scroll to receipt section
-  setTimeout(function(){
-    var r=document.getElementById('s2-empty');
-    if(r) r.scrollIntoView({behavior:'smooth', block:'center'});
-  }, 350);
 }
 function s1EditFields(){
-  // Unlock insurance fields
-  var s1body=document.getElementById('s1-card-body');
-  if(s1body){ s1body.style.pointerEvents=''; s1body.style.opacity=''; }
-  // Hide done badge
+  // Unlock the visible manual-entry fields
+  ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.readOnly=false;el.style.pointerEvents='';el.style.opacity='';}
+  });
   var badge=document.getElementById('s1-badge');
   if(badge) badge.style.display='none';
-  // Show confirm banner for re-confirmation
   var banner=document.getElementById('s1-confirm-banner');
   if(banner) banner.style.display='flex';
   window._s1CardOk=false;
