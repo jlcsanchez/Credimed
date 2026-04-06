@@ -2477,9 +2477,12 @@ function s1ShowExtracted(){
     var el=document.getElementById(id);
     if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.85';}
   });
-  // Enable Continue button directly after scan — no extra confirm needed
-  var nextBtn=document.getElementById('s1-next-btn');
-  if(nextBtn) nextBtn.disabled=false;
+  // Show confirm banner so user can review before continuing
+  var banner=document.getElementById('s1-confirm-banner');
+  if(banner){
+    banner.style.display='flex';
+    setTimeout(function(){banner.scrollIntoView({behavior:'smooth',block:'nearest'});},200);
+  }
   s1Scanned=true;
 }
 function s1Reset(){
