@@ -2228,15 +2228,21 @@ function goTo(id, param) {
   }
   if (id === 's-step1') {
     if(!currentUser) { goTo('s-auth','register'); return; }
-    // Reset upload areas to initial state
-    window._s1CardOk = false; window._s2ReceiptOk = false;
-    var s1ph = document.getElementById('s1-ph'); if(s1ph) s1ph.style.display='flex';
-    var s1prev = document.getElementById('s1-preview'); if(s1prev) s1prev.style.display='none';
-    var s2emp = document.getElementById('s2-empty'); if(s2emp) s2emp.style.display='flex';
-    var s2fs = document.getElementById('s2-file-state'); if(s2fs) s2fs.style.display='none';
-    var s2flds = document.getElementById('s2-fields'); if(s2flds) s2flds.style.display='none';
-    var s1flds = document.getElementById('s1-fields'); if(s1flds) s1flds.style.display='none';
-    var cbtn = document.getElementById('s1-continue-btn'); if(cbtn) cbtn.disabled=true;
+    // Only do a full reset if no fields are filled (fresh entry)
+    var _existingDentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
+    var _existingProvider = (document.getElementById('s1-ins-provider') && document.getElementById('s1-ins-provider').value.trim()) || '';
+    if(!_existingDentist && !_existingProvider) {
+      // Fresh start — reset flags and upload UI
+      window._s1CardOk = false; window._s2ReceiptOk = false;
+      var s1ph = document.getElementById('s1-ph'); if(s1ph) s1ph.style.display='flex';
+      var s1prev = document.getElementById('s1-preview'); if(s1prev) s1prev.style.display='none';
+      var s2emp = document.getElementById('s2-empty'); if(s2emp) s2emp.style.display='flex';
+      var s2fs = document.getElementById('s2-file-state'); if(s2fs) s2fs.style.display='none';
+      var s2flds = document.getElementById('s2-fields'); if(s2flds) s2flds.style.display='none';
+      var s1flds = document.getElementById('s1-fields'); if(s1flds) s1flds.style.display='none';
+    }
+    // Always re-evaluate button state based on actual field values
+    setTimeout(function(){ try{ s1TryEnableContinue(); }catch(e){} }, 50);
   }
   const navScreens = ['s-dashboard','s-claims','s-support','s-profile'];
   var bn = document.getElementById('bottom-nav');
@@ -2315,6 +2321,18 @@ function startNewClaim() {
     const screen = document.getElementById(target);
     if(screen) { screen.classList.add('active'); screen.style.display='block'; screen.scrollTop=0; }
   }
+  // Clear all form fields so re-evaluation starts clean
+  ['s1-ins-provider','s1-ins-member','s1-ins-group','s1-m-provider','s1-m-member','s1-m-group'].forEach(function(id){
+    var el=document.getElementById(id); if(el){ el.value=''; el.readOnly=false; el.style.opacity=''; el.style.pointerEvents=''; el.classList.remove('prefilled'); }
+  });
+  ['s2-dentist','s2-date','s2-amount','s2-city'].forEach(function(id){
+    var el=document.getElementById(id); if(el){ el.value=''; el.readOnly=false; el.style.opacity=''; el.style.pointerEvents=''; el.classList.remove('prefilled'); }
+  });
+  var s2proc=document.getElementById('s2-proc'); if(s2proc){ s2proc.selectedIndex=0; s2proc.disabled=false; s2proc.style.opacity=''; s2proc.classList.remove('prefilled'); }
+  var s1auto=document.getElementById('s1-auto'); if(s1auto) s1auto.style.display='none';
+  var s2auto=document.getElementById('s2-auto'); if(s2auto) s2auto.classList.remove('show');
+  var s2body=document.getElementById('s2-card-body'); if(s2body){ s2body.style.pointerEvents=''; s2body.style.opacity=''; }
+  var pill=document.getElementById('live-refund-pill'); if(pill) pill.style.display='none';
 }
 function doLogout() {
   currentUser = null;
@@ -2635,7 +2653,7 @@ function s1TryEnableContinue(){
                  (document.getElementById('s1-m-provider') && document.getElementById('s1-m-provider').value.trim()) || '';
   var member   = (document.getElementById('s1-ins-member') && document.getElementById('s1-ins-member').value.trim()) ||
                  (document.getElementById('s1-m-member') && document.getElementById('s1-m-member').value.trim()) || '';
-  var cardFieldsOk = !!(provider && member);
+  var cardFieldsOk = !!(provider); // member optional for button unlock — validated at submit
 
   var cardOk    = window._s1CardOk || cardFieldsOk;
   var receiptOk = window._s2ReceiptOk || receiptFieldsOk;
@@ -2843,7 +2861,9 @@ function s2RunOCR(){
     if(s2bodyOCR){ s2bodyOCR.style.pointerEvents='none'; s2bodyOCR.style.opacity='0.75'; }
     var _dummy=null; if(_dummy){ _dummy.style.opacity = '0.85'; }
 
-    // Keep Continue disabled -- only Confirm → enables it
+    // Re-evaluate the main submit button now that receipt fields are filled
+    try { s1TryEnableContinue(); } catch(e) {}
+    // Keep legacy s2-continue-btn in sync
     var s2btn = document.getElementById('s2-continue-btn');
     if(s2btn) s2btn.disabled = true;
 
@@ -2853,6 +2873,9 @@ function s2RunOCR(){
       s2banner.style.display = 'flex';
       setTimeout(function(){ s2banner.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 150);
     }
+
+    // Re-evaluate main submit button — fields are now filled
+    try { s1TryEnableContinue(); } catch(e) {}
 
     // Show summary card
     setTimeout(function(){
