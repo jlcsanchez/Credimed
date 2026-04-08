@@ -7598,11 +7598,24 @@ window.closeLightbox = window.closeLightbox || function(){};
         <!-- Form -->
         <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:24px">
           <div style="margin-bottom:16px">
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:8px">Email</label>
+            <input
+              id="admin-email-input"
+              type="email"
+              placeholder="CEO@credimed.us"
+              autocomplete="email"
+              style="width:100%;height:52px;padding:0 16px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;color:white;font-size:16px;outline:none;transition:border-color .2s"
+              onfocus="this.style.borderColor='#0D9488'"
+              onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
+              onkeydown="if(event.key==='Enter')document.getElementById('admin-pwd-input').focus()"
+            />
+          </div>
+          <div style="margin-bottom:16px">
             <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:8px">Password</label>
             <input
               id="admin-pwd-input"
               type="password"
-              placeholder="Enter admin password"
+              placeholder="Enter password"
               autocomplete="current-password"
               style="width:100%;height:52px;padding:0 16px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;color:white;font-size:16px;outline:none;transition:border-color .2s"
               onfocus="this.style.borderColor='#0D9488'"
@@ -7611,7 +7624,7 @@ window.closeLightbox = window.closeLightbox || function(){};
             />
           </div>
           <div id="admin-login-err" style="display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#fca5a5;margin-bottom:14px;text-align:center">
-            Incorrect password. Try again.
+            Incorrect email or password. Try again.
           </div>
           <button
             id="admin-login-btn"
@@ -7632,23 +7645,24 @@ window.closeLightbox = window.closeLightbox || function(){};
 
     document.body.appendChild(overlay);
 
-    // Focus password field
+    // Focus email field on open
     setTimeout(function() {
-      var inp = document.getElementById('admin-pwd-input');
+      var inp = document.getElementById('admin-email-input');
       if (inp) inp.focus();
     }, 100);
   }
 
-  // Password check
+  // Email + Password check
   window._credimedAdminLogin = function() {
+    var email = ((document.getElementById('admin-email-input') || {}).value || '').toLowerCase().trim();
     var pwd = (document.getElementById('admin-pwd-input') || {}).value || '';
     var err = document.getElementById('admin-login-err');
     var btn = document.getElementById('admin-login-btn');
 
-    // ⚠️ Cambia esta contraseña antes de hacer deploy
+    var ADMIN_EMAIL = 'ceo@credimed.us';
     var ADMIN_PASSWORD = 'Credimed2026!';
 
-    if (pwd === ADMIN_PASSWORD) {
+    if (email === ADMIN_EMAIL && pwd === ADMIN_PASSWORD) {
       // Animate button
       btn.textContent = '✓ Access granted';
       btn.style.background = '#22c55e';
