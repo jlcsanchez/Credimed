@@ -2318,7 +2318,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 // 
 // GLOBAL STATE & NAVIGATION
 // 
-const users = {};
+const users = {
+  'ceo@credimed.us': {first:'CEO',last:'Credimed',email:'ceo@credimed.us',phone:'',pass:'Credimed2026!',role:'admin',hasCompletedOnce:true}
+};
 let currentUser = null;
 let navHistory = ['s-landing'];
 let lang = 'en';
@@ -2582,6 +2584,12 @@ function doLogin(){
 }
 function loginUser(u){
  currentUser=u;
+ // Admin goes to admin panel
+ if(u.role === 'admin') {
+   if(window.switchPanel) window.switchPanel('admin');
+   else { var r=document.getElementById('radio-admin'); if(r)r.click(); }
+   return;
+ }
  // New users see checklist, returning users go to dashboard
  const isNew = !u.hasCompletedOnce;
  if(isNew) { u.hasCompletedOnce = true; goTo('s-checklist'); }
