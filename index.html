@@ -3807,6 +3807,37 @@ function runProcessing() {
  var cdt=cdtMap[proc]||'D2750',refund=Math.round(amt*.75),fee=Math.round(refund*.10),net=Math.max(0,refund-fee);
  if(currentUser){currentUser.cdtCode=cdt;currentUser.estimatedRefund=refund;}
  var sub=document.getElementById('proc-sub');if(sub)sub.textContent='Analyzing your '+insurer+' PPO claim...';
+
+ // ── Save claim to AWS backend ─────────────────────────────────
+ (function saveClaim(){
+   var payload = {
+     email:     (currentUser && currentUser.email)     || '',
+     firstName: (currentUser && currentUser.first)     || '',
+     lastName:  (currentUser && currentUser.last)      || '',
+     phone:     (currentUser && currentUser.phone)     || '',
+     insurer:   insurer,
+     memberId:  (currentUser && currentUser.memberId)  || '',
+     groupId:   (currentUser && currentUser.groupId)   || '',
+     procedure: proc,
+     cdtCode:   cdt,
+     amount:    String(amt),
+     estimatedRefund: String(refund),
+     city:      (currentUser && currentUser.city)      || '',
+     dentist:   (currentUser && currentUser.dentist)   || '',
+   };
+   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/claims', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify(payload)
+   })
+   .then(function(r){ return r.json(); })
+   .then(function(data){
+     if(data.claimId && currentUser) currentUser.claimId = data.claimId;
+     console.log('Claim saved:', data.claimId);
+   })
+   .catch(function(err){ console.warn('Claim save failed:', err); });
+ })();
+ // ─────────────────────────────────────────────────────────────
  var steps=[{id:'pc1',done:'ADA form ready '},{id:'pc2',done:proc+' -- '+cdt+' attached '},{id:'pc3',done:'PPO out-of-network verified '},{id:'pc4',done:'Refund $'+refund.toLocaleString()+' estimated '}];
  var svgCheck = '<svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M1.5 6L6 10.5L14.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
  steps.forEach(function(s,i){
@@ -7834,5 +7865,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
-
 </html>
