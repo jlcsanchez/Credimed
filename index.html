@@ -170,7 +170,7 @@ SCREEN: AUTH
 .auth-form-card{background:white;margin:16px 16px 0;border-radius:16px;padding:24px 20px;box-shadow:0 8px 40px rgba(0,0,0,.15);width:calc(100% - 32px)}
 .pw-wrap{position:relative}
 .pw-wrap input{padding-right:48px}
-.pw-toggle{position:absolute;right:0;top:0;width:48px;height:46px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;font-size:18px;color:var(--slate-light)}
+.pw-toggle{position:absolute;right:0;top:0;width:48px;height:46px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;font-size:18px;color:var(--slate-light)}.pw-toggle::before{content:"👁"}
 .pw-strength{display:flex;gap:4px;margin-top:6px}
 .pw-seg{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .3s}
 .pw-seg.weak{background:var(--red)}
@@ -485,6 +485,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 .demo-wrapper{position:fixed;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;overflow:hidden;background:#fff}
 .demo-topbar{display:none}
+/* Show topbar when admin panel is active on mobile */
+#radio-admin:checked ~ .demo-topbar{display:flex !important;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;z-index:1000;}
 .desktop-hero{display:none}
 .demo-logo{display:none;align-items:center;gap:8px;flex-shrink:0}
 @media(min-width:480px){.demo-logo{display:flex}}
@@ -510,7 +512,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .patient-label{margin-top:16px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3)}
 
 /* ADMIN PANEL */
-.admin-panel{background:var(--bg);overflow-y:auto}
+.admin-panel{background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;width:100%;height:100%}
 .admin-header{background:linear-gradient(135deg,#0f172a 0%,#134e4a 100%);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .admin-logo{display:flex;align-items:center;gap:8px}
 .admin-logo-icon{width:34px;height:34px;background:var(--teal);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
@@ -2553,7 +2555,7 @@ function checkStrAndMatch(){ try{checkStr();}catch(e){} try{checkMatch();}catch(
 window.checkStrAndMatch = checkStrAndMatch;
 function checkStr(){const pw=document.getElementById('r-pass').value;const segs=[document.getElementById('ps1'),document.getElementById('ps2'),document.getElementById('ps3'),document.getElementById('ps4')];const lbl=document.getElementById('ps-lbl');segs.forEach(s=>{s.className='pw-seg'});if(!pw){lbl.textContent='';return}let sc=0;if(pw.length>=8)sc++;if(/[A-Z]/.test(pw))sc++;if(/[0-9]/.test(pw))sc++;if(/[^A-Za-z0-9]/.test(pw))sc++;const cls=sc<=1?'weak':sc<=2?'fair':'good';const txt=sc<=1?'Weak':sc<=2?'Fair':sc===3?'Good':'Strong';const fill=sc<=1?1:sc<=2?2:sc===3?3:4;for(let i=0;i<fill;i++)segs[i].classList.add(cls);lbl.className='pw-str-lbl '+cls;lbl.textContent=txt}
 function checkMatch(){const p1=document.getElementById('r-pass').value;const p2=document.getElementById('r-pass2').value;const m=document.getElementById('pw-match');if(!p2){m.textContent='';m.className='pw-match';return false}const ok=p1===p2;m.className='pw-match '+(ok?'ok':'no');m.textContent=ok?' Passwords match':' Passwords do not match';return ok}
-function tPw(id,btn){const inp=document.getElementById(id);const show=inp.type==='password';inp.type=show?'text':'password';btn.textContent=show?'':''}
+function tPw(id,btn){const inp=document.getElementById(id);const show=inp.type==='password';inp.type=show?'text':'password';btn.style.cssText=show?'font-size:18px':'font-size:14px;opacity:.5';}
 function doRegister(){
  const first=document.getElementById('r-first').value.trim();
  const last=document.getElementById('r-last').value.trim();
