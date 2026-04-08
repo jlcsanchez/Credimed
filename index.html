@@ -7563,4 +7563,142 @@ window.closeLightbox = window.closeLightbox || function(){};
 /* desktop-hero visibility controlled by CSS media queries */
 </script>
 
+<script>
+/* ============================================================
+   ADMIN ACCESS via URL hash  —  credimed.us#admin
+   Password-protected. Not visible to regular patients.
+   ============================================================ */
+(function() {
+  function showAdminLogin() {
+    // Build login overlay
+    var overlay = document.createElement('div');
+    overlay.id = 'admin-login-overlay';
+    overlay.style.cssText = [
+      'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999',
+      'background:#0a0f1e',
+      'display:flex;align-items:center;justify-content:center',
+      'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
+    ].join(';');
+
+    overlay.innerHTML = `
+      <div style="width:100%;max-width:360px;padding:0 24px">
+        <!-- Logo -->
+        <div style="text-align:center;margin-bottom:32px">
+          <svg width="52" height="52" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:12px">
+            <circle cx="36" cy="36" r="35" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#0D9488" stroke-width="2.5"/>
+            <rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/>
+            <rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/>
+          </svg>
+          <div style="font-size:11px;font-weight:700;letter-spacing:3px;color:#5eead4;text-transform:uppercase;margin-bottom:6px">Credimed</div>
+          <div style="font-size:22px;font-weight:700;color:white">Admin Access</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">Operations Dashboard</div>
+        </div>
+
+        <!-- Form -->
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:24px">
+          <div style="margin-bottom:16px">
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:8px">Password</label>
+            <input
+              id="admin-pwd-input"
+              type="password"
+              placeholder="Enter admin password"
+              autocomplete="current-password"
+              style="width:100%;height:52px;padding:0 16px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;color:white;font-size:16px;outline:none;transition:border-color .2s"
+              onfocus="this.style.borderColor='#0D9488'"
+              onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
+              onkeydown="if(event.key==='Enter')document.getElementById('admin-login-btn').click()"
+            />
+          </div>
+          <div id="admin-login-err" style="display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#fca5a5;margin-bottom:14px;text-align:center">
+            Incorrect password. Try again.
+          </div>
+          <button
+            id="admin-login-btn"
+            style="width:100%;height:52px;background:#0D9488;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s"
+            onmouseover="this.style.background='#0a7a70'"
+            onmouseout="this.style.background='#0D9488'"
+            onclick="window._credimedAdminLogin()"
+          >
+            Enter Dashboard →
+          </button>
+        </div>
+
+        <div style="text-align:center;margin-top:20px">
+          <a href="/" style="font-size:12px;color:rgba(255,255,255,0.25);text-decoration:none">← Back to patient app</a>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Focus password field
+    setTimeout(function() {
+      var inp = document.getElementById('admin-pwd-input');
+      if (inp) inp.focus();
+    }, 100);
+  }
+
+  // Password check
+  window._credimedAdminLogin = function() {
+    var pwd = (document.getElementById('admin-pwd-input') || {}).value || '';
+    var err = document.getElementById('admin-login-err');
+    var btn = document.getElementById('admin-login-btn');
+
+    // ⚠️ Cambia esta contraseña antes de hacer deploy
+    var ADMIN_PASSWORD = 'Credimed2026!';
+
+    if (pwd === ADMIN_PASSWORD) {
+      // Animate button
+      btn.textContent = '✓ Access granted';
+      btn.style.background = '#22c55e';
+      setTimeout(function() {
+        // Remove overlay
+        var overlay = document.getElementById('admin-login-overlay');
+        if (overlay) overlay.remove();
+        // Switch to admin panel
+        if (window.switchPanel) {
+          window.switchPanel('admin');
+        } else {
+          // Fallback: trigger radio
+          var radio = document.getElementById('radio-admin');
+          if (radio) radio.click();
+        }
+      }, 600);
+    } else {
+      // Shake effect
+      if (err) err.style.display = 'block';
+      btn.style.background = '#ef4444';
+      btn.textContent = 'Incorrect password';
+      setTimeout(function() {
+        btn.style.background = '#0D9488';
+        btn.textContent = 'Enter Dashboard →';
+      }, 1500);
+      var inp = document.getElementById('admin-pwd-input');
+      if (inp) { inp.value = ''; inp.focus(); }
+    }
+  };
+
+  // Check hash on load
+  function checkHash() {
+    if (window.location.hash === '#admin') {
+      showAdminLogin();
+    }
+  }
+
+  // Check immediately and on hash change
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkHash);
+  } else {
+    checkHash();
+  }
+  window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#admin') {
+      var existing = document.getElementById('admin-login-overlay');
+      if (!existing) showAdminLogin();
+    }
+  });
+})();
+</script>
+
 </html>
