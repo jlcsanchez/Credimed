@@ -2344,7 +2344,7 @@ function goTo(id, param) {
  var pp = document.querySelector('.patient-panel');
  if(pp) pp.scrollTop = 0;
  });
- if (id === 's-auth') { try { initAuth(param); } catch(e){} }
+ if (id === 's-auth') { try { initAuth(param); } catch(e){} window._claimSaved = false; }
  // Update theme-color to match screen background
  var tc = document.querySelector('meta[name=theme-color]');
  if(tc){
