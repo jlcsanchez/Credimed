@@ -2912,7 +2912,7 @@ function s1Continue(){
  window._s1CardOk = true;
  window._s2ReceiptOk = true;
 
- if (window.goTo) window.goTo('s-processing');
+ // Navigation to s-processing handled by s1Submit
 }
 
 
@@ -6921,12 +6921,7 @@ window.s1Submit = function s1Submit() {
   // Navigate to processing
   if(!window.goTo){ console.error('goTo not available'); return; }
   window.goTo('s-processing');
-  setTimeout(function(){
-    try{
-      if(typeof runProcessing==='function') runProcessing();
-      else if(window.runProcessing) window.runProcessing();
-    }catch(e){ console.warn('runProcessing error:', e); }
-  }, 150);
+  // runProcessing is triggered automatically by goTo handler
 };
 
 window.runProcessingDone = function() {
