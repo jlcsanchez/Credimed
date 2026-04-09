@@ -2344,7 +2344,7 @@ function goTo(id, param) {
  var pp = document.querySelector('.patient-panel');
  if(pp) pp.scrollTop = 0;
  });
- if (id === 's-auth') { try { initAuth(param); } catch(e){} window._claimSaved = false; }
+ if (id === 's-auth') { try { initAuth(param); } catch(e){} window._lastClaimSave = null; }
  // Update theme-color to match screen background
  var tc = document.querySelector('meta[name=theme-color]');
  if(tc){
@@ -3808,8 +3808,13 @@ function runProcessing() {
  var sub=document.getElementById('proc-sub');if(sub)sub.textContent='Analyzing your '+insurer+' PPO claim...';
 
  // -- Save claim to AWS backend ---------------------------------
- if(window._claimSaved){ console.log('Duplicate runProcessing call - skipping save'); return; }
- window._claimSaved = true;
+ // Timestamp guard: block any duplicate within 10 seconds
+ var now = Date.now();
+ if(window._lastClaimSave && (now - window._lastClaimSave) < 10000){
+   console.log('Duplicate blocked - last save was ' + (now - window._lastClaimSave) + 'ms ago');
+   return;
+ }
+ window._lastClaimSave = now;
  (function saveClaim(){
    var payload = {
      email:     (currentUser && currentUser.email)     || '',
@@ -7193,6 +7198,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
+
 <script>
 /* -- LOAD REAL CLAIMS FROM AWS ------------------------------------ */
 window.CREDIMED_API = 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com';
@@ -7292,4 +7298,5 @@ window.loadRealClaims = async function() {
   };
 })();
 </script>
+
 </html>
