@@ -3808,6 +3808,8 @@ function runProcessing() {
  var sub=document.getElementById('proc-sub');if(sub)sub.textContent='Analyzing your '+insurer+' PPO claim...';
 
  // -- Save claim to AWS backend ---------------------------------
+ if(window._claimSaved){ console.log('Duplicate runProcessing call - skipping save'); return; }
+ window._claimSaved = true;
  (function saveClaim(){
    var payload = {
      email:     (currentUser && currentUser.email)     || '',
