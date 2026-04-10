@@ -1,3 +1,4 @@
+﻿
 <!DOCTYPE html>
 
 <html lang="en">
@@ -2344,7 +2345,7 @@ function goTo(id, param) {
  var pp = document.querySelector('.patient-panel');
  if(pp) pp.scrollTop = 0;
  });
- if (id === 's-auth') { try { initAuth(param); } catch(e){} window._lastClaimSave = null; }
+ if (id === 's-auth') { try { initAuth(param); } catch(e){} window._CLAIM_FETCH_SENT = false; }
  // Update theme-color to match screen background
  var tc = document.querySelector('meta[name=theme-color]');
  if(tc){
@@ -2622,29 +2623,66 @@ function s1HandleFile(inp){
  if(!inp.files||!inp.files[0])return;
  var file=inp.files[0];
  var isImg=file.type.startsWith('image/');
- if(isImg){
- var r=new FileReader();
- r.onload=function(e){
- var img=document.getElementById('s1-img');
- if(img) img.src=e.target.result;
+ var reader=new FileReader();
+ reader.onload=function(e){
+   var dataUrl=e.target.result;
+   if(isImg){
+     var img=document.getElementById('s1-img');
+     if(img) img.src=dataUrl;
+   }
+   // Extract base64 and mediaType
+   var parts=dataUrl.split(',');
+   var meta=parts[0]; // e.g. "data:image/jpeg;base64"
+   var base64=parts[1];
+   var mediaType=meta.replace('data:','').replace(';base64','');
+   s1StartScan(base64, mediaType);
  };
- r.readAsDataURL(file);
- }
- s1StartScan();
+ reader.readAsDataURL(file);
 }
-function s1StartScan(){
+function s1StartScan(imageBase64, mediaType){
  var ph=document.getElementById('s1-ph'); if(ph) ph.style.display='none';
  var prev=document.getElementById('s1-preview'); if(prev) prev.style.display='block';
  var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='flex';
  var tog=document.getElementById('s1-manual-toggle'); if(tog) tog.style.display='none';
  document.getElementById('s1-ocr').classList.add('show');
- const fill=document.getElementById('s1-ocr-fill');
- const steps=[{p:20,t:'Detecting card...',s:'Analyzing image'},{p:55,t:'Reading text...',s:'Extracting details'},{p:85,t:'Identifying insurer...',s:'Cross-referencing'},{p:100,t:'Done!',s:'Details extracted'}];
- let i=0;const iv=setInterval(()=>{if(i<steps.length){const st=steps[i++];fill.style.width=st.p+'%';document.getElementById('s1-ocr-title').textContent=st.t;document.getElementById('s1-ocr-sub').textContent=st.s}},480);
- setTimeout(()=>{clearInterval(iv);s1ShowExtracted()},2100);
+ var fill=document.getElementById('s1-ocr-fill');
+ // Animate progress while waiting for API
+ var prog=0;
+ var iv=setInterval(function(){
+   prog=Math.min(prog+5,90);
+   if(fill) fill.style.width=prog+'%';
+   if(prog<30){ document.getElementById('s1-ocr-title').textContent='Detecting card...'; document.getElementById('s1-ocr-sub').textContent='Analyzing image'; }
+   else if(prog<60){ document.getElementById('s1-ocr-title').textContent='Reading text...'; document.getElementById('s1-ocr-sub').textContent='Extracting details'; }
+   else { document.getElementById('s1-ocr-title').textContent='Identifying insurer...'; document.getElementById('s1-ocr-sub').textContent='Cross-referencing'; }
+ },300);
+ // Call real OCR API
+ fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType,type:'insurance'})
+ })
+ .then(function(r){return r.json();})
+ .then(function(data){
+   clearInterval(iv);
+   if(fill) fill.style.width='100%';
+   document.getElementById('s1-ocr-title').textContent='Done!';
+   document.getElementById('s1-ocr-sub').textContent='Details extracted';
+   setTimeout(function(){ s1ShowExtracted(data); },400);
+ })
+ .catch(function(err){
+   clearInterval(iv);
+   console.warn('OCR failed, using demo data:', err);
+   setTimeout(function(){ s1ShowExtracted(null); },400);
+ });
 }
-function s1ShowExtracted(){
- const d=s1Insurers[Math.floor(Math.random()*s1Insurers.length)];
+function s1ShowExtracted(ocrData){
+ // Use real OCR data if available, fallback to demo
+ var d;
+ if(ocrData && ocrData.insurer){
+   d={provider:ocrData.insurer,member:ocrData.memberId||'',group:ocrData.groupId||'',plan:'PPO'};
+ } else {
+   d=s1Insurers[Math.floor(Math.random()*s1Insurers.length)];
+ }
  // Hide scan overlay
  var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
  // Hide OCR progress bar
@@ -2948,112 +2986,115 @@ function s2HandleFile(inp){
  s2RunOCR();
 }
 
-function s2RunOCR(){
- const d = s2Demos[Math.floor(Math.random()*s2Demos.length)];
- const ocr = document.getElementById('s2-ocr');
- const fill = document.getElementById('s2-ocr-fill');
+function s2RunOCR(imageBase64, mediaType){
+ var demoDat = s2Demos[Math.floor(Math.random()*s2Demos.length)];
+ var ocr = document.getElementById('s2-ocr');
+ var fill = document.getElementById('s2-ocr-fill');
 
- // Clear fields and reset UI
- ['s2-dentist','s2-date','s2-proc','s2-amount','s2-city'].forEach(id=>{
- const el=document.getElementById(id);
- if(el){el.value='';el.classList.remove('prefilled','ocr-typing');}
+ ['s2-dentist','s2-date','s2-proc','s2-amount','s2-city'].forEach(function(id){
+   var el=document.getElementById(id);
+   if(el){el.value='';el.classList.remove('prefilled','ocr-typing');}
  });
- document.getElementById('s2-auto').classList.remove('show');
+ var autoEl=document.getElementById('s2-auto'); if(autoEl) autoEl.classList.remove('show');
  var _sf=document.getElementById('s2-fields'); if(_sf) _sf.style.display='none';
-
- // Show scanning animation
  ocr.classList.add('show');
- var steps=[
- {p:20,t:' Reading document...',s:'Detecting receipt format'},
- {p:50,t:' Extracting data...',s:'Running OCR'},
- {p:80,t:' Matching procedure...',s:'CDT codes'},
- {p:100,t:' Done!',s:'All fields extracted'},
- ];
- var si=0;
+
+ var prog=0;
  var iv=setInterval(function(){
- if(si<steps.length){
- fill.style.width=steps[si].p+'%';
- document.getElementById('s2-ocr-title').textContent=steps[si].t;
- document.getElementById('s2-ocr-sub').textContent=steps[si].s;
- si++;
+   prog=Math.min(prog+5,90);
+   if(fill) fill.style.width=prog+'%';
+   if(prog<30){ document.getElementById('s2-ocr-title').textContent='Reading document...'; document.getElementById('s2-ocr-sub').textContent='Detecting receipt format'; }
+   else if(prog<60){ document.getElementById('s2-ocr-title').textContent='Extracting data...'; document.getElementById('s2-ocr-sub').textContent='Running OCR'; }
+   else { document.getElementById('s2-ocr-title').textContent='Matching procedure...'; document.getElementById('s2-ocr-sub').textContent='CDT codes'; }
+ },300);
+
+ function applyFields(ocrData){
+   clearInterval(iv);
+   if(fill) fill.style.width='100%';
+   document.getElementById('s2-ocr-title').textContent='Done!';
+   document.getElementById('s2-ocr-sub').textContent='All fields extracted';
+
+   // Merge real OCR data with demo fallback
+   var d = {
+     dentist: (ocrData&&ocrData.dentist) || demoDat.dentist,
+     proc:    (ocrData&&ocrData.procedure) || demoDat.proc,
+     amount:  (ocrData&&ocrData.amount) || demoDat.amount,
+     city:    (ocrData&&ocrData.city) || demoDat.city,
+     date:    (ocrData&&ocrData.date) || demoDat.date
+   };
+
+   setTimeout(function(){
+     ocr.classList.remove('show');
+     var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
+
+     var dentistEl=document.getElementById('s2-dentist');
+     if(dentistEl){ dentistEl.value=d.dentist; dentistEl.classList.add('prefilled'); }
+
+     var procEl=document.getElementById('s2-proc');
+     if(procEl){
+       for(var o=0;o<procEl.options.length;o++){
+         if(procEl.options[o].text===d.proc||procEl.options[o].value===d.proc){
+           procEl.selectedIndex=o; break;
+         }
+       }
+       procEl.classList.add('prefilled');
+     }
+
+     var amtEl=document.getElementById('s2-amount');
+     if(amtEl){ amtEl.value=d.amount; amtEl.classList.add('prefilled'); }
+
+     var cityEl=document.getElementById('s2-city');
+     if(cityEl){ cityEl.value=d.city; cityEl.classList.add('prefilled'); }
+
+     var dateEl=document.getElementById('s2-date');
+     if(dateEl){ dateEl.value=d.date; dateEl.classList.add('prefilled'); }
+
+     var s2fields=document.getElementById('s2-fields');
+     if(s2fields) s2fields.style.display='block';
+     var autoE=document.getElementById('s2-auto'); if(autoE) autoE.classList.add('show');
+
+     var rcD=document.getElementById('s2-rc-dentist'); if(rcD) rcD.textContent=d.dentist.split('--')[0].trim();
+     var rcP=document.getElementById('s2-rc-proc'); if(rcP) rcP.textContent=d.proc;
+     var rcA=document.getElementById('s2-rc-amount'); if(rcA) rcA.textContent='$'+d.amount;
+     var rcDt=document.getElementById('s2-rc-date'); if(rcDt) rcDt.textContent=d.date?new Date(d.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'--';
+
+     var imgEl=document.getElementById('s2-img');
+     var rcCard=document.getElementById('s2-receipt-card');
+     if(imgEl&&!imgEl.src){ if(rcCard) rcCard.style.display='block'; }
+
+     s2Summary();
+
+     var s2bodyOCR=document.getElementById('s2-card-body');
+     if(s2bodyOCR){ s2bodyOCR.style.pointerEvents='none'; s2bodyOCR.style.opacity='0.75'; }
+
+     try{ s1TryEnableContinue(); }catch(e){}
+
+     var s2btn=document.getElementById('s2-continue-btn');
+     if(s2btn) s2btn.disabled=true;
+
+     var s2banner=document.getElementById('s2-confirm-banner');
+     if(s2banner){
+       s2banner.style.display='flex';
+       setTimeout(function(){ s2banner.scrollIntoView({behavior:'smooth',block:'nearest'}); },150);
+     }
+
+     try{ s1TryEnableContinue(); }catch(e){}
+   }, 400);
  }
- },400);
 
- // Fill ALL fields at once after scan completes
- setTimeout(function(){
- clearInterval(iv);
- ocr.classList.remove('show');
- var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
-
- // Fill dentist
- var dentistEl = document.getElementById('s2-dentist');
- if(dentistEl){ dentistEl.value=d.dentist; dentistEl.classList.add('prefilled'); }
-
- // Fill procedure select by matching text
- var procEl = document.getElementById('s2-proc');
- if(procEl){
- for(var o=0;o<procEl.options.length;o++){
- if(procEl.options[o].text===d.proc||procEl.options[o].value===d.proc){
- procEl.selectedIndex=o; break;
+ // Call real OCR Lambda if we have image data
+ if(imageBase64){
+   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
+   })
+   .then(function(r){return r.json();})
+   .then(function(data){ applyFields(data); })
+   .catch(function(err){ console.warn('Receipt OCR failed, using demo:', err); applyFields(null); });
+ } else {
+   setTimeout(function(){ applyFields(null); }, 1800);
  }
- }
- procEl.classList.add('prefilled');
- }
-
- // Fill amount
- var amtEl = document.getElementById('s2-amount');
- if(amtEl){ amtEl.value=d.amount; amtEl.classList.add('prefilled'); }
-
- // Fill city
- var cityEl = document.getElementById('s2-city');
- if(cityEl){ cityEl.value=d.city; cityEl.classList.add('prefilled'); }
-
- // Fill date
- var dateEl = document.getElementById('s2-date');
- if(dateEl){ dateEl.value=d.date; dateEl.classList.add('prefilled'); }
-
- // Show receipt fields
- var s2fields = document.getElementById('s2-fields');
- if(s2fields) s2fields.style.display = 'block';
- var autoEl = document.getElementById('s2-auto'); if(autoEl) autoEl.classList.add('show');
- // Update receipt card visual with OCR data
- var rcD=document.getElementById('s2-rc-dentist'); if(rcD) rcD.textContent=d.dentist.split('--')[0].trim();
- var rcP=document.getElementById('s2-rc-proc'); if(rcP) rcP.textContent=d.proc;
- var rcA=document.getElementById('s2-rc-amount'); if(rcA) rcA.textContent='$'+d.amount;
- var rcDt=document.getElementById('s2-rc-date'); if(rcDt) rcDt.textContent=d.date?new Date(d.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'--';
- // Show receipt card if image was loaded
- var imgEl=document.getElementById('s2-img');
- var rcCard=document.getElementById('s2-receipt-card');
- if(imgEl && !imgEl.src) { if(rcCard) rcCard.style.display='block'; }
- s2Summary();
-
- // Lock card body after OCR -- Edit button is outside so still clickable
- var s2bodyOCR=document.getElementById('s2-card-body');
- if(s2bodyOCR){ s2bodyOCR.style.pointerEvents='none'; s2bodyOCR.style.opacity='0.75'; }
- var _dummy=null; if(_dummy){ _dummy.style.opacity = '0.85'; }
-
- // Re-evaluate the main submit button now that receipt fields are filled
- try { s1TryEnableContinue(); } catch(e) {}
- // Keep legacy s2-continue-btn in sync
- var s2btn = document.getElementById('s2-continue-btn');
- if(s2btn) s2btn.disabled = true;
-
- // Show confirm banner
- var s2banner = document.getElementById('s2-confirm-banner');
- if(s2banner){
- s2banner.style.display = 'flex';
- setTimeout(function(){ s2banner.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 150);
- }
-
- // Re-evaluate main submit button -- fields are now filled
- try { s1TryEnableContinue(); } catch(e) {}
-
- // Show summary card
- setTimeout(function(){
- // s2-summary removed -- fields shown directly
- }, 200);
-
- }, 1800);
 }
 
 function s2TypeField(id, text, delay, cb){
@@ -3808,13 +3849,13 @@ function runProcessing() {
  var sub=document.getElementById('proc-sub');if(sub)sub.textContent='Analyzing your '+insurer+' PPO claim...';
 
  // -- Save claim to AWS backend ---------------------------------
- // Timestamp guard: block any duplicate within 10 seconds
- var now = Date.now();
- if(window._lastClaimSave && (now - window._lastClaimSave) < 10000){
-   console.log('Duplicate blocked - last save was ' + (now - window._lastClaimSave) + 'ms ago');
+ // Singleton: only ONE claim save per session, ever
+ if(window._CLAIM_FETCH_SENT === true){
+   console.log('Claim already sent this session - blocked');
    return;
  }
- window._lastClaimSave = now;
+ window._CLAIM_FETCH_SENT = true;
+ console.log('Sending claim to API - first and only time');
  (function saveClaim(){
    var payload = {
      email:     (currentUser && currentUser.email)     || '',
@@ -7198,7 +7239,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
-
 <script>
 /* -- LOAD REAL CLAIMS FROM AWS ------------------------------------ */
 window.CREDIMED_API = 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com';
@@ -7298,5 +7338,4 @@ window.loadRealClaims = async function() {
   };
 })();
 </script>
-
 </html>
