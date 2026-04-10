@@ -1,3 +1,4 @@
+﻿
 <!DOCTYPE html>
 
 <html lang="en">
@@ -461,7 +462,7 @@ input[type=file]{display:none}
 .patient-viewport #chat-input-bar,
 #chat-input-bar {position:sticky !important; bottom:0;}
 #s-support:not(.active) #chat-input-bar { display:none !important; }
-/* Only convert fixed→absolute for elements INSIDE patient-viewport screens
+/* Only convert fixed->absolute for elements INSIDE patient-viewport screens
  (not for top-level overlays appended to <html> or <body>) */
 .patient-viewport .screen [style*="position:fixed"] {position:absolute !important;}
 /* Lightbox overlay -- ensure it paints above everything on iOS */
@@ -1115,7 +1116,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- CTAs -->
 
 <div class="hero-ctas" style="animation:slideUp .6s .3s cubic-bezier(.16,1,.3,1) both">
- <button class="btn-hero-main" onclick="(function(){var s=document.getElementById('s-auth');document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});s.classList.add('active');s.style.display='block';try{window.initAuth&&window.initAuth('register');}catch(e){}try{window.goTo&&window.goTo('s-auth','register');}catch(e){}})()" data-en="Check if I qualify -- free →" data-es="Ver si califico -- gratis →">Check if I qualify -- free →</button>
+ <button class="btn-hero-main" onclick="(function(){var s=document.getElementById('s-auth');document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});s.classList.add('active');s.style.display='block';try{window.initAuth&&window.initAuth('register');}catch(e){}try{window.goTo&&window.goTo('s-auth','register');}catch(e){}})()" data-en="Check if I qualify -- free ->" data-es="Ver si califico -- gratis ->">Check if I qualify -- free -></button>
  <button class="btn-hero-sec" onclick="(function(){var s=document.getElementById('s-auth');document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});s.classList.add('active');s.style.display='block';try{window.initAuth&&window.initAuth('login');}catch(e){}try{window.goTo&&window.goTo('s-auth','login');}catch(e){}})()" data-en="I already have an account" data-es="Ya tengo una cuenta">I already have an account</button>
 </div>
 <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:6px;letter-spacing:.3px" data-en="No upfront cost · Takes 3 minutes · 458 claims filed" data-es="Sin costo inicial · 3 minutos · 458 reclamaciones">No upfront cost · Takes 3 minutes · 458 claims filed</div>
@@ -1195,7 +1196,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="text-align:center;margin-bottom:20px">
  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#94a3b8;margin-bottom:10px">Works with your insurance</div>
  <div style="background:#f0fdfa;border:1.5px solid var(--teal-light);border-radius:12px;padding:12px 16px">
- <div style="font-size:14px;font-weight:800;color:#0f766e;margin-bottom:4px;letter-spacing:-.3px"> If your plan is PPO → you qualify</div>
+ <div style="font-size:14px;font-weight:800;color:#0f766e;margin-bottom:4px;letter-spacing:-.3px"> If your plan is PPO -> you qualify</div>
  <div style="font-size:12px;color:var(--slate-mid);line-height:1.5">Any US dental PPO plan covers out-of-network treatment.<br>That includes dental care received in Mexico.</div>
  </div>
  </div>
@@ -1303,7 +1304,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="final-cta">
  <h2 data-en="Stop leaving money on the table." data-es="Deja de dejar dinero sobre la mesa.">Stop leaving money on the table.</h2>
  <p data-en="The average patient gets $1,100 back. It takes 3 minutes to start. You only pay if you win." data-es="El paciente promedio recupera $1,100. Toma 3 minutos empezar. Solo pagas si ganas.">The average patient gets $1,100 back. It takes 3 minutes to start. You only pay if you win.</p>
- <button class="btn-final" data-oc="goTo('s-auth','register')" onclick="window.goTo&&window.goTo('s-auth','register')" data-en="Start my claim -- free →" data-es="Iniciar mi reclamo -- gratis →">Start my claim -- free →</button>
+ <button class="btn-final" data-oc="goTo('s-auth','register')" onclick="window.goTo&&window.goTo('s-auth','register')" data-en="Start my claim -- free ->" data-es="Iniciar mi reclamo -- gratis ->">Start my claim -- free -></button>
  <div class="final-note" data-en="Any US PPO plan · No upfront cost · 10% only on success · 458 claims filed" data-es="Cualquier plan PPO · Sin costo inicial · 10% solo al éxito">Any US PPO plan · No upfront cost · 10% only on success · 458 claims filed</div>
  <a href="tel:+15551234567" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;color:white;text-decoration:none"> (555) 123-4567 · Call or text us</a>
  </div>
@@ -1364,7 +1365,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="field"><label>Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="r-pass" placeholder="Create a password" data-oi="checkStr();checkMatch()" oninput="(window.checkStr&&window.checkStr())||(window.checkMatch&&window.checkMatch())"><button class="pw-toggle" type="button" data-oc="tPw('r-pass',this)" onclick="window.tPw&&window.tPw('r-pass',this)"></button></div><div class="pw-strength"><div class="pw-seg" id="ps1"></div><div class="pw-seg" id="ps2"></div><div class="pw-seg" id="ps3"></div><div class="pw-seg" id="ps4"></div></div><div class="pw-str-lbl" id="ps-lbl"></div></div>
  <div class="field"><label>Confirm Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="r-pass2" placeholder="Repeat password" data-oi="checkMatch()" oninput="window.checkMatch&&window.checkMatch()"><button class="pw-toggle" type="button" data-oc="tPw('r-pass2',this)" onclick="window.tPw&&window.tPw('r-pass2',this)"></button></div><div class="pw-match" id="pw-match"></div></div>
  <div class="err-banner" id="reg-err"><span></span><span id="reg-err-txt"></span></div>
- <button class="btn-primary" data-oc="doRegister()" onclick="window.doRegister&&window.doRegister()" style="margin-top:4px">Create my account →</button>
+ <button class="btn-primary" data-oc="doRegister()" onclick="window.doRegister&&window.doRegister()" style="margin-top:4px">Create my account -></button>
  <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:var(--slate-mid);line-height:1.5;text-align:center">By signing up you agree to our <a href="#" style="color:var(--teal);font-weight:600" data-oc="showTerms()" onclick="window.showTerms&&window.showTerms()">Terms</a> and authorize Credimed to charge a <strong>10% commission</strong> on successful refunds.</div>
  <div style="text-align:center;font-size:13px;color:var(--slate-mid);margin-top:14px;margin-bottom:4px">Already have an account? <a data-oc="switchTab('login')" onclick="window.switchTab&&window.switchTab('login')" style="color:var(--teal);font-weight:600;cursor:pointer">Sign in</a></div>
  <div style="text-align:center;font-size:12px;color:var(--slate-light);cursor:pointer;padding-bottom:8px" data-oc="goBack()" onclick="window.goBack&&window.goBack()">← Back to home</div>
@@ -1376,7 +1377,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="field"><label>Email <span class="req">*</span></label><input type="email" id="l-email" placeholder="you@email.com"></div>
  <div class="field"><label>Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="l-pass" placeholder="Your password" data-okd="if(event.key==='Enter')doLogin()"><button class="pw-toggle" type="button" data-oc="tPw('l-pass',this)" onclick="window.tPw&&window.tPw('l-pass',this)"></button></div></div>
  <div class="err-banner" id="login-err"><span></span><span id="login-err-txt">Invalid email or password.</span></div>
- <button class="btn-primary" data-oc="doLogin()" onclick="window.doLogin&&window.doLogin()" style="margin-top:4px">Sign in to my account →</button>
+ <button class="btn-primary" data-oc="doLogin()" onclick="window.doLogin&&window.doLogin()" style="margin-top:4px">Sign in to my account -></button>
  </div>
  <div style="text-align:center;font-size:13px;color:var(--slate-mid);margin-top:14px;margin-bottom:4px">No account yet? <a data-oc="switchTab('register')" onclick="window.switchTab&&window.switchTab('register')" style="color:var(--teal);font-weight:600;cursor:pointer">Sign up free</a></div>
  <div style="text-align:center;font-size:12px;color:var(--slate-light);cursor:pointer;padding-bottom:8px" data-oc="goBack()" onclick="window.goBack&&window.goBack()">← Back to home</div>
@@ -1458,7 +1459,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div style="padding:12px 16px 32px;margin-top:auto;background:linear-gradient(160deg,#0f172a 0%,#1e293b 100%);">
- <button class="btn-primary" data-oc="goTo('s-step1')" onclick="window.goTo&&window.goTo('s-step1')" style="width:100%;font-size:15px;height:52px">Continue → Step 2</button>
+ <button class="btn-primary" data-oc="goTo('s-step1')" onclick="window.goTo&&window.goTo('s-step1')" style="width:100%;font-size:15px;height:52px">Continue -> Step 2</button>
 </div>
 
 </div>
@@ -1503,7 +1504,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="font-size:11px;color:var(--slate-light)"> Camera &nbsp;·&nbsp; Photo</div>
  </div>
  </div>
- <div style="width:40px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0"><span style="color:white;font-size:16px">→</span></div>
+ <div style="width:40px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0"><span style="color:white;font-size:16px">-></span></div>
  </div>
  <!-- Photo preview after scan -->
  <div id="s1-preview" style="display:none;border-radius:10px;overflow:hidden;margin-top:10px;position:relative;border:2px solid var(--teal)">
@@ -1560,7 +1561,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div><div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px"> Details look correct?</div><div style="font-size:11px;color:#6b7280">Review and confirm to continue</div></div>
  <div style="display:flex;gap:8px;flex-shrink:0">
  <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" data-oc="s1EditFields()" onclick="window.s1EditFields&&window.s1EditFields()"> Edit</button>
- <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" data-oc="s1UseCard()" onclick="window.s1UseCard&&window.s1UseCard()"> Confirm →</button>
+ <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" data-oc="s1UseCard()" onclick="window.s1UseCard&&window.s1UseCard()"> Confirm -></button>
  </div>
 </div>
 
@@ -1595,7 +1596,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="font-size:11px;color:var(--slate-light)"> Camera &nbsp;·&nbsp; Photo &nbsp;·&nbsp; PDF</div>
  </div>
  </div>
- <div style="width:40px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0"><span style="color:white;font-size:16px">→</span></div>
+ <div style="width:40px;display:flex;align-items:center;justify-content:center;background:var(--teal);flex-shrink:0"><span style="color:white;font-size:16px">-></span></div>
  </div>
  <div id="s2-file-state" style="display:none;border-radius:10px;overflow:hidden;margin-top:10px;position:relative;border:2px solid var(--teal);height:110px">
  <img id="s2-img" style="display:none;width:100%;height:110px;object-fit:cover">
@@ -1649,7 +1650,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="display:flex;flex-direction:column;gap:4px">
  <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.5)">You paid</span><span style="font-size:12px;font-weight:700;color:white" id="pill-paid">$0</span></div>
  <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.25);border-radius:6px"><span style="font-size:12px;color:#5eead4">Insurance reimburses (~75%)</span><span style="font-size:12px;font-weight:700;color:#5eead4" id="pill-insures">$0</span></div>
- <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.4)">Credimed fee (10%)</span><span style="font-size:12px;color:rgba(255,255,255,.4)" id="pill-fee">−$0</span></div>
+ <div style="display:flex;justify-content:space-between;padding:5px 9px;background:rgba(255,255,255,.04);border-radius:6px"><span style="font-size:12px;color:rgba(255,255,255,.4)">Credimed fee (10%)</span><span style="font-size:12px;color:rgba(255,255,255,.4)" id="pill-fee">-$0</span></div>
  <div style="display:flex;justify-content:space-between;padding:6px 9px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:6px"><span style="font-size:13px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:13px;font-weight:700;color:#4ade80" id="pill-net">$0</span></div>
  </div>
  </div>
@@ -1665,7 +1666,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div><div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:2px"> Details look correct?</div><div style="font-size:11px;color:#6b7280">Review and confirm to continue</div></div>
  <div style="display:flex;gap:8px;flex-shrink:0">
  <button style="height:36px;padding:0 14px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--slate)" onclick="window.s2EditFields&&window.s2EditFields()"> Edit</button>
- <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" onclick="window.s2Confirm&&window.s2Confirm()"> Confirm →</button>
+ <button style="height:36px;padding:0 16px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:white" onclick="window.s2Confirm&&window.s2Confirm()"> Confirm -></button>
  </div>
 </div>
 <div class="err-banner" id="s2-err"><span></span><span id="s2-err-txt"></span></div>
@@ -1711,11 +1712,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="width:100%;max-width:310px;display:flex;flex-direction:column;gap:7px;margin-bottom:20px">
  <div id="pb1" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.05);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:13px;color:rgba(255,255,255,.5)">You paid</span><span style="font-size:13px;font-weight:700;color:white" id="pb1-val">$0</span></div>
  <div id="pb2" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:13px;color:#5eead4">Insurance reimburses (~75%)</span><span style="font-size:13px;font-weight:700;color:#5eead4" id="pb2-val">$0</span></div>
- <div id="pb3" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.04);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:12px;color:rgba(255,255,255,.35)">Credimed fee (10%)</span><span style="font-size:12px;color:rgba(255,255,255,.35)" id="pb3-val">−$0</span></div>
+ <div id="pb3" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.04);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:12px;color:rgba(255,255,255,.35)">Credimed fee (10%)</span><span style="font-size:12px;color:rgba(255,255,255,.35)" id="pb3-val">-$0</span></div>
  <div id="pb4" style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:14px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:14px;font-weight:700;color:#4ade80" id="pb4-val">$0</span></div>
  <div id="proc-cdt-row" style="display:flex;justify-content:space-between;padding:7px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:11px;color:rgba(255,255,255,.3)">CDT Code assigned</span><span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:1px 8px;border-radius:5px" id="proc-cdt-val">D2750</span></div>
  </div>
- <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" onclick="window.goTo&&window.goTo('s-step3')">Yes -- Start my claim →</button>
+ <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" onclick="window.goTo&&window.goTo('s-step3')">Yes -- Start my claim -></button>
  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">10% only when you get paid · No win, no fee</div>
 </div>
 </div>
@@ -1765,7 +1766,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div id="ready-bar" style="height:100%;background:var(--teal);border-radius:20px;width:0%;transition:width 2.5s linear"></div>
 </div>
 <div style="font-size:11px;color:rgba(255,255,255,.3)">Taking you to your estimate...</div>
-<button data-oc="goTo('s-refund')" onclick="window.goTo&&window.goTo('s-refund')" class="btn-primary" style="width:100%;max-width:320px;margin-top:16px;background:var(--teal)">See my refund estimate →</button>
+<button data-oc="goTo('s-refund')" onclick="window.goTo&&window.goTo('s-refund')" class="btn-primary" style="width:100%;max-width:320px;margin-top:16px;background:var(--teal)">See my refund estimate -></button>
 
  </div>
 </div>
@@ -1786,7 +1787,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="width:72px;height:72px;border:3px solid rgba(13,148,136,.3);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px"></div>
  <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:600;color:white;margin-bottom:8px" id="refund-analyzing-title">Analyzing your coverage...</div>
  <div style="font-size:13px;color:rgba(255,255,255,.5)" id="refund-analyzing-sub">Checking your Delta Dental PPO benefits</div>
- <button data-oc="try{showRefundResultNow();}catch(e){}" style="margin-top:40px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:10px 20px;border-radius:10px;font-size:12px;cursor:pointer">Skip to result →</button>
+ <button data-oc="try{showRefundResultNow();}catch(e){}" style="margin-top:40px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:10px 20px;border-radius:10px;font-size:12px;cursor:pointer">Skip to result -></button>
  <div style="display:flex;flex-direction:column;gap:8px;margin-top:28px;width:100%;max-width:300px" id="refund-check-list">
  <div class="refund-check" id="rc1" style="display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .4s"><span style="font-size:14px">⏳</span><span style="font-size:12px;color:rgba(255,255,255,.5)">Verifying insurance benefits</span></div>
  <div class="refund-check" id="rc2" style="display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .4s"><span style="font-size:14px">⏳</span><span style="font-size:12px;color:rgba(255,255,255,.5)">Calculating out-of-network coverage</span></div>
@@ -1846,7 +1847,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <!-- CTA -->
 
  <button class="btn-primary" style="width:100%;background:var(--teal)" data-oc="goTo('s-step3')" onclick="window.goTo&&window.goTo('s-step3')">
- Yes -- Start my claim →
+ Yes -- Start my claim ->
  </button>
  <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.3);text-align:center">10% commission · Only when you get paid</div>
 </div>
@@ -1869,7 +1870,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="guide-item"><div class="guide-num">2</div><div><div class="guide-item-title">Reimbursement Goes to You</div><div class="guide-item-text">Your insurance sends money directly to your bank. Do not change your banking info with your insurer without notifying Credimed.</div></div></div>
  <div class="guide-item"><div class="guide-num">3</div><div><div class="guide-item-title">Success Fee -- Only After Deposit</div><div class="guide-item-text">10% is charged automatically only after we verify your deposit. No deposit = no charge.</div><div class="guide-amount">10%</div></div></div>
  <div class="guide-item"><div class="guide-num">4</div><div><div class="guide-item-title">Open Book Policy</div><div class="guide-item-text">We may contact your insurer on your behalf. Report any reimbursement you receive within 48 hours.</div></div></div>
- <button class="btn-primary" data-oc="goTo('s-step4')" onclick="window.goTo&&window.goTo('s-step4')" style="margin-top:8px">I understand -- Continue →</button>
+ <button class="btn-primary" data-oc="goTo('s-step4')" onclick="window.goTo&&window.goTo('s-step4')" style="margin-top:8px">I understand -- Continue -></button>
  <br><br>
  </div>
 </div>
@@ -1971,7 +1972,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="err-banner" id="c-err"><span></span><span id="c-err-txt"></span></div>
  </div>
  <div style="padding:12px 16px 24px;background:white">
- <button class="btn-primary" id="c-submit-btn" data-oc="cSubmit()" onclick="window.cSubmit&&window.cSubmit()" disabled>Sign & Submit My Claim →</button>
+ <button class="btn-primary" id="c-submit-btn" data-oc="cSubmit()" onclick="window.cSubmit&&window.cSubmit()" disabled>Sign & Submit My Claim -></button>
  </div>
 </div>
 
@@ -2097,7 +2098,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <!-- Prominent teal button -->
  <button class="btn-primary" style="background:var(--teal);color:white;margin-top:12px;width:100%;max-width:280px;box-shadow:0 8px 24px rgba(13,148,136,.4)" onclick="if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
- Go to my dashboard →
+ Go to my dashboard ->
  </button>
  </div>
 </div>
@@ -2141,7 +2142,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="tracker-line done"></div>
  <div class="tracker-step"><div class="tracker-dot done"></div></div>
  <div class="tracker-line done"></div>
- <div class="tracker-step"><div class="tracker-dot active">→</div></div>
+ <div class="tracker-step"><div class="tracker-dot active">-></div></div>
  <div class="tracker-line"></div>
  <div class="tracker-step"><div class="tracker-dot">4</div></div>
  </div>
@@ -2155,7 +2156,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="background:#fffbeb;border-radius:8px;padding:8px 12px;margin:10px 0;font-size:12px;color:#92400e;display:flex;align-items:center;gap:6px">
  <span>⏳</span><span><strong>Awaiting insurer response</strong> · Est. 5-10 business days · Next update via WhatsApp</span>
  </div>
- <div class="claim-footer"><span class="claim-insurer" id="dash-ins-name">Delta Dental</span><span class="claim-view-btn">View →</span><span class="claim-date">Mar 16, 2026</span></div>
+ <div class="claim-footer"><span class="claim-insurer" id="dash-ins-name">Delta Dental</span><span class="claim-view-btn">View -></span><span class="claim-date">Mar 16, 2026</span></div>
  </div>
 </div>
 <div class="sec-label">Past Claims <a>See all</a></div>
@@ -2185,7 +2186,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </svg>
  <div class="expert-label">
  <div class="expert-label-top">Questions?</div>
- <div class="expert-label-main">Get help →</div>
+ <div class="expert-label-main">Get help -></div>
  </div>
  </button>
 </div>
@@ -2344,7 +2345,7 @@ function goTo(id, param) {
  var pp = document.querySelector('.patient-panel');
  if(pp) pp.scrollTop = 0;
  });
- if (id === 's-auth') { try { initAuth(param); } catch(e){} }
+ if (id === 's-auth') { try { initAuth(param); } catch(e){} window._CLAIM_FETCH_SENT = false; }
  // Update theme-color to match screen background
  var tc = document.querySelector('meta[name=theme-color]');
  if(tc){
@@ -2622,29 +2623,66 @@ function s1HandleFile(inp){
  if(!inp.files||!inp.files[0])return;
  var file=inp.files[0];
  var isImg=file.type.startsWith('image/');
- if(isImg){
- var r=new FileReader();
- r.onload=function(e){
- var img=document.getElementById('s1-img');
- if(img) img.src=e.target.result;
+ var reader=new FileReader();
+ reader.onload=function(e){
+   var dataUrl=e.target.result;
+   if(isImg){
+     var img=document.getElementById('s1-img');
+     if(img) img.src=dataUrl;
+   }
+   // Extract base64 and mediaType
+   var parts=dataUrl.split(',');
+   var meta=parts[0]; // e.g. "data:image/jpeg;base64"
+   var base64=parts[1];
+   var mediaType=meta.replace('data:','').replace(';base64','');
+   s1StartScan(base64, mediaType);
  };
- r.readAsDataURL(file);
- }
- s1StartScan();
+ reader.readAsDataURL(file);
 }
-function s1StartScan(){
+function s1StartScan(imageBase64, mediaType){
  var ph=document.getElementById('s1-ph'); if(ph) ph.style.display='none';
  var prev=document.getElementById('s1-preview'); if(prev) prev.style.display='block';
  var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='flex';
  var tog=document.getElementById('s1-manual-toggle'); if(tog) tog.style.display='none';
  document.getElementById('s1-ocr').classList.add('show');
- const fill=document.getElementById('s1-ocr-fill');
- const steps=[{p:20,t:'Detecting card...',s:'Analyzing image'},{p:55,t:'Reading text...',s:'Extracting details'},{p:85,t:'Identifying insurer...',s:'Cross-referencing'},{p:100,t:'Done!',s:'Details extracted'}];
- let i=0;const iv=setInterval(()=>{if(i<steps.length){const st=steps[i++];fill.style.width=st.p+'%';document.getElementById('s1-ocr-title').textContent=st.t;document.getElementById('s1-ocr-sub').textContent=st.s}},480);
- setTimeout(()=>{clearInterval(iv);s1ShowExtracted()},2100);
+ var fill=document.getElementById('s1-ocr-fill');
+ // Animate progress while waiting for API
+ var prog=0;
+ var iv=setInterval(function(){
+   prog=Math.min(prog+5,90);
+   if(fill) fill.style.width=prog+'%';
+   if(prog<30){ document.getElementById('s1-ocr-title').textContent='Detecting card...'; document.getElementById('s1-ocr-sub').textContent='Analyzing image'; }
+   else if(prog<60){ document.getElementById('s1-ocr-title').textContent='Reading text...'; document.getElementById('s1-ocr-sub').textContent='Extracting details'; }
+   else { document.getElementById('s1-ocr-title').textContent='Identifying insurer...'; document.getElementById('s1-ocr-sub').textContent='Cross-referencing'; }
+ },300);
+ // Call real OCR API
+ fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType,type:'insurance'})
+ })
+ .then(function(r){return r.json();})
+ .then(function(data){
+   clearInterval(iv);
+   if(fill) fill.style.width='100%';
+   document.getElementById('s1-ocr-title').textContent='Done!';
+   document.getElementById('s1-ocr-sub').textContent='Details extracted';
+   setTimeout(function(){ s1ShowExtracted(data); },400);
+ })
+ .catch(function(err){
+   clearInterval(iv);
+   console.warn('OCR failed, using demo data:', err);
+   setTimeout(function(){ s1ShowExtracted(null); },400);
+ });
 }
-function s1ShowExtracted(){
- const d=s1Insurers[Math.floor(Math.random()*s1Insurers.length)];
+function s1ShowExtracted(ocrData){
+ // Use real OCR data if available, fallback to demo
+ var d;
+ if(ocrData && ocrData.insurer){
+   d={provider:ocrData.insurer,member:ocrData.memberId||'',group:ocrData.groupId||'',plan:'PPO'};
+ } else {
+   d=s1Insurers[Math.floor(Math.random()*s1Insurers.length)];
+ }
  // Hide scan overlay
  var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
  // Hide OCR progress bar
@@ -2822,7 +2860,7 @@ function s1TryEnableContinue(){
 
  if(btn) {
    btn.disabled = false;
-   btn.textContent = both ? 'Submit my claim →' : (receiptFieldsOk && !receiptOk ? 'Confirm your receipt above →' : (cardOk ? 'Next: confirm your receipt →' : 'Step 1: confirm your insurance card'));
+   btn.textContent = both ? 'Submit my claim ->' : (receiptFieldsOk && !receiptOk ? 'Confirm your receipt above ->' : (cardOk ? 'Next: confirm your receipt ->' : 'Step 1: confirm your insurance card'));
    if(both) {
      btn.style.background = 'var(--teal)';
      btn.style.boxShadow = '0 4px 20px rgba(13,148,136,.35)';
@@ -2869,7 +2907,7 @@ function s1CheckManual(){
  // Always re-evaluate the submit button (fields may satisfy requirements)
  s1TryEnableContinue();
 }
-function s1ToggleManual(){const m=document.getElementById('s1-manual');const open=m.style.display==='block';m.style.display=open?'none':'block';document.getElementById('s1-manual-toggle').textContent=open?' Enter manually':'× Hide manual entry';if(!open)m.scrollIntoView({behavior:'smooth',block:'start'})}
+function s1ToggleManual(){const m=document.getElementById('s1-manual');const open=m.style.display==='block';m.style.display=open?'none':'block';document.getElementById('s1-manual-toggle').textContent=open?' Enter manually':'x Hide manual entry';if(!open)m.scrollIntoView({behavior:'smooth',block:'start'})}
 function s1Continue(){
  // Collect receipt data
  var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
@@ -2912,8 +2950,7 @@ function s1Continue(){
  window._s1CardOk = true;
  window._s2ReceiptOk = true;
 
- if (window.goTo) window.goTo('s-processing');
- try { runProcessing(); } catch(e) {}
+ // Navigation to s-processing handled by s1Submit
 }
 
 
@@ -2921,9 +2958,9 @@ function s1Continue(){
 // STEP 2 - RECEIPT
 // 
 const s2Demos=[
- {dentist:'Dr. Carlos Pérez -- Los Cabos Dental Center',proc:'Crown',amount:'850',city:'Los Cabos, BCS',date:'2026-03-15'},
- {dentist:'Dra. Ana Ramírez -- Tijuana Dental Spa',proc:'Implant',amount:'1200',city:'Tijuana, BC',date:'2026-03-10'},
- {dentist:'Dr. Miguel López -- Mexicali Oral Health',proc:'Root Canal',amount:'620',city:'Mexicali, BC',date:'2026-03-08'},
+ {dentist:'Dr. Carlos Perez -- Los Cabos Dental Center',proc:'Crown',amount:'850',city:'Los Cabos, BCS',date:'2026-03-15'},
+ {dentist:'Dra. Ana Ramirez -- Tijuana Dental Spa',proc:'Implant',amount:'1200',city:'Tijuana, BC',date:'2026-03-10'},
+ {dentist:'Dr. Miguel Lopez -- Mexicali Oral Health',proc:'Root Canal',amount:'620',city:'Mexicali, BC',date:'2026-03-08'},
 ];
 function s2HandleFile(inp){
  if(!inp.files||!inp.files[0])return;
@@ -2949,112 +2986,115 @@ function s2HandleFile(inp){
  s2RunOCR();
 }
 
-function s2RunOCR(){
- const d = s2Demos[Math.floor(Math.random()*s2Demos.length)];
- const ocr = document.getElementById('s2-ocr');
- const fill = document.getElementById('s2-ocr-fill');
+function s2RunOCR(imageBase64, mediaType){
+ var demoDat = s2Demos[Math.floor(Math.random()*s2Demos.length)];
+ var ocr = document.getElementById('s2-ocr');
+ var fill = document.getElementById('s2-ocr-fill');
 
- // Clear fields and reset UI
- ['s2-dentist','s2-date','s2-proc','s2-amount','s2-city'].forEach(id=>{
- const el=document.getElementById(id);
- if(el){el.value='';el.classList.remove('prefilled','ocr-typing');}
+ ['s2-dentist','s2-date','s2-proc','s2-amount','s2-city'].forEach(function(id){
+   var el=document.getElementById(id);
+   if(el){el.value='';el.classList.remove('prefilled','ocr-typing');}
  });
- document.getElementById('s2-auto').classList.remove('show');
+ var autoEl=document.getElementById('s2-auto'); if(autoEl) autoEl.classList.remove('show');
  var _sf=document.getElementById('s2-fields'); if(_sf) _sf.style.display='none';
-
- // Show scanning animation
  ocr.classList.add('show');
- var steps=[
- {p:20,t:' Reading document...',s:'Detecting receipt format'},
- {p:50,t:' Extracting data...',s:'Running OCR'},
- {p:80,t:' Matching procedure...',s:'CDT codes'},
- {p:100,t:' Done!',s:'All fields extracted'},
- ];
- var si=0;
+
+ var prog=0;
  var iv=setInterval(function(){
- if(si<steps.length){
- fill.style.width=steps[si].p+'%';
- document.getElementById('s2-ocr-title').textContent=steps[si].t;
- document.getElementById('s2-ocr-sub').textContent=steps[si].s;
- si++;
+   prog=Math.min(prog+5,90);
+   if(fill) fill.style.width=prog+'%';
+   if(prog<30){ document.getElementById('s2-ocr-title').textContent='Reading document...'; document.getElementById('s2-ocr-sub').textContent='Detecting receipt format'; }
+   else if(prog<60){ document.getElementById('s2-ocr-title').textContent='Extracting data...'; document.getElementById('s2-ocr-sub').textContent='Running OCR'; }
+   else { document.getElementById('s2-ocr-title').textContent='Matching procedure...'; document.getElementById('s2-ocr-sub').textContent='CDT codes'; }
+ },300);
+
+ function applyFields(ocrData){
+   clearInterval(iv);
+   if(fill) fill.style.width='100%';
+   document.getElementById('s2-ocr-title').textContent='Done!';
+   document.getElementById('s2-ocr-sub').textContent='All fields extracted';
+
+   // Merge real OCR data with demo fallback
+   var d = {
+     dentist: (ocrData&&ocrData.dentist) || demoDat.dentist,
+     proc:    (ocrData&&ocrData.procedure) || demoDat.proc,
+     amount:  (ocrData&&ocrData.amount) || demoDat.amount,
+     city:    (ocrData&&ocrData.city) || demoDat.city,
+     date:    (ocrData&&ocrData.date) || demoDat.date
+   };
+
+   setTimeout(function(){
+     ocr.classList.remove('show');
+     var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
+
+     var dentistEl=document.getElementById('s2-dentist');
+     if(dentistEl){ dentistEl.value=d.dentist; dentistEl.classList.add('prefilled'); }
+
+     var procEl=document.getElementById('s2-proc');
+     if(procEl){
+       for(var o=0;o<procEl.options.length;o++){
+         if(procEl.options[o].text===d.proc||procEl.options[o].value===d.proc){
+           procEl.selectedIndex=o; break;
+         }
+       }
+       procEl.classList.add('prefilled');
+     }
+
+     var amtEl=document.getElementById('s2-amount');
+     if(amtEl){ amtEl.value=d.amount; amtEl.classList.add('prefilled'); }
+
+     var cityEl=document.getElementById('s2-city');
+     if(cityEl){ cityEl.value=d.city; cityEl.classList.add('prefilled'); }
+
+     var dateEl=document.getElementById('s2-date');
+     if(dateEl){ dateEl.value=d.date; dateEl.classList.add('prefilled'); }
+
+     var s2fields=document.getElementById('s2-fields');
+     if(s2fields) s2fields.style.display='block';
+     var autoE=document.getElementById('s2-auto'); if(autoE) autoE.classList.add('show');
+
+     var rcD=document.getElementById('s2-rc-dentist'); if(rcD) rcD.textContent=d.dentist.split('--')[0].trim();
+     var rcP=document.getElementById('s2-rc-proc'); if(rcP) rcP.textContent=d.proc;
+     var rcA=document.getElementById('s2-rc-amount'); if(rcA) rcA.textContent='$'+d.amount;
+     var rcDt=document.getElementById('s2-rc-date'); if(rcDt) rcDt.textContent=d.date?new Date(d.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'--';
+
+     var imgEl=document.getElementById('s2-img');
+     var rcCard=document.getElementById('s2-receipt-card');
+     if(imgEl&&!imgEl.src){ if(rcCard) rcCard.style.display='block'; }
+
+     s2Summary();
+
+     var s2bodyOCR=document.getElementById('s2-card-body');
+     if(s2bodyOCR){ s2bodyOCR.style.pointerEvents='none'; s2bodyOCR.style.opacity='0.75'; }
+
+     try{ s1TryEnableContinue(); }catch(e){}
+
+     var s2btn=document.getElementById('s2-continue-btn');
+     if(s2btn) s2btn.disabled=true;
+
+     var s2banner=document.getElementById('s2-confirm-banner');
+     if(s2banner){
+       s2banner.style.display='flex';
+       setTimeout(function(){ s2banner.scrollIntoView({behavior:'smooth',block:'nearest'}); },150);
+     }
+
+     try{ s1TryEnableContinue(); }catch(e){}
+   }, 400);
  }
- },400);
 
- // Fill ALL fields at once after scan completes
- setTimeout(function(){
- clearInterval(iv);
- ocr.classList.remove('show');
- var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
-
- // Fill dentist
- var dentistEl = document.getElementById('s2-dentist');
- if(dentistEl){ dentistEl.value=d.dentist; dentistEl.classList.add('prefilled'); }
-
- // Fill procedure select by matching text
- var procEl = document.getElementById('s2-proc');
- if(procEl){
- for(var o=0;o<procEl.options.length;o++){
- if(procEl.options[o].text===d.proc||procEl.options[o].value===d.proc){
- procEl.selectedIndex=o; break;
+ // Call real OCR Lambda if we have image data
+ if(imageBase64){
+   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
+   })
+   .then(function(r){return r.json();})
+   .then(function(data){ applyFields(data); })
+   .catch(function(err){ console.warn('Receipt OCR failed, using demo:', err); applyFields(null); });
+ } else {
+   setTimeout(function(){ applyFields(null); }, 1800);
  }
- }
- procEl.classList.add('prefilled');
- }
-
- // Fill amount
- var amtEl = document.getElementById('s2-amount');
- if(amtEl){ amtEl.value=d.amount; amtEl.classList.add('prefilled'); }
-
- // Fill city
- var cityEl = document.getElementById('s2-city');
- if(cityEl){ cityEl.value=d.city; cityEl.classList.add('prefilled'); }
-
- // Fill date
- var dateEl = document.getElementById('s2-date');
- if(dateEl){ dateEl.value=d.date; dateEl.classList.add('prefilled'); }
-
- // Show receipt fields
- var s2fields = document.getElementById('s2-fields');
- if(s2fields) s2fields.style.display = 'block';
- var autoEl = document.getElementById('s2-auto'); if(autoEl) autoEl.classList.add('show');
- // Update receipt card visual with OCR data
- var rcD=document.getElementById('s2-rc-dentist'); if(rcD) rcD.textContent=d.dentist.split('--')[0].trim();
- var rcP=document.getElementById('s2-rc-proc'); if(rcP) rcP.textContent=d.proc;
- var rcA=document.getElementById('s2-rc-amount'); if(rcA) rcA.textContent='$'+d.amount;
- var rcDt=document.getElementById('s2-rc-date'); if(rcDt) rcDt.textContent=d.date?new Date(d.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'--';
- // Show receipt card if image was loaded
- var imgEl=document.getElementById('s2-img');
- var rcCard=document.getElementById('s2-receipt-card');
- if(imgEl && !imgEl.src) { if(rcCard) rcCard.style.display='block'; }
- s2Summary();
-
- // Lock card body after OCR -- Edit button is outside so still clickable
- var s2bodyOCR=document.getElementById('s2-card-body');
- if(s2bodyOCR){ s2bodyOCR.style.pointerEvents='none'; s2bodyOCR.style.opacity='0.75'; }
- var _dummy=null; if(_dummy){ _dummy.style.opacity = '0.85'; }
-
- // Re-evaluate the main submit button now that receipt fields are filled
- try { s1TryEnableContinue(); } catch(e) {}
- // Keep legacy s2-continue-btn in sync
- var s2btn = document.getElementById('s2-continue-btn');
- if(s2btn) s2btn.disabled = true;
-
- // Show confirm banner
- var s2banner = document.getElementById('s2-confirm-banner');
- if(s2banner){
- s2banner.style.display = 'flex';
- setTimeout(function(){ s2banner.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 150);
- }
-
- // Re-evaluate main submit button -- fields are now filled
- try { s1TryEnableContinue(); } catch(e) {}
-
- // Show summary card
- setTimeout(function(){
- // s2-summary removed -- fields shown directly
- }, 200);
-
- }, 1800);
 }
 
 function s2TypeField(id, text, delay, cb){
@@ -3477,7 +3517,7 @@ function showWhatsAppEscalation() {
  style="display:flex;align-items:center;gap:8px;background:#25D366;color:white;border-radius:10px;padding:10px 14px;text-decoration:none;font-size:13px;font-weight:600">
  <span style="font-size:18px"></span> Chat on WhatsApp
  </a>
- <div style="font-size:10px;color:var(--slate-light);margin-top:8px">Mon--Fri 9am--6pm PST · Usually replies in &lt;5 min</div>
+ <div style="font-size:10px;color:var(--slate-light);margin-top:8px">Mon--Fri 9am--6pm PST . Usually replies in &lt;5 min</div>
  </div>`;
  msgs.appendChild(div);
  msgs.scrollTop = msgs.scrollHeight;
@@ -3548,7 +3588,7 @@ function appendBubble(role, text) {
  : `<svg width="32" height="32" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg>
  <div style="background:white;border:1px solid var(--border);border-radius:0 14px 14px 14px;padding:12px 14px;max-width:78%;box-shadow:0 1px 4px rgba(0,0,0,.06)">
  <div style="font-size:13px;color:var(--slate);line-height:1.6;white-space:pre-wrap">${text}</div>
- <div style="font-size:10px;color:var(--slate-light);margin-top:6px">Credimed · ${time}</div>
+ <div style="font-size:10px;color:var(--slate-light);margin-top:6px">Credimed . ${time}</div>
  </div>`;
  msgs.appendChild(div);
  msgs.scrollTop = msgs.scrollHeight;
@@ -3579,7 +3619,7 @@ function showTapHint() {
  const hint = document.createElement('div');
  hint.id = 'tap-finger-hint';
  hint.style.cssText = 'position:absolute;font-size:28px;z-index:500;pointer-events:none;transition:transform .3s,opacity .3s;opacity:0;top:52%;left:55%';
- hint.textContent = '↑';
+ hint.textContent = '^';
  vp.appendChild(hint);
 
  // Animate: appear, tap down, tap up, disappear
@@ -3602,7 +3642,7 @@ async function runRefundEstimate() {
 
  ['rc1','rc2','rc3','rc4'].forEach(id => {
  const el = document.getElementById(id);
- if(el){ el.style.opacity='0'; const spans=el.querySelectorAll('span'); if(spans[0])spans[0].textContent='⏳'; }
+ if(el){ el.style.opacity='0'; const spans=el.querySelectorAll('span'); if(spans[0])spans[0].textContent='...'; }
  });
 
  // Get claim data
@@ -3808,7 +3848,14 @@ function runProcessing() {
  if(currentUser){currentUser.cdtCode=cdt;currentUser.estimatedRefund=refund;}
  var sub=document.getElementById('proc-sub');if(sub)sub.textContent='Analyzing your '+insurer+' PPO claim...';
 
- // ── Save claim to AWS backend ─────────────────────────────────
+ // -- Save claim to AWS backend ---------------------------------
+ // Singleton: only ONE claim save per session, ever
+ if(window._CLAIM_FETCH_SENT === true){
+   console.log('Claim already sent this session - blocked');
+   return;
+ }
+ window._CLAIM_FETCH_SENT = true;
+ console.log('Sending claim to API - first and only time');
  (function saveClaim(){
    var payload = {
      email:     (currentUser && currentUser.email)     || '',
@@ -3837,7 +3884,7 @@ function runProcessing() {
    })
    .catch(function(err){ console.warn('Claim save failed:', err); });
  })();
- // ─────────────────────────────────────────────────────────────
+ // -------------------------------------------------------------
  var steps=[{id:'pc1',done:'ADA form ready '},{id:'pc2',done:proc+' -- '+cdt+' attached '},{id:'pc3',done:'PPO out-of-network verified '},{id:'pc4',done:'Refund $'+refund.toLocaleString()+' estimated '}];
  var svgCheck = '<svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M1.5 6L6 10.5L14.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
  steps.forEach(function(s,i){
@@ -3879,7 +3926,7 @@ function runProcessing() {
          // Make sure the processing screen itself scrolls
          var procScreen=document.getElementById('s-processing');
          if(procScreen){procScreen.style.overflowY='auto';}
-         var v={'pb1-val':'$'+Math.round(amt).toLocaleString(),'pb2-val':'$'+refund.toLocaleString(),'pb3-val':'−$'+fee.toLocaleString(),'pb4-val':'$'+net.toLocaleString(),'proc-cdt-val':cdt};
+         var v={'pb1-val':'$'+Math.round(amt).toLocaleString(),'pb2-val':'$'+refund.toLocaleString(),'pb3-val':'-$'+fee.toLocaleString(),'pb4-val':'$'+net.toLocaleString(),'proc-cdt-val':cdt};
          Object.keys(v).forEach(function(key){var el=document.getElementById(key);if(el)el.textContent=v[key];});
          var bigEl=document.getElementById('proc-big-number');
          if(bigEl){
@@ -4408,7 +4455,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Crown</div>
  <div class="td amt">$1,400</div>
  <div class="td"><span class="sbadge ins">Awaiting Response</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
 </label>
 <input type="checkbox" id="acc-0" style="display:none">
 <div class="claim-accordion" id="acc-body-0" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4459,8 +4506,8 @@ window._setUser = function(u){ currentUser = u; };
 <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$1,050</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$105</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$105</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$920</span></div>
  </div>
 <div style="display:flex;gap:8px">
@@ -4475,7 +4522,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Bridge</div>
  <div class="td amt">$2,800</div>
  <div class="td"><span class="sbadge ins">Awaiting Response</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-1" style="display:none">
  <div class="claim-accordion" id="acc-body-1" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4526,8 +4573,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$2,100</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$210</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$210</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$1,865</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -4541,7 +4588,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Implant</div>
  <div class="td amt">$1,650</div>
  <div class="td"><span class="sbadge ins">Awaiting Response</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-2" style="display:none">
  <div class="claim-accordion" id="acc-body-2" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4592,8 +4639,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$1,238</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$124</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$124</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$1,089</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -4607,7 +4654,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Veneer</div>
  <div class="td amt">$1,200</div>
  <div class="td"><span class="sbadge ins">Awaiting Response</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-3" style="display:none">
  <div class="claim-accordion" id="acc-body-3" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4658,8 +4705,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$900</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$90</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$90</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$785</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -4673,7 +4720,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Root Canal</div>
  <div class="td amt">$890</div>
  <div class="td"><span class="sbadge ins">Awaiting Response</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-4" style="display:none">
  <div class="claim-accordion" id="acc-body-4" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4724,8 +4771,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$668</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$67</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$67</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$576</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -4739,7 +4786,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Bridge</div>
  <div class="td amt">$1,750</div>
  <div class="td"><span class="sbadge ins">Awaiting Response</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-5" style="display:none">
  <div class="claim-accordion" id="acc-body-5" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4790,8 +4837,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$1,312</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$131</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$131</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$1,156</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -4805,7 +4852,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Crown</div>
  <div class="td amt">$1,300</div>
  <div class="td"><span class="sbadge ins">Awaiting Response</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-6" style="display:none">
  <div class="claim-accordion" id="acc-body-6" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4856,8 +4903,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$975</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$98</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$98</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$852</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -4871,7 +4918,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Root Canal</div>
  <div class="td amt">$620</div>
  <div class="td"><span class="sbadge rev">Under Review</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-7" style="display:none">
  <div class="claim-accordion" id="acc-body-7" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4922,8 +4969,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$465</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$46</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$46</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$394</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -4937,7 +4984,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Cleaning</div>
  <div class="td amt">$280</div>
  <div class="td"><span class="sbadge rev">Under Review</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-8" style="display:none">
  <div class="claim-accordion" id="acc-body-8" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -4988,8 +5035,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$210</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$21</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$21</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$164</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5003,7 +5050,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Bridge</div>
  <div class="td amt">$2,100</div>
  <div class="td"><span class="sbadge rev">Under Review</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-9" style="display:none">
  <div class="claim-accordion" id="acc-body-9" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5054,8 +5101,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$1,575</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$158</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$158</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$1,392</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5069,7 +5116,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Implant</div>
  <div class="td amt">$3,100</div>
  <div class="td"><span class="sbadge rev">Under Review</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-10" style="display:none">
  <div class="claim-accordion" id="acc-body-10" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5120,8 +5167,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$2,325</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$232</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$232</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$2,068</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5135,7 +5182,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Veneer</div>
  <div class="td amt">$540</div>
  <div class="td"><span class="sbadge rev">Under Review</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-11" style="display:none">
  <div class="claim-accordion" id="acc-body-11" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5186,8 +5233,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$405</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$40</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$40</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$340</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5201,7 +5248,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Veneer</div>
  <div class="td amt">$1,800</div>
  <div class="td"><span class="sbadge new">New</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-12" style="display:none">
  <div class="claim-accordion" id="acc-body-12" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5252,8 +5299,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$1,350</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$135</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$135</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$1,190</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5267,7 +5314,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Extraction</div>
  <div class="td amt">$380</div>
  <div class="td"><span class="sbadge new">New</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-13" style="display:none">
  <div class="claim-accordion" id="acc-body-13" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5318,8 +5365,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$285</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$28</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$28</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$232</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5333,7 +5380,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Implant</div>
  <div class="td amt">$2,200</div>
  <div class="td"><span class="sbadge new">New</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-14" style="display:none">
  <div class="claim-accordion" id="acc-body-14" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5384,8 +5431,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$1,650</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$165</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$165</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$1,460</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5399,7 +5446,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Crown</div>
  <div class="td amt">$1,950</div>
  <div class="td"><span class="sbadge new">New</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-15" style="display:none">
  <div class="claim-accordion" id="acc-body-15" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5450,8 +5497,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$1,462</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$146</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$146</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$1,291</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5465,7 +5512,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Implant</div>
  <div class="td amt">$2,050</div>
  <div class="td"><span class="sbadge new">New</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-16" style="display:none">
  <div class="claim-accordion" id="acc-body-16" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5516,8 +5563,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$1,538</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$154</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$154</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$1,359</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5531,7 +5578,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Cleaning</div>
  <div class="td amt">$670</div>
  <div class="td"><span class="sbadge new">New</span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-17" style="display:none">
  <div class="claim-accordion" id="acc-body-17" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5582,8 +5629,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#0D9488;font-weight:700;margin-bottom:6px"> ESTIMATED REFUND</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Est. Recovery (75%)</span><span style="font-weight:700;color:#0D9488">~$502</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">−$50</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission</span><span style="color:#475569">-$50</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #ccfbf1"><span style="font-weight:700;color:#0D9488">Est. Net to Patient</span><span style="font-weight:700;color:#0D9488">~$427</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5597,7 +5644,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Implant</div>
  <div class="td amt">$980</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-18" style="display:none">
  <div class="claim-accordion" id="acc-body-18" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5648,8 +5695,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$735</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$74</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$74</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$636</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5663,7 +5710,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Extraction</div>
  <div class="td amt">$340</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-19" style="display:none">
  <div class="claim-accordion" id="acc-body-19" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5714,8 +5761,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$255</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$26</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$26</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$204</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5729,7 +5776,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Crown</div>
  <div class="td amt">$1,100</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-20" style="display:none">
  <div class="claim-accordion" id="acc-body-20" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5780,8 +5827,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$825</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$82</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$82</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$718</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5795,7 +5842,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Root Canal</div>
  <div class="td amt">$740</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-21" style="display:none">
  <div class="claim-accordion" id="acc-body-21" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5846,8 +5893,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$555</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$56</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$56</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$474</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5861,7 +5908,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Cleaning</div>
  <div class="td amt">$190</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-22" style="display:none">
  <div class="claim-accordion" id="acc-body-22" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5912,8 +5959,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$142</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$14</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$14</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$103</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5927,7 +5974,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Bridge</div>
  <div class="td amt">$1,850</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-23" style="display:none">
  <div class="claim-accordion" id="acc-body-23" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -5978,8 +6025,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$1,388</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$139</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$139</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$1,224</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -5993,7 +6040,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Implant</div>
  <div class="td amt">$2,400</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-24" style="display:none">
  <div class="claim-accordion" id="acc-body-24" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6044,8 +6091,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$1,800</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$180</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$180</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$1,595</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6059,7 +6106,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Veneer</div>
  <div class="td amt">$1,380</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-25" style="display:none">
  <div class="claim-accordion" id="acc-body-25" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6110,8 +6157,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$1,035</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$104</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$104</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$906</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6125,7 +6172,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Crown</div>
  <div class="td amt">$960</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-26" style="display:none">
  <div class="claim-accordion" id="acc-body-26" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6176,8 +6223,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$720</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$72</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$72</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$623</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6191,7 +6238,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Extraction</div>
  <div class="td amt">$290</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-27" style="display:none">
  <div class="claim-accordion" id="acc-body-27" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6242,8 +6289,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$218</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$22</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$22</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$171</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6257,7 +6304,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Root Canal</div>
  <div class="td amt">$760</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-28" style="display:none">
  <div class="claim-accordion" id="acc-body-28" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6308,8 +6355,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$570</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$57</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$57</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$488</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6323,7 +6370,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Crown</div>
  <div class="td amt">$1,120</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-29" style="display:none">
  <div class="claim-accordion" id="acc-body-29" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6374,8 +6421,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$840</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$84</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$84</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$731</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6389,7 +6436,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Bridge</div>
  <div class="td amt">$1,480</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-30" style="display:none">
  <div class="claim-accordion" id="acc-body-30" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6440,8 +6487,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$1,110</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$111</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$111</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$974</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6455,7 +6502,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Cleaning</div>
  <div class="td amt">$680</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-31" style="display:none">
  <div class="claim-accordion" id="acc-body-31" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6506,8 +6553,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$510</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$51</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$51</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$434</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6521,7 +6568,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Extraction</div>
  <div class="td amt">$420</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-32" style="display:none">
  <div class="claim-accordion" id="acc-body-32" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6572,8 +6619,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$315</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$32</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$32</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$258</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6587,7 +6634,7 @@ window._setUser = function(u){ currentUser = u; };
  <div class="td">Bridge</div>
  <div class="td amt">$2,100</div>
  <div class="td"><span class="sbadge paid">Paid </span></div>
- <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>
+ <div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>
  </label>
  <input type="checkbox" id="acc-33" style="display:none">
  <div class="claim-accordion" id="acc-body-33" style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px;animation:fadeUp .2s ease">
@@ -6638,8 +6685,8 @@ window._setUser = function(u){ currentUser = u; };
  <div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:12px;margin-bottom:10px">
  <div style="font-size:10px;color:#065f46;font-weight:700;margin-bottom:6px"> PAYMENT COMPLETED</div>
  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Amount Recovered</span><span style="font-weight:700;color:#0D9488">$1,575</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">−$158</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">−$25</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Credimed Commission (10%)</span><span style="font-weight:600;color:#475569">-$158</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#475569">Setup Fee</span><span style="font-weight:600;color:#475569">-$25</span></div>
  <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:6px;border-top:1px solid #6ee7b7"><span style="font-weight:700;color:#065f46">Net to Patient</span><span style="font-weight:700;color:#0D9488">$1,392</span></div>
  </div>
  <div style="display:flex;gap:8px">
@@ -6811,7 +6858,7 @@ var feeEl = document.getElementById('pill-fee');
 var netEl = document.getElementById('pill-net');
 if (paidEl) paidEl.textContent = '$' + Math.round(amount).toLocaleString();
 if (insEl) insEl.textContent = '$' + refund.toLocaleString();
-if (feeEl) feeEl.textContent = '−$' + fee.toLocaleString();
+if (feeEl) feeEl.textContent = '-$' + fee.toLocaleString();
 if (netEl) netEl.textContent = '$' + net.toLocaleString();
 
 // Animate the big number counting up
@@ -6920,12 +6967,7 @@ window.s1Submit = function s1Submit() {
   // Navigate to processing
   if(!window.goTo){ console.error('goTo not available'); return; }
   window.goTo('s-processing');
-  setTimeout(function(){
-    try{
-      if(typeof runProcessing==='function') runProcessing();
-      else if(window.runProcessing) window.runProcessing();
-    }catch(e){ console.warn('runProcessing error:', e); }
-  }, 150);
+  // runProcessing is triggered automatically by goTo handler
 };
 
 window.runProcessingDone = function() {
@@ -6935,7 +6977,7 @@ var refund=(currentUser&&currentUser.estimatedRefund)||637;
 var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$'+refund.toLocaleString();
 ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.opacity='1';});
 var btn=document.getElementById('proc-cta-btn');
-if(btn){btn.textContent='Go to dashboard →';btn.onclick=function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}};}
+if(btn){btn.textContent='Go to dashboard ->';btn.onclick=function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}};}
 setTimeout(function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){};},4000);
 };
 </script></div></div>
@@ -7001,12 +7043,12 @@ setTimeout(function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboar
             onmouseout="this.style.background='#0D9488'"
             onclick="window._credimedAdminLogin()"
           >
-            Enter Dashboard →
+            Enter Dashboard ->
           </button>
         </div>
 
         <div style="text-align:center;margin-top:20px">
-          <a href="/" style="font-size:12px;color:rgba(255,255,255,0.25);text-decoration:none">← Back to patient app</a>
+          <a href="/" style="font-size:12px;color:rgba(255,255,255,0.25);text-decoration:none"><- Back to patient app</a>
         </div>
       </div>
     `;
@@ -7026,12 +7068,12 @@ setTimeout(function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboar
     var err = document.getElementById('admin-login-err');
     var btn = document.getElementById('admin-login-btn');
 
-    // ⚠️ Cambia esta contraseña antes de hacer deploy
+    // ! Cambia esta contrasena antes de hacer deploy
     var ADMIN_PASSWORD = 'Credimed2026!';
 
     if (pwd === ADMIN_PASSWORD) {
       // Animate button
-      btn.textContent = '✓ Access granted';
+      btn.textContent = 'v Access granted';
       btn.style.background = '#22c55e';
       setTimeout(function() {
         // Remove overlay
@@ -7053,7 +7095,7 @@ setTimeout(function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboar
       btn.textContent = 'Incorrect password';
       setTimeout(function() {
         btn.style.background = '#0D9488';
-        btn.textContent = 'Enter Dashboard →';
+        btn.textContent = 'Enter Dashboard ->';
       }, 1500);
       var inp = document.getElementById('admin-pwd-input');
       if (inp) { inp.value = ''; inp.focus(); }
@@ -7083,7 +7125,7 @@ setTimeout(function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboar
 </script>
 
 <script>
-/* ── ADMIN SWITCH (injected last, overrides broken script) ─────── */
+/* -- ADMIN SWITCH (injected last, overrides broken script) ------- */
 document.addEventListener('DOMContentLoaded', function() {
 
   window.switchPanel = function(w) {
@@ -7198,7 +7240,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-/* ── LOAD REAL CLAIMS FROM AWS ──────────────────────────────────── */
+/* -- LOAD REAL CLAIMS FROM AWS ------------------------------------ */
 window.CREDIMED_API = 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com';
 
 window.loadRealClaims = async function() {
@@ -7206,7 +7248,7 @@ window.loadRealClaims = async function() {
   if (!tbody) return;
 
   // Show loading state
-  var loadingRow = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px">⏳ Loading claims...</div>';
+  var loadingRow = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px">... Loading claims...</div>';
   tbody.innerHTML = '<div class="tbl-head"><div class="th">Patient</div><div class="th">Insurer</div><div class="th">Proc.</div><div class="th">Amount</div><div class="th">Status</div><div class="th"></div></div>' + loadingRow;
 
   try {
@@ -7246,13 +7288,13 @@ window.loadRealClaims = async function() {
         '<div class="td">' + (c.procedure || '-') + '</div>' +
         '<div class="td amt">' + amt + '</div>' +
         '<div class="td"><span class="sbadge ' + badge + '">' + statusLabel + '</span></div>' +
-        '<div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">→</button></div>' +
+        '<div class="td"><button style="pointer-events:none;width:28px;height:28px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px">-></button></div>' +
         '</div>' +
         '<div style="display:none;background:#f8fafc;border-bottom:1px solid var(--border);padding:14px 16px">' +
           '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">' +
             '<div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Patient</div><div style="font-size:13px;font-weight:600">' + name + '</div><div style="font-size:11px;color:#94a3b8">' + c.email + '</div></div>' +
             '<div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Insurer</div><div style="font-size:13px;font-weight:600">' + (c.insurer||'-') + '</div><div style="font-size:11px;color:#94a3b8">ID: ' + (c.memberId||'-') + '</div></div>' +
-            '<div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Procedure</div><div style="font-size:13px;font-weight:600">' + (c.procedure||'-') + ' · ' + (c.cdtCode||'-') + '</div></div>' +
+            '<div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Procedure</div><div style="font-size:13px;font-weight:600">' + (c.procedure||'-') + ' . ' + (c.cdtCode||'-') + '</div></div>' +
             '<div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Amount Paid</div><div style="font-size:13px;font-weight:600;color:#0D9488">' + amt + '</div></div>' +
             '<div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Est. Refund</div><div style="font-size:13px;font-weight:600;color:#22c55e">' + est + '</div></div>' +
             '<div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Submitted</div><div style="font-size:13px;font-weight:600">' + date + '</div></div>' +
@@ -7281,7 +7323,7 @@ window.loadRealClaims = async function() {
 
   } catch(err) {
     tbody.innerHTML = '<div class="tbl-head"><div class="th">Patient</div><div class="th">Insurer</div><div class="th">Proc.</div><div class="th">Amount</div><div class="th">Status</div><div class="th"></div></div>' +
-      '<div style="padding:24px;text-align:center;color:#ef4444;font-size:13px">⚠️ Error loading claims: ' + err.message + '</div>';
+      '<div style="padding:24px;text-align:center;color:#ef4444;font-size:13px">! Error loading claims: ' + err.message + '</div>';
   }
 };
 
