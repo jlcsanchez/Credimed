@@ -1531,6 +1531,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="card-head"><h3> Insurance Details</h3></div>
  <div class="card-body">
  <div class="field">
+ <label>Member Name <span class="req">*</span></label>
+ <input type="text" id="s1-ins-name" placeholder="Name on insurance card">
+ </div>
+ <div class="field">
  <label>Insurance Provider <span class="req">*</span></label>
  <input type="text" id="s1-ins-provider" placeholder="e.g. Delta Dental, Aetna, Cigna..." data-oi="s1CheckManual()" oninput="window.s1CheckManual&&window.s1CheckManual()">
  </div>
@@ -1546,6 +1550,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="s1-fields" style="display:none"></div>
 <div id="s1-manual" style="display:none">
  <div class="card"><div class="card-head"><h3>Enter manually</h3></div><div class="card-body">
+ <div class="field"><label>Member Name <span class="req">*</span></label><input type="text" id="s1-m-name" placeholder="Name on insurance card"></div>
  <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-m-provider" placeholder="e.g. Delta Dental, Aetna..."></div>
  <div class="field-row">
  <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-m-member" placeholder="Member ID"></div>
@@ -1628,7 +1633,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="card" id="s2-manual-card" style="margin-bottom:0">
  <div class="card-head"><h3> Treatment Details</h3><div class="auto-badge" id="s2-auto-2" style="display:none"> Auto-filled</div></div>
  <div class="card-body" id="s2-card-body">
- <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="e.g. Dr. Pérez -- Los Cabos Dental" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
+ <div class="field"><label>Patient Name <span class="req">*</span></label>
+ <input type="text" id="s2-patient-name" placeholder="Name of patient who received treatment">
+ <div style="font-size:11px;color:#94a3b8;margin-top:4px">Same as member or a dependent (child/spouse)?</div>
+ </div>
+ <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="e.g. Dr. Perez -- Los Cabos Dental" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
  <div class="field-row">
  <div class="field"><label>Treatment Date</label><input type="date" id="s2-date"></div>
  <div class="field"><label>Procedure <span class="req">*</span></label>
@@ -2708,6 +2717,8 @@ function s1ShowExtracted(ocrData){
  var provEl=document.getElementById('s1-ins-provider');
  var memEl=document.getElementById('s1-ins-member');
  var grpEl=document.getElementById('s1-ins-group');
+ var nameEl=document.getElementById('s1-ins-name');
+ if(nameEl&&ocrData&&ocrData.memberName){nameEl.value=ocrData.memberName;nameEl.classList.add('prefilled');}
  if(provEl){provEl.value=d.provider;provEl.classList.add('prefilled');}
  if(memEl){memEl.value=d.member;memEl.classList.add('prefilled');}
  if(grpEl){grpEl.value=d.group;grpEl.classList.add('prefilled');}
@@ -2955,7 +2966,11 @@ function s1Continue(){
  var member = (document.getElementById('s1-ins-member') && document.getElementById('s1-ins-member').value.trim()) ||
  (document.getElementById('s1-m-member') && document.getElementById('s1-m-member').value.trim()) || '';
 
+ var memberName = (document.getElementById('s1-ins-name')&&document.getElementById('s1-ins-name').value.trim()) || '';
+ var patientName = (document.getElementById('s2-patient-name')&&document.getElementById('s2-patient-name').value.trim()) || '';
  if (currentUser) {
+ currentUser.memberName = memberName;
+ currentUser.patientName = patientName;
  currentUser.insurer = provider;
  currentUser.memberId = member;
  currentUser.procedure = proc;
@@ -3904,6 +3919,8 @@ function runProcessing() {
      firstName: (currentUser && currentUser.first)     || '',
      lastName:  (currentUser && currentUser.last)      || '',
      phone:     (currentUser && currentUser.phone)     || '',
+     memberName:(currentUser && currentUser.memberName)|| '',
+     patientName:(currentUser && currentUser.patientName)|| '',
      insurer:   insurer,
      memberId:  (currentUser && currentUser.memberId)  || '',
      groupId:   (currentUser && currentUser.groupId)   || '',
