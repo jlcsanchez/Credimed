@@ -3123,25 +3123,45 @@ function s2RunOCR(imageBase64, mediaType){
 
    // Use real OCR data
    var d = {
-     dentist: (ocrData&&ocrData.dentist) || '',
-     proc:    (ocrData&&ocrData.procedure) || '',
-     amount:  (ocrData&&ocrData.amount) || '',
-     city:    (ocrData&&ocrData.city) || '',
-     date:    (ocrData&&ocrData.date) || ''
+     dentist:     (ocrData&&ocrData.dentist) || '',
+     proc:        (ocrData&&ocrData.procedure) || '',
+     cdtCode:     (ocrData&&ocrData.cdtCode) || '',
+     amount:      (ocrData&&ocrData.amount) || '',
+     city:        (ocrData&&ocrData.city) || '',
+     date:        (ocrData&&ocrData.date) || '',
+     patientName: (ocrData&&ocrData.patientName) || ''
    };
+   // Save CDT code to currentUser for claim submission
+   if(d.cdtCode && window.currentUser) window.currentUser.cdtCode = d.cdtCode;
 
    setTimeout(function(){
      ocr.classList.remove('show');
      var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
 
+     // Fill patient name from OCR if available
+     var patientNameEl=document.getElementById('s2-patient-name');
+     if(patientNameEl && ocrData && ocrData.patientName){
+       patientNameEl.value=ocrData.patientName;
+       patientNameEl.classList.add('prefilled');
+     }
+
      var dentistEl=document.getElementById('s2-dentist');
      if(dentistEl){ dentistEl.value=d.dentist; dentistEl.classList.add('prefilled'); }
 
      var procEl=document.getElementById('s2-proc');
-     if(procEl){
+     if(procEl && d.proc){
+       var procLower = d.proc.toLowerCase();
+       var matched = false;
        for(var o=0;o<procEl.options.length;o++){
-         if(procEl.options[o].text===d.proc||procEl.options[o].value===d.proc){
-           procEl.selectedIndex=o; break;
+         var optLower = procEl.options[o].text.toLowerCase();
+         if(optLower === procLower || procLower.includes(optLower) || optLower.includes(procLower)){
+           procEl.selectedIndex=o; matched=true; break;
+         }
+       }
+       // If no match found, select Other
+       if(!matched && d.proc){
+         for(var o=0;o<procEl.options.length;o++){
+           if(procEl.options[o].text==='Other'){ procEl.selectedIndex=o; break; }
          }
        }
        procEl.classList.add('prefilled');
