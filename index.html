@@ -1,4 +1,3 @@
-﻿
 <!DOCTYPE html>
 
 <html lang="en">
@@ -2676,6 +2675,28 @@ function s1StartScan(imageBase64, mediaType){
  });
 }
 function s1ShowExtracted(ocrData){
+ // If OCR failed, show error
+ var hasRealData = ocrData && ocrData.insurer;
+ if(!hasRealData && ocrData !== undefined){
+   // ocrData was returned but has no insurer = wrong document
+   var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
+   document.getElementById('s1-ocr').classList.remove('show');
+   var errBanner = document.getElementById('s1-ocr-err');
+   if(!errBanner){
+     errBanner = document.createElement('div');
+     errBanner.id = 's1-ocr-err';
+     errBanner.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;font-size:13px;color:#991b1b;margin:12px 0;text-align:center;';
+     errBanner.innerHTML = "<strong>No pudimos leer tu tarjeta de seguro</strong><br>Asegurate de subir una foto clara del frente de tu tarjeta. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('insurance')\">Ver ejemplo</span>";
+     var s1ph = document.getElementById('s1-ph');
+     if(s1ph && s1ph.parentNode) s1ph.parentNode.insertBefore(errBanner, s1ph.nextSibling);
+   }
+   errBanner.style.display = 'block';
+   // Reset so user can try again
+   var ph=document.getElementById('s1-ph'); if(ph) ph.style.display='flex';
+   var prev=document.getElementById('s1-preview'); if(prev) prev.style.display='none';
+   return;
+ }
+ var errBanner = document.getElementById('s1-ocr-err'); if(errBanner) errBanner.style.display='none';
  // Use real OCR data if available, fallback to demo
  var d;
  if(ocrData && ocrData.insurer){
@@ -2970,20 +2991,25 @@ function s2HandleFile(inp){
  var empty=document.getElementById('s2-empty'); if(empty) empty.style.display='none';
  var fileState=document.getElementById('s2-file-state'); if(fileState) fileState.style.display='block';
  var s2ovl=document.getElementById('s2-scan-overlay'); if(s2ovl) s2ovl.style.display='flex';
- if(isImg){
- var r=new FileReader();
- r.onload=function(e){
- var img=document.getElementById('s2-img');
- if(img){ img.src=e.target.result; img.style.display='block'; }
- var rc=document.getElementById('s2-receipt-card'); if(rc) rc.style.display='none';
+ // Read file and call OCR with base64 inside onload
+ var reader=new FileReader();
+ reader.onload=function(e){
+   var dataUrl=e.target.result;
+   if(isImg){
+     var img=document.getElementById('s2-img');
+     if(img){ img.src=dataUrl; img.style.display='block'; }
+     var rc=document.getElementById('s2-receipt-card'); if(rc) rc.style.display='none';
+   } else {
+     var img=document.getElementById('s2-img'); if(img) img.style.display='none';
+     var rc=document.getElementById('s2-receipt-card'); if(rc) rc.style.display='block';
+   }
+   var parts=dataUrl.split(',');
+   var base64=parts[1];
+   var mediaType=parts[0].replace('data:','').replace(';base64','');
+   if(!isImg) mediaType='application/pdf';
+   s2RunOCR(base64, mediaType);
  };
- r.readAsDataURL(file);
- } else {
- // PDF -- show receipt card placeholder
- var img=document.getElementById('s2-img'); if(img) img.style.display='none';
- var rc=document.getElementById('s2-receipt-card'); if(rc) rc.style.display='block';
- }
- s2RunOCR();
+ reader.readAsDataURL(file);
 }
 
 function s2RunOCR(imageBase64, mediaType){
@@ -3014,7 +3040,31 @@ function s2RunOCR(imageBase64, mediaType){
    document.getElementById('s2-ocr-title').textContent='Done!';
    document.getElementById('s2-ocr-sub').textContent='All fields extracted';
 
-   // Merge real OCR data with demo fallback
+   // If OCR failed or returned no useful data, show error
+   var hasRealData = ocrData && (ocrData.dentist || ocrData.amount || ocrData.procedure);
+   if(!hasRealData && imageBase64){
+     // Show error message and open receipt example
+     ocr.classList.remove('show');
+     var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
+     var errBanner = document.getElementById('s2-ocr-err');
+     if(!errBanner){
+       errBanner = document.createElement('div');
+       errBanner.id = 's2-ocr-err';
+       errBanner.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;font-size:13px;color:#991b1b;margin:12px 0;text-align:center;';
+       errBanner.innerHTML = "<strong>No pudimos leer tu recibo</strong><br>Asegurate de subir una foto clara del recibo dental. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('receipt')\">Ver ejemplo</span>";
+       var s2empty = document.getElementById('s2-empty');
+       if(s2empty && s2empty.parentNode) s2empty.parentNode.insertBefore(errBanner, s2empty.nextSibling);
+     }
+     errBanner.style.display = 'block';
+     // Reset upload so user can try again
+     var s2fileState = document.getElementById('s2-file-state'); if(s2fileState) s2fileState.style.display='none';
+     var s2empty2 = document.getElementById('s2-empty'); if(s2empty2) s2empty2.style.display='flex';
+     return;
+   }
+   // Hide error if was showing
+   var errBanner = document.getElementById('s2-ocr-err'); if(errBanner) errBanner.style.display='none';
+
+   // Use real OCR data
    var d = {
      dentist: (ocrData&&ocrData.dentist) || demoDat.dentist,
      proc:    (ocrData&&ocrData.procedure) || demoDat.proc,
@@ -7337,5 +7387,22 @@ window.loadRealClaims = async function() {
     }
   };
 })();
+
+/* -- LIGHTBOX FUNCTIONS -- */
+window.openLightbox = function(type) {
+  var lb = document.getElementById('doc-lightbox');
+  if (!lb) return;
+  var ins = document.getElementById('lb-insurance');
+  var rec = document.getElementById('lb-receipt');
+  if (ins) ins.style.display = type === 'insurance' ? 'block' : 'none';
+  if (rec) rec.style.display = type === 'receipt' ? 'block' : 'none';
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
+window.closeLightbox = function() {
+  var lb = document.getElementById('doc-lightbox');
+  if (lb) lb.style.display = 'none';
+  document.body.style.overflow = '';
+};
 </script>
 </html>
