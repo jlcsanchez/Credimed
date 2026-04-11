@@ -1642,7 +1642,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="field"><label>Treatment Date</label><input type="date" id="s2-date"></div>
  <div class="field"><label>Procedure <span class="req">*</span></label>
  <select id="s2-proc" onchange="window.s2CheckFields&&window.s2CheckFields()">
- <option value="">Select...</option><option>Crown</option><option>Implant</option><option>Root Canal</option><option>Extraction</option><option>Bridge</option><option>Cleaning</option><option>Whitening</option><option>Veneer</option><option>Partial Denture</option><option>Other</option>
+ <option value="">Select...</option><option value="D0120">Exam / Evaluation (D0120)</option><option value="D0210">X-Ray / Radiograph (D0210)</option><option value="D1110">Cleaning / Prophylaxis (D1110)</option><option value="D2140">Filling - 1 surface (D2140)</option><option value="D2391">Filling / Composite / Resin (D2391)</option><option value="D2740">Crown (D2740)</option><option value="D2960">Veneer (D2960)</option><option value="D3330">Root Canal (D3330)</option><option value="D5213">Partial Denture (D5213)</option><option value="D6010">Implant (D6010)</option><option value="D6240">Bridge (D6240)</option><option value="D7140">Extraction (D7140)</option><option value="D9975">Whitening (D9975)</option><option value="D9999">Other (D9999)</option>
  </select>
  </div>
  </div>
@@ -2053,7 +2053,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <p style="font-size:13px;font-weight:600;color:var(--slate);margin-bottom:12px">Choose payment method:</p>
  <div class="pay-methods">
- <!-- Apple Pay -- official black button with white Apple Pay wordmark -->
+ <!-- Stripe Payment Element (Apple Pay, Google Pay, Card) -->
+ <div id="stripe-payment-element" style="margin-bottom:12px"></div>
+ <!-- Fallback: Apple Pay button -->
  <button class="pay-method-btn apple" data-oc="doPayment('Apple Pay')" onclick="window.doPayment&&window.doPayment('Apple Pay')" style="padding:0;overflow:hidden;border-radius:12px">
  <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
  data-oer="this.style.display='none';this.nextElementSibling.style.display='flex'"
@@ -3150,16 +3152,56 @@ function s2RunOCR(imageBase64, mediaType){
 
      var procEl=document.getElementById('s2-proc');
      if(procEl && d.proc){
+       // Map Spanish/partial terms to English options
+       var spanishMap = {
+         'resina':'Filling / Composite / Resin (D2391)',
+         'composite':'Filling / Composite / Resin (D2391)',
+         'relleno':'Filling / Composite / Resin (D2391)',
+         'filling':'Filling / Composite / Resin (D2391)',
+         'limpieza':'Cleaning / Prophylaxis (D1110)',
+         'profilaxis':'Cleaning / Prophylaxis (D1110)',
+         'cleaning':'Cleaning / Prophylaxis (D1110)',
+         'prophy':'Cleaning / Prophylaxis (D1110)',
+         'corona':'Crown (D2740)',
+         'crown':'Crown (D2740)',
+         'implante':'Implant (D6010)',
+         'implant':'Implant (D6010)',
+         'endodoncia':'Root Canal (D3330)',
+         'conducto':'Root Canal (D3330)',
+         'root canal':'Root Canal (D3330)',
+         'extraccion':'Extraction (D7140)',
+         'exodoncia':'Extraction (D7140)',
+         'extraction':'Extraction (D7140)',
+         'puente':'Bridge (D6240)',
+         'bridge':'Bridge (D6240)',
+         'blanqueamiento':'Whitening (D9975)',
+         'whitening':'Whitening (D9975)',
+         'carilla':'Veneer (D2960)',
+         'veneer':'Veneer (D2960)',
+         'parcial':'Partial Denture (D5213)',
+         'partial':'Partial Denture (D5213)',
+         'radiografia':'X-Ray / Radiograph (D0210)',
+         'xray':'X-Ray / Radiograph (D0210)',
+         'consulta':'Exam / Evaluation (D0120)',
+         'evaluacion':'Exam / Evaluation (D0120)',
+         'exam':'Exam / Evaluation (D0120)'
+       };
        var procLower = d.proc.toLowerCase();
+       var mappedProc = null;
+       // Check Spanish map first
+       for(var key in spanishMap){
+         if(procLower.includes(key)){ mappedProc = spanishMap[key]; break; }
+       }
        var matched = false;
+       var searchProc = mappedProc ? mappedProc.toLowerCase() : procLower;
        for(var o=0;o<procEl.options.length;o++){
-         var optLower = procEl.options[o].text.toLowerCase();
-         if(optLower === procLower || procLower.includes(optLower) || optLower.includes(procLower)){
+         var optText = procEl.options[o].text.toLowerCase();
+         var optVal = procEl.options[o].value.toLowerCase();
+         if(optText === searchProc || searchProc.includes(optText) || optText.includes(searchProc) || optVal === searchProc){
            procEl.selectedIndex=o; matched=true; break;
          }
        }
-       // If no match found, select Other
-       if(!matched && d.proc){
+       if(!matched){
          for(var o=0;o<procEl.options.length;o++){
            if(procEl.options[o].text==='Other'){ procEl.selectedIndex=o; break; }
          }
@@ -3559,26 +3601,119 @@ window.fmtExp = function fmtExp(inp){
  if(v.length>=3)inp.value=v.slice(0,2)+' / '+v.slice(2);
  else inp.value=v;
 }
-function doPayment(method){
- if(method==='Card'){
- const num=document.getElementById('cc-number').value.replace(/\s/g,'');
- const exp=document.getElementById('cc-exp').value;
- const cvc=document.getElementById('cc-cvc').value;
- const name=document.getElementById('cc-name').value.trim();
- const err=document.getElementById('cc-err');
- err.classList.remove('show');
- if(num.length<16){document.getElementById('cc-err-txt').textContent='Please enter a valid card number.';err.classList.add('show');return}
- if(exp.length<7){document.getElementById('cc-err-txt').textContent='Please enter a valid expiry date.';err.classList.add('show');return}
- if(cvc.length<3){document.getElementById('cc-err-txt').textContent='Please enter your CVC.';err.classList.add('show');return}
- if(!name){document.getElementById('cc-err-txt').textContent='Please enter the cardholder name.';err.classList.add('show');return}
- }
- document.getElementById('s5-form').style.display='none';
- document.getElementById('s5-success').classList.add('show'); try{launchConfetti();}catch(e){}
- // Auto-advance to dashboard after 2.5 seconds
- setTimeout(function(){
-   if(window.goTo) window.goTo('s-dashboard');
-   try{ initDashboard(); }catch(e){}
- }, 2500);
+// Stripe publishable key
+var STRIPE_PK = 'pk_test_51TKrV9EqFJnMc0RQN8UzTVtOgSJw7VoJ9uCoxLWYWYQYUUy3JzWatcXiw4EJV6wMRDcfc5urKPTq92DgCdhlDpMk00n3Y3HFsv';
+var stripeInstance = null;
+var stripeElements = null;
+var stripePaymentElement = null;
+
+function getStripe(){
+  if(!stripeInstance && typeof Stripe !== 'undefined'){
+    stripeInstance = Stripe(STRIPE_PK);
+  }
+  return stripeInstance;
+}
+
+async function initStripePayment(){
+  var plan = (window.currentUser && window.currentUser.plan) || 'standard';
+  if(plan !== 'premium') return; // Only charge upfront for Premium
+
+  var stripe = getStripe();
+  if(!stripe) return;
+
+  try {
+    // Create payment intent via Lambda
+    var resp = await fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/payment', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'create_payment_intent',
+        plan: 'premium',
+        email: currentUser && currentUser.email,
+        claimId: currentUser && currentUser.claimId
+      })
+    });
+    var data = await resp.json();
+    if(!data.clientSecret) return;
+
+    // Mount Stripe Payment Element (supports Apple Pay, Google Pay, Card)
+    var elements = stripe.elements({clientSecret: data.client_secret || data.clientSecret});
+    stripeElements = elements;
+    var paymentEl = elements.create('payment', {
+      layout: 'tabs',
+      wallets: { applePay: 'auto', googlePay: 'auto' }
+    });
+    var container = document.getElementById('stripe-payment-element');
+    if(container){
+      paymentEl.mount('#stripe-payment-element');
+      stripePaymentElement = paymentEl;
+    }
+  } catch(err) {
+    console.warn('Stripe init error:', err);
+  }
+}
+
+async function doPayment(method){
+  var plan = (window.currentUser && window.currentUser.plan) || 'standard';
+
+  // Standard plan - no upfront payment, go directly to success
+  if(plan === 'standard'){
+    document.getElementById('s5-form').style.display='none';
+    document.getElementById('s5-success').classList.add('show');
+    try{launchConfetti();}catch(e){}
+    setTimeout(function(){
+      if(window.goTo) window.goTo('s-dashboard');
+      try{ initDashboard(); }catch(e){}
+    }, 2500);
+    return;
+  }
+
+  // Premium plan - process $29 payment via Stripe
+  var stripe = getStripe();
+  if(!stripe || !stripeElements){
+    // Fallback if Stripe not loaded
+    document.getElementById('s5-form').style.display='none';
+    document.getElementById('s5-success').classList.add('show');
+    try{launchConfetti();}catch(e){}
+    setTimeout(function(){
+      if(window.goTo) window.goTo('s-dashboard');
+      try{ initDashboard(); }catch(e){}
+    }, 2500);
+    return;
+  }
+
+  var btn = document.querySelector('#s5-form .btn-primary');
+  if(btn){ btn.disabled=true; btn.textContent='Processing...'; }
+
+  try {
+    var result = await stripe.confirmPayment({
+      elements: stripeElements,
+      confirmParams: {
+        return_url: window.location.href,
+        receipt_email: currentUser && currentUser.email
+      },
+      redirect: 'if_required'
+    });
+
+    if(result.error){
+      var err = document.getElementById('cc-err');
+      var errTxt = document.getElementById('cc-err-txt');
+      if(err && errTxt){ errTxt.textContent = result.error.message; err.classList.add('show'); }
+      if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
+    } else {
+      // Payment successful
+      document.getElementById('s5-form').style.display='none';
+      document.getElementById('s5-success').classList.add('show');
+      try{launchConfetti();}catch(e){}
+      setTimeout(function(){
+        if(window.goTo) window.goTo('s-dashboard');
+        try{ initDashboard(); }catch(e){}
+      }, 2500);
+    }
+  } catch(err) {
+    console.warn('Payment error:', err);
+    if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
+  }
 }
 
 // 
