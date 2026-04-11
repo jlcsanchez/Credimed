@@ -2610,12 +2610,7 @@ function loginUser(u){
 // 
 // STEP 1 - INSURANCE CARD
 // 
-const s1Insurers=[
- {provider:'Delta Dental',member:'DDT-884-2291',group:'GRP-77821',plan:'PPO'},
- {provider:'Aetna',member:'AET-55543-MX',group:'GRP-44019',plan:'HMO'},
- {provider:'Cigna',member:'CGN-99012-TX',group:'GRP-11203',plan:'PPO'},
- {provider:'MetLife',member:'MTL-88821-CA',group:'GRP-30045',plan:'DHMO'},
-];
+const s1Insurers=[];
 let s1Scanned=false;
 
 function s1HandleFile(inp){
@@ -2702,7 +2697,8 @@ function s1ShowExtracted(ocrData){
  if(ocrData && ocrData.insurer){
    d={provider:ocrData.insurer,member:ocrData.memberId||'',group:ocrData.groupId||'',plan:'PPO'};
  } else {
-   d=s1Insurers[Math.floor(Math.random()*s1Insurers.length)];
+   // No demo fallback - if OCR failed show error (handled above)
+   return;
  }
  // Hide scan overlay
  var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
@@ -2978,11 +2974,7 @@ function s1Continue(){
 // 
 // STEP 2 - RECEIPT
 // 
-const s2Demos=[
- {dentist:'Dr. Carlos Perez -- Los Cabos Dental Center',proc:'Crown',amount:'850',city:'Los Cabos, BCS',date:'2026-03-15'},
- {dentist:'Dra. Ana Ramirez -- Tijuana Dental Spa',proc:'Implant',amount:'1200',city:'Tijuana, BC',date:'2026-03-10'},
- {dentist:'Dr. Miguel Lopez -- Mexicali Oral Health',proc:'Root Canal',amount:'620',city:'Mexicali, BC',date:'2026-03-08'},
-];
+const s2Demos=[];
 function s2HandleFile(inp){
  if(!inp.files||!inp.files[0])return;
  var file=inp.files[0];
@@ -3066,11 +3058,11 @@ function s2RunOCR(imageBase64, mediaType){
 
    // Use real OCR data
    var d = {
-     dentist: (ocrData&&ocrData.dentist) || demoDat.dentist,
-     proc:    (ocrData&&ocrData.procedure) || demoDat.proc,
-     amount:  (ocrData&&ocrData.amount) || demoDat.amount,
-     city:    (ocrData&&ocrData.city) || demoDat.city,
-     date:    (ocrData&&ocrData.date) || demoDat.date
+     dentist: (ocrData&&ocrData.dentist) || '',
+     proc:    (ocrData&&ocrData.procedure) || '',
+     amount:  (ocrData&&ocrData.amount) || '',
+     city:    (ocrData&&ocrData.city) || '',
+     date:    (ocrData&&ocrData.date) || ''
    };
 
    setTimeout(function(){
@@ -3141,7 +3133,7 @@ function s2RunOCR(imageBase64, mediaType){
    })
    .then(function(r){return r.json();})
    .then(function(data){ applyFields(data); })
-   .catch(function(err){ console.warn('Receipt OCR failed, using demo:', err); applyFields(null); });
+   .catch(function(err){ console.warn('Receipt OCR failed:', err); applyFields(null); });
  } else {
    setTimeout(function(){ applyFields(null); }, 1800);
  }
