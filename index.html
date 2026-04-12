@@ -1638,13 +1638,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="font-size:11px;color:#94a3b8;margin-top:4px">Same as member or a dependent (child/spouse)?</div>
  </div>
  <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="e.g. Dr. Perez · Los Cabos Dental" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
- <div class="field-row">
- <div class="field"><label>Treatment Date</label><input type="date" id="s2-date"></div>
- <div class="field"><label>Procedure <span class="req">*</span></label>
- <select id="s2-proc" onchange="window.s2CheckFields&&window.s2CheckFields()">
- <option value="">Select...</option><option value="D0120">Exam / Evaluation (D0120)</option><option value="D0210">X-Ray / Radiograph (D0210)</option><option value="D1110">Cleaning / Prophylaxis (D1110)</option><option value="D2140">Filling - 1 surface (D2140)</option><option value="D2391">Filling / Composite / Resin (D2391)</option><option value="D2740">Crown (D2740)</option><option value="D2960">Veneer (D2960)</option><option value="D3330">Root Canal (D3330)</option><option value="D5213">Partial Denture (D5213)</option><option value="D6010">Implant (D6010)</option><option value="D6240">Bridge (D6240)</option><option value="D7140">Extraction (D7140)</option><option value="D9975">Whitening (D9975)</option><option value="D9999">Other (D9999)</option>
- </select>
+ <div class="field">
+  <label>Treatment Date</label>
+  <input type="date" id="s2-date">
  </div>
+ <!-- Procedures detected by OCR -->
+ <div class="field" id="proc-field">
+  <label>Procedures <span class="req">*</span></label>
+  <!-- OCR list -- shown when multiple procedures detected -->
+  <div id="proc-list" style="display:none;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:6px"></div>
+  <!-- Fallback single select -->
+  <select id="s2-proc" onchange="window.s2CheckFields&&window.s2CheckFields()">
+   <option value="">Select...</option>
+   <option value="D0120">Exam / Evaluation (D0120)</option>
+   <option value="D0210">X-Ray / Radiograph (D0210)</option>
+   <option value="D1110">Cleaning / Prophylaxis (D1110)</option>
+   <option value="D2140">Filling - 1 surface (D2140)</option>
+   <option value="D2391">Filling / Composite / Resin (D2391)</option>
+   <option value="D2740">Crown (D2740)</option>
+   <option value="D2960">Veneer (D2960)</option>
+   <option value="D3330">Root Canal (D3330)</option>
+   <option value="D5213">Partial Denture (D5213)</option>
+   <option value="D6010">Implant (D6010)</option>
+   <option value="D6240">Bridge (D6240)</option>
+   <option value="D7140">Extraction (D7140)</option>
+   <option value="D9975">Whitening (D9975)</option>
+   <option value="D9999">Other (D9999)</option>
+  </select>
+  <div id="proc-hint" style="display:none;font-size:12px;color:#991b1b;margin-top:4px;font-weight:600;padding:6px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5"></div>
  </div>
  <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label>
  <div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
@@ -2130,14 +2151,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim status</span><span style="color:#5eead4">Submitting...</span></div>
  <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7)"><span>WhatsApp updates</span><span style="color:#5eead4">Enabled </span></div>
  </div>
- <!-- Auto-advance bar -->
- <div style="width:100%;max-width:280px;margin-bottom:6px">
- <div style="background:rgba(255,255,255,.15);border-radius:20px;height:4px;overflow:hidden">
- <div id="s5-auto-bar" style="height:100%;background:#5eead4;width:0%;transition:width 3s linear;border-radius:20px"></div>
- </div>
- <div style="font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-top:6px">Taking you to your claim in a moment...</div>
- </div>
+
  <!-- Prominent teal button -->
+
  <button class="btn-primary" style="background:var(--teal);color:white;margin-top:12px;width:100%;max-width:280px;box-shadow:0 8px 24px rgba(13,148,136,.4)" onclick="if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
  Go to my dashboard ->
  </button>
@@ -3175,6 +3191,103 @@ function s2RunOCR(imageBase64, mediaType){
    else { document.getElementById('s2-ocr-title').textContent='Matching procedure...'; document.getElementById('s2-ocr-sub').textContent='CDT codes'; }
  },300);
 
+ // Build procedure list from OCR results
+ function mapProcToCDT(text){
+   if(!text) return null;
+   var t = text.toLowerCase();
+   var map = [
+     {keys:['limpieza','profilaxis','cleaning','prophylaxis','prophy','higiene'],cdt:'D1110',label:'Cleaning / Prophylaxis (D1110)'},
+     {keys:['consulta','evaluacion','evaluación','exam','revision','checkup','general'],cdt:'D0120',label:'Exam / Evaluation (D0120)'},
+     {keys:['radiografia','radiografía','xray','x-ray','bitewing','panoram','periapical'],cdt:'D0210',label:'X-Ray / Radiograph (D0210)'},
+     {keys:['resina','composite','relleno','obturacion','amalgama','empaste','filling','restauracion','1 superficie','1 surface','molar'],cdt:'D2391',label:'Filling / Composite (D2391)'},
+     {keys:['corona','crown','porcelana','zirconia','ceramica'],cdt:'D2740',label:'Crown (D2740)'},
+     {keys:['implante','implant','oseointegrado'],cdt:'D6010',label:'Implant (D6010)'},
+     {keys:['endodoncia','conducto','root canal','pulpectomia','nervio'],cdt:'D3330',label:'Root Canal (D3330)'},
+     {keys:['extraccion','exodoncia','extraction','muela'],cdt:'D7140',label:'Extraction (D7140)'},
+     {keys:['puente','bridge'],cdt:'D6240',label:'Bridge (D6240)'},
+     {keys:['blanqueamiento','whitening','bleaching'],cdt:'D9975',label:'Whitening (D9975)'},
+     {keys:['carilla','veneer','faceta'],cdt:'D2960',label:'Veneer (D2960)'},
+   ];
+   for(var i=0;i<map.length;i++){
+     for(var j=0;j<map[i].keys.length;j++){
+       if(t.includes(map[i].keys[j])) return map[i];
+     }
+   }
+   return {cdt:'D9999',label:'Other: '+text.slice(0,30)};
+ }
+
+ function buildProcedureList(procedures){
+   // procedures = array of strings from OCR
+   var list = document.getElementById('proc-list');
+   var select = document.getElementById('s2-proc');
+   if(!list || !procedures || !procedures.length) return;
+
+   list.innerHTML = '';
+   var mapped = procedures.map(function(p){ return mapProcToCDT(p); }).filter(Boolean);
+   // Remove duplicates by CDT
+   var seen = {};
+   mapped = mapped.filter(function(m){ if(seen[m.cdt]) return false; seen[m.cdt]=true; return true; });
+
+   if(mapped.length === 0) return;
+
+   // Show list, hide select
+   list.style.display = 'block';
+   if(select) select.style.display = 'none';
+
+   var header = document.createElement('div');
+   header.style.cssText = 'padding:8px 12px;background:#f0fdf4;border-bottom:1px solid #d1fae5;font-size:11px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:.5px';
+   header.textContent = mapped.length + ' procedure' + (mapped.length>1?'s':'') + ' detected · select to claim';
+   list.appendChild(header);
+
+   mapped.forEach(function(m, i){
+     var row = document.createElement('label');
+     row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:white';
+     row.innerHTML =
+       '<input type="checkbox" data-cdt="'+m.cdt+'" data-label="'+m.label+'" style="width:18px;height:18px;accent-color:#0D9488;flex-shrink:0" onchange="window.onProcCheck&&window.onProcCheck()">' +
+       '<div><div style="font-size:13px;font-weight:600;color:#1e293b">'+m.label+'</div>' +
+       '<div style="font-size:11px;color:#94a3b8">CDT '+m.cdt+'</div></div>';
+     if(i===0){
+       // Auto-check first item
+       row.querySelector('input').checked = true;
+     }
+     list.appendChild(row);
+   });
+
+   // Also add "Add another" option
+   var addRow = document.createElement('div');
+   addRow.style.cssText = 'padding:8px 12px;font-size:12px;color:#0D9488;cursor:pointer;font-weight:600';
+   addRow.textContent = '+ Add procedure manually';
+   addRow.onclick = function(){
+     if(select){ select.style.display='block'; select.focus(); }
+   };
+   list.appendChild(addRow);
+
+   // Update s2-proc hidden value with first checked
+   window.onProcCheck = function(){
+     var checked = list.querySelectorAll('input[type=checkbox]:checked');
+     if(checked.length > 0){
+       // Set s2-proc value to first selected CDT
+       var firstCdt = checked[0].getAttribute('data-cdt');
+       if(select){
+         for(var o=0;o<select.options.length;o++){
+           if(select.options[o].value === firstCdt){ select.selectedIndex=o; break; }
+         }
+       }
+       // Store all selected procedures
+       var allProcs = [];
+       checked.forEach(function(cb){ allProcs.push({cdt:cb.getAttribute('data-cdt'),label:cb.getAttribute('data-label')}); });
+       window._selectedProcedures = allProcs;
+     } else {
+       if(select) select.selectedIndex=0;
+       window._selectedProcedures = [];
+     }
+     try{ s1TryEnableContinue(); }catch(e){}
+   };
+
+   // Trigger initial check
+   window.onProcCheck();
+ }
+
  function applyFields(ocrData){
    clearInterval(iv);
    if(fill) fill.style.width='100%';
@@ -3240,8 +3353,18 @@ function s2RunOCR(imageBase64, mediaType){
      var dentistEl=document.getElementById('s2-dentist');
      if(dentistEl){ dentistEl.value=d.dentist; dentistEl.classList.add('prefilled'); }
 
+     // Handle multiple procedures from OCR
+     var proceduresList = ocrData && (ocrData.procedures || ocrData.items || ocrData.services);
+     if(proceduresList && Array.isArray(proceduresList) && proceduresList.length > 0){
+       // Lambda returned array of procedures
+       buildProcedureList(proceduresList);
+     } else if(d.proc){
+       // Single procedure -- try to build list with just that one
+       buildProcedureList([d.proc]);
+     }
+
      var procEl=document.getElementById('s2-proc');
-     if(procEl && d.proc){
+     if(procEl && d.proc && (!proceduresList || !proceduresList.length)){
        // Map CDT codes directly first
        var cdtMap = {
          'D0120':'Exam / Evaluation (D0120)','D0150':'Exam / Evaluation (D0120)',
@@ -3437,6 +3560,9 @@ function s2TypeField(id, text, delay, cb){
 function s2Reset(){
  // Reset all s2 state
  window._s2ReceiptOk = false;
+ window._selectedProcedures = [];
+ var pl=document.getElementById('proc-list'); if(pl){pl.innerHTML='';pl.style.display='none';}
+ var ps=document.getElementById('s2-proc'); if(ps){ps.style.display='block';ps.selectedIndex=0;}
  // Hide fields and banner
  var fields = document.getElementById('s2-fields');
  if(fields) fields.style.display = 'none';
@@ -3845,10 +3971,11 @@ function paymentSuccess(){
   document.getElementById('s5-form').style.display='none';
   document.getElementById('s5-success').classList.add('show');
   try{launchConfetti();}catch(e){}
-  setTimeout(function(){
-    if(window.goTo) window.goTo('s-dashboard');
-    try{ initDashboard(); }catch(e){}
-  }, 2500);
+  // No auto-advance -- user taps the button when ready
+  // Hide the auto-bar and "taking you..." text
+  var bar = document.getElementById('s5-auto-bar');
+  if(bar) bar.parentNode.parentNode.style.display='none';
+  var autoText = bar && bar.parentNode.parentNode.nextElementSibling;
 }
 
 async function doPayment(method){
@@ -7540,6 +7667,7 @@ window.s1Submit = function s1Submit() {
   cu.insurer   = provider || cu.insurer || 'Delta Dental';
   cu.memberId  = member   || cu.memberId || '';
   cu.procedure = proc;
+  cu.procedures = window._selectedProcedures || (proc ? [{cdt:proc,label:proc}] : []);
   cu.dentist   = dentist;
   cu.amount    = amount;
   cu.date      = date;
