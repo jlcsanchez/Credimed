@@ -7,7 +7,7 @@
 <title>Credimed · US Dental Insurance Claims</title>
 <meta name="description" content="Recover up to 80% of your dental costs from Mexico. Credimed handles your US insurance claim -- fast, secure, no win no fee.">
 <meta property="og:title" content="Credimed · Get Your Dental Insurance Refund">
-<meta property="og:description" content="Had dental work in Mexico? We recover your US insurance money. Free to start · 15% only if you win.">
+<meta property="og:description" content="Had dental work in Mexico? We recover your US insurance money. Standard: free to start · Premium: $29 upfront for faster results.">
 <meta name="theme-color" content="#0D9488">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -312,7 +312,7 @@ SCREEN: STEP 4 - CONTRACT
 .sig-name-inp{width:100%;height:48px;padding:0 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Playfair Display',Georgia,serif;font-size:17px;font-style:italic;color:var(--slate);outline:none;transition:border-color .15s}
 .sig-name-inp:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
 .canvas-wrap{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:white;cursor:crosshair;position:relative}
-.canvas-wrap canvas{display:block;width:100%;height:140px}
+.canvas-wrap canvas{display:block;width:100%;height:200px}
 .canvas-wrap.locked{cursor:not-allowed;opacity:.85;pointer-events:none}
 .canvas-ph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;color:#cbd5e1;pointer-events:none;text-align:center}
 .canvas-clr{position:absolute;top:8px;right:10px;font-size:11px;color:var(--slate-light);cursor:pointer;padding:3px 9px;border-radius:6px;background:rgba(255,255,255,.95);border:1px solid var(--border);display:none}
@@ -1043,10 +1043,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Language toggle -->
 
 <div style="position:absolute;top:16px;right:16px;z-index:10">
- <div class="lang-toggle" style="margin-bottom:0">
- <button class="lang-btn active" id="btn-en" data-oc="setLang('en')" onclick="window.setLang&&window.setLang('en')">EN</button>
- <button class="lang-btn" id="btn-es" data-oc="setLang('es')" onclick="window.setLang&&window.setLang('es')">ES</button>
- </div>
+
 </div>
 
 <!-- Logo -->
@@ -1065,7 +1062,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- Eyebrow pill -->
 
-<div class="hero-eyebrow" style="animation:slideUp .55s .05s cubic-bezier(.16,1,.3,1) both"> <span data-en="Free to start · 15% only if you win" data-es="Gratis para empezar · 15% solo si ganas">Free to start · You only pay if you win</span></div>
+<div class="hero-eyebrow" style="animation:slideUp .55s .05s cubic-bezier(.16,1,.3,1) both"> <span data-en="Standard: free to start · Premium: $29 upfront for faster results" data-es="Gratis para empezar · 15% solo si ganas">Standard: free to start · Premium: $29 upfront for faster results</span></div>
 
 <!-- Hero Headline -->
 
@@ -1306,7 +1303,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="final-cta">
  <h2 data-en="Stop leaving money on the table." data-es="Deja de dejar dinero sobre la mesa.">Stop leaving money on the table.</h2>
  <p data-en="The average patient gets $1,100 back. It takes 3 minutes to start. You only pay if you win." data-es="El paciente promedio recupera $1,100. Toma 3 minutos empezar. Solo pagas si ganas.">The average patient gets $1,100 back. It takes 3 minutes to start. You only pay if you win.</p>
- <button class="btn-final" data-oc="goTo('s-auth','register')" onclick="window.goTo&&window.goTo('s-auth','register')" data-en="Start my claim -- free ->" data-es="Iniciar mi reclamo -- gratis ->">Start my claim -- free -></button>
+ <button class="btn-final" data-oc="goTo('s-auth','register')" onclick="window.goTo&&window.goTo('s-auth','register')" data-en="Start my claim →" data-es="Iniciar mi reclamo -- gratis ->">Start my claim →</button>
  <div class="final-note" data-en="Standard: $0 upfront · 15% on success · Premium: $29 + 10% on success" data-es="Standard: $0 · 15% al éxito · Premium: $29 + 10%">Any US PPO plan · No upfront cost · 15% only on success · 458 claims filed</div>
  <a href="tel:+15551234567" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;color:white;text-decoration:none"> (555) 123-4567 · Call or text us</a>
  </div>
@@ -2036,7 +2033,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <div class="err-banner" id="c-err"><span></span><span id="c-err-txt"></span></div>
  </div>
- <div id="c-submit-bar" style="padding:16px 16px 32px;background:white">
+ <div id="c-submit-bar" style="padding:12px 16px 16px;background:white">
  <button class="btn-primary" id="c-submit-btn" data-oc="cSubmit()" onclick="window.cSubmit&&window.cSubmit()" disabled>Sign & Submit My Claim -></button>
  </div>
 </div>
@@ -2817,7 +2814,7 @@ function s1ShowExtracted(ocrData){
      errBanner = document.createElement('div');
      errBanner.id = 's1-ocr-err';
      errBanner.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;font-size:13px;color:#991b1b;margin:12px 0;text-align:center;';
-     errBanner.innerHTML = "<strong>Esta no parece ser una tarjeta de seguro dental</strong><br>Por favor sube una foto clara del <strong>frente</strong> de tu tarjeta de seguro de EE.UU. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('insurance')\">Ver ejemplo</span>";
+     errBanner.innerHTML = "<strong>This does not appear to be a dental insurance card.</strong><br>Please upload a clear photo of the <strong>front</strong> of your US insurance card. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('insurance')\">See example</span>";
      var s1ph = document.getElementById('s1-ph');
      if(s1ph && s1ph.parentNode) s1ph.parentNode.insertBefore(errBanner, s1ph.nextSibling);
    }
@@ -3018,8 +3015,9 @@ function s1TryEnableContinue(){
  var cardFieldsOk = !!(provider); // member optional for button unlock -- validated at submit
 
  var cardOk   = window._s1CardOk || cardFieldsOk;
- // Receipt only OK after user explicitly hits Confirm -- fields alone are not enough
- var receiptOk = !!window._s2ReceiptOk;
+ // Receipt only OK after user explicitly hits Confirm AND procedure is selected
+ var procVal = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
+ var receiptOk = !!window._s2ReceiptOk && !!procVal;
  var both = cardOk && receiptOk;
 
  if(btn) {
@@ -3202,7 +3200,7 @@ function s2RunOCR(imageBase64, mediaType){
        errBanner = document.createElement('div');
        errBanner.id = 's2-ocr-err';
        errBanner.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;font-size:13px;color:#991b1b;margin:12px 0;text-align:center;';
-       errBanner.innerHTML = "<strong>Este documento no parece ser un recibo dental</strong><br>Por favor sube una foto clara del recibo o factura de tu dentista. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('receipt')\">Ver ejemplo</span>";
+       errBanner.innerHTML = "<strong>This does not appear to be a dental receipt.</strong><br>Please upload a clear photo of your dentist's receipt or invoice. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('receipt')\">See example</span>";
        var s2empty = document.getElementById('s2-empty');
        if(s2empty && s2empty.parentNode) s2empty.parentNode.insertBefore(errBanner, s2empty.nextSibling);
      }
@@ -3299,13 +3297,18 @@ function s2RunOCR(imageBase64, mediaType){
        }
        // 4. Match against select options
        var matched = false;
-       var searchProc = mappedProc ? mappedProc.toLowerCase() : procLower;
+       // If we have a mappedProc, extract the CDT code from it e.g. "Cleaning / Prophylaxis (D1110)" -> "D1110"
+       var mappedCdt = mappedProc ? (mappedProc.match(/D\d{4}/i)||[])[0] : null;
+       if(mappedCdt) mappedCdt = mappedCdt.toUpperCase();
        for(var o=0;o<procEl.options.length;o++){
+         var optVal = procEl.options[o].value;
          var optText = procEl.options[o].text.toLowerCase();
-         var optVal = procEl.options[o].value.toLowerCase();
-         if(optText === searchProc || searchProc.includes(optText) || optText.includes(searchProc) || optVal === cdtLower.toLowerCase()){
-           procEl.selectedIndex=o; matched=true; break;
-         }
+         // Match by CDT code first (most reliable)
+         if(mappedCdt && optVal === mappedCdt){ procEl.selectedIndex=o; matched=true; break; }
+         if(cdtLower && optVal.toLowerCase() === cdtLower){ procEl.selectedIndex=o; matched=true; break; }
+         // Match by text contains
+         var sp = (mappedProc||d.proc).toLowerCase();
+         if(sp && optText.includes(sp.split('(')[0].trim()) && optText.length > 3){ procEl.selectedIndex=o; matched=true; break; }
        }
        // 5. Fallback: reset to Select... and unlock so user picks manually
        if(!matched){
@@ -3323,6 +3326,9 @@ function s2RunOCR(imageBase64, mediaType){
            procEl.parentNode.insertBefore(hint, procEl.nextSibling);
          }
          hint.style.display = 'block';
+         // Block confirm until user selects manually
+         window._s2ReceiptOk = false;
+         try{ s1TryEnableContinue(); }catch(e){}
        } else {
          var hint = document.getElementById('proc-hint');
          if(hint) hint.style.display = 'none';
@@ -3649,9 +3655,9 @@ function initCanvas(){
  const W = wrap.clientWidth || 343;
  const dpr = window.devicePixelRatio || 1;
  canvas.width = W * dpr;
- canvas.height = 100 * dpr;
+ canvas.height = 200 * dpr;
  canvas.style.width = W + 'px';
- canvas.style.height = '100px';
+ canvas.style.height = '200px';
  const ctx = canvas.getContext('2d');
  ctx.scale(dpr, dpr);
  ctx.strokeStyle = '#1e293b';
