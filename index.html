@@ -2482,7 +2482,7 @@ function goTo(id, param) {
  // Update theme-color to match screen background
  var tc = document.querySelector('meta[name=theme-color]');
  if(tc){
- var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step1b','s-step2','s-step3','s-step4','s-refund','s-ready'];
+ var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step1b','s-step2','s-step3','s-step4','s-ready'];
  tc.setAttribute('content', darkScreens.includes(id) ? '#0a0f1e' : '#ffffff');
  }
  if (id === 's-step3') {
@@ -4744,8 +4744,8 @@ function runReadyScreen() {
  setTimeout(() => bar.style.width = '100%', 100);
  }
 
- // Auto-advance to refund screen after 2.8s
- setTimeout(() => goTo('s-refund'), 2900);
+ // Auto-advance to plan selection
+ setTimeout(() => goTo('s-plan'), 2900);
 }
 
 function runProcessing() {
