@@ -2129,7 +2129,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  </div>
  <div id="cc-err" class="err-banner"><span></span><span id="cc-err-txt"></span></div>
- <button class="btn-primary" data-oc="doPayment('Card')" onclick="window.doPayment&&window.doPayment('Card')" style="margin-bottom:10px"> Pay $25.00</button>
+ <button class="btn-primary" data-oc="doPayment('Card')" onclick="window.doPayment&&window.doPayment('Card')" style="margin-bottom:10px" id="card-pay-btn"> Pay $29.00</button>
  <div style="text-align:center;font-size:12px;color:var(--slate-light);cursor:pointer;margin-bottom:4px" data-oc="hideCardForm()" onclick="window.hideCardForm&&window.hideCardForm()">← Other payment methods</div>
  </div>
  <div class="stripe-note" id="stripe-note">
@@ -2422,8 +2422,16 @@ function goTo(id, param) {
  // Reset payment screen - hide success, show form
  var sf = document.getElementById('s5-form'); if(sf) sf.style.display='flex';
  var ss = document.getElementById('s5-success'); if(ss) ss.classList.remove('show');
- // Update amounts based on plan
- var plan = (window.currentUser && window.currentUser.plan) || 'standard';
+ // Update amounts based on plan -- use _selectedPlan as source of truth
+ var plan = window._selectedPlan
+   || (window.currentUser && window.currentUser.plan)
+   || (window._getUser && window._getUser() && window._getUser().plan)
+   || 'standard';
+ // Standard should never reach s-step5 -- redirect to dashboard
+ if(plan !== 'premium'){
+   setTimeout(function(){ try{initDashboard();}catch(e){} if(window.goTo) window.goTo('s-dashboard'); }, 50);
+   return;
+ }
  var amtEl = document.getElementById('s5-amount');
  var labelEl = document.getElementById('s5-plan-label');
  var rowLabel = document.getElementById('s5-row-label');
@@ -3704,7 +3712,7 @@ function getStripe(){
 }
 
 async function initStripePayment(){
-  var plan = (window.currentUser && window.currentUser.plan) || 'standard';
+  var plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   if(plan !== 'premium') return; // Only charge upfront for Premium
 
   var stripe = getStripe();
@@ -3743,7 +3751,7 @@ async function initStripePayment(){
 }
 
 async function doPayment(method){
-  var plan = (window.currentUser && window.currentUser.plan) || 'standard';
+  var plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
 
   // Standard plan - no upfront payment, go directly to success
   if(plan === 'standard'){
@@ -7747,4 +7755,4 @@ window.selectPlan = function(plan) {
 };
 </script>
 
-</html>p
+</html>
