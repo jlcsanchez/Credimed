@@ -1043,7 +1043,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Language toggle -->
 
 <div style="position:absolute;top:16px;right:16px;z-index:10">
-
+ 
 </div>
 
 <!-- Logo -->
@@ -1667,7 +1667,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </select>
   <div id="proc-hint" style="display:none;font-size:12px;color:#991b1b;margin-top:4px;font-weight:600;padding:6px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5"></div>
  </div>
- <div class="field"><label>Amount Paid <span class="req">*</span> <span id="amt-currency-label" style="font-weight:400;color:#0D9488;font-size:11px">(MXN)</span></label>
+ <div class="field"><label>Amount Paid <span class="req">*</span> <span id="amt-currency-label" style="font-weight:400;color:#0D9488;font-size:11px"></span></label>
  <div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
  </div>
  <div id="live-refund-pill" style="display:none;margin-top:6px;margin-bottom:2px">
@@ -2153,7 +2153,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
 
  <!-- Prominent teal button -->
-
  <button class="btn-primary" style="background:var(--teal);color:white;margin-top:12px;width:100%;max-width:280px;box-shadow:0 8px 24px rgba(13,148,136,.4)" onclick="if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
  Go to my dashboard ->
  </button>
@@ -3464,9 +3463,8 @@ function s2RunOCR(imageBase64, mediaType){
        buildProcedureList([d.proc]);
      }
 
-     var proceduresList = null; // already handled above
      var procEl=document.getElementById('s2-proc');
-     if(procEl && d.proc && false){ // disabled -- handled by Claude API call above
+     if(procEl && d.proc){
        // Map CDT codes directly first
        var cdtMap = {
          'D0120':'Exam / Evaluation (D0120)','D0150':'Exam / Evaluation (D0120)',
@@ -3565,54 +3563,15 @@ function s2RunOCR(imageBase64, mediaType){
 
      var amtEl=document.getElementById('s2-amount');
      if(amtEl){
-       var isMXN = ocrData && ocrData.isMXN;
-       if(isMXN){
-         // Show MXN amount and fetch live exchange rate
-         amtEl.value = d.amount;
-         amtEl.classList.add('prefilled');
-         var lbl = document.getElementById('amt-currency-label');
-         if(lbl) lbl.textContent = '(MXN)';
-         // Fetch live USD/MXN rate
-         fetch('https://open.er-api.com/v6/latest/USD')
-           .then(function(r){return r.json();})
-           .then(function(fx){
-             var rate = fx && fx.rates && fx.rates.MXN || 18;
-             var usd = (parseFloat(d.amount)/rate).toFixed(2);
-             window._lastOcrAmount = parseFloat(usd);
-             window._mxnAmount = parseFloat(d.amount);
-             window._exchangeRate = rate;
-             // Add note below amount field
-             var note = document.getElementById('amt-fx-note');
-             if(!note){
-               note = document.createElement('div');
-               note.id = 'amt-fx-note';
-               note.style.cssText = 'font-size:11px;color:#64748b;margin-top:4px';
-               amtEl.parentNode.insertBefore(note, amtEl.nextSibling);
-             }
-             note.textContent = 'MXN $'+parseFloat(d.amount).toLocaleString()+' · USD $'+usd+' · Rate: 1 USD = '+rate.toFixed(2)+' MXN (open.er-api.com)';
-             // Update the amount field to USD for calculations
-             amtEl.value = usd;
-             if(lbl) lbl.textContent = '→ USD';
-             if(window._updateProcSummary) window._updateProcSummary();
-           })
-           .catch(function(){ 
-             var rate = 18;
-             var usd = (parseFloat(d.amount)/rate).toFixed(2);
-             window._lastOcrAmount = parseFloat(usd);
-             amtEl.value = usd;
-             var note = document.getElementById('amt-fx-note');
-             if(!note){ note=document.createElement('div'); note.id='amt-fx-note'; note.style.cssText='font-size:11px;color:#64748b;margin-top:4px'; amtEl.parentNode.insertBefore(note, amtEl.nextSibling); }
-             note.textContent = 'MXN $'+parseFloat(d.amount).toLocaleString()+' · USD $'+usd+' · Rate: 18 MXN/USD (default)';
-             if(lbl) lbl.textContent = '→ USD';
-           });
-       } else {
-         amtEl.value = d.amount;
-         amtEl.classList.add('prefilled');
-         var lbl2 = document.getElementById('amt-currency-label');
-         if(lbl2) lbl2.textContent = '(USD)';
-       }
+       amtEl.value = d.amount;
+       amtEl.classList.add('prefilled');
+       // Show currency label based on amount size
+       var lbl = document.getElementById('amt-currency-label');
+       var currency = ocrData && ocrData.currency ? ocrData.currency : (parseFloat(d.amount) > 500 ? 'MXN' : 'USD');
+       if(lbl) lbl.textContent = '(' + currency + ')';
+       window._currency = currency;
+       window._lastOcrAmount = parseFloat(d.amount)||0;
      }
-     if(d.amount) window._lastOcrAmount = parseFloat(d.amount)||0;
 
      var cityEl=document.getElementById('s2-city');
      if(cityEl){ cityEl.value=d.city; cityEl.classList.add('prefilled'); }
