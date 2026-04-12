@@ -1043,7 +1043,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Language toggle -->
 
 <div style="position:absolute;top:16px;right:16px;z-index:10">
- 
+
 </div>
 
 <!-- Logo -->
@@ -2147,12 +2147,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="success-title">Payment Received!</div>
  <div class="success-sub" style="margin-bottom:20px">Your claim is being submitted now</div>
  <div style="width:100%;max-width:280px;background:rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:left">
- <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim filed</span><span style="color:#4ade80">Free </span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Plan</span><span id="s5-plan-label" style="color:#4ade80">Standard</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim filed</span><span id="s5-fee-label" style="color:#4ade80">Free to start</span></div>
  <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim status</span><span style="color:#5eead4">Submitting...</span></div>
  <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7)"><span>WhatsApp updates</span><span style="color:#5eead4">Enabled </span></div>
  </div>
 
  <!-- Prominent teal button -->
+
  <button class="btn-primary" style="background:var(--teal);color:white;margin-top:12px;width:100%;max-width:280px;box-shadow:0 8px 24px rgba(13,148,136,.4)" onclick="if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
  Go to my dashboard ->
  </button>
@@ -2175,7 +2177,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="dash-greeting-time" id="dash-time">Good morning </div>
  <div class="dash-greeting-name" id="dash-name-display">Welcome!</div>
  <div class="dash-stat-card" style="padding:10px 14px;margin-top:8px">
- <div><div class="stat-card-label">Estimated refund</div><div class="stat-card-val" id="dash-potential">$1,240</div><div class="stat-card-sub" id="dash-insurer-sub">Delta Dental PPO</div></div>
+ <div><div class="stat-card-label">Estimated refund</div><div class="stat-card-val" id="dash-potential">--</div><div class="stat-card-sub" id="dash-insurer-sub">Submit a claim to see your estimate</div></div>
  <div><div class="stat-card-pct">75%</div><div class="stat-card-pct-lbl">Coverage</div></div>
  </div>
 
@@ -2186,11 +2188,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="sec-label">Active Claim <a>View details</a></div>
 <div class="active-claim-card">
- <div class="active-claim-head"><h3> <span id="dash-claim-title">Crown · Dr. Pérez</span></h3><div class="active-tag">Active</div></div>
+ <div class="active-claim-head"><h3> <span id="dash-claim-title">No active claim</span></h3><div class="active-tag">Active</div></div>
  <div class="active-claim-body">
  <div class="claim-meta">
- <div><div class="claim-procedure" id="dash-procedure">Dental Crown</div><div class="claim-dentist" id="dash-dentist">Dr. Pérez · Los Cabos · Mar 15</div></div>
- <div><div class="claim-amount-lbl">Paid</div><div class="claim-amount-val" id="dash-amount">$850</div></div>
+ <div><div class="claim-procedure" id="dash-procedure">--</div><div class="claim-dentist" id="dash-dentist">Submit your first claim to get started</div></div>
+ <div><div class="claim-amount-lbl">Paid</div><div class="claim-amount-val" id="dash-amount">--</div></div>
  </div>
  <div class="tracker">
  <div class="tracker-row">
@@ -2212,12 +2214,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="background:#fffbeb;border-radius:8px;padding:8px 12px;margin:10px 0;font-size:12px;color:#92400e;display:flex;align-items:center;gap:6px">
  <span>⏳</span><span><strong>Awaiting insurer response</strong> · Est. 5-10 business days · Next update via WhatsApp</span>
  </div>
- <div class="claim-footer"><span class="claim-insurer" id="dash-ins-name">Delta Dental</span><span class="claim-view-btn">View -></span><span class="claim-date">Mar 16, 2026</span></div>
+ <div class="claim-footer"><span class="claim-insurer" id="dash-ins-name"></span><span class="claim-view-btn">View -></span><span class="claim-date">Mar 16, 2026</span></div>
  </div>
 </div>
-<div class="sec-label">Past Claims <a>See all</a></div>
-<div class="past-claim-item" style="cursor:pointer" data-oc="goTo('s-dashboard')" onclick="window.goTo&&window.goTo('s-dashboard')"><div class="past-claim-icon paid"></div><div class="past-claim-info"><div class="past-claim-title">Implant -- Dr. Ramírez</div><div class="past-claim-sub">Delta Dental · Jan 2026</div></div><div style="text-align:right"><div class="past-claim-amount">+$480</div><div class="status-pill paid">Paid</div></div></div>
-<div class="past-claim-item" style="cursor:pointer" data-oc="goTo('s-dashboard')" onclick="window.goTo&&window.goTo('s-dashboard')"><div class="past-claim-icon review"></div><div class="past-claim-info"><div class="past-claim-title">Root Canal -- Dr. López</div><div class="past-claim-sub">Aetna · Feb 2026</div></div><div style="text-align:right"><div class="past-claim-amount pending">Pending</div><div class="status-pill review">In Review</div></div></div>
+<div class="sec-label" id="past-claims-label" style="display:none">Past Claims</div>
+<div id="past-claims-list"></div>
 
  </div>
 </div>
@@ -2269,8 +2270,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="text-align:right"><div class="past-claim-amount">$850</div><div style="font-size:10px;color:var(--slate-light)">paid</div></div>
  </div>
  <div class="sec-label" style="margin-top:8px">Past</div>
- <div class="past-claim-item" style="cursor:pointer" data-oc="goTo('s-dashboard')" onclick="window.goTo&&window.goTo('s-dashboard')"><div class="past-claim-icon paid"></div><div class="past-claim-info"><div class="past-claim-title">Implant -- Dr. Ramírez</div><div class="past-claim-sub">Delta Dental · Jan 2026</div></div><div style="text-align:right"><div class="past-claim-amount">+$480</div><div class="status-pill paid">Paid</div></div></div>
- <div class="past-claim-item" style="cursor:pointer" data-oc="goTo('s-dashboard')" onclick="window.goTo&&window.goTo('s-dashboard')"><div class="past-claim-icon review"></div><div class="past-claim-info"><div class="past-claim-title">Root Canal -- Dr. López</div><div class="past-claim-sub">Aetna · Feb 2026</div></div><div style="text-align:right"><div class="past-claim-amount pending">Pending</div><div class="status-pill review">In Review</div></div></div>
+ <div id="claims-list-full" style="margin-top:8px"></div>
  <button class="btn-new-claim" data-oc="startNewClaim()" onclick="window.startNewClaim&&window.startNewClaim()" style="margin-top:16px"> Submit New Claim</button>
  </div>
 </div>
@@ -3570,6 +3570,7 @@ function s2RunOCR(imageBase64, mediaType){
        var currency = ocrData && ocrData.currency ? ocrData.currency : (parseFloat(d.amount) > 500 ? 'MXN' : 'USD');
        if(lbl) lbl.textContent = '(' + currency + ')';
        window._currency = currency;
+       window._amountCurrency = currency;
        window._lastOcrAmount = parseFloat(d.amount)||0;
      }
 
@@ -4077,6 +4078,12 @@ function paymentSuccess(){
   document.getElementById('s5-form').style.display='none';
   document.getElementById('s5-success').classList.add('show');
   try{launchConfetti();}catch(e){}
+  // Update plan labels
+  var plan = window._selectedPlan || 'standard';
+  var planLbl = document.getElementById('s5-plan-label');
+  var feeLbl = document.getElementById('s5-fee-label');
+  if(planLbl) planLbl.textContent = plan === 'premium' ? 'Premium' : 'Standard';
+  if(feeLbl) feeLbl.textContent = plan === 'premium' ? '$29 paid · 10% on success' : 'Free to start · 15% on success';
   // No auto-advance -- user taps the button when ready
   // Hide the auto-bar and "taking you..." text
   var bar = document.getElementById('s5-auto-bar');
