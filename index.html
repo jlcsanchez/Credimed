@@ -3271,13 +3271,82 @@ function s2RunOCR(imageBase64, mediaType){
      list.appendChild(row);
    });
 
-   // Add procedure manually
+   // Add procedure manually -- inline select inside the list
    var addRow = document.createElement('div');
-   addRow.style.cssText = 'padding:10px 14px;font-size:12px;color:#0D9488;cursor:pointer;font-weight:600;background:#f0fdf4;border-top:1px solid #d1fae5;display:flex;align-items:center;gap:6px';
-   addRow.innerHTML = '<span style="font-size:16px;line-height:1">+</span> Add procedure manually';
-   addRow.onclick = function(){
-     if(select){ select.style.display='block'; select.focus(); }
+   addRow.style.cssText = 'padding:10px 14px;background:#f0fdf4;border-top:1px solid #d1fae5';
+   addRow.innerHTML =
+     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer" id="add-proc-toggle">' +
+       '<span style="font-size:16px;color:#0D9488;line-height:1;font-weight:700">+</span>' +
+       '<span style="font-size:12px;color:#0D9488;font-weight:600">Add procedure manually</span>' +
+     '</div>' +
+     '<div id="add-proc-row" style="display:none;display:none;gap:8px;align-items:center">' +
+       '<select id="add-proc-select" style="flex:1;height:38px;border:1.5px solid #0D9488;border-radius:8px;padding:0 8px;font-size:13px;color:#1e293b;background:white">' +
+         '<option value="">Select procedure...</option>' +
+         '<option value="D0120">Exam / Evaluation (D0120)</option>' +
+         '<option value="D0210">X-Ray / Radiograph (D0210)</option>' +
+         '<option value="D1110">Cleaning / Prophylaxis (D1110)</option>' +
+         '<option value="D2140">Filling - 1 surface (D2140)</option>' +
+         '<option value="D2391">Filling / Composite / Resin (D2391)</option>' +
+         '<option value="D2740">Crown (D2740)</option>' +
+         '<option value="D2960">Veneer (D2960)</option>' +
+         '<option value="D3330">Root Canal (D3330)</option>' +
+         '<option value="D5213">Partial Denture (D5213)</option>' +
+         '<option value="D6010">Implant (D6010)</option>' +
+         '<option value="D6240">Bridge (D6240)</option>' +
+         '<option value="D7140">Extraction (D7140)</option>' +
+         '<option value="D9975">Whitening (D9975)</option>' +
+         '<option value="D9999">Other (D9999)</option>' +
+       '</select>' +
+       '<button id="add-proc-btn" style="height:38px;padding:0 14px;background:#0D9488;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Add</button>' +
+     '</div>';
+
+   addRow.querySelector('#add-proc-toggle').onclick = function(){
+     var row = addRow.querySelector('#add-proc-row');
+     var isHidden = row.style.display === 'none' || row.style.display === '';
+     row.style.display = isHidden ? 'flex' : 'none';
+     if(isHidden) addRow.querySelector('#add-proc-select').focus();
    };
+
+   addRow.querySelector('#add-proc-btn') && (addRow.querySelector('#add-proc-btn').onclick = function(){
+     var sel = addRow.querySelector('#add-proc-select');
+     if(!sel || !sel.value) return;
+     var optText = sel.options[sel.selectedIndex].text;
+     var newCdt = sel.value;
+     // Check if already in list
+     var existing = list.querySelector('input[data-cdt="'+newCdt+'"]');
+     if(existing){ existing.checked = true; window.onProcCheck && window.onProcCheck(); }
+     else {
+       // Add new row to list
+       var newIdx = list.querySelectorAll('input[type=checkbox]').length;
+       var newRow = document.createElement('label');
+       newRow.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:white;border-bottom:1px solid #e0fdf4';
+       newRow.innerHTML =
+         '<div style="width:22px;height:22px;border-radius:6px;border:2px solid #0D9488;background:#0D9488;display:flex;align-items:center;justify-content:center;flex-shrink:0" id="proc-check-'+newIdx+'"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+
+         '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0f172a">'+optText.split('(')[0].trim()+'</div><div style="font-size:11px;color:#0D9488;font-weight:600">CDT '+newCdt+'</div></div>'+
+         '<input type="checkbox" data-cdt="'+newCdt+'" data-label="'+optText+'" data-idx="'+newIdx+'" checked style="display:none" onchange="window.onProcCheck&&window.onProcCheck()">';
+       newRow.onclick = function(e){
+         var cb = newRow.querySelector('input');
+         if(e.target !== cb) cb.checked = !cb.checked;
+         var box = document.getElementById('proc-check-'+newIdx);
+         if(box){ box.style.background=cb.checked?'#0D9488':'white'; box.style.borderColor=cb.checked?'#0D9488':'#cbd5e1'; box.innerHTML=cb.checked?'<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''; }
+         window.onProcCheck && window.onProcCheck();
+       };
+       list.insertBefore(newRow, addRow);
+       // Update header count
+       var hdr = list.querySelector('div:first-child');
+       var cnt = list.querySelectorAll('input[type=checkbox]').length;
+       if(hdr) hdr.innerHTML = '<span style="font-size:14px">✓</span> ' + cnt + ' procedure' + (cnt>1?'s':' ') + ' detected · select to claim';
+     }
+     // Update main select value
+     if(select){
+       for(var o=0;o<select.options.length;o++){ if(select.options[o].value===newCdt){ select.selectedIndex=o; break; } }
+     }
+     window.onProcCheck && window.onProcCheck();
+     // Reset and hide
+     sel.selectedIndex = 0;
+     addRow.querySelector('#add-proc-row').style.display = 'none';
+   });
+
    list.appendChild(addRow);
 
    window.onProcCheck = function(){
@@ -3296,8 +3365,59 @@ function s2RunOCR(imageBase64, mediaType){
        if(select) select.selectedIndex=0;
        window._selectedProcedures = [];
      }
+     // Update refund summary box
+     updateProcRefundBox();
      try{ s1TryEnableContinue(); }catch(e){}
    };
+
+   // Refund summary box below the list
+   var summaryBox = document.getElementById('proc-refund-summary');
+   if(!summaryBox){
+     summaryBox = document.createElement('div');
+     summaryBox.id = 'proc-refund-summary';
+     list.parentNode.insertBefore(summaryBox, list.nextSibling);
+   }
+
+   function updateProcRefundBox(){
+     var checked = list.querySelectorAll('input[type=checkbox]:checked');
+     var totalAmt = parseFloat((document.getElementById('s2-amount')&&document.getElementById('s2-amount').value)||0);
+     var coverageMap = {'D0120':0.80,'D0210':0.80,'D1110':0.80,'D2140':0.70,'D2391':0.70,
+       'D2740':0.60,'D2960':0.50,'D3330':0.65,'D5213':0.55,'D6010':0.50,
+       'D6240':0.60,'D7140':0.75,'D9975':0.00,'D9999':0.65};
+     var plan = window._selectedPlan || 'standard';
+     var feePct = plan === 'premium' ? 0.10 : 0.15;
+
+     if(!summaryBox) return;
+     if(checked.length === 0 || totalAmt <= 0){ summaryBox.style.display='none'; return; }
+
+     var sharePerProc = totalAmt / checked.length;
+     var rows = '';
+     var totalRefund = 0;
+     checked.forEach(function(cb){
+       var cdt = cb.getAttribute('data-cdt');
+       var label = cb.getAttribute('data-label').split('(')[0].trim();
+       var cov = coverageMap[cdt] || 0.70;
+       var refund = Math.round(sharePerProc * cov);
+       totalRefund += refund;
+       rows += '<div style="display:flex;justify-content:space-between;padding:6px 14px;border-bottom:1px solid rgba(255,255,255,.06)">' +
+         '<span style="font-size:12px;color:rgba(255,255,255,.6)">'+label+'</span>' +
+         '<span style="font-size:12px;font-weight:600;color:#5eead4">~$'+refund+'</span></div>';
+     });
+     var fee = Math.round(totalRefund * feePct) + (plan==='premium'?29:0);
+     var net = totalRefund - Math.round(totalRefund * feePct);
+
+     summaryBox.style.cssText = 'background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;overflow:hidden;margin-top:8px;margin-bottom:4px';
+     summaryBox.innerHTML =
+       '<div style="padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.08)">' +
+         '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Estimated refund per procedure</span>' +
+       '</div>' +
+       rows;
+     summaryBox.style.display = 'block';
+   }
+
+   // Also update when amount changes
+   var amtEl = document.getElementById('s2-amount');
+   if(amtEl) amtEl.addEventListener('input', updateProcRefundBox);
 
    window.onProcCheck();
  }
@@ -3314,6 +3434,17 @@ function s2RunOCR(imageBase64, mediaType){
      if(!ocrData.procedure) ocrData.procedure = ocrData.treatment || ocrData.service || ocrData.proc || '';
      if(!ocrData.amount) ocrData.amount = ocrData.total || ocrData.cost || ocrData.price || '';
      if(ocrData.amount) ocrData.amount = String(ocrData.amount).replace(/[^0-9.]/g,'');
+     // If procedures not array yet, try to build from procedure string or other fields
+     if(!ocrData.procedures || !Array.isArray(ocrData.procedures)){
+       var procStr = ocrData.procedure || '';
+       // Try splitting by common separators
+       var parts = [];
+       if(procStr.includes(',')) parts = procStr.split(',').map(function(s){return s.trim();}).filter(Boolean);
+       else if(procStr.includes(';')) parts = procStr.split(';').map(function(s){return s.trim();}).filter(Boolean);
+       else if(procStr.includes('\n')) parts = procStr.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+       else if(procStr) parts = [procStr];
+       if(parts.length > 0) ocrData.procedures = parts;
+     }
    }
 
    // If OCR failed or returned no useful data, show error
