@@ -3522,7 +3522,11 @@ function cSubmit(){
  if(routing.length!==9){errTxt.textContent='Routing number must be exactly 9 digits.';err.classList.add('show');return}
  if(account.length<4){errTxt.textContent='Please enter a valid account number (min 4 digits).';err.classList.add('show');return}
  // Go to payment screen (Step 5) instead of dashboard
- var plan = (window.currentUser && window.currentUser.plan) || 'standard';
+ // Read plan from all sources -- _selectedPlan is the most reliable
+ var plan = window._selectedPlan
+   || (window.currentUser && window.currentUser.plan)
+   || (window._getUser && window._getUser() && window._getUser().plan)
+   || 'standard';
  if(plan === 'premium'){
    if(window.goTo) window.goTo('s-step5');
  } else {
@@ -7253,6 +7257,8 @@ window.s1Submit = function s1Submit() {
   cu.amount    = amount;
   cu.date      = date;
   cu.city      = city;
+  // Preserve plan selection -- critical for premium $29 payment flow
+  cu.plan      = window._selectedPlan || cu.plan || 'standard';
 
   // Save back via internal setter
   if(window._setUser) window._setUser(cu);
@@ -7539,6 +7545,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
+
 <script>
 /* -- LOAD REAL CLAIMS FROM AWS ------------------------------------ */
 window.CREDIMED_API = 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com';
@@ -7678,8 +7685,11 @@ window.selectPlan = function(plan) {
     if(stdBtn) { stdBtn.style.background = 'white'; stdBtn.style.color = '#0D9488'; }
   }
   
-  // Save to currentUser
+  // Save to currentUser -- all sources in sync
   if(window.currentUser) window.currentUser.plan = plan;
+  var cu2 = (window._getUser && window._getUser()) || {};
+  cu2.plan = plan;
+  if(window._setUser) window._setUser(cu2);
   
   // Navigate to next step
   setTimeout(function(){
@@ -7687,4 +7697,5 @@ window.selectPlan = function(plan) {
   }, 300);
 };
 </script>
+
 </html>
