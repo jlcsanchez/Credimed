@@ -3217,63 +3217,68 @@ function s2RunOCR(imageBase64, mediaType){
  }
 
  function buildProcedureList(procedures){
-   // procedures = array of strings from OCR
    var list = document.getElementById('proc-list');
    var select = document.getElementById('s2-proc');
    if(!list || !procedures || !procedures.length) return;
 
    list.innerHTML = '';
    var mapped = procedures.map(function(p){ return mapProcToCDT(p); }).filter(Boolean);
-   // Remove duplicates by CDT
    var seen = {};
    mapped = mapped.filter(function(m){ if(seen[m.cdt]) return false; seen[m.cdt]=true; return true; });
-
    if(mapped.length === 0) return;
 
-   // Show list, hide select
-   list.style.display = 'block';
+   // Show list with teal border, hide select
+   list.style.cssText = 'display:block;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:6px;box-shadow:0 2px 12px rgba(13,148,136,.15)';
    if(select) select.style.display = 'none';
 
+   // Header teal
    var header = document.createElement('div');
-   header.style.cssText = 'padding:8px 12px;background:#f0fdf4;border-bottom:1px solid #d1fae5;font-size:11px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:.5px';
-   header.textContent = mapped.length + ' procedure' + (mapped.length>1?'s':'') + ' detected · select to claim';
+   header.style.cssText = 'padding:10px 14px;background:#0D9488;font-size:11px;font-weight:700;color:white;text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px';
+   header.innerHTML = '<span style="font-size:14px">✓</span> ' + mapped.length + ' procedure' + (mapped.length>1?' s':' ') + ' detected · select to claim';
    list.appendChild(header);
 
    mapped.forEach(function(m, i){
      var row = document.createElement('label');
-     row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:white';
+     row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:white;transition:background .15s' + (i < mapped.length-1 ? ';border-bottom:1px solid #e0fdf4' : '');
+     var isChecked = true; // auto-check all
      row.innerHTML =
-       '<input type="checkbox" data-cdt="'+m.cdt+'" data-label="'+m.label+'" style="width:18px;height:18px;accent-color:#0D9488;flex-shrink:0" onchange="window.onProcCheck&&window.onProcCheck()">' +
-       '<div><div style="font-size:13px;font-weight:600;color:#1e293b">'+m.label+'</div>' +
-       '<div style="font-size:11px;color:#94a3b8">CDT '+m.cdt+'</div></div>';
-     if(i===0){
-       // Auto-check first item
-       row.querySelector('input').checked = true;
-     }
+       '<div style="width:22px;height:22px;border-radius:6px;border:2px solid '+(isChecked?'#0D9488':'#cbd5e1')+';background:'+(isChecked?'#0D9488':'white')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s" id="proc-check-'+i+'">'+(isChecked?'<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div>'+
+       '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0f172a">'+m.label.split('(')[0].trim()+'</div>'+
+       '<div style="font-size:11px;color:#0D9488;font-weight:600;margin-top:1px">CDT '+m.cdt+'</div></div>'+
+       '<input type="checkbox" data-cdt="'+m.cdt+'" data-label="'+m.label+'" data-idx="'+i+'" checked style="display:none" onchange="window.onProcCheck&&window.onProcCheck()">';
+     row.onclick = function(e){
+       var cb = row.querySelector('input[type=checkbox]');
+       if(e.target !== cb) cb.checked = !cb.checked;
+       var idx = cb.getAttribute('data-idx');
+       var box = document.getElementById('proc-check-'+idx);
+       if(box){
+         box.style.background = cb.checked ? '#0D9488' : 'white';
+         box.style.borderColor = cb.checked ? '#0D9488' : '#cbd5e1';
+         box.innerHTML = cb.checked ? '<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+       }
+       window.onProcCheck && window.onProcCheck();
+     };
      list.appendChild(row);
    });
 
-   // Also add "Add another" option
+   // Add procedure manually
    var addRow = document.createElement('div');
-   addRow.style.cssText = 'padding:8px 12px;font-size:12px;color:#0D9488;cursor:pointer;font-weight:600';
-   addRow.textContent = '+ Add procedure manually';
+   addRow.style.cssText = 'padding:10px 14px;font-size:12px;color:#0D9488;cursor:pointer;font-weight:600;background:#f0fdf4;border-top:1px solid #d1fae5;display:flex;align-items:center;gap:6px';
+   addRow.innerHTML = '<span style="font-size:16px;line-height:1">+</span> Add procedure manually';
    addRow.onclick = function(){
      if(select){ select.style.display='block'; select.focus(); }
    };
    list.appendChild(addRow);
 
-   // Update s2-proc hidden value with first checked
    window.onProcCheck = function(){
      var checked = list.querySelectorAll('input[type=checkbox]:checked');
      if(checked.length > 0){
-       // Set s2-proc value to first selected CDT
        var firstCdt = checked[0].getAttribute('data-cdt');
        if(select){
          for(var o=0;o<select.options.length;o++){
            if(select.options[o].value === firstCdt){ select.selectedIndex=o; break; }
          }
        }
-       // Store all selected procedures
        var allProcs = [];
        checked.forEach(function(cb){ allProcs.push({cdt:cb.getAttribute('data-cdt'),label:cb.getAttribute('data-label')}); });
        window._selectedProcedures = allProcs;
@@ -3284,7 +3289,6 @@ function s2RunOCR(imageBase64, mediaType){
      try{ s1TryEnableContinue(); }catch(e){}
    };
 
-   // Trigger initial check
    window.onProcCheck();
  }
 
