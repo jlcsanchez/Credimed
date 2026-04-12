@@ -1724,7 +1724,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div id="pb4" style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:14px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:14px;font-weight:700;color:#4ade80" id="pb4-val">$0</span></div>
  <div id="proc-cdt-row" style="display:flex;justify-content:space-between;padding:7px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:11px;color:rgba(255,255,255,.3)">CDT Code assigned</span><span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:1px 8px;border-radius:5px" id="proc-cdt-val">D2750</span></div>
  </div>
- <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" onclick="window.goTo&&window.goTo('s-step3')">Yes -- Start my claim -></button>
+ <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" onclick="window.goTo&&window.goTo('s-plan')">Yes -- Start my claim -></button>
  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">15% only when you get paid · No win, no fee</div>
 </div>
 </div>
@@ -1774,7 +1774,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div id="ready-bar" style="height:100%;background:var(--teal);border-radius:20px;width:0%;transition:width 2.5s linear"></div>
 </div>
 <div style="font-size:11px;color:rgba(255,255,255,.3)">Taking you to your estimate...</div>
-<button data-oc="goTo('s-refund')" onclick="window.goTo&&window.goTo('s-refund')" class="btn-primary" style="width:100%;max-width:320px;margin-top:16px;background:var(--teal)">See my refund estimate -></button>
+<button data-oc="goTo('s-refund')" onclick="window.goTo&&window.goTo('s-refund')" class="btn-primary" style="width:100%;max-width:320px;margin-top:16px;background:var(--teal);display:none">See my refund estimate -></button>
 
  </div>
 </div>
@@ -1854,7 +1854,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
  <!-- CTA -->
 
- <button class="btn-primary" style="width:100%;background:var(--teal)" data-oc="goTo('s-step3')" onclick="window.goTo&&window.goTo('s-step3')">
+ <button class="btn-primary" style="width:100%;background:var(--teal)" data-oc="goTo('s-plan')" onclick="window.goTo&&window.goTo('s-plan')">
  Yes -- Start my claim ->
  </button>
  <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.3);text-align:center">15% commission · Only when you get paid</div>
@@ -2564,6 +2564,9 @@ function startNewClaim() {
  var s2auto=document.getElementById('s2-auto'); if(s2auto) s2auto.classList.remove('show');
  var s2body=document.getElementById('s2-card-body'); if(s2body){ s2body.style.pointerEvents=''; s2body.style.opacity=''; }
  var pill=document.getElementById('live-refund-pill'); if(pill) pill.style.display='none';
+  // Reset plan and processing flags for new claim
+  window._selectedPlan = 'standard';
+  window._skipProcessingAnim = false;
 }
 function doLogout() {
  currentUser = null;
@@ -2739,23 +2742,46 @@ function s1StartScan(imageBase64, mediaType){
    else if(prog<60){ document.getElementById('s1-ocr-title').textContent='Reading text...'; document.getElementById('s1-ocr-sub').textContent='Extracting details'; }
    else { document.getElementById('s1-ocr-title').textContent='Identifying insurer...'; document.getElementById('s1-ocr-sub').textContent='Cross-referencing'; }
  },300);
- // Call real OCR API
- fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+ // Validate + OCR with Anthropic API directly
+ fetch('https://api.anthropic.com/v1/messages',{
    method:'POST',
    headers:{'Content-Type':'application/json'},
-   body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType,type:'insurance'})
+   body:JSON.stringify({
+     model:'claude-sonnet-4-20250514',
+     max_tokens:500,
+     messages:[{
+       role:'user',
+       content:[
+         {type:'image',source:{type:'base64',media_type:mediaType,data:imageBase64}},
+         {type:'text',text:'Look at this image. Is it a US dental/health insurance card? If YES, extract and return ONLY valid JSON: {"isValid":true,"insurer":"...","memberId":"...","groupId":"...","memberName":"..."}. If NO (selfie, ID, receipt, random photo, etc.), return ONLY: {"isValid":false}. No explanation, only JSON.'}
+       ]
+     }]
+   })
  })
  .then(function(r){return r.json();})
- .then(function(data){
+ .then(function(apiResp){
    clearInterval(iv);
    if(fill) fill.style.width='100%';
-   document.getElementById('s1-ocr-title').textContent='Done!';
-   document.getElementById('s1-ocr-sub').textContent='Details extracted';
-   setTimeout(function(){ s1ShowExtracted(data); },400);
+   try{
+     var text = apiResp.content && apiResp.content[0] && apiResp.content[0].text || '{}';
+     var clean = text.replace(/```json|```/g,'').trim();
+     var data = JSON.parse(clean);
+     if(!data.isValid){
+       document.getElementById('s1-ocr-title').textContent='Not recognized';
+       document.getElementById('s1-ocr-sub').textContent='Wrong document';
+       setTimeout(function(){ s1ShowExtracted({}); },400);
+     } else {
+       document.getElementById('s1-ocr-title').textContent='Done!';
+       document.getElementById('s1-ocr-sub').textContent='Card verified';
+       setTimeout(function(){ s1ShowExtracted(data); },400);
+     }
+   } catch(e){
+     setTimeout(function(){ s1ShowExtracted({}); },400);
+   }
  })
  .catch(function(err){
    clearInterval(iv);
-   console.warn('OCR failed, using demo data:', err);
+   console.warn('OCR failed:', err);
    setTimeout(function(){ s1ShowExtracted(null); },400);
  });
 }
@@ -2771,7 +2797,7 @@ function s1ShowExtracted(ocrData){
      errBanner = document.createElement('div');
      errBanner.id = 's1-ocr-err';
      errBanner.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;font-size:13px;color:#991b1b;margin:12px 0;text-align:center;';
-     errBanner.innerHTML = "<strong>No pudimos leer tu tarjeta de seguro</strong><br>Asegurate de subir una foto clara del frente de tu tarjeta. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('insurance')\">Ver ejemplo</span>";
+     errBanner.innerHTML = "<strong>Esta no parece ser una tarjeta de seguro dental</strong><br>Por favor sube una foto clara del <strong>frente</strong> de tu tarjeta de seguro de EE.UU. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('insurance')\">Ver ejemplo</span>";
      var s1ph = document.getElementById('s1-ph');
      if(s1ph && s1ph.parentNode) s1ph.parentNode.insertBefore(errBanner, s1ph.nextSibling);
    }
@@ -3139,7 +3165,7 @@ function s2RunOCR(imageBase64, mediaType){
        errBanner = document.createElement('div');
        errBanner.id = 's2-ocr-err';
        errBanner.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;font-size:13px;color:#991b1b;margin:12px 0;text-align:center;';
-       errBanner.innerHTML = "<strong>No pudimos leer tu recibo</strong><br>Asegurate de subir una foto clara del recibo dental. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('receipt')\">Ver ejemplo</span>";
+       errBanner.innerHTML = "<strong>Este documento no parece ser un recibo dental</strong><br>Por favor sube una foto clara del recibo o factura de tu dentista. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('receipt')\">Ver ejemplo</span>";
        var s2empty = document.getElementById('s2-empty');
        if(s2empty && s2empty.parentNode) s2empty.parentNode.insertBefore(errBanner, s2empty.nextSibling);
      }
@@ -3280,15 +3306,36 @@ function s2RunOCR(imageBase64, mediaType){
    }, 400);
  }
 
- // Call real OCR Lambda if we have image data
+ // Validate + OCR receipt with Anthropic API
  if(imageBase64){
-   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+   fetch('https://api.anthropic.com/v1/messages',{
      method:'POST',
      headers:{'Content-Type':'application/json'},
-     body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
+     body:JSON.stringify({
+       model:'claude-sonnet-4-20250514',
+       max_tokens:600,
+       messages:[{
+         role:'user',
+         content:[
+           {type:'image',source:{type:'base64',media_type:mediaType||'image/jpeg',data:imageBase64}},
+           {type:'text',text:'Look at this image. Is it a dental receipt, dental invoice, or dental treatment document? If YES, return ONLY valid JSON: {"isValid":true,"dentist":"clinic name","procedure":"procedure name in English","amount":"number only","date":"YYYY-MM-DD","city":"city name"}. If NO (insurance card, selfie, ID, random photo, etc.), return ONLY: {"isValid":false}. No explanation, only JSON.'}
+         ]
+       }]
+     })
    })
    .then(function(r){return r.json();})
-   .then(function(data){ applyFields(data); })
+   .then(function(apiResp){
+     try{
+       var text = apiResp.content && apiResp.content[0] && apiResp.content[0].text || '{}';
+       var clean = text.replace(/```json|```/g,'').trim();
+       var data = JSON.parse(clean);
+       if(!data.isValid){
+         applyFields({});
+       } else {
+         applyFields(data);
+       }
+     } catch(e){ applyFields({}); }
+   })
    .catch(function(err){ console.warn('Receipt OCR failed:', err); applyFields(null); });
  } else {
    setTimeout(function(){ applyFields(null); }, 1800);
@@ -3530,8 +3577,10 @@ function cSubmit(){
  if(plan === 'premium'){
    if(window.goTo) window.goTo('s-step5');
  } else {
-   // Standard - no payment needed, go to processing then dashboard
-   if(window.goTo) window.goTo('s-processing');
+   // Standard - claim submitted, go directly to dashboard
+   window._skipProcessingAnim = true;
+   if(window.goTo) window.goTo('s-dashboard');
+   try { initDashboard(); } catch(e){}
  }
 }
 
@@ -7270,10 +7319,10 @@ window.s1Submit = function s1Submit() {
   window._s1CardOk = true;
   window._s2ReceiptOk = true;
 
-  // Navigate to processing
+  // Navigate to processing to calculate refund estimate
   if(!window.goTo){ console.error('goTo not available'); return; }
-  // Navigate to plan selection first
-  if(window.goTo) window.goTo('s-plan');
+  window._skipProcessingAnim = false;
+  if(window.goTo) window.goTo('s-processing');
 };
 
 window.runProcessingDone = function() {
@@ -7698,4 +7747,4 @@ window.selectPlan = function(plan) {
 };
 </script>
 
-</html>
+</html>p
