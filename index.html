@@ -1645,10 +1645,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="field" id="proc-field">
   <label>Procedures <span class="req">*</span></label>
   <!-- OCR list -- shown when multiple procedures detected -->
-  <div id="proc-list" style="display:none;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:6px"></div>
+  <div id="proc-list" style="display:none"></div>
   <div id="proc-refund-summary" style="display:none"></div>
   <!-- Fallback single select -->
-  <select id="s2-proc" onchange="window.s2CheckFields&&window.s2CheckFields()">
+  <select id="s2-proc" onchange="window.s2CheckFields&&window.s2CheckFields()" style="display:none">
    <option value="">Select...</option>
    <option value="D0120">Exam / Evaluation (D0120)</option>
    <option value="D0210">X-Ray / Radiograph (D0210)</option>
@@ -1667,7 +1667,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </select>
   <div id="proc-hint" style="display:none;font-size:12px;color:#991b1b;margin-top:4px;font-weight:600;padding:6px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5"></div>
  </div>
- <div class="field"><label>Amount Paid (USD) <span class="req">*</span></label>
+ <div class="field"><label>Amount Paid <span class="req">*</span> <span id="amt-currency-label" style="font-weight:400;color:#0D9488;font-size:11px">(MXN)</span></label>
  <div class="amt-wrap"><span class="amt-sym">$</span><input type="number" id="s2-amount" placeholder="0.00" min="0" step="0.01" oninput="window.s2CheckFields&&window.s2CheckFields()"></div>
  </div>
  <div id="live-refund-pill" style="display:none;margin-top:6px;margin-bottom:2px">
@@ -3227,128 +3227,20 @@ function s2RunOCR(imageBase64, mediaType){
    mapped = mapped.filter(function(m){ if(seen[m.cdt]) return false; seen[m.cdt]=true; return true; });
    if(mapped.length === 0) return;
 
-   // Show list with teal border, hide select
-   list.style.cssText = 'display:block;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:6px;box-shadow:0 2px 12px rgba(13,148,136,.15)';
+   // list stays hidden -- only stores checkboxes for state tracking
+   list.style.display = 'none';
    if(select) select.style.display = 'none';
 
-   // Header teal
-   var header = document.createElement('div');
-   header.style.cssText = 'padding:10px 14px;background:#0D9488;font-size:11px;font-weight:700;color:white;text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px';
-   header.innerHTML = '<span style="font-size:14px">✓</span> ' + mapped.length + ' procedure' + (mapped.length>1?' s':' ') + ' detected · select to claim';
-   list.appendChild(header);
-
-   mapped.forEach(function(m, i){
-     var row = document.createElement('label');
-     row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:white;transition:background .15s' + (i < mapped.length-1 ? ';border-bottom:1px solid #e0fdf4' : '');
-     var isChecked = true; // auto-check all
-     // Estimate refund per procedure based on coverage rates
-     var coverageMap = {'D0120':0.80,'D0210':0.80,'D1110':0.80,'D2140':0.70,'D2391':0.70,
-       'D2740':0.60,'D2960':0.50,'D3330':0.65,'D5213':0.55,'D6010':0.50,
-       'D6240':0.60,'D7140':0.75,'D9975':0.00,'D9999':0.65};
-     var totalAmt = parseFloat((document.getElementById('s2-amount')&&document.getElementById('s2-amount').value)||0);
-     var sharePerProc = mapped.length > 0 ? totalAmt / mapped.length : 0;
-     var coverage = coverageMap[m.cdt] || 0.70;
-     var estRefund = Math.round(sharePerProc * coverage);
-     var estRefundStr = estRefund > 0 ? '~$'+estRefund : '';
-
-     row.innerHTML =
-       '<div style="width:22px;height:22px;border-radius:6px;border:2px solid '+(isChecked?'#0D9488':'#cbd5e1')+';background:'+(isChecked?'#0D9488':'white')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s" id="proc-check-'+i+'">'+(isChecked?'<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div>'+
-       '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0f172a">'+m.label.split('(')[0].trim()+'</div>'+
-       '<div style="font-size:11px;color:#0D9488;font-weight:600;margin-top:1px">CDT '+m.cdt+'</div></div>'+
-       (estRefundStr ? '<div style="font-size:13px;font-weight:700;color:#0D9488;flex-shrink:0">'+estRefundStr+'</div>' : '')+
-       '<input type="checkbox" data-cdt="'+m.cdt+'" data-label="'+m.label+'" data-idx="'+i+'" checked style="display:none" onchange="window.onProcCheck&&window.onProcCheck()">';
-     row.onclick = function(e){
-       var cb = row.querySelector('input[type=checkbox]');
-       if(e.target !== cb) cb.checked = !cb.checked;
-       var idx = cb.getAttribute('data-idx');
-       var box = document.getElementById('proc-check-'+idx);
-       if(box){
-         box.style.background = cb.checked ? '#0D9488' : 'white';
-         box.style.borderColor = cb.checked ? '#0D9488' : '#cbd5e1';
-         box.innerHTML = cb.checked ? '<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
-       }
-       window.onProcCheck && window.onProcCheck();
-     };
-     list.appendChild(row);
+   mapped.forEach(function(m){
+     var cb = document.createElement('input');
+     cb.type = 'checkbox';
+     cb.setAttribute('data-cdt', m.cdt);
+     cb.setAttribute('data-label', m.label);
+     cb.checked = true;
+     cb.style.display = 'none';
+     cb.onchange = function(){ window.onProcCheck && window.onProcCheck(); };
+     list.appendChild(cb);
    });
-
-   // Add procedure manually -- inline select inside the list
-   var addRow = document.createElement('div');
-   addRow.style.cssText = 'padding:10px 14px;background:#f0fdf4;border-top:1px solid #d1fae5';
-   addRow.innerHTML =
-     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer" id="add-proc-toggle">' +
-       '<span style="font-size:16px;color:#0D9488;line-height:1;font-weight:700">+</span>' +
-       '<span style="font-size:12px;color:#0D9488;font-weight:600">Add procedure manually</span>' +
-     '</div>' +
-     '<div id="add-proc-row" style="display:none;display:none;gap:8px;align-items:center">' +
-       '<select id="add-proc-select" style="flex:1;height:38px;border:1.5px solid #0D9488;border-radius:8px;padding:0 8px;font-size:13px;color:#1e293b;background:white">' +
-         '<option value="">Select procedure...</option>' +
-         '<option value="D0120">Exam / Evaluation (D0120)</option>' +
-         '<option value="D0210">X-Ray / Radiograph (D0210)</option>' +
-         '<option value="D1110">Cleaning / Prophylaxis (D1110)</option>' +
-         '<option value="D2140">Filling - 1 surface (D2140)</option>' +
-         '<option value="D2391">Filling / Composite / Resin (D2391)</option>' +
-         '<option value="D2740">Crown (D2740)</option>' +
-         '<option value="D2960">Veneer (D2960)</option>' +
-         '<option value="D3330">Root Canal (D3330)</option>' +
-         '<option value="D5213">Partial Denture (D5213)</option>' +
-         '<option value="D6010">Implant (D6010)</option>' +
-         '<option value="D6240">Bridge (D6240)</option>' +
-         '<option value="D7140">Extraction (D7140)</option>' +
-         '<option value="D9975">Whitening (D9975)</option>' +
-         '<option value="D9999">Other (D9999)</option>' +
-       '</select>' +
-       '<button id="add-proc-btn" style="height:38px;padding:0 14px;background:#0D9488;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Add</button>' +
-     '</div>';
-
-   addRow.querySelector('#add-proc-toggle').onclick = function(){
-     var row = addRow.querySelector('#add-proc-row');
-     var isHidden = row.style.display === 'none' || row.style.display === '';
-     row.style.display = isHidden ? 'flex' : 'none';
-     if(isHidden) addRow.querySelector('#add-proc-select').focus();
-   };
-
-   addRow.querySelector('#add-proc-btn') && (addRow.querySelector('#add-proc-btn').onclick = function(){
-     var sel = addRow.querySelector('#add-proc-select');
-     if(!sel || !sel.value) return;
-     var optText = sel.options[sel.selectedIndex].text;
-     var newCdt = sel.value;
-     // Check if already in list
-     var existing = list.querySelector('input[data-cdt="'+newCdt+'"]');
-     if(existing){ existing.checked = true; window.onProcCheck && window.onProcCheck(); }
-     else {
-       // Add new row to list
-       var newIdx = list.querySelectorAll('input[type=checkbox]').length;
-       var newRow = document.createElement('label');
-       newRow.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:white;border-bottom:1px solid #e0fdf4';
-       newRow.innerHTML =
-         '<div style="width:22px;height:22px;border-radius:6px;border:2px solid #0D9488;background:#0D9488;display:flex;align-items:center;justify-content:center;flex-shrink:0" id="proc-check-'+newIdx+'"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+
-         '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0f172a">'+optText.split('(')[0].trim()+'</div><div style="font-size:11px;color:#0D9488;font-weight:600">CDT '+newCdt+'</div></div>'+
-         '<input type="checkbox" data-cdt="'+newCdt+'" data-label="'+optText+'" data-idx="'+newIdx+'" checked style="display:none" onchange="window.onProcCheck&&window.onProcCheck()">';
-       newRow.onclick = function(e){
-         var cb = newRow.querySelector('input');
-         if(e.target !== cb) cb.checked = !cb.checked;
-         var box = document.getElementById('proc-check-'+newIdx);
-         if(box){ box.style.background=cb.checked?'#0D9488':'white'; box.style.borderColor=cb.checked?'#0D9488':'#cbd5e1'; box.innerHTML=cb.checked?'<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''; }
-         window.onProcCheck && window.onProcCheck();
-       };
-       list.insertBefore(newRow, addRow);
-       // Update header count
-       var hdr = list.querySelector('div:first-child');
-       var cnt = list.querySelectorAll('input[type=checkbox]').length;
-       if(hdr) hdr.innerHTML = '<span style="font-size:14px">✓</span> ' + cnt + ' procedure' + (cnt>1?'s':' ') + ' detected · select to claim';
-     }
-     // Update main select value
-     if(select){
-       for(var o=0;o<select.options.length;o++){ if(select.options[o].value===newCdt){ select.selectedIndex=o; break; } }
-     }
-     window.onProcCheck && window.onProcCheck();
-     // Reset and hide
-     sel.selectedIndex = 0;
-     addRow.querySelector('#add-proc-row').style.display = 'none';
-   });
-
-   list.appendChild(addRow);
 
    window.onProcCheck = function(){
      var checked = list.querySelectorAll('input[type=checkbox]:checked');
@@ -3366,12 +3258,14 @@ function s2RunOCR(imageBase64, mediaType){
        if(select) select.selectedIndex=0;
        window._selectedProcedures = [];
      }
-     // Update refund summary box
      window._updateProcSummary && window._updateProcSummary();
      try{ s1TryEnableContinue(); }catch(e){}
    };
 
-   // Global function to update the summary box
+   window._showAddProc = function(){
+     if(select){ select.style.display='block'; select.style.marginTop='8px'; select.focus(); }
+   };
+
    window._updateProcSummary = function(){
      var sb = document.getElementById('proc-refund-summary');
      var pl = document.getElementById('proc-list');
@@ -3390,16 +3284,24 @@ function s2RunOCR(imageBase64, mediaType){
      });
      sb.style.cssText = 'background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;overflow:hidden;margin-top:8px;margin-bottom:4px';
      sb.innerHTML =
-       '<div style="display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1)">' +
+       '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1)">' +
          '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Procedures detected · ADA codes</span>' +
+         '<span style="font-size:10px;color:rgba(255,255,255,.3)">'+checked.length+' item'+(checked.length>1?'s':'')+'</span>' +
        '</div>' +
-       procRows;
+       procRows +
+       '<div onclick="window._showAddProc&&window._showAddProc()" style="padding:10px 14px;font-size:12px;color:#5eead4;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;border-top:1px solid rgba(255,255,255,.06)">' +
+         '<span style="font-size:16px;line-height:1">+</span> Add procedure' +
+       '</div>';
      sb.style.display = 'block';
    };
+
+   var amtEl = document.getElementById('s2-amount');
+   if(amtEl) amtEl.addEventListener('input', function(){ window._updateProcSummary && window._updateProcSummary(); });
 
    window.onProcCheck();
    setTimeout(window._updateProcSummary, 400);
  }
+
 
  function applyFields(ocrData){
    clearInterval(iv);
@@ -3412,7 +3314,12 @@ function s2RunOCR(imageBase64, mediaType){
      if(!ocrData.dentist) ocrData.dentist = ocrData.clinic || ocrData.provider || ocrData.doctor || ocrData.name || '';
      if(!ocrData.procedure) ocrData.procedure = ocrData.treatment || ocrData.service || ocrData.proc || '';
      if(!ocrData.amount) ocrData.amount = ocrData.total || ocrData.cost || ocrData.price || '';
-     if(ocrData.amount) ocrData.amount = String(ocrData.amount).replace(/[^0-9.]/g,'');
+     if(ocrData.amount){
+       var rawAmt = String(ocrData.amount);
+       var isMXN = ocrData.currency === 'MXN' || rawAmt.includes('MXN') || rawAmt.includes('pesos') || parseFloat(rawAmt.replace(/[^0-9.]/g,'')) > 500;
+       ocrData.amount = rawAmt.replace(/[^0-9.]/g,'');
+       ocrData.isMXN = isMXN;
+     }
      // If procedures not array yet, try to build from procedure string or other fields
      if(!ocrData.procedures || !Array.isArray(ocrData.procedures)){
        var procStr = ocrData.procedure || '';
@@ -3586,7 +3493,54 @@ function s2RunOCR(imageBase64, mediaType){
      }
 
      var amtEl=document.getElementById('s2-amount');
-     if(amtEl){ amtEl.value=d.amount; amtEl.classList.add('prefilled'); }
+     if(amtEl){
+       var isMXN = ocrData && ocrData.isMXN;
+       if(isMXN){
+         // Show MXN amount and fetch live exchange rate
+         amtEl.value = d.amount;
+         amtEl.classList.add('prefilled');
+         var lbl = document.getElementById('amt-currency-label');
+         if(lbl) lbl.textContent = '(MXN)';
+         // Fetch live USD/MXN rate
+         fetch('https://open.er-api.com/v6/latest/USD')
+           .then(function(r){return r.json();})
+           .then(function(fx){
+             var rate = fx && fx.rates && fx.rates.MXN || 18;
+             var usd = (parseFloat(d.amount)/rate).toFixed(2);
+             window._lastOcrAmount = parseFloat(usd);
+             window._mxnAmount = parseFloat(d.amount);
+             window._exchangeRate = rate;
+             // Add note below amount field
+             var note = document.getElementById('amt-fx-note');
+             if(!note){
+               note = document.createElement('div');
+               note.id = 'amt-fx-note';
+               note.style.cssText = 'font-size:11px;color:#64748b;margin-top:4px';
+               amtEl.parentNode.insertBefore(note, amtEl.nextSibling);
+             }
+             note.textContent = 'MXN $'+parseFloat(d.amount).toLocaleString()+' · USD $'+usd+' · Rate: 1 USD = '+rate.toFixed(2)+' MXN (open.er-api.com)';
+             // Update the amount field to USD for calculations
+             amtEl.value = usd;
+             if(lbl) lbl.textContent = '→ USD';
+             if(window._updateProcSummary) window._updateProcSummary();
+           })
+           .catch(function(){ 
+             var rate = 18;
+             var usd = (parseFloat(d.amount)/rate).toFixed(2);
+             window._lastOcrAmount = parseFloat(usd);
+             amtEl.value = usd;
+             var note = document.getElementById('amt-fx-note');
+             if(!note){ note=document.createElement('div'); note.id='amt-fx-note'; note.style.cssText='font-size:11px;color:#64748b;margin-top:4px'; amtEl.parentNode.insertBefore(note, amtEl.nextSibling); }
+             note.textContent = 'MXN $'+parseFloat(d.amount).toLocaleString()+' · USD $'+usd+' · Rate: 18 MXN/USD (default)';
+             if(lbl) lbl.textContent = '→ USD';
+           });
+       } else {
+         amtEl.value = d.amount;
+         amtEl.classList.add('prefilled');
+         var lbl2 = document.getElementById('amt-currency-label');
+         if(lbl2) lbl2.textContent = '(USD)';
+       }
+     }
      if(d.amount) window._lastOcrAmount = parseFloat(d.amount)||0;
 
      var cityEl=document.getElementById('s2-city');
