@@ -2048,53 +2048,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="pay-row total"><span>Due today</span><span id="s5-row-total">$29.00</span></div>
  </div>
  <p style="font-size:13px;font-weight:600;color:var(--slate);margin-bottom:12px">Choose payment method:</p>
- <div class="pay-methods">
- <!-- Stripe Payment Element (Apple Pay, Google Pay, Card) -->
- <div id="stripe-payment-element" style="margin-bottom:12px"></div>
- <!-- Fallback: Apple Pay button -->
- <button class="pay-method-btn apple" data-oc="doPayment('Apple Pay')" onclick="window.doPayment&&window.doPayment('Apple Pay')" style="padding:0;overflow:hidden;border-radius:12px">
- <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
- data-oer="this.style.display='none';this.nextElementSibling.style.display='flex'"
- style="display:none">
- <div style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:18px;font-weight:500;color:white;letter-spacing:-.3px">
- <svg height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
- <span>Pay</span>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+  <!-- Apple Pay -->
+  <button class="pay-method-btn apple" onclick="window.doPayment&&window.doPayment('applepay')" style="padding:0;overflow:hidden;border-radius:12px;height:52px;background:#000;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+   <svg height="20" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+   <span style="font-family:-apple-system,sans-serif;font-size:17px;font-weight:500;color:white">Pay</span>
+  </button>
+  <!-- Google Pay -->
+  <button class="pay-method-btn google" onclick="window.doPayment&&window.doPayment('googlepay')" style="padding:0;overflow:hidden;border-radius:12px;height:52px;background:white;border:1.5px solid #dadce0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
+   <svg width="22" height="22" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+   <span style="font-family:-apple-system,sans-serif;font-size:15px;font-weight:600;color:#3c4043">Pay</span>
+  </button>
+  <!-- PayPal -->
+  <button class="pay-method-btn paypal" onclick="window.doPayment&&window.doPayment('paypal')" style="padding:0;overflow:hidden;border-radius:12px;height:52px;background:#003087;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">
+   <svg width="80" height="20" viewBox="0 0 80 22" fill="none"><path d="M9.26 1.01H3.7C3.31 1.01 2.98 1.3 2.92 1.69L.68 15.87c-.05.3.18.57.49.57h2.7c.39 0 .72-.29.78-.67l.56-3.58c.06-.39.4-.67.78-.67h1.75c3.63 0 5.73-1.76 6.28-5.24.25-1.52.01-2.72-.7-3.56-.78-.92-2.17-1.41-4.06-1.41zm.64 5.16c-.3 1.98-1.81 1.98-3.27 1.98h-.83l.58-3.7c.04-.23.24-.4.47-.4h.38c.99 0 1.93 0 2.41.57.29.34.38.84.26 1.55z" fill="white"/><path d="M26.72 6.1h-2.71c-.23 0-.43.17-.47.4l-.12.77-.19-.28c-.6-.87-1.93-1.16-3.26-1.16-3.05 0-5.65 2.31-6.16 5.54-.26 1.61.11 3.15 1.02 4.23.84.98 2.03 1.39 3.46 1.39 2.46 0 3.83-1.58 3.83-1.58l-.12.76c-.05.3.18.57.49.57h2.44c.39 0 .72-.29.78-.67l1.46-9.26c.05-.3-.18-.57-.49-.57zm-3.78 5.37c-.27 1.58-1.52 2.64-3.12 2.64-.8 0-1.44-.26-1.85-.74-.41-.48-.56-1.17-.43-1.93.25-1.57 1.52-2.66 3.1-2.66.79 0 1.42.26 1.84.75.43.49.59 1.18.46 1.94z" fill="white"/><path d="M40.56 6.1h-2.72c-.26 0-.5.13-.64.35l-3.72 5.47-1.57-5.26c-.1-.33-.4-.56-.74-.56h-2.67c-.34 0-.58.34-.47.66l2.97 8.71-2.79 3.94c-.23.33 0 .79.4.79h2.71c.26 0 .5-.13.64-.34l8.97-12.95c.23-.33 0-.79-.37-.81z" fill="white"/><path d="M48.98 1.01h-5.56c-.39 0-.72.29-.78.67L40.4 15.87c-.05.3.18.57.49.57h2.9c.27 0 .5-.2.55-.47l.59-3.78c.06-.39.4-.67.78-.67h1.75c3.63 0 5.73-1.76 6.28-5.24.25-1.52.01-2.72-.7-3.56-.79-.92-2.17-1.41-4.06-1.41v.7zm.64 5.16c-.3 1.98-1.81 1.98-3.27 1.98h-.83l.58-3.7c.04-.23.24-.4.47-.4h.38c.99 0 1.93 0 2.41.57.29.34.38.84.26 1.55z" fill="#009CDE"/><path d="M66.44 6.1h-2.71c-.23 0-.43.17-.47.4l-.12.77-.19-.28c-.6-.87-1.93-1.16-3.26-1.16-3.05 0-5.65 2.31-6.16 5.54-.26 1.61.11 3.15 1.02 4.23.84.98 2.03 1.39 3.46 1.39 2.46 0 3.83-1.58 3.83-1.58l-.12.76c-.05.3.18.57.49.57h2.44c.39 0 .72-.29.78-.67l1.46-9.26c.05-.3-.18-.57-.49-.57zm-3.78 5.37c-.27 1.58-1.52 2.64-3.12 2.64-.8 0-1.44-.26-1.85-.74-.41-.48-.56-1.17-.43-1.93.25-1.57 1.52-2.66 3.1-2.66.79 0 1.42.26 1.84.75.43.49.59 1.18.46 1.94z" fill="#009CDE"/><path d="M70.08 1.38l-2.32 14.49c-.05.3.18.57.49.57h2.34c.39 0 .72-.29.78-.67L73.6 1.59c.05-.3-.18-.57-.49-.57h-2.55c-.23.01-.43.17-.48.36z" fill="#009CDE"/></svg>
+  </button>
+  <!-- Pay with Card -->
+  <button class="pay-method-btn card" onclick="window.showCardForm&&window.showCardForm()" style="padding:0;overflow:hidden;border-radius:12px;height:52px;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+   <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><rect x=".5" y=".5" width="19" height="15" rx="2.5" stroke="white" stroke-opacity=".6"/><rect y="3" width="20" height="3" fill="white" fill-opacity=".4"/><rect x="2" y="9" width="5" height="2" rx="1" fill="white"/></svg>
+   <span style="font-size:14px;font-weight:700;color:white">Card</span>
+  </button>
  </div>
- </button>
- <!-- Google Pay -- G multicolor + Pay text, estilo oficial -->
- <button class="pay-method-btn google" data-oc="doPayment('Google Pay')" onclick="window.doPayment&&window.doPayment('Google Pay')" style="padding:0;overflow:hidden;border-radius:12px;border:1.5px solid #dadce0;background:white">
- <div style="display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:100%">
- <!-- G oficial de Google -->
- <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
- <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
- <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
- <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
- <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
- </svg>
- <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:600;color:#3c4043;letter-spacing:-.2px">Pay</span>
- </div>
- </button>
- <!-- PayPal -->
- <button class="pay-method-btn paypal" data-oc="doPayment('PayPal')" onclick="window.doPayment&&window.doPayment('PayPal')">
- <svg width="80" height="22" viewBox="0 0 80 22" fill="none" xmlns="http://www.w3.org/2000/svg">
- <path d="M9.26 1.01H3.7C3.31 1.01 2.98 1.3 2.92 1.69L.68 15.87c-.05.3.18.57.49.57h2.7c.39 0 .72-.29.78-.67l.56-3.58c.06-.39.4-.67.78-.67h1.75c3.63 0 5.73-1.76 6.28-5.24.25-1.52.01-2.72-.7-3.56-.78-.92-2.17-1.41-4.06-1.41zm.64 5.16c-.3 1.98-1.81 1.98-3.27 1.98h-.83l.58-3.7c.04-.23.24-.4.47-.4h.38c.99 0 1.93 0 2.41.57.29.34.38.84.26 1.55z" fill="white"/>
- <path d="M26.72 6.1h-2.71c-.23 0-.43.17-.47.4l-.12.77-.19-.28c-.6-.87-1.93-1.16-3.26-1.16-3.05 0-5.65 2.31-6.16 5.54-.26 1.61.11 3.15 1.02 4.23.84.98 2.03 1.39 3.46 1.39 2.46 0 3.83-1.58 3.83-1.58l-.12.76c-.05.3.18.57.49.57h2.44c.39 0 .72-.29.78-.67l1.46-9.26c.05-.3-.18-.57-.49-.57-.02 0-.02 0 0 0zm-3.78 5.37c-.27 1.58-1.52 2.64-3.12 2.64-.8 0-1.44-.26-1.85-.74-.41-.48-.56-1.17-.43-1.93.25-1.57 1.52-2.66 3.1-2.66.79 0 1.42.26 1.84.75.43.49.59 1.18.46 1.94z" fill="white"/>
- <path d="M40.56 6.1h-2.72c-.26 0-.5.13-.64.35l-3.72 5.47-1.57-5.26c-.1-.33-.4-.56-.74-.56h-2.67c-.34 0-.58.34-.47.66l2.97 8.71-2.79 3.94c-.23.33 0 .79.4.79h2.71c.26 0 .5-.13.64-.34l8.97-12.95c.23-.33 0-.79-.37-.81z" fill="white"/>
- <path d="M48.98 1.01h-5.56c-.39 0-.72.29-.78.67L40.4 15.87c-.05.3.18.57.49.57h2.9c.27 0 .5-.2.55-.47l.59-3.78c.06-.39.4-.67.78-.67h1.75c3.63 0 5.73-1.76 6.28-5.24.25-1.52.01-2.72-.7-3.56-.79-.92-2.17-1.41-4.06-1.41v.7zm.64 5.16c-.3 1.98-1.81 1.98-3.27 1.98h-.83l.58-3.7c.04-.23.24-.4.47-.4h.38c.99 0 1.93 0 2.41.57.29.34.38.84.26 1.55z" fill="#009CDE"/>
- <path d="M66.44 6.1h-2.71c-.23 0-.43.17-.47.4l-.12.77-.19-.28c-.6-.87-1.93-1.16-3.26-1.16-3.05 0-5.65 2.31-6.16 5.54-.26 1.61.11 3.15 1.02 4.23.84.98 2.03 1.39 3.46 1.39 2.46 0 3.83-1.58 3.83-1.58l-.12.76c-.05.3.18.57.49.57h2.44c.39 0 .72-.29.78-.67l1.46-9.26c.05-.3-.18-.57-.49-.57zm-3.78 5.37c-.27 1.58-1.52 2.64-3.12 2.64-.8 0-1.44-.26-1.85-.74-.41-.48-.56-1.17-.43-1.93.25-1.57 1.52-2.66 3.1-2.66.79 0 1.42.26 1.84.75.43.49.59 1.18.46 1.94z" fill="#009CDE"/>
- <path d="M70.08 1.38l-2.32 14.49c-.05.3.18.57.49.57h2.34c.39 0 .72-.29.78-.67L73.6 1.59c.05-.3-.18-.57-.49-.57h-2.55c-.23.01-.43.17-.48.36z" fill="#009CDE"/>
- </svg>
- </button>
- <!-- Pay with Card - full width -->
- <button class="pay-method-btn card" data-oc="showCardForm()" onclick="window.showCardForm&&window.showCardForm()">
- <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:6px">
- <rect x=".5" y=".5" width="19" height="15" rx="2.5" stroke="white" stroke-opacity=".6"/>
- <rect y="3" width="20" height="3" fill="white" fill-opacity=".4"/>
- <rect x="2" y="9" width="5" height="2" rx="1" fill="white"/>
- </svg>
- Pay with Card
- </button>
- </div>
+ <!-- Stripe element hidden -- used for actual payment processing -->
+ <div id="stripe-payment-element" style="display:none"></div>
+ <div id="fallback-card-btn" style="display:none"></div>
  <!-- Card Form (hidden by default) -->
  <div id="card-form" style="display:none;margin-top:4px;animation:fadeUp .25s ease">
  <div style="background:var(--teal-xlight);border:1px solid var(--teal-light);border-radius:12px;padding:14px 16px;margin-bottom:14px">
@@ -3688,17 +3665,15 @@ window.clearCanvas = function clearCanvas(){
 // STEP 5 - PAYMENT
 // 
 function showCardForm(){
- document.getElementById('card-form').style.display='block';
- document.querySelectorAll('.pay-methods').forEach(el=>el.style.display='none');
- document.getElementById('stripe-note').style.display='none';
- document.querySelector('#s-step5 p').style.display='none';
- setTimeout(()=>document.getElementById('cc-number').focus(),100);
+ var cf = document.getElementById('card-form'); if(cf) cf.style.display='block';
+ var fb = document.getElementById('fallback-card-btn'); if(fb) fb.style.display='none';
+ var sn = document.getElementById('stripe-note'); if(sn) sn.style.display='none';
+ setTimeout(function(){ var n=document.getElementById('cc-number'); if(n) n.focus(); },100);
 }
 function hideCardForm(){
- document.getElementById('card-form').style.display='none';
- document.querySelectorAll('.pay-methods').forEach(el=>el.style.display='grid');
- document.getElementById('stripe-note').style.display='block';
- document.querySelector('#s-step5 p').style.display='block';
+ var cf = document.getElementById('card-form'); if(cf) cf.style.display='none';
+ var fb = document.getElementById('fallback-card-btn'); if(fb) fb.style.display='flex';
+ var sn = document.getElementById('stripe-note'); if(sn) sn.style.display='block';
 }
 window.fmtCard = function fmtCard(inp){
  let v=inp.value.replace(/\D/g,'').slice(0,16);
@@ -3730,28 +3705,51 @@ function getStripe(){
 
 async function initStripePayment(){
   var plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
-  if(plan !== 'premium') return; // Only charge upfront for Premium
+  if(plan !== 'premium') return;
 
   var stripe = getStripe();
-  if(!stripe) return;
+  if(!stripe){
+    var fb = document.getElementById('fallback-card-btn');
+    if(fb) fb.style.display='flex';
+    return;
+  }
 
   try {
-    // Create payment intent via Lambda
-    var resp = await fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/payment', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        action: 'create_payment_intent',
-        plan: 'premium',
-        email: currentUser && currentUser.email,
-        claimId: currentUser && currentUser.claimId
-      })
-    });
-    var data = await resp.json();
-    if(!data.clientSecret) return;
+    // Step 1: Create payment intent via Lambda
+    var clientSecret = null;
+    try {
+      var resp = await fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/payment', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          action: 'create_payment_intent',
+          plan: 'premium',
+          amount: 2900,
+          currency: 'usd',
+          email: currentUser && currentUser.email,
+          claimId: currentUser && currentUser.claimId
+        })
+      });
+      var data = await resp.json();
+      console.log('[Credimed] Payment intent response:', JSON.stringify(data));
+      clientSecret = data.clientSecret || data.client_secret || data.paymentIntentClientSecret || null;
+    } catch(fetchErr) {
+      console.warn('[Credimed] Lambda payment failed:', fetchErr);
+    }
 
-    // Mount Stripe Payment Element (supports Apple Pay, Google Pay, Card)
-    var elements = stripe.elements({clientSecret: data.client_secret || data.clientSecret});
+    if(!clientSecret){
+      // Lambda failed -- show fallback card button
+      console.warn('[Credimed] No clientSecret -- showing fallback');
+      var fb = document.getElementById('fallback-card-btn');
+      if(fb) fb.style.display='flex';
+      return;
+    }
+
+    // Step 2: Mount Stripe Payment Element with clientSecret
+    var elements = stripe.elements({
+      clientSecret: clientSecret,
+      appearance: { theme: 'stripe', variables: { colorPrimary: '#0D9488' } }
+    });
     stripeElements = elements;
     var paymentEl = elements.create('payment', {
       layout: 'tabs',
@@ -3761,68 +3759,85 @@ async function initStripePayment(){
     if(container){
       paymentEl.mount('#stripe-payment-element');
       stripePaymentElement = paymentEl;
+      console.log('[Credimed] Stripe Payment Element mounted OK');
     }
   } catch(err) {
-    console.warn('Stripe init error:', err);
+    console.warn('[Credimed] Stripe init error:', err);
+    var fb = document.getElementById('fallback-card-btn');
+    if(fb) fb.style.display='flex';
   }
+}
+
+function paymentSuccess(){
+  document.getElementById('s5-form').style.display='none';
+  document.getElementById('s5-success').classList.add('show');
+  try{launchConfetti();}catch(e){}
+  setTimeout(function(){
+    if(window.goTo) window.goTo('s-dashboard');
+    try{ initDashboard(); }catch(e){}
+  }, 2500);
 }
 
 async function doPayment(method){
   var plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
+  if(plan === 'standard'){ paymentSuccess(); return; }
 
-  // Standard plan - no upfront payment, go directly to success
-  if(plan === 'standard'){
-    document.getElementById('s5-form').style.display='none';
-    document.getElementById('s5-success').classList.add('show');
-    try{launchConfetti();}catch(e){}
-    setTimeout(function(){
-      if(window.goTo) window.goTo('s-dashboard');
-      try{ initDashboard(); }catch(e){}
-    }, 2500);
+  // Apple Pay / Google Pay via Stripe Payment Request Button
+  if(method === 'applepay' || method === 'googlepay'){
+    var stripe = getStripe();
+    if(!stripe){ showCardForm(); return; }
+    try {
+      // Get fresh clientSecret
+      var resp = await fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/payment',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
+      });
+      var data = await resp.json();
+      var cs = data.clientSecret || data.client_secret;
+      if(!cs){ showCardForm(); return; }
+      var pr = stripe.paymentRequest({
+        country:'US', currency:'usd',
+        total:{label:'Credimed Premium Fast-Track', amount:2900},
+        requestPayerName:true, requestPayerEmail:true
+      });
+      var canMake = await pr.canMakePayment();
+      if(!canMake){ showCardForm(); return; }
+      pr.on('paymentmethod', async function(ev){
+        var result = await stripe.confirmCardPayment(cs, {payment_method: ev.paymentMethod.id}, {handleActions: false});
+        if(result.error){ ev.complete('fail'); }
+        else { ev.complete('success'); paymentSuccess(); }
+      });
+      pr.show();
+    } catch(e){ console.warn('Wallet pay error:', e); showCardForm(); }
     return;
   }
 
-  // Premium plan - process $29 payment via Stripe
+  // PayPal -- redirect to PayPal checkout (placeholder)
+  if(method === 'paypal'){
+    alert('PayPal coming soon. Please use card payment.');
+    return;
+  }
+
+  // Card payment via Stripe card form
   var stripe = getStripe();
-  if(!stripe || !stripeElements){
-    // Fallback if Stripe not loaded
-    document.getElementById('s5-form').style.display='none';
-    document.getElementById('s5-success').classList.add('show');
-    try{launchConfetti();}catch(e){}
-    setTimeout(function(){
-      if(window.goTo) window.goTo('s-dashboard');
-      try{ initDashboard(); }catch(e){}
-    }, 2500);
-    return;
-  }
+  if(!stripe || !stripeElements){ showCardForm(); return; }
 
-  var btn = document.querySelector('#s5-form .btn-primary');
+  var btn = document.getElementById('card-pay-btn');
   if(btn){ btn.disabled=true; btn.textContent='Processing...'; }
 
   try {
     var result = await stripe.confirmPayment({
       elements: stripeElements,
-      confirmParams: {
-        return_url: window.location.href,
-        receipt_email: currentUser && currentUser.email
-      },
+      confirmParams: { return_url: window.location.href, receipt_email: currentUser && currentUser.email },
       redirect: 'if_required'
     });
-
     if(result.error){
-      var err = document.getElementById('cc-err');
+      var errEl = document.getElementById('cc-err');
       var errTxt = document.getElementById('cc-err-txt');
-      if(err && errTxt){ errTxt.textContent = result.error.message; err.classList.add('show'); }
+      if(errEl && errTxt){ errTxt.textContent = result.error.message; errEl.classList.add('show'); }
       if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
     } else {
-      // Payment successful
-      document.getElementById('s5-form').style.display='none';
-      document.getElementById('s5-success').classList.add('show');
-      try{launchConfetti();}catch(e){}
-      setTimeout(function(){
-        if(window.goTo) window.goTo('s-dashboard');
-        try{ initDashboard(); }catch(e){}
-      }, 2500);
+      paymentSuccess();
     }
   } catch(err) {
     console.warn('Payment error:', err);
