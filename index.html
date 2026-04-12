@@ -3032,7 +3032,8 @@ function s1TryEnableContinue(){
 
  var cardOk   = window._s1CardOk || cardFieldsOk;
  // Receipt only OK after user explicitly hits Confirm AND procedure is selected
- var procVal = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
+ var procVal = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || 
+               (window._selectedProcedures && window._selectedProcedures.length > 0 ? 'ok' : '');
  var receiptOk = !!window._s2ReceiptOk && !!procVal;
  var both = cardOk && receiptOk;
 
@@ -3213,6 +3214,9 @@ function s2RunOCR(imageBase64, mediaType){
      {keys:['blanqueamiento','whitening','bleaching'],cdt:'D9975',label:'Whitening (D9975)'},
      {keys:['carilla','veneer','faceta'],cdt:'D2960',label:'Veneer (D2960)'},
      {keys:['protesis','denture','dentadura'],cdt:'D5213',label:'Partial Denture (D5213)'},
+     {keys:['anestesia','anesthesia','sedacion'],cdt:'D9930',label:'Anesthesia (D9930)'},
+     {keys:['medicacion','medicamento','postoperator','antibiotic'],cdt:'D9999',label:'Medication / Post-op care'},
+     {keys:['reconstruccion','reconstruction','buildup','build-up'],cdt:'D2391',label:'Filling / Composite (D2391)'},
    ];
    for(var i=0;i<map.length;i++){
      for(var j=0;j<map[i].keys.length;j++){
@@ -3398,8 +3402,9 @@ function s2RunOCR(imageBase64, mediaType){
    }
 
    // If OCR failed or returned no useful data, show error
-   var hasRealData = ocrData && (ocrData.dentist || ocrData.amount || ocrData.procedure);
-   if(!hasRealData && imageBase64){
+   var hasRealData = ocrData && (ocrData.dentist || ocrData.amount || ocrData.procedure || (ocrData.procedures && ocrData.procedures.length));
+   // Only show error if ocrData is explicitly {} (isValid:false), not null (network/parse failure)
+   if(!hasRealData && ocrData !== null && imageBase64){
      // Show error message and open receipt example
      ocr.classList.remove('show');
      var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
@@ -3656,23 +3661,32 @@ function s2RunOCR(imageBase64, mediaType){
        'anthropic-dangerous-direct-browser-access':'true'
      },
      body:JSON.stringify({
-       model:'claude-haiku-4-5-20251001',
+       model:'claude-sonnet-4-20250514',
        max_tokens:600,
        messages:[{role:'user',content:[
          {type:'image',source:{type:'base64',media_type:mediaType||'image/jpeg',data:imageBase64}},
-         {type:'text',text:'This is a dental receipt. Return ONLY this JSON, no markdown: {"isValid":true,"dentist":"clinic name","date":"YYYY-MM-DD","city":"city name","amount":"total number only no currency symbols","patientName":"patient name","procedures":["procedure 1","procedure 2","procedure 3"]} List every dental procedure found. If not a dental receipt return {"isValid":false}'}
+         {type:'text',text:'This is a dental document (receipt, invoice, or insurance EOB). Return ONLY this JSON, no markdown: {"isValid":true,"dentist":"clinic or provider name","date":"YYYY-MM-DD","city":"city if visible","amount":"total amount charged number only","patientName":"patient name","procedures":["procedure 1","procedure 2"]} List every dental procedure or service found. Use the description text, not just the codes. If this is not a dental document at all return {"isValid":false}'}
        ]}]
      })
    })
    .then(function(r){return r.json();})
    .then(function(resp){
-     var txt = (resp.content&&resp.content[0]&&resp.content[0].text)||'{}';
-     var data = JSON.parse(txt.replace(/```json|```/g,'').trim());
-     console.log('[Credimed OCR receipt]', JSON.stringify(data));
+     var txt = (resp.content&&resp.content[0]&&resp.content[0].text)||'';
+     // API-level error (auth, rate limit, etc)
+     if(resp.error || !txt){ applyFields(null); return; }
+     var data = null;
+     try {
+       var clean = txt.replace(/```json|```/g,'').trim();
+       var start = clean.indexOf('{');
+       var end = clean.lastIndexOf('}');
+       if(start !== -1 && end !== -1) clean = clean.slice(start, end+1);
+       data = JSON.parse(clean);
+     } catch(e){}
+     if(!data){ applyFields(null); return; }
      if(data.isValid===false){ applyFields({}); }
      else{ applyFields(data); }
    })
-   .catch(function(err){ console.warn('Receipt OCR failed:',err); applyFields(null); });
+   .catch(function(){ applyFields(null); });
  } else {
    setTimeout(function(){ applyFields(null); }, 1800);
  }
