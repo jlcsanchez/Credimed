@@ -4324,28 +4324,31 @@ async function doPayment(method){
       if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
       return;
     }
-    // Confirm payment via Lambda (no Stripe.js needed)
+    // Confirm with Stripe.js
+    var stripe = getStripe();
+    if(!stripe){
+      if(errEl&&errTxt){errTxt.textContent='Stripe failed to load. Please refresh and try again.';errEl.classList.add('show');}
+      if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
+      return;
+    }
     try {
-      var expParts = ccExp.replace(' ','').split('/');
-      var confirmResp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          action: 'confirm_payment',
-          clientSecret: cs,
-          card: {
-            number: ccNum.replace(/\s/g,''),
-            exp_month: expParts[0],
-            exp_year: expParts[1],
-            cvc: ccCvc,
-            name: ccName
-          },
-          email: currentUser && currentUser.email
-        })
+      var cardData = await stripe.createToken('card', {
+        number: ccNum.replace(/\s/g,''),
+        exp_month: ccExp.split('/')[0].trim(),
+        exp_year: ccExp.split('/')[1].trim(),
+        cvc: ccCvc,
+        name: ccName
       });
-      var confirmData = await confirmResp.json();
-      if(confirmData.error){
-        if(errEl&&errTxt){errTxt.textContent=confirmData.error;errEl.classList.add('show');}
+      if(cardData.error){
+        if(errEl&&errTxt){errTxt.textContent=cardData.error.message;errEl.classList.add('show');}
+        if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
+        return;
+      }
+      var confirmResult = await stripe.confirmCardPayment(cs, {
+        payment_method: { card: { token: cardData.token.id }, billing_details: { name: ccName, email: currentUser&&currentUser.email } }
+      });
+      if(confirmResult.error){
+        if(errEl&&errTxt){errTxt.textContent=confirmResult.error.message;errEl.classList.add('show');}
         if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
       } else {
         paymentSuccess();
