@@ -2271,7 +2271,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <!-- Header -->
  <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 100%);padding:16px 20px 20px;flex-shrink:0">
  <div style="display:flex;align-items:center;gap:12px">
- <div id="support-back-btn" onclick="window.goBack()" style="display:none;width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;color:white">←</div>
+ <div id="support-back-btn" onclick="window.goBack()" style="display:flex;width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;color:white">←</div>
  <div style="flex-shrink:0"><svg width="36" height="36" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
  <div>
  <div style="font-family:'Playfair Display',Georgia,serif;font-size:16px;font-weight:600;color:white">Credimed Support</div>
@@ -4008,39 +4008,63 @@ async function sendChat() {
  }
 
  const typingId = appendTyping();
- setTimeout(() => {
+ const cu = (window._getUser && window._getUser()) || {};
+ const plan = cu.plan || window._selectedPlan || 'standard';
+
+ try {
+   const resp = await fetch('https://api.anthropic.com/v1/messages', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({
+       model: 'claude-sonnet-4-20250514',
+       max_tokens: 300,
+       system: 'You are the Credimed support assistant. Credimed helps US patients recover dental insurance reimbursements for dental work done in Mexico. Keep answers short, friendly, and accurate. Pricing: Standard plan = $0 upfront, 15% fee only on successful reimbursement. Premium plan = $29 upfront + 10% fee on successful reimbursement. The patient plan is: ' + plan + '. Patient info: ' + (cu.first ? 'Name: ' + cu.first + ' ' + (cu.last||'') : '') + (cu.insurer ? ', Insurance: ' + cu.insurer : '') + (cu.amount ? ', Amount paid: $' + cu.amount : '') + '. Answer in the same language the user writes in.',
+       messages: [{ role: 'user', content: text }]
+     })
+   });
+   const data = await resp.json();
+   const reply = (data.content && data.content[0] && data.content[0].text) || getSmartReply(text, cu);
    removeTyping(typingId);
-   const cu = (window._getUser && window._getUser()) || {};
+   appendBubble('assistant', reply);
+ } catch(e) {
+   removeTyping(typingId);
    const reply = getSmartReply(text, cu);
    appendBubble('assistant', reply);
- }, 900);
+ }
 }
 
 function getSmartReply(text, cu) {
  const t = text.toLowerCase();
  const name = cu && cu.first ? ', ' + cu.first : '';
+ const plan = (cu && cu.plan) || window._selectedPlan || 'standard';
+ const isPremium = plan === 'premium';
  if (/cuanto|refund|reembolso|how much|recover|money|dinero/.test(t)) {
    const amt = parseFloat(cu && cu.amount) || 0;
    if (amt > 0) {
      const est = Math.round(amt * 0.75);
-     const fee = Math.round(est * 0.15) + 25;
-     return 'Based on your $' + amt + ' payment, you could recover approximately $' + est + '. After our fee, your net refund would be around $' + (est - fee) + '.';
+     const feePct = isPremium ? 0.10 : 0.15;
+     const fee = Math.round(est * feePct) + (isPremium ? 29 : 0);
+     return 'Based on your $' + amt + ' payment, you could recover approximately $' + est + '. After our ' + (isPremium ? '10%' : '15%') + ' fee, your net refund would be around $' + (est - fee) + '.';
    }
-   return 'Most patients recover 60-80% of what they paid. We take 15% only after you receive payment -- no win, no fee.';
+   return 'Most patients recover 60-80% of what they paid. Standard plan: free to start, 15% only if you win. Premium: $29 upfront + 10% on success.';
  }
  if (/how long|cuanto tiempo|when|cuando|days|dias/.test(t))
-   return 'Once you submit, we file within 24 hours. Insurance companies typically respond in 5-15 business days. We\'ll keep you updated via WhatsApp.';
+   return 'Once you submit, we file within 24 hours. Insurance companies typically respond in 5-15 business days. We will keep you updated via WhatsApp.';
  if (/document|upload|need|necesito|receipt|recibo|insurance card|tarjeta/.test(t))
-   return 'You need two things: 1) Your US insurance card (front) and 2) The receipt from your dentist. That\'s it -- we handle all the paperwork.';
- if (/cost|fee|precio|cobran|charge|15%|25/.test(t))
-   return 'It\'s $25 to file your claim, then 15% of whatever you recover. If your insurance doesn\'t pay, you owe nothing beyond the $25.';
+   return 'You need two things: 1) Your US insurance card (front) and 2) The receipt from your dentist. That is it · we handle all the paperwork.';
+ if (/cost|fee|precio|cobran|charge|15%|10%|premium|standard/.test(t))
+   return isPremium
+     ? 'You chose Premium: $29 upfront + 10% of your refund on success. On a $1,000 refund you would pay $129 total — less than Standard.'
+     : 'Standard plan: $0 upfront. We only charge 15% after your insurance pays you. No win, no fee. Or upgrade to Premium: $29 upfront + 10% on success.';
  if (/hmo|ppo|insurance|seguro|plan|delta|aetna|cigna|metlife/.test(t))
-   return 'We work with US PPO dental plans -- Delta Dental, Aetna, Cigna, MetLife, Guardian, Humana and others. HMO plans typically don\'t cover out-of-network care.';
+   return 'We work with US PPO dental plans · Delta Dental, Aetna, Cigna, MetLife, Guardian, Humana and others. HMO plans typically do not cover out-of-network care.';
  if (/hola|hello|hi |hey /.test(t))
-   return 'Hi' + name + '! I\'m the Credimed support assistant. Ask me anything about your claim, our process, or what documents you need.';
+   return 'Hi' + name + '! I am the Credimed support assistant. Ask me anything about your claim, fees, or documents needed.';
  if (/gracias|thank/.test(t))
-   return 'You\'re welcome' + name + '! Let me know if you have any other questions.';
- return 'Great question' + name + '. For anything specific about your claim, our team is on WhatsApp and typically responds within a few hours. Is there anything else I can clarify?';
+   return 'You are welcome' + name + '! Let me know if you have any other questions.';
+ if (/cancel|cancelar|stop|detener/.test(t))
+   return 'To cancel your claim, please contact us on WhatsApp. We will handle it right away.';
+ return 'Great question' + name + '. For anything specific about your claim, our team is on WhatsApp and typically responds within a few minutes. Is there anything else I can clarify?';
 }
 
 function appendBubble(role, text) {
@@ -4604,7 +4628,7 @@ window._setUser = function(u){ currentUser = u; };
 <div id="lb-insurance" style="display:none;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)">
  <div style="background:linear-gradient(135deg,#1a3a6b 0%,#1e5f74 50%,#0D9488 100%);padding:22px 22px 18px;position:relative;overflow:hidden">
  <div style="position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,.04);border-radius:50%"></div>
- <button data-oc="closeLightbox()" onclick="window.closeLightbox&&window.closeLightbox()" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:white;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;z-index:10;line-height:1">✕</button>
+ <button data-oc="closeLightbox()" onclick="window.closeLightbox&&window.closeLightbox()" style="position:absolute;top:12px;right:12px;background:#1e293b;border:2px solid rgba(255,255,255,.3);color:white;border-radius:50%;width:36px;height:36px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:10">✕</button>
  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
  <div>
  <div style="font-size:13px;font-weight:800;color:white;letter-spacing:.5px">DENTAL INSURANCE</div>
@@ -4645,7 +4669,7 @@ window._setUser = function(u){ currentUser = u; };
 <div id="lb-receipt" style="display:none;background:white;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4)">
  <div style="background:#1e293b;padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
  <div><div style="font-size:12px;font-weight:700;color:white">DENTAL RECEIPT</div><div style="font-size:9px;color:rgba(255,255,255,.4)">Official document from your dentist</div></div>
- <button data-oc="closeLightbox()" onclick="window.closeLightbox&&window.closeLightbox()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:white;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;line-height:1">✕</button>
+ <button data-oc="closeLightbox()" onclick="window.closeLightbox&&window.closeLightbox()" style="background:#1e293b;border:2px solid rgba(255,255,255,.3);color:white;border-radius:50%;width:36px;height:36px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">✕</button>
  </div>
  <div style="padding:14px 18px;text-align:center;border-bottom:2px dashed #e2e8f0">
  <div style="font-size:14px;font-weight:800;color:#1e293b">YOUR DENTIST / CLINIC</div>
