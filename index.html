@@ -2760,6 +2760,7 @@ function s1StartScan(imageBase64, mediaType){
  .then(function(data){
    clearInterval(iv);
    if(fill) fill.style.width='100%';
+   console.log('[Credimed OCR insurance response]', JSON.stringify(data));
    // Check isValid flag from Lambda -- if false, image is not an insurance card
    if(data && data.isValid === false){
      document.getElementById('s1-ocr-title').textContent='Not recognized';
@@ -2778,8 +2779,18 @@ function s1StartScan(imageBase64, mediaType){
  });
 }
 function s1ShowExtracted(ocrData){
+ // Normalize fields -- Lambda may return different key names
+ if(ocrData && !ocrData.insurer){
+   ocrData.insurer = ocrData.provider || ocrData.carrier || ocrData.insurance || ocrData.insuranceName || ocrData.company || '';
+ }
+ if(ocrData && !ocrData.memberId){
+   ocrData.memberId = ocrData.member || ocrData.memberNumber || ocrData.id || '';
+ }
+ if(ocrData && !ocrData.groupId){
+   ocrData.groupId = ocrData.group || ocrData.groupNumber || '';
+ }
  // If OCR failed, show error
- var hasRealData = ocrData && ocrData.insurer;
+ var hasRealData = ocrData && ocrData.insurer && ocrData.insurer.length > 1;
  if(!hasRealData && ocrData !== undefined){
    // ocrData was returned but has no insurer = wrong document
    var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
@@ -3146,6 +3157,14 @@ function s2RunOCR(imageBase64, mediaType){
    document.getElementById('s2-ocr-title').textContent='Done!';
    document.getElementById('s2-ocr-sub').textContent='All fields extracted';
 
+   // Normalize fields -- Lambda may return different key names
+   if(ocrData){
+     if(!ocrData.dentist) ocrData.dentist = ocrData.clinic || ocrData.provider || ocrData.doctor || ocrData.name || '';
+     if(!ocrData.procedure) ocrData.procedure = ocrData.treatment || ocrData.service || ocrData.proc || '';
+     if(!ocrData.amount) ocrData.amount = ocrData.total || ocrData.cost || ocrData.price || '';
+     if(ocrData.amount) ocrData.amount = String(ocrData.amount).replace(/[^0-9.]/g,'');
+   }
+
    // If OCR failed or returned no useful data, show error
    var hasRealData = ocrData && (ocrData.dentist || ocrData.amount || ocrData.procedure);
    if(!hasRealData && imageBase64){
@@ -3307,6 +3326,7 @@ function s2RunOCR(imageBase64, mediaType){
    })
    .then(function(r){return r.json();})
    .then(function(data){
+     console.log('[Credimed OCR receipt response]', JSON.stringify(data));
      // Check isValid flag from Lambda -- if false, image is not a dental receipt
      if(data && data.isValid === false){
        applyFields({});
