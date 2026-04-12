@@ -1723,7 +1723,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div id="pb4" style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:14px;font-weight:700;color:#4ade80">Your net refund</span><span style="font-size:14px;font-weight:700;color:#4ade80" id="pb4-val">$0</span></div>
  <div id="proc-cdt-row" style="display:flex;justify-content:space-between;padding:7px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:11px;color:rgba(255,255,255,.3)">CDT Code assigned</span><span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);padding:1px 8px;border-radius:5px" id="proc-cdt-val">D2750</span></div>
  </div>
- <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45)" onclick="window.goTo&&window.goTo('s-plan')">Yes -- Start my claim -></button>
+ <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--teal);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45);display:none;opacity:0;transition:opacity .5s" onclick="window.goTo&&window.goTo('s-plan')">Yes -- Start my claim -></button>
  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">15% only when you get paid · No win, no fee</div>
 </div>
 </div>
@@ -1923,9 +1923,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <div class="guide-hero"><h2>Before you sign </h2><p>Here's exactly how Credimed works -- no surprises</p></div>
  <div class="guide-body">
- <div class="guide-item"><div class="guide-num">1</div><div><div class="guide-item-title">No Upfront Cost</div><div class="guide-item-text">Credimed handles your entire claim for free. We charge 15% only when your insurance pays you.</div></div></div>
+ <!-- Plan badge -->
+ <div id="s3-plan-badge" style="display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:10px 14px;margin-bottom:4px">
+  <span id="s3-plan-icon" style="font-size:20px"></span>
+  <div>
+   <div id="s3-plan-title" style="font-size:13px;font-weight:700;color:#065f46"></div>
+   <div id="s3-plan-sub" style="font-size:11px;color:#6b7280"></div>
+  </div>
+ </div>
+ <div class="guide-item"><div class="guide-num">1</div><div><div class="guide-item-title" id="s3-item1-title">No Upfront Cost</div><div class="guide-item-text" id="s3-item1-text">Credimed handles your entire claim for free. We charge 15% only when your insurance pays you.</div></div></div>
  <div class="guide-item"><div class="guide-num">2</div><div><div class="guide-item-title">Reimbursement Goes to You</div><div class="guide-item-text">Your insurance sends money directly to your bank. Do not change your banking info with your insurer without notifying Credimed.</div></div></div>
- <div class="guide-item"><div class="guide-num">3</div><div><div class="guide-item-title">Success Fee -- Only After Deposit</div><div class="guide-item-text">15% is charged automatically only after we verify your deposit. No deposit = no charge.</div><div class="guide-amount">15%</div></div></div>
+ <div class="guide-item"><div class="guide-num">3</div><div><div class="guide-item-title">Success Fee -- Only After Deposit</div><div class="guide-item-text" id="s3-fee-text">15% is charged automatically only after we verify your deposit. No deposit = no charge.</div><div class="guide-amount" id="s3-fee-amount">15%</div></div></div>
  <div class="guide-item"><div class="guide-num">4</div><div><div class="guide-item-title">Open Book Policy</div><div class="guide-item-text">We may contact your insurer on your behalf. Report any reimbursement you receive within 48 hours.</div></div></div>
  <button class="btn-primary" data-oc="goTo('s-step4')" onclick="window.goTo&&window.goTo('s-step4')" style="margin-top:8px">I understand -- Continue -></button>
  <br><br>
@@ -2028,7 +2036,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <div class="err-banner" id="c-err"><span></span><span id="c-err-txt"></span></div>
  </div>
- <div style="height:80px"></div>
+ <div style="height:20px"></div>
  <div id="c-submit-bar" style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:12px 16px 24px;background:white;box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:100;display:none">
  <button class="btn-primary" id="c-submit-btn" data-oc="cSubmit()" onclick="window.cSubmit&&window.cSubmit()" disabled>Sign & Submit My Claim -></button>
  </div>
@@ -2390,6 +2398,37 @@ function goTo(id, param) {
  if(tc){
  var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step1b','s-step2','s-step3','s-step4','s-refund','s-ready'];
  tc.setAttribute('content', darkScreens.includes(id) ? '#0a0f1e' : '#ffffff');
+ }
+ if (id === 's-step3') {
+   var plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
+   var isPremium = plan === 'premium';
+   var badge = document.getElementById('s3-plan-badge');
+   var icon = document.getElementById('s3-plan-icon');
+   var title = document.getElementById('s3-plan-title');
+   var sub = document.getElementById('s3-plan-sub');
+   var item1Title = document.getElementById('s3-item1-title');
+   var item1Text = document.getElementById('s3-item1-text');
+   var feeText = document.getElementById('s3-fee-text');
+   var feeAmount = document.getElementById('s3-fee-amount');
+   if(isPremium){
+     if(badge) badge.style.background='#eff6ff', badge.style.borderColor='#93c5fd';
+     if(icon) icon.textContent='⚡';
+     if(title) title.textContent='Premium Fast-Track selected', title.style.color='#1e40af';
+     if(sub) sub.textContent='$29 upfront · 10% success fee · Priority processing';
+     if(item1Title) item1Title.textContent='$29 Upfront + 10% on Success';
+     if(item1Text) item1Text.textContent='You paid $29 to fast-track your claim. We charge an additional 10% only after your insurance pays you.';
+     if(feeText) feeText.textContent='10% is charged automatically only after we verify your deposit. No deposit = no additional charge.';
+     if(feeAmount) feeAmount.textContent='10%';
+   } else {
+     if(badge) badge.style.background='#f0fdf4', badge.style.borderColor='#6ee7b7';
+     if(icon) icon.textContent='✓';
+     if(title) title.textContent='Standard plan selected', title.style.color='#065f46';
+     if(sub) sub.textContent='$0 upfront · 15% success fee only if you win';
+     if(item1Title) item1Title.textContent='No Upfront Cost';
+     if(item1Text) item1Text.textContent='Credimed handles your entire claim for free. We charge 15% only when your insurance pays you.';
+     if(feeText) feeText.textContent='15% is charged automatically only after we verify your deposit. No deposit = no charge.';
+     if(feeAmount) feeAmount.textContent='15%';
+   }
  }
  if (id === 's-step4') { try { initContract(); } catch(e){} var csb=document.getElementById('c-submit-bar'); if(csb) csb.style.display='block'; }
  if (id === 's-dashboard') { try { initDashboard(); } catch(e){} }
@@ -2907,7 +2946,16 @@ function s2Confirm(){
  var dentist=document.getElementById('s2-dentist')?.value.trim()||'';
  var proc=document.getElementById('s2-proc')?.value||'';
  var amount=parseFloat(document.getElementById('s2-amount')?.value)||0;
- if(!dentist || !proc || amount<=0){ return; }
+ if(!proc){
+   var e=document.getElementById('s2-proc');
+   if(e){e.style.borderColor='#ef4444';e.style.background='#fef2f2';e.scrollIntoView({behavior:'smooth',block:'center'});}
+   var hint=document.getElementById('proc-hint');
+   if(!hint){hint=document.createElement('div');hint.id='proc-hint';hint.style.cssText='font-size:12px;color:#991b1b;margin-top:4px;font-weight:600;padding:6px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5';if(e&&e.parentNode)e.parentNode.insertBefore(hint,e.nextSibling);}
+   hint.textContent='⚠️ Please select the procedure performed';
+   hint.style.display='block';
+   return;
+ }
+ if(!dentist || amount<=0){ return; }
  // Lock fields
  ['s2-dentist','s2-date','s2-amount','s2-city'].forEach(function(id){
  var el=document.getElementById(id);
@@ -3774,6 +3822,20 @@ async function initStripePayment(){
   }
 }
 
+function showWalletError(msg){
+  var errEl = document.getElementById('wallet-err');
+  if(!errEl){
+    errEl = document.createElement('div');
+    errEl.id = 'wallet-err';
+    errEl.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:12px 16px;font-size:13px;color:#991b1b;margin-bottom:12px;text-align:center;';
+    var methods = document.querySelector('.pay-methods');
+    if(methods && methods.parentNode) methods.parentNode.insertBefore(errEl, methods);
+  }
+  errEl.textContent = '⚠️ ' + msg;
+  errEl.style.display = 'block';
+  setTimeout(function(){ errEl.style.display = 'none'; }, 5000);
+}
+
 function paymentSuccess(){
   document.getElementById('s5-form').style.display='none';
   document.getElementById('s5-success').classList.add('show');
@@ -3790,31 +3852,43 @@ async function doPayment(method){
 
   // Apple Pay / Google Pay via Stripe Payment Request Button
   if(method === 'applepay' || method === 'googlepay'){
+    var walletName = method === 'applepay' ? 'Apple Pay' : 'Google Pay';
     var stripe = getStripe();
-    if(!stripe){ showCardForm(); return; }
+    if(!stripe){
+      showWalletError(walletName + ' is not available. Please use card payment.');
+      return;
+    }
     try {
-      // Get fresh clientSecret
       var resp = await fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/payment',{
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
       });
       var data = await resp.json();
       var cs = data.clientSecret || data.client_secret;
-      if(!cs){ showCardForm(); return; }
+      if(!cs){
+        showWalletError('Payment setup failed. Please use card payment below.');
+        return;
+      }
       var pr = stripe.paymentRequest({
         country:'US', currency:'usd',
         total:{label:'Credimed Premium Fast-Track', amount:2900},
         requestPayerName:true, requestPayerEmail:true
       });
       var canMake = await pr.canMakePayment();
-      if(!canMake){ showCardForm(); return; }
+      if(!canMake){
+        showWalletError(walletName + ' is not available on this device. Please use card payment.');
+        return;
+      }
       pr.on('paymentmethod', async function(ev){
         var result = await stripe.confirmCardPayment(cs, {payment_method: ev.paymentMethod.id}, {handleActions: false});
         if(result.error){ ev.complete('fail'); }
         else { ev.complete('success'); paymentSuccess(); }
       });
       pr.show();
-    } catch(e){ console.warn('Wallet pay error:', e); showCardForm(); }
+    } catch(e){
+      console.warn('Wallet pay error:', e);
+      showWalletError(walletName + ' unavailable. Please use card payment.');
+    }
     return;
   }
 
@@ -4339,6 +4413,11 @@ function runProcessing() {
                  ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id,j){
                    setTimeout(function(){var el=document.getElementById(id);if(el)el.style.opacity='1';},j*120);
                  });
+                 // Show CTA button after everything is visible
+                 setTimeout(function(){
+                   var ctaBtn=document.getElementById('proc-cta-btn');
+                   if(ctaBtn){ctaBtn.style.display='flex';setTimeout(function(){ctaBtn.style.opacity='1';},50);}
+                 }, 5*120+200);
                },280);
              }
            },dur/st2);
@@ -7332,11 +7411,32 @@ window.s1Submit = function s1Submit() {
     if(e){e.style.borderColor='#ef4444';e.focus();e.scrollIntoView({behavior:'smooth',block:'center'});}
     return;
   }
-  if(!proc){
+  if(!proc || proc === ''){
     var e=document.getElementById('s2-proc');
-    if(e){e.style.borderColor='#ef4444';e.focus();e.scrollIntoView({behavior:'smooth',block:'center'});}
+    if(e){
+      e.style.borderColor='#ef4444';
+      e.style.background='#fef2f2';
+      e.scrollIntoView({behavior:'smooth',block:'center'});
+      e.focus();
+    }
+    // Show hint
+    var hint=document.getElementById('proc-hint');
+    if(!hint){
+      hint=document.createElement('div');
+      hint.id='proc-hint';
+      hint.style.cssText='font-size:12px;color:#991b1b;margin-top:4px;font-weight:600;padding:6px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5';
+      var procEl=document.getElementById('s2-proc');
+      if(procEl&&procEl.parentNode) procEl.parentNode.insertBefore(hint, procEl.nextSibling);
+    }
+    hint.textContent='⚠️ Please select the procedure performed';
+    hint.style.display='block';
     return;
   }
+  // Clear proc error if valid
+  var procOk=document.getElementById('s2-proc');
+  if(procOk){procOk.style.borderColor='';procOk.style.background='';}
+  var hintOk=document.getElementById('proc-hint');
+  if(hintOk) hintOk.style.display='none';
   if(!amount){
     var e=document.getElementById('s2-amount');
     if(e){e.style.borderColor='#ef4444';e.focus();e.scrollIntoView({behavior:'smooth',block:'center'});}
