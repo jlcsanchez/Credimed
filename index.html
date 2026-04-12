@@ -1790,8 +1790,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div style="width:100%;max-width:320px;background:rgba(255,255,255,.1);border-radius:20px;height:4px;overflow:hidden;margin-bottom:8px">
  <div id="ready-bar" style="height:100%;background:var(--teal);border-radius:20px;width:0%;transition:width 2.5s linear"></div>
 </div>
-<div style="font-size:11px;color:rgba(255,255,255,.3)">Taking you to your estimate...</div>
-<button data-oc="goTo('s-refund')" onclick="window.goTo&&window.goTo('s-refund')" class="btn-primary" style="width:100%;max-width:320px;margin-top:16px;background:var(--teal);display:none">See my refund estimate -></button>
+<div style="font-size:11px;color:rgba(255,255,255,.3)">Taking you to plan selection...</div>
+<button data-oc="goTo('s-plan')" onclick="window.goTo&&window.goTo('s-plan')" class="btn-primary" style="width:100%;max-width:320px;margin-top:16px;background:var(--teal);display:none">Choose your plan -></button>
 
  </div>
 </div>
@@ -7936,8 +7936,8 @@ var refund=(currentUser&&currentUser.estimatedRefund)||637;
 var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$'+refund.toLocaleString();
 ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.opacity='1';});
 var btn=document.getElementById('proc-cta-btn');
-if(btn){btn.textContent='Go to dashboard ->';btn.onclick=function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}};}
-setTimeout(function(){if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){};},4000);
+if(btn){btn.style.display='block';btn.style.opacity='1';}
+setTimeout(function(){if(window.goTo)window.goTo('s-plan');},2500);
 };
 </script></div></div>
 
