@@ -3037,16 +3037,18 @@ function s1TryEnableContinue(){
  var both = cardOk && receiptOk;
 
  if(btn) {
-   btn.disabled = false;
+   btn.disabled = !both;
    btn.textContent = both ? 'Submit my claim ->' : (receiptFieldsOk && !receiptOk ? 'Confirm your receipt above ->' : (cardOk ? 'Next: confirm your receipt ->' : 'Step 1: confirm your insurance card'));
    if(both) {
      btn.style.background = 'var(--teal)';
      btn.style.boxShadow = '0 4px 20px rgba(13,148,136,.35)';
      btn.style.cursor = 'pointer';
+     btn.style.opacity = '1';
    } else {
      btn.style.background = '#94a3b8';
      btn.style.boxShadow = 'none';
-     btn.style.cursor = 'default';
+     btn.style.cursor = 'not-allowed';
+     btn.style.opacity = '0.7';
    }
  }
  // Show section badges
@@ -3460,17 +3462,21 @@ function s2RunOCR(imageBase64, mediaType){
        })
        .then(function(r){return r.json();})
        .then(function(resp){
+         console.log('[Credimed procs]', JSON.stringify(resp));
          var text = resp.content&&resp.content[0]&&resp.content[0].text||'';
          var procs = text.split('\n').map(function(s){return s.replace(/^[-\u2022\d\.\)\s]+/,'').trim();}).filter(function(s){return s.length>3;});
+         console.log('[Credimed procs parsed]', procs);
          buildProcedureList(procs.length>0 ? procs : (d.proc ? [d.proc] : []));
+         if(window._updateProcSummary) window._updateProcSummary();
        })
-       .catch(function(){ if(d.proc) buildProcedureList([d.proc]); });
+       .catch(function(e){ console.warn('[Credimed procs error]',e); if(d.proc) buildProcedureList([d.proc]); });
      } else if(d.proc){
        buildProcedureList([d.proc]);
      }
 
+     var proceduresList = null; // already handled above
      var procEl=document.getElementById('s2-proc');
-     if(procEl && d.proc && (!proceduresList || !proceduresList.length)){
+     if(procEl && d.proc && false){ // disabled -- handled by Claude API call above
        // Map CDT codes directly first
        var cdtMap = {
          'D0120':'Exam / Evaluation (D0120)','D0150':'Exam / Evaluation (D0120)',
