@@ -7,7 +7,7 @@
 <title>Credimed -- US Dental Insurance Claims</title>
 <meta name="description" content="Recover up to 80% of your dental costs from Mexico. Credimed handles your US insurance claim -- fast, secure, no win no fee.">
 <meta property="og:title" content="Credimed -- Get Your Dental Insurance Refund">
-<meta property="og:description" content="Had dental work in Mexico? We recover your US insurance money. Simple, secure, No upfront cost.">
+<meta property="og:description" content="Had dental work in Mexico? We recover your US insurance money. Free to start · 15% only if you win.">
 <meta name="theme-color" content="#0D9488">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -121,7 +121,7 @@ SCREEN: LANDING
 .hero-stat-val{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;display:inline;line-height:1}
 .hero-stat-lbl{font-size:13px;color:rgba(255,255,255,.75);font-weight:500}
 .hero-ctas{width:100%;display:flex;flex-direction:column;gap:10px}
-.btn-hero-main{height:62px;background:var(--teal);color:white;border:none;border-radius:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 24px rgba(13,148,136,.4)}
+.btn-hero-main{height:70px;background:var(--teal);color:white;border:none;border-radius:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 24px rgba(13,148,136,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2}
 .btn-hero-main:hover{background:var(--teal-dark)}
 .btn-hero-sec{height:56px;background:transparent;color:rgba(255,255,255,.9);border:1.5px solid rgba(255,255,255,.35);border-radius:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:600;cursor:pointer}
 .how-section{background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);padding:52px 24px}
@@ -343,7 +343,7 @@ SCREEN: STEP 5 - PAYMENT
 .pay-method-btn.apple{background:#000;color:white;border-color:#000}
 .pay-method-btn.google{background:white;color:var(--slate)}
 .pay-method-btn.paypal{background:#003087;color:white;border-color:#003087}
-.pay-method-btn.card{background:var(--teal);color:white;border-color:var(--teal);grid-column:span 2}
+.pay-method-btn.card{background:var(--teal);color:white;border-color:var(--teal)}
 .stripe-note{text-align:center;font-size:11px;color:var(--slate-light);margin-bottom:16px}
 
 /* 
@@ -990,7 +990,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="font-size:11px;font-weight:700;letter-spacing:3px;color:#5eead4;text-transform:uppercase;margin-bottom:20px">Dental Insurance Claims</div>
     <h1 style="font-family:'Playfair Display',Georgia,serif;font-size:52px;font-weight:900;color:white;line-height:1.08;margin-bottom:16px;letter-spacing:-1px">Got dental<br>work in<br>Mexico?</h1>
     <p style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-style:italic;font-weight:700;color:#5eead4;line-height:1.2;margin-bottom:28px">Your insurance<br>owes you money.</p>
-    <p style="font-size:16px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:36px;max-width:420px">Most US PPO plans reimburse out-of-network dental work -- even in Mexico. Credimed files the claim for you. You get the check. We take 15% only after you\'re paid.</p>
+    <p style="font-size:16px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:36px;max-width:420px">Most US PPO plans reimburse out-of-network dental work -- even in Mexico. Credimed files the claim for you. You get the check. Standard plan: $0 upfront, 15% only after you get paid. Or go Premium: $29 upfront + 10% on success.</p>
     <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:28px;height:28px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="11" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -1012,8 +1012,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
       <div style="width:1px;height:48px;background:rgba(255,255,255,.1)"></div>
       <div style="text-align:center">
-        <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:700;color:#5eead4">15%</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;text-transform:uppercase;letter-spacing:1px">Only if you win</div>
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:700;color:#5eead4;line-height:1.1">$0<br><span style="font-size:14px">or $29</span></div>
+        <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;text-transform:uppercase;letter-spacing:1px">upfront · you choose</div>
       </div>
       <div style="width:1px;height:48px;background:rgba(255,255,255,.1)"></div>
       <div style="text-align:center">
@@ -1065,7 +1065,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- Eyebrow pill -->
 
-<div class="hero-eyebrow" style="animation:slideUp .55s .05s cubic-bezier(.16,1,.3,1) both"> <span data-en="Free to start · You only pay if you win" data-es="Gratis para empezar · Solo pagas si ganas">Free to start · You only pay if you win</span></div>
+<div class="hero-eyebrow" style="animation:slideUp .55s .05s cubic-bezier(.16,1,.3,1) both"> <span data-en="Free to start · 15% only if you win" data-es="Gratis para empezar · 15% solo si ganas">Free to start · You only pay if you win</span></div>
 
 <!-- Hero Headline -->
 
@@ -1078,7 +1078,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- Sub -->
 
-<p class="hero-body" style="animation:slideUp .6s .15s cubic-bezier(.16,1,.3,1) both;font-size:17px" data-en="Most US PPO plans reimburse out-of-network dental work -- even in Mexico. Credimed files the claim for you. You get the check. We take 15% only after you\'re paid." data-es="Tu plan PPO reembolsa trabajo dental fuera de red, incluso en México. Credimed tramita el reclamo por ti. Tú cobras. Nosotros tomamos el 15% solo después de que cobras.">Most US PPO plans reimburse out-of-network dental work -- even in Mexico. Credimed files the claim for you. You get the check. We take 15% only after you\'re paid.</p>
+<p class="hero-body" style="animation:slideUp .6s .15s cubic-bezier(.16,1,.3,1) both;font-size:17px" data-en="Most US PPO plans reimburse out-of-network dental work -- even in Mexico. Credimed files the claim for you. You get the check. <strong>Standard: free to start, 15% only if you win. Premium: $29 upfront + 10% on success.</strong>" data-es="Tu plan PPO reembolsa trabajo dental fuera de red, incluso en México. Credimed tramita el reclamo por ti. Tú cobras. Plan Standard: $0 por adelantado, 15% solo si cobras. O elige Premium: $29 + 10% al éxito.">Most US PPO plans reimburse out-of-network dental work -- even in Mexico. Credimed files the claim for you. You get the check. We take 15% only after you\'re paid.</p>
 
 <!-- Qualify box -- bento style -->
 
@@ -1109,16 +1109,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="hero-stat" style="animation:slideUp .6s .25s cubic-bezier(.16,1,.3,1) both">
  <div class="hero-stat-icon"></div>
  <span class="hero-stat-val">$1,100</span>
- <span class="hero-stat-lbl" data-en="average refund · no win, no fee" data-es="reembolso promedio · sin éxito, sin costo">average refund · no win, no fee</span>
+ <span class="hero-stat-lbl" data-en="average refund · $0 upfront · no win no fee" data-es="reembolso promedio · $0 por adelantado">average refund · no win, no fee</span>
 </div>
 
 <!-- CTAs -->
 
 <div class="hero-ctas" style="animation:slideUp .6s .3s cubic-bezier(.16,1,.3,1) both">
- <button class="btn-hero-main" onclick="(function(){var s=document.getElementById('s-auth');document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});s.classList.add('active');s.style.display='block';try{window.initAuth&&window.initAuth('register');}catch(e){}try{window.goTo&&window.goTo('s-auth','register');}catch(e){}})()" data-en="Check if I qualify -- free ->" data-es="Ver si califico -- gratis ->">Check if I qualify -- free -></button>
+ <button class="btn-hero-main" onclick="(function(){var s=document.getElementById('s-auth');document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});s.classList.add('active');s.style.display='block';try{window.initAuth&&window.initAuth('register');}catch(e){}try{window.goTo&&window.goTo('s-auth','register');}catch(e){}})()">
+  <span style="display:block;font-size:18px;font-weight:700">Start my claim →</span>
+  <span style="display:block;font-size:11px;font-weight:500;opacity:.75;margin-top:2px;letter-spacing:.3px">no upfront cost</span>
+</button>
  <button class="btn-hero-sec" onclick="(function(){var s=document.getElementById('s-auth');document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});s.classList.add('active');s.style.display='block';try{window.initAuth&&window.initAuth('login');}catch(e){}try{window.goTo&&window.goTo('s-auth','login');}catch(e){}})()" data-en="I already have an account" data-es="Ya tengo una cuenta">I already have an account</button>
 </div>
-<div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:6px;letter-spacing:.3px" data-en="No upfront cost · Takes 3 minutes · 458 claims filed" data-es="Sin costo inicial · 3 minutos · 458 reclamaciones">No upfront cost · Takes 3 minutes · 458 claims filed</div>
+<div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:6px;letter-spacing:.3px" data-en="Standard: $0 upfront · Premium: $29 · Takes 3 minutes" data-es="Standard: $0 · Premium: $29 · 3 minutos">Standard: $0 upfront · Premium: $29 · Takes 3 minutes</div>
 <div class="scroll-hint">↓</div>
 
  </div>
@@ -1176,7 +1179,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="step-num" style="background:linear-gradient(135deg,#5eead4,#0D9488);color:#0f172a">3</div>
  <div style="flex:1">
  <div class="step-title" style="color:#5eead4" data-en="You get the check" data-es="Tú cobras el cheque">You get the check</div>
- <div class="step-text" style="color:rgba(255,255,255,.7)" data-en="Insurance sends the reimbursement to you. Only then do we charge our 15% fee. Zero risk." data-es="La aseguradora te envía el reembolso. Solo entonces cobramos nuestro 15%. Cero riesgo.">Insurance sends the reimbursement to you. Only then do we charge our 15% fee. Zero risk.</div>
+ <div class="step-text" style="color:rgba(255,255,255,.7)" data-en="Insurance sends the reimbursement to you. Standard: 15% only on success. Premium: $29 upfront + 10% on success." data-es="La aseguradora te envía el reembolso. Standard: 15% solo al éxito. Premium: $29 + 10% al éxito.">Insurance sends the reimbursement to you. Only then do we charge our 15% fee. Zero risk.</div>
  </div>
  </div>
  <div style="margin-top:14px;padding:10px 14px;background:rgba(94,234,212,.08);border:1px solid rgba(94,234,212,.2);border-radius:12px;display:flex;align-items:center;justify-content:space-between">
@@ -1236,7 +1239,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="stat-cell"><div class="stat-val">80%</div><div class="stat-lbl" data-en="Max recovery" data-es="Recuperación máx.">Max recovery</div></div>
  <div class="stat-cell"><div class="stat-val">$1,100</div><div class="stat-lbl" data-en="Avg. refund" data-es="Reembolso prom.">Avg. refund</div></div>
  <div class="stat-cell"><div class="stat-val">48h</div><div class="stat-lbl" data-en="Claim submitted" data-es="Reclamación enviada">Claim submitted</div></div>
- <div class="stat-cell"><div class="stat-val">15%</div><div class="stat-lbl" data-en="Only on success" data-es="Solo si hay éxito">Only on success</div></div>
+ <div class="stat-cell"><div class="stat-val">15%</div><div class="stat-lbl" data-en="Standard fee" data-es="Tarifa Standard">Standard fee</div></div>
  </div>
  <!-- Testimonials -->
  <div class="testi-section">
@@ -1270,7 +1273,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="font-size:26px;flex-shrink:0"></div>
  <div>
  <div style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:3px">No win, no fee -- literally</div>
- <div style="font-size:13px;color:#64748b;line-height:1.6">We only charge 15% after your insurance pays you. If you don\'t get reimbursed, you owe us nothing. There's no catch.</div>
+ <div style="font-size:13px;color:#64748b;line-height:1.6">Standard plan: 15% only after your insurance pays. Zero upfront. Or choose Premium ($29 upfront) for faster processing and only 10% on success. No win, no fee either way.</div>
  </div>
  </div>
  <div style="display:flex;gap:14px;align-items:flex-start;padding:16px;background:white;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 1px 6px rgba(0,0,0,.04)">
@@ -1304,7 +1307,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <h2 data-en="Stop leaving money on the table." data-es="Deja de dejar dinero sobre la mesa.">Stop leaving money on the table.</h2>
  <p data-en="The average patient gets $1,100 back. It takes 3 minutes to start. You only pay if you win." data-es="El paciente promedio recupera $1,100. Toma 3 minutos empezar. Solo pagas si ganas.">The average patient gets $1,100 back. It takes 3 minutes to start. You only pay if you win.</p>
  <button class="btn-final" data-oc="goTo('s-auth','register')" onclick="window.goTo&&window.goTo('s-auth','register')" data-en="Start my claim -- free ->" data-es="Iniciar mi reclamo -- gratis ->">Start my claim -- free -></button>
- <div class="final-note" data-en="Any US PPO plan · No upfront cost · 15% only on success · 458 claims filed" data-es="Cualquier plan PPO · Sin costo inicial · 15% solo al éxito">Any US PPO plan · No upfront cost · 15% only on success · 458 claims filed</div>
+ <div class="final-note" data-en="Standard: $0 upfront · 15% on success · Premium: $29 + 10% on success" data-es="Standard: $0 · 15% al éxito · Premium: $29 + 10%">Any US PPO plan · No upfront cost · 15% only on success · 458 claims filed</div>
  <a href="tel:+15551234567" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;color:white;text-decoration:none"> (555) 123-4567 · Call or text us</a>
  </div>
  <div class="landing-footer">
@@ -1365,7 +1368,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="field"><label>Confirm Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="r-pass2" placeholder="Repeat password" data-oi="checkMatch()" oninput="window.checkMatch&&window.checkMatch()"><button class="pw-toggle" type="button" data-oc="tPw('r-pass2',this)" onclick="window.tPw&&window.tPw('r-pass2',this)"></button></div><div class="pw-match" id="pw-match"></div></div>
  <div class="err-banner" id="reg-err"><span></span><span id="reg-err-txt"></span></div>
  <button class="btn-primary" data-oc="doRegister()" onclick="window.doRegister&&window.doRegister()" style="margin-top:4px">Create my account -></button>
- <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:var(--slate-mid);line-height:1.5;text-align:center">By signing up you agree to our <a href="#" style="color:var(--teal);font-weight:600" data-oc="showTerms()" onclick="window.showTerms&&window.showTerms()">Terms</a> and authorize Credimed to charge a <strong>15% commission</strong> on successful refunds.</div>
+ <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:var(--slate-mid);line-height:1.5;text-align:center">By signing up you agree to our <a href="#" style="color:var(--teal);font-weight:600" data-oc="showTerms()" onclick="window.showTerms&&window.showTerms()">Terms</a> and authorize Credimed to charge our success fee (Standard: 15% · Premium: 10%) on successful refunds.</div>
  <div style="text-align:center;font-size:13px;color:var(--slate-mid);margin-top:14px;margin-bottom:4px">Already have an account? <a data-oc="switchTab('login')" onclick="window.switchTab&&window.switchTab('login')" style="color:var(--teal);font-weight:600;cursor:pointer">Sign in</a></div>
  <div style="text-align:center;font-size:12px;color:var(--slate-light);cursor:pointer;padding-bottom:8px" data-oc="goBack()" onclick="window.goBack&&window.goBack()">← Back to home</div>
  </div>
@@ -2025,7 +2028,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <div class="err-banner" id="c-err"><span></span><span id="c-err-txt"></span></div>
  </div>
- <div style="padding:12px 16px 24px;background:white">
+ <div style="height:80px"></div>
+ <div id="c-submit-bar" style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:12px 16px 24px;background:white;box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:100;display:none">
  <button class="btn-primary" id="c-submit-btn" data-oc="cSubmit()" onclick="window.cSubmit&&window.cSubmit()" disabled>Sign & Submit My Claim -></button>
  </div>
 </div>
@@ -2361,6 +2365,8 @@ function goTo(id, param) {
  try {
  const cur = navHistory[navHistory.length-1];
  if (cur === id) return;
+ // Hide submit bar when leaving s-step4
+ if(cur === 's-step4'){ var csb=document.getElementById('c-submit-bar'); if(csb) csb.style.display='none'; }
  // Hide ALL screens explicitly
  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); s.style.display='none'; s.scrollTop = 0; });
  navHistory.push(id);
@@ -2385,7 +2391,7 @@ function goTo(id, param) {
  var darkScreens = ['s-landing','s-auth','s-processing','s-checklist','s-step1','s-step1b','s-step2','s-step3','s-step4','s-refund','s-ready'];
  tc.setAttribute('content', darkScreens.includes(id) ? '#0a0f1e' : '#ffffff');
  }
- if (id === 's-step4') { try { initContract(); } catch(e){} }
+ if (id === 's-step4') { try { initContract(); } catch(e){} var csb=document.getElementById('c-submit-bar'); if(csb) csb.style.display='block'; }
  if (id === 's-dashboard') { try { initDashboard(); } catch(e){} }
  try { updateHelpBtn(id); } catch(e){}
  if (id === 's-processing' && !window._skipProcessingAnim) setTimeout(function(){ try{ runProcessing(); }catch(e){} }, 300);
