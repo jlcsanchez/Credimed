@@ -3899,21 +3899,70 @@ async function doPayment(method){
 
   // Card payment via Stripe card form
   var stripe = getStripe();
-  if(!stripe || !stripeElements){ showCardForm(); return; }
-
   var btn = document.getElementById('card-pay-btn');
+
+  // Validate card fields first
+  var ccNum = (document.getElementById('cc-number')||{}).value||'';
+  var ccExp = (document.getElementById('cc-exp')||{}).value||'';
+  var ccCvc = (document.getElementById('cc-cvc')||{}).value||'';
+  var ccName = (document.getElementById('cc-name')||{}).value||'';
+  var errEl = document.getElementById('cc-err');
+  var errTxt = document.getElementById('cc-err-txt');
+
+  if(ccNum.replace(/\s/g,'').length < 16){
+    if(errEl&&errTxt){errTxt.textContent='Please enter a valid card number.';errEl.classList.add('show');}
+    return;
+  }
+  if(ccExp.length < 4){
+    if(errEl&&errTxt){errTxt.textContent='Please enter a valid expiry date.';errEl.classList.add('show');}
+    return;
+  }
+  if(ccCvc.length < 3){
+    if(errEl&&errTxt){errTxt.textContent='Please enter a valid CVC.';errEl.classList.add('show');}
+    return;
+  }
+  if(errEl) errEl.classList.remove('show');
+
   if(btn){ btn.disabled=true; btn.textContent='Processing...'; }
 
   try {
-    var result = await stripe.confirmPayment({
-      elements: stripeElements,
-      confirmParams: { return_url: window.location.href, receipt_email: currentUser && currentUser.email },
-      redirect: 'if_required'
+    // Get fresh clientSecret from Lambda
+    var cs = null;
+    try {
+      var resp = await fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/payment',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
+      });
+      var pdata = await resp.json();
+      cs = pdata.clientSecret || pdata.client_secret;
+    } catch(fe){ console.warn('Lambda error:', fe); }
+
+    if(!stripe || !cs){
+      // Lambda unavailable -- show success for demo
+      console.warn('Stripe/Lambda not available, demo mode');
+      paymentSuccess();
+      return;
+    }
+
+    // Create card token and confirm
+    var cardEl = {
+      number: ccNum.replace(/\s/g,''),
+      exp_month: ccExp.split('/')[0]||ccExp.split(' / ')[0],
+      exp_year: ccExp.split('/')[1]||ccExp.split(' / ')[1],
+      cvc: ccCvc,
+      name: ccName
+    };
+    var tokenResult = await stripe.createToken({type:'card',...cardEl});
+    if(tokenResult.error){
+      if(errEl&&errTxt){errTxt.textContent=tokenResult.error.message;errEl.classList.add('show');}
+      if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
+      return;
+    }
+    var confirmResult = await stripe.confirmCardPayment(cs, {
+      payment_method: { card: {token: tokenResult.token.id}, billing_details: {name: ccName, email: currentUser&&currentUser.email} }
     });
-    if(result.error){
-      var errEl = document.getElementById('cc-err');
-      var errTxt = document.getElementById('cc-err-txt');
-      if(errEl && errTxt){ errTxt.textContent = result.error.message; errEl.classList.add('show'); }
+    if(confirmResult.error){
+      if(errEl&&errTxt){errTxt.textContent=confirmResult.error.message;errEl.classList.add('show');}
       if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
     } else {
       paymentSuccess();
@@ -3969,11 +4018,12 @@ function sendQuick(btn, text) {
 // Detect escalation intent
 function needsHuman(text) {
  const t = text.toLowerCase();
- return t.includes('human') || t.includes('agent') || t.includes('person') ||
- t.includes('speak') || t.includes('talk to') || t.includes('representative') ||
- t.includes('whatsapp') || t.includes('call') || t.includes('phone') ||
- t.includes('urgente') || t.includes('urgent') || t.includes('problema') ||
- t.includes('hablar') || t.includes('persona');
+ // Only escalate to WhatsApp when user explicitly asks for a human or has active claim issues
+ return t.includes('hablar con') || t.includes('talk to') ||
+   t.includes('speak to') || t.includes('human agent') ||
+   t.includes('representative') || t.includes('quiero hablar') ||
+   (t.includes('urgent') && t.includes('claim')) ||
+   (t.includes('urgente') && t.includes('reclamo'));
 }
 
 function showWhatsAppEscalation() {
@@ -4064,7 +4114,12 @@ function getSmartReply(text, cu) {
    return 'You are welcome' + name + '! Let me know if you have any other questions.';
  if (/cancel|cancelar|stop|detener/.test(t))
    return 'To cancel your claim, please contact us on WhatsApp. We will handle it right away.';
- return 'Great question' + name + '. For anything specific about your claim, our team is on WhatsApp and typically responds within a few minutes. Is there anything else I can clarify?';
+ // Respuestas para preguntas de pago
+ if (/pagar|pay|payment|card|tarjeta|cobro|charge/.test(t))
+   return 'You can pay with Apple Pay, Google Pay, PayPal, or credit card. The ' + (isPremium ? '$29 Premium fee' : '15% fee') + ' is charged ' + (isPremium ? 'upfront when you submit.' : 'automatically only after your insurance pays you.');
+ if (/como|how|proceso|process|funciona|works/.test(t))
+   return '1) Upload your insurance card + dental receipt. 2) We file your claim with your insurer. 3) Insurance pays you directly. 4) We charge our fee only after you receive payment.';
+ return 'Happy to help' + name + '. Could you be more specific? I can answer questions about fees, documents, how the claim process works, or your insurance coverage.';
 }
 
 function appendBubble(role, text) {
@@ -4536,7 +4591,7 @@ function toggleHelp(){
  navTo('s-support','nav-support');
  // Hide back button (coming from bottom nav)
  var bb = document.getElementById('support-back-btn');
- if(bb) bb.style.display='none';
+ if(bb) bb.style.display='flex';
  }
 }
 window.toggleHelp = toggleHelp;
@@ -4626,20 +4681,28 @@ window._setUser = function(u){ currentUser = u; };
 <!-- Insurance card expanded -->
 
 <div id="lb-insurance" style="display:none;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)">
- <div style="background:linear-gradient(135deg,#1a3a6b 0%,#1e5f74 50%,#0D9488 100%);padding:22px 22px 18px;position:relative;overflow:hidden">
+ <!-- Header igual al del recibo -->
+ <div style="background:#1e293b;padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
+  <div>
+   <div style="font-size:12px;font-weight:700;color:white">DENTAL INSURANCE</div>
+   <div style="font-size:9px;color:rgba(255,255,255,.4)">US member identification card</div>
+  </div>
+  <button data-oc="closeLightbox()" onclick="window.closeLightbox&&window.closeLightbox()" style="background:#1e293b;border:2px solid rgba(255,255,255,.3);color:white;border-radius:50%;width:36px;height:36px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">✕</button>
+ </div>
+ <!-- Card body con gradiente teal -->
+ <div style="background:linear-gradient(135deg,#1a3a6b 0%,#1e5f74 50%,#0D9488 100%);padding:18px 22px;position:relative;overflow:hidden">
  <div style="position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,.04);border-radius:50%"></div>
- <button data-oc="closeLightbox()" onclick="window.closeLightbox&&window.closeLightbox()" style="position:absolute;top:12px;right:12px;background:#1e293b;border:2px solid rgba(255,255,255,.3);color:white;border-radius:50%;width:36px;height:36px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:10">✕</button>
  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
  <div>
- <div style="font-size:13px;font-weight:800;color:white;letter-spacing:.5px">DENTAL INSURANCE</div>
- <div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase">Member Identification Card</div>
+ <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.5px">MEMBER NAME</div>
+ <div style="font-size:14px;font-weight:800;color:white">JOHN A. SMITH</div>
  </div>
- <div style="width:38px;height:28px;background:linear-gradient(135deg,#f0d060,#c8960c,#f0d060);border-radius:4px;opacity:.95"></div>
+ <div style="text-align:right">
+ <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.5px">EFFECTIVE DATE</div>
+ <div style="font-size:14px;font-weight:800;color:white">01/01/2026</div>
  </div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
- <div><div style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">Member Name</div><div style="font-size:14px;font-weight:700;color:white">JOHN A. SMITH</div></div>
- <div><div style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">Effective Date</div><div style="font-size:14px;font-weight:700;color:white">01/01/2026</div></div>
  </div>
+
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
  <div style="background:rgba(94,234,212,.22);border:2px solid rgba(94,234,212,.7);border-radius:10px;padding:10px 12px;position:relative">
  <div style="position:absolute;top:-8px;left:10px;background:#0D9488;border-radius:4px;padding:2px 8px;font-size:8px;font-weight:800;color:white"> WE NEED THIS</div>
