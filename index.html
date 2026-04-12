@@ -2173,7 +2173,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </button>
  </div>
  <!-- Stripe element hidden -- used for actual payment processing -->
- <div id="stripe-payment-element" style="display:none"></div>
+ <div id="stripe-payment-element" style="margin-bottom:16px;min-height:50px"></div>
  <div id="fallback-card-btn" style="display:none"></div>
  <!-- Card Form (hidden by default) -->
  <div id="card-form" style="display:none;margin-top:4px;animation:fadeUp .25s ease">
@@ -4332,23 +4332,14 @@ async function doPayment(method){
       return;
     }
     try {
-      var cardElement = stripe.elements().create('card');
-      var pmResult = await stripe.createPaymentMethod({
-        type: 'card',
-        card: cardElement,
-        billing_details: { name: ccName, email: currentUser&&currentUser.email }
-      });
-      // Since we can't mount the element, use confirmCardPayment with raw card data via payment element
-      var confirmResult = await stripe.confirmCardPayment(cs, {
-        payment_method: {
-          card: {
-            number: ccNum.replace(/\s/g,''),
-            exp_month: parseInt(ccExp.split('/')[0].trim()),
-            exp_year: parseInt(ccExp.split('/')[1].trim()),
-            cvc: ccCvc
-          },
-          billing_details: { name: ccName, email: currentUser&&currentUser.email }
-        }
+      // Use the mounted Stripe Payment Element
+      var confirmResult = await stripe.confirmPayment({
+        elements: stripeElements,
+        confirmParams: {
+          return_url: window.location.href,
+          payment_method_data: { billing_details: { name: ccName, email: currentUser&&currentUser.email } }
+        },
+        redirect: 'if_required'
       });
       if(confirmResult.error){
         if(errEl&&errTxt){errTxt.textContent=confirmResult.error.message;errEl.classList.add('show');}
