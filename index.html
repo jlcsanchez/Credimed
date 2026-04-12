@@ -1889,9 +1889,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
  </div>
  <div style="padding:20px 16px">
- <div style="text-align:center;margin-bottom:24px">
+ <div style="text-align:center;margin-bottom:16px">
  <h2 style="font-size:22px;font-weight:700;color:#1e293b;margin-bottom:6px">How would you like to proceed?</h2>
  <p style="font-size:13px;color:#94a3b8">Choose the plan that works best for you</p>
+ </div>
+ <!-- Refund breakdown by plan -->
+ <div id="plan-breakdown" style="background:linear-gradient(135deg,#0f172a,#134e4a);border-radius:14px;padding:14px 16px;margin-bottom:20px;display:none">
+   <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Your refund estimate</div>
+   <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+     <span style="font-size:12px;color:rgba(255,255,255,.6)">You paid</span>
+     <span style="font-size:12px;font-weight:600;color:white" id="plan-bd-paid">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+     <span style="font-size:12px;color:#5eead4">Insurance reimburses (~75%)</span>
+     <span style="font-size:12px;font-weight:600;color:#5eead4" id="plan-bd-refund">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+     <span style="font-size:12px;color:rgba(255,255,255,.5)">Standard fee (15%)</span>
+     <span style="font-size:12px;color:rgba(255,255,255,.5)" id="plan-bd-std-fee">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+     <span style="font-size:12px;color:rgba(255,255,255,.5)">Premium fee ($29 + 10%)</span>
+     <span style="font-size:12px;color:rgba(255,255,255,.5)" id="plan-bd-prem-fee">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;padding:8px 0 4px">
+     <span style="font-size:13px;font-weight:700;color:#4ade80">Your net · Standard</span>
+     <span style="font-size:13px;font-weight:700;color:#4ade80" id="plan-bd-std-net">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;padding:4px 0">
+     <span style="font-size:13px;font-weight:700;color:#5eead4">Your net · Premium</span>
+     <span style="font-size:13px;font-weight:700;color:#5eead4" id="plan-bd-prem-net">--</span>
+   </div>
  </div>
  <div id="plan-standard-card" onclick="window.selectPlan&&window.selectPlan('standard')" style="border:2px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:12px;cursor:pointer;background:white">
  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
@@ -2441,6 +2469,26 @@ function goTo(id, param) {
  try { updateHelpBtn(id); } catch(e){}
  if (id === 's-processing' && !window._skipProcessingAnim) setTimeout(function(){ try{ runProcessing(); }catch(e){} }, 300);
  if (id === 's-refund') setTimeout(function(){ try{ runRefundEstimate(); }catch(e){ console.warn('refund error',e); } }, 300);;
+ if (id === 's-plan') setTimeout(function(){
+   var amt = parseFloat(window._lastOcrAmount || (window.currentUser && window.currentUser.amount) || 0);
+   var refund = Math.round(amt * 0.75);
+   var stdFee = Math.round(refund * 0.15);
+   var premFee = Math.round(refund * 0.10) + 29;
+   var stdNet = refund - stdFee;
+   var premNet = refund - Math.round(refund * 0.10);
+   var curr = window._amountCurrency || window._currency || 'USD';
+   var sym = curr === 'MXN' ? 'MXN $' : '$';
+   var bd = document.getElementById('plan-breakdown');
+   if(bd && amt > 0){
+     bd.style.display = 'block';
+     document.getElementById('plan-bd-paid').textContent = sym + amt.toLocaleString();
+     document.getElementById('plan-bd-refund').textContent = sym + refund.toLocaleString();
+     document.getElementById('plan-bd-std-fee').textContent = '-' + sym + stdFee.toLocaleString();
+     document.getElementById('plan-bd-prem-fee').textContent = '-' + sym + premFee.toLocaleString();
+     document.getElementById('plan-bd-std-net').textContent = sym + stdNet.toLocaleString();
+     document.getElementById('plan-bd-prem-net').textContent = sym + premNet.toLocaleString();
+   }
+ }, 200);
  if (id === 's-ready') setTimeout(function(){ try{ runReadyScreen(); }catch(e){} }, 100);
  if (id === 's-step5') {
  // Reset payment screen - hide success, show form
@@ -4074,7 +4122,7 @@ function paymentSuccess(){
   document.getElementById('s5-success').classList.add('show');
   try{launchConfetti();}catch(e){}
   // Update plan labels
-  var plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
+  var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   var planLbl = document.getElementById('s5-plan-label');
   var feeLbl = document.getElementById('s5-fee-label');
   if(planLbl) planLbl.textContent = plan === 'premium' ? 'Premium' : 'Standard';
@@ -8209,6 +8257,7 @@ window.selectPlan = function(plan) {
   }
   
   // Save to currentUser -- all sources in sync
+  window._confirmedPlan = plan; // backup that survives resets
   if(window.currentUser) window.currentUser.plan = plan;
   var cu2 = (window._getUser && window._getUser()) || {};
   cu2.plan = plan;
