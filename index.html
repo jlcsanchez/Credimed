@@ -3521,7 +3521,14 @@ function cSubmit(){
  err.classList.remove('show');
  if(routing.length!==9){errTxt.textContent='Routing number must be exactly 9 digits.';err.classList.add('show');return}
  if(account.length<4){errTxt.textContent='Please enter a valid account number (min 4 digits).';err.classList.add('show');return}
- if(window.goTo) window.goTo('s-dashboard'); try { initDashboard(); } catch(e) {}
+ // Go to payment screen (Step 5) instead of dashboard
+ var plan = (window.currentUser && window.currentUser.plan) || 'standard';
+ if(plan === 'premium'){
+   if(window.goTo) window.goTo('s-step5');
+ } else {
+   // Standard - no payment needed, go to processing then dashboard
+   if(window.goTo) window.goTo('s-processing');
+ }
 }
 
 // Canvas drawing
