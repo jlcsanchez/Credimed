@@ -121,7 +121,7 @@ SCREEN: LANDING
 .hero-stat-val{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;display:inline;line-height:1}
 .hero-stat-lbl{font-size:13px;color:rgba(255,255,255,.75);font-weight:500}
 .hero-ctas{width:100%;display:flex;flex-direction:column;gap:10px}
-.btn-hero-main{height:70px;background:var(--teal);color:white;border:none;border-radius:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 24px rgba(13,148,136,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2}
+.btn-hero-main{height:62px;background:var(--teal);color:white;border:none;border-radius:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 24px rgba(13,148,136,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2}
 .btn-hero-main:hover{background:var(--teal-dark)}
 .btn-hero-sec{height:56px;background:transparent;color:rgba(255,255,255,.9);border:1.5px solid rgba(255,255,255,.35);border-radius:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:600;cursor:pointer}
 .how-section{background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);padding:52px 24px}
@@ -1113,8 +1113,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="hero-ctas" style="animation:slideUp .6s .3s cubic-bezier(.16,1,.3,1) both">
  <button class="btn-hero-main" onclick="(function(){var s=document.getElementById('s-auth');document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});s.classList.add('active');s.style.display='block';try{window.initAuth&&window.initAuth('register');}catch(e){}try{window.goTo&&window.goTo('s-auth','register');}catch(e){}})()">
-  <span style="display:block;font-size:18px;font-weight:700">Start my claim →</span>
-  <span style="display:block;font-size:11px;font-weight:500;opacity:.75;margin-top:2px;letter-spacing:.3px">no upfront cost</span>
+  <span style="display:block;font-size:22px;font-weight:700">Start my claim →</span>
 </button>
  <button class="btn-hero-sec" onclick="(function(){var s=document.getElementById('s-auth');document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});s.classList.add('active');s.style.display='block';try{window.initAuth&&window.initAuth('login');}catch(e){}try{window.goTo&&window.goTo('s-auth','login');}catch(e){}})()" data-en="I already have an account" data-es="Ya tengo una cuenta">I already have an account</button>
 </div>
@@ -3518,33 +3517,23 @@ function s2RunOCR(imageBase64, mediaType){
    }, 400);
  }
 
- // Use Claude API directly to extract ALL procedures from receipt
+ // Call OCR Lambda -- extract ALL procedures from receipt
  if(imageBase64){
-   fetch('https://api.anthropic.com/v1/messages',{
+   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
      method:'POST',
      headers:{'Content-Type':'application/json'},
      body:JSON.stringify({
-       model:'claude-sonnet-4-20250514',
-       max_tokens:800,
-       messages:[{
-         role:'user',
-         content:[
-           {type:'image',source:{type:'base64',media_type:mediaType||'image/jpeg',data:imageBase64}},
-           {type:'text',text:'Analyze this dental receipt/invoice. Is it a valid dental receipt? If YES return ONLY this JSON (no markdown): {"isValid":true,"dentist":"clinic name","date":"YYYY-MM-DD","city":"city","amount":"total amount numbers only in USD or convert from MXN dividing by 18","patientName":"patient name","procedures":["procedure 1 description","procedure 2 description","procedure 3 description"]} - include ALL procedures listed, each as a separate string. If NOT a dental receipt return: {"isValid":false}'}
-         ]
-       }]
+       imageBase64:imageBase64,
+       mediaType:mediaType||'image/jpeg',
+       type:'receipt',
+       extractAllProcedures:true
      })
    })
    .then(function(r){return r.json();})
-   .then(function(apiResp){
-     try{
-       var text = apiResp.content && apiResp.content[0] && apiResp.content[0].text || '{}';
-       var clean = text.replace(/```json|```/g,'').trim();
-       var data = JSON.parse(clean);
-       console.log('[Credimed OCR receipt]', JSON.stringify(data));
-       if(!data.isValid){ applyFields({}); }
-       else { applyFields(data); }
-     } catch(e){ console.warn('OCR parse error:',e); applyFields(null); }
+   .then(function(data){
+     console.log('[Credimed OCR receipt]', JSON.stringify(data));
+     if(data && data.isValid === false){ applyFields({}); }
+     else { applyFields(data); }
    })
    .catch(function(err){ console.warn('Receipt OCR failed:', err); applyFields(null); });
  } else {
