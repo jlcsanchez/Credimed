@@ -3241,10 +3241,21 @@ function s2RunOCR(imageBase64, mediaType){
      var row = document.createElement('label');
      row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:white;transition:background .15s' + (i < mapped.length-1 ? ';border-bottom:1px solid #e0fdf4' : '');
      var isChecked = true; // auto-check all
+     // Estimate refund per procedure based on coverage rates
+     var coverageMap = {'D0120':0.80,'D0210':0.80,'D1110':0.80,'D2140':0.70,'D2391':0.70,
+       'D2740':0.60,'D2960':0.50,'D3330':0.65,'D5213':0.55,'D6010':0.50,
+       'D6240':0.60,'D7140':0.75,'D9975':0.00,'D9999':0.65};
+     var totalAmt = parseFloat((document.getElementById('s2-amount')&&document.getElementById('s2-amount').value)||0);
+     var sharePerProc = mapped.length > 0 ? totalAmt / mapped.length : 0;
+     var coverage = coverageMap[m.cdt] || 0.70;
+     var estRefund = Math.round(sharePerProc * coverage);
+     var estRefundStr = estRefund > 0 ? '~$'+estRefund : '';
+
      row.innerHTML =
        '<div style="width:22px;height:22px;border-radius:6px;border:2px solid '+(isChecked?'#0D9488':'#cbd5e1')+';background:'+(isChecked?'#0D9488':'white')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s" id="proc-check-'+i+'">'+(isChecked?'<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div>'+
        '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0f172a">'+m.label.split('(')[0].trim()+'</div>'+
        '<div style="font-size:11px;color:#0D9488;font-weight:600;margin-top:1px">CDT '+m.cdt+'</div></div>'+
+       (estRefundStr ? '<div style="font-size:13px;font-weight:700;color:#0D9488;flex-shrink:0">'+estRefundStr+'</div>' : '')+
        '<input type="checkbox" data-cdt="'+m.cdt+'" data-label="'+m.label+'" data-idx="'+i+'" checked style="display:none" onchange="window.onProcCheck&&window.onProcCheck()">';
      row.onclick = function(e){
        var cb = row.querySelector('input[type=checkbox]');
@@ -3507,22 +3518,33 @@ function s2RunOCR(imageBase64, mediaType){
    }, 400);
  }
 
- // Call OCR Lambda for receipt -- returns isValid + extracted fields
+ // Use Claude API directly to extract ALL procedures from receipt
  if(imageBase64){
-   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+   fetch('https://api.anthropic.com/v1/messages',{
      method:'POST',
      headers:{'Content-Type':'application/json'},
-     body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
+     body:JSON.stringify({
+       model:'claude-sonnet-4-20250514',
+       max_tokens:800,
+       messages:[{
+         role:'user',
+         content:[
+           {type:'image',source:{type:'base64',media_type:mediaType||'image/jpeg',data:imageBase64}},
+           {type:'text',text:'Analyze this dental receipt/invoice. Is it a valid dental receipt? If YES return ONLY this JSON (no markdown): {"isValid":true,"dentist":"clinic name","date":"YYYY-MM-DD","city":"city","amount":"total amount numbers only in USD or convert from MXN dividing by 18","patientName":"patient name","procedures":["procedure 1 description","procedure 2 description","procedure 3 description"]} - include ALL procedures listed, each as a separate string. If NOT a dental receipt return: {"isValid":false}'}
+         ]
+       }]
+     })
    })
    .then(function(r){return r.json();})
-   .then(function(data){
-     console.log('[Credimed OCR receipt response]', JSON.stringify(data));
-     // Check isValid flag from Lambda -- if false, image is not a dental receipt
-     if(data && data.isValid === false){
-       applyFields({});
-     } else {
-       applyFields(data);
-     }
+   .then(function(apiResp){
+     try{
+       var text = apiResp.content && apiResp.content[0] && apiResp.content[0].text || '{}';
+       var clean = text.replace(/```json|```/g,'').trim();
+       var data = JSON.parse(clean);
+       console.log('[Credimed OCR receipt]', JSON.stringify(data));
+       if(!data.isValid){ applyFields({}); }
+       else { applyFields(data); }
+     } catch(e){ console.warn('OCR parse error:',e); applyFields(null); }
    })
    .catch(function(err){ console.warn('Receipt OCR failed:', err); applyFields(null); });
  } else {
