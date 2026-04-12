@@ -959,6 +959,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 </style>
 
+<script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
 <div class="demo-wrapper">
@@ -4111,8 +4112,16 @@ var stripeElements = null;
 var stripePaymentElement = null;
 
 function getStripe(){
-  if(!stripeInstance && typeof Stripe !== 'undefined'){
-    stripeInstance = Stripe(STRIPE_PK);
+  if(!stripeInstance){
+    if(typeof Stripe !== 'undefined'){
+      stripeInstance = Stripe(STRIPE_PK);
+    } else {
+      // Load Stripe.js dynamically if not loaded
+      var s = document.createElement('script');
+      s.src = 'https://js.stripe.com/v3/';
+      s.onload = function(){ stripeInstance = Stripe(STRIPE_PK); };
+      document.head.appendChild(s);
+    }
   }
   return stripeInstance;
 }
@@ -4303,41 +4312,48 @@ async function doPayment(method){
       });
       var pdata = await resp.json();
       cs = pdata.clientSecret || pdata.client_secret;
-    } catch(fe){ console.warn('Lambda error:', fe); }
+    } catch(fe){ 
+      console.warn('Lambda error:', fe);
+      if(errEl&&errTxt){errTxt.textContent='Error: '+fe.message;errEl.classList.add('show');}
+      if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
+      return;
+    }
 
     if(!cs){
       if(errEl&&errTxt){errTxt.textContent='Payment service unavailable. Please try again.';errEl.classList.add('show');}
       if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
       return;
     }
-    if(!stripe){
-      if(errEl&&errTxt){errTxt.textContent='Stripe failed to load. Please refresh and try again.';errEl.classList.add('show');}
+    // Confirm payment via Lambda (no Stripe.js needed)
+    try {
+      var expParts = ccExp.replace(' ','').split('/');
+      var confirmResp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          action: 'confirm_payment',
+          clientSecret: cs,
+          card: {
+            number: ccNum.replace(/\s/g,''),
+            exp_month: expParts[0],
+            exp_year: expParts[1],
+            cvc: ccCvc,
+            name: ccName
+          },
+          email: currentUser && currentUser.email
+        })
+      });
+      var confirmData = await confirmResp.json();
+      if(confirmData.error){
+        if(errEl&&errTxt){errTxt.textContent=confirmData.error;errEl.classList.add('show');}
+        if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
+      } else {
+        paymentSuccess();
+      }
+    } catch(err) {
+      console.warn('Payment error:', err);
+      if(errEl&&errTxt){errTxt.textContent='Payment failed. Please try again.';errEl.classList.add('show');}
       if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
-      return;
-    }
-
-    // Create card token and confirm
-    var cardEl = {
-      number: ccNum.replace(/\s/g,''),
-      exp_month: ccExp.split('/')[0]||ccExp.split(' / ')[0],
-      exp_year: ccExp.split('/')[1]||ccExp.split(' / ')[1],
-      cvc: ccCvc,
-      name: ccName
-    };
-    var tokenResult = await stripe.createToken({type:'card',...cardEl});
-    if(tokenResult.error){
-      if(errEl&&errTxt){errTxt.textContent=tokenResult.error.message;errEl.classList.add('show');}
-      if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
-      return;
-    }
-    var confirmResult = await stripe.confirmCardPayment(cs, {
-      payment_method: { card: {token: tokenResult.token.id}, billing_details: {name: ccName, email: currentUser&&currentUser.email} }
-    });
-    if(confirmResult.error){
-      if(errEl&&errTxt){errTxt.textContent=confirmResult.error.message;errEl.classList.add('show');}
-      if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
-    } else {
-      paymentSuccess();
     }
   } catch(err) {
     console.warn('Payment error:', err);
