@@ -2041,15 +2041,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="screen" id="s-step5" style="background:var(--bg)">
  <div id="s5-form" style="display:flex;flex-direction:column;min-height:100vh">
  <div class="pay-hero">
- <div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:6px">Setup Fee -- Non-refundable</div>
- <div class="pay-amount">$25</div>
+ <div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:6px" id="s5-plan-label">Premium Fast-Track</div>
+ <div class="pay-amount" id="s5-amount">$29</div>
  <div class="pay-label">Secured by Stripe · Encrypted</div>
  </div>
  <div class="pay-body">
- <div class="pay-summary">
- <div class="pay-row"><span>Setup fee</span><span>$25.00</span></div>
- <div class="pay-row"><span>Processing</span><span>$0.00</span></div>
- <div class="pay-row total"><span>Total due today</span><span>$25.00</span></div>
+ <div class="pay-summary" id="s5-summary">
+ <div class="pay-row"><span id="s5-row-label">Fast-Track fee</span><span id="s5-row-amount">$29.00</span></div>
+ <div class="pay-row"><span>Success fee</span><span id="s5-row-pct">10% on refund</span></div>
+ <div class="pay-row total"><span>Due today</span><span id="s5-row-total">$29.00</span></div>
  </div>
  <p style="font-size:13px;font-weight:600;color:var(--slate);margin-bottom:12px">Choose payment method:</p>
  <div class="pay-methods">
@@ -2422,6 +2422,35 @@ function goTo(id, param) {
  // Reset payment screen - hide success, show form
  var sf = document.getElementById('s5-form'); if(sf) sf.style.display='flex';
  var ss = document.getElementById('s5-success'); if(ss) ss.classList.remove('show');
+ // Update amounts based on plan
+ var plan = (window.currentUser && window.currentUser.plan) || 'standard';
+ var amtEl = document.getElementById('s5-amount');
+ var labelEl = document.getElementById('s5-plan-label');
+ var rowLabel = document.getElementById('s5-row-label');
+ var rowAmt = document.getElementById('s5-row-amount');
+ var rowPct = document.getElementById('s5-row-pct');
+ var rowTotal = document.getElementById('s5-row-total');
+ var payBtn = document.querySelector('#s5-form .btn-primary');
+ if(plan === 'premium'){
+   if(amtEl) amtEl.textContent = '$29';
+   if(labelEl) labelEl.textContent = 'Premium Fast-Track';
+   if(rowLabel) rowLabel.textContent = 'Fast-Track fee';
+   if(rowAmt) rowAmt.textContent = '$29.00';
+   if(rowPct) rowPct.textContent = '10% on refund';
+   if(rowTotal) rowTotal.textContent = '$29.00';
+   if(payBtn) payBtn.textContent = 'Pay $29.00 ->';
+   // Init Stripe payment
+   setTimeout(function(){ try{ initStripePayment(); }catch(e){ console.warn('Stripe init:', e); } }, 300);
+ } else {
+   // Standard - no upfront payment
+   if(amtEl) amtEl.textContent = '$0';
+   if(labelEl) labelEl.textContent = 'Standard Plan';
+   if(rowLabel) rowLabel.textContent = 'Upfront fee';
+   if(rowAmt) rowAmt.textContent = '$0.00';
+   if(rowPct) rowPct.textContent = '15% on refund';
+   if(rowTotal) rowTotal.textContent = '$0.00';
+   if(payBtn) payBtn.textContent = 'Continue ->';
+ }
  }
  if (id === 's-checklist') {
  // Auth guard -- must be logged in
