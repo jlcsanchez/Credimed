@@ -1646,6 +1646,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <label>Procedures <span class="req">*</span></label>
   <!-- OCR list -- shown when multiple procedures detected -->
   <div id="proc-list" style="display:none;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:6px"></div>
+  <div id="proc-refund-summary" style="display:none"></div>
   <!-- Fallback single select -->
   <select id="s2-proc" onchange="window.s2CheckFields&&window.s2CheckFields()">
    <option value="">Select...</option>
@@ -3366,60 +3367,38 @@ function s2RunOCR(imageBase64, mediaType){
        window._selectedProcedures = [];
      }
      // Update refund summary box
-     updateProcRefundBox();
+     window._updateProcSummary && window._updateProcSummary();
      try{ s1TryEnableContinue(); }catch(e){}
    };
 
-   // Refund summary box below the list
-   var summaryBox = document.getElementById('proc-refund-summary');
-   if(!summaryBox){
-     summaryBox = document.createElement('div');
-     summaryBox.id = 'proc-refund-summary';
-     list.parentNode.insertBefore(summaryBox, list.nextSibling);
-   }
-
-   function updateProcRefundBox(){
-     var checked = list.querySelectorAll('input[type=checkbox]:checked');
-     var totalAmt = parseFloat((document.getElementById('s2-amount')&&document.getElementById('s2-amount').value)||0);
-     var coverageMap = {'D0120':0.80,'D0210':0.80,'D1110':0.80,'D2140':0.70,'D2391':0.70,
-       'D2740':0.60,'D2960':0.50,'D3330':0.65,'D5213':0.55,'D6010':0.50,
-       'D6240':0.60,'D7140':0.75,'D9975':0.00,'D9999':0.65};
-     var plan = window._selectedPlan || 'standard';
-     var feePct = plan === 'premium' ? 0.10 : 0.15;
-
-     if(!summaryBox) return;
-     if(checked.length === 0 || totalAmt <= 0){ summaryBox.style.display='none'; return; }
-
-     var sharePerProc = totalAmt / checked.length;
-     var rows = '';
-     var totalRefund = 0;
+   // Global function to update the summary box
+   window._updateProcSummary = function(){
+     var sb = document.getElementById('proc-refund-summary');
+     var pl = document.getElementById('proc-list');
+     if(!sb || !pl) return;
+     var checked = pl.querySelectorAll('input[type=checkbox]:checked');
+     if(checked.length === 0){ sb.style.display='none'; return; }
+     var procRows = '';
      checked.forEach(function(cb){
        var cdt = cb.getAttribute('data-cdt');
        var label = cb.getAttribute('data-label').split('(')[0].trim();
-       var cov = coverageMap[cdt] || 0.70;
-       var refund = Math.round(sharePerProc * cov);
-       totalRefund += refund;
-       rows += '<div style="display:flex;justify-content:space-between;padding:6px 14px;border-bottom:1px solid rgba(255,255,255,.06)">' +
-         '<span style="font-size:12px;color:rgba(255,255,255,.6)">'+label+'</span>' +
-         '<span style="font-size:12px;font-weight:600;color:#5eead4">~$'+refund+'</span></div>';
+       procRows +=
+         '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06)">' +
+           '<span style="font-size:13px;color:rgba(255,255,255,.85);font-weight:500">'+label+'</span>' +
+           '<span style="font-size:11px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.25);padding:2px 8px;border-radius:6px">'+cdt+'</span>' +
+         '</div>';
      });
-     var fee = Math.round(totalRefund * feePct) + (plan==='premium'?29:0);
-     var net = totalRefund - Math.round(totalRefund * feePct);
-
-     summaryBox.style.cssText = 'background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;overflow:hidden;margin-top:8px;margin-bottom:4px';
-     summaryBox.innerHTML =
-       '<div style="padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.08)">' +
-         '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Estimated refund per procedure</span>' +
+     sb.style.cssText = 'background:linear-gradient(135deg,#0f172a,#134e4a);border:1px solid rgba(13,148,136,.35);border-radius:14px;overflow:hidden;margin-top:8px;margin-bottom:4px';
+     sb.innerHTML =
+       '<div style="display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1)">' +
+         '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Procedures detected · ADA codes</span>' +
        '</div>' +
-       rows;
-     summaryBox.style.display = 'block';
-   }
-
-   // Also update when amount changes
-   var amtEl = document.getElementById('s2-amount');
-   if(amtEl) amtEl.addEventListener('input', updateProcRefundBox);
+       procRows;
+     sb.style.display = 'block';
+   };
 
    window.onProcCheck();
+   setTimeout(window._updateProcSummary, 400);
  }
 
  function applyFields(ocrData){
@@ -3608,6 +3587,7 @@ function s2RunOCR(imageBase64, mediaType){
 
      var amtEl=document.getElementById('s2-amount');
      if(amtEl){ amtEl.value=d.amount; amtEl.classList.add('prefilled'); }
+     if(d.amount) window._lastOcrAmount = parseFloat(d.amount)||0;
 
      var cityEl=document.getElementById('s2-city');
      if(cityEl){ cityEl.value=d.city; cityEl.classList.add('prefilled'); }
@@ -3629,6 +3609,8 @@ function s2RunOCR(imageBase64, mediaType){
      if(imgEl&&!imgEl.src){ if(rcCard) rcCard.style.display='block'; }
 
      s2Summary();
+     // Show procedure summary box
+     if(window._updateProcSummary) window._updateProcSummary();
 
      var s2bodyOCR=document.getElementById('s2-card-body');
      if(s2bodyOCR){ s2bodyOCR.style.pointerEvents='none'; s2bodyOCR.style.opacity='0.75'; }
