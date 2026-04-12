@@ -3170,6 +3170,9 @@ function s2HandleFile(inp){
 }
 
 function s2RunOCR(imageBase64, mediaType){
+ // Save image for multi-procedure extraction
+ window._receiptImageBase64 = imageBase64;
+ window._receiptMediaType = mediaType;
  var demoDat = s2Demos[Math.floor(Math.random()*s2Demos.length)];
  var ocr = document.getElementById('s2-ocr');
  var fill = document.getElementById('s2-ocr-fill');
@@ -3263,7 +3266,61 @@ function s2RunOCR(imageBase64, mediaType){
    };
 
    window._showAddProc = function(){
-     if(select){ select.style.display='block'; select.style.marginTop='8px'; select.focus(); }
+     // Build inline add-proc UI below the summary box
+     var sb = document.getElementById('proc-refund-summary');
+     if(!sb) return;
+     var existing = document.getElementById('add-proc-inline');
+     if(existing){ existing.remove(); return; }
+     var div = document.createElement('div');
+     div.id = 'add-proc-inline';
+     div.style.cssText = 'display:flex;gap:8px;margin-top:6px;align-items:center';
+     div.innerHTML =
+       '<select id="add-proc-sel" style="flex:1;height:40px;border:1.5px solid #0D9488;border-radius:10px;padding:0 10px;font-size:13px;color:#1e293b;background:white">' +
+         '<option value="">Select procedure...</option>' +
+         '<option value="D0120">Exam / Evaluation (D0120)</option>' +
+         '<option value="D0210">X-Ray / Radiograph (D0210)</option>' +
+         '<option value="D1110">Cleaning / Prophylaxis (D1110)</option>' +
+         '<option value="D2140">Filling - 1 surface (D2140)</option>' +
+         '<option value="D2391">Filling / Composite / Resin (D2391)</option>' +
+         '<option value="D2740">Crown (D2740)</option>' +
+         '<option value="D2960">Veneer (D2960)</option>' +
+         '<option value="D3330">Root Canal (D3330)</option>' +
+         '<option value="D5213">Partial Denture (D5213)</option>' +
+         '<option value="D6010">Implant (D6010)</option>' +
+         '<option value="D6240">Bridge (D6240)</option>' +
+         '<option value="D7140">Extraction (D7140)</option>' +
+         '<option value="D9975">Whitening (D9975)</option>' +
+         '<option value="D9999">Other (D9999)</option>' +
+       '</select>' +
+       '<button id="add-proc-confirm" style="height:40px;padding:0 16px;background:#0D9488;color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Add</button>';
+     sb.parentNode.insertBefore(div, sb.nextSibling);
+     document.getElementById('add-proc-sel').focus();
+     document.getElementById('add-proc-confirm').onclick = function(){
+       var sel = document.getElementById('add-proc-sel');
+       if(!sel || !sel.value) return;
+       var cdt = sel.value;
+       var label = sel.options[sel.selectedIndex].text;
+       var pl = document.getElementById('proc-list');
+       // Check if already exists
+       var exists = pl && pl.querySelector('input[data-cdt="'+cdt+'"]');
+       if(!exists && pl){
+         var cb = document.createElement('input');
+         cb.type = 'checkbox';
+         cb.setAttribute('data-cdt', cdt);
+         cb.setAttribute('data-label', label);
+         cb.checked = true;
+         cb.style.display = 'none';
+         cb.onchange = function(){ window.onProcCheck && window.onProcCheck(); };
+         pl.appendChild(cb);
+       } else if(exists){
+         exists.checked = true;
+       }
+       // Update main select
+       var ms = document.getElementById('s2-proc');
+       if(ms){ for(var o=0;o<ms.options.length;o++){ if(ms.options[o].value===cdt){ms.selectedIndex=o;break;} } }
+       window.onProcCheck && window.onProcCheck();
+       div.remove();
+     };
    };
 
    window._updateProcSummary = function(){
@@ -3387,10 +3444,33 @@ function s2RunOCR(imageBase64, mediaType){
      // Handle multiple procedures from OCR
      var proceduresList = ocrData && (ocrData.procedures || ocrData.items || ocrData.services);
      if(proceduresList && Array.isArray(proceduresList) && proceduresList.length > 0){
-       // Lambda returned array of procedures
        buildProcedureList(proceduresList);
+     } else if(window._receiptImageBase64){
+       // Use Claude API directly to extract ALL procedures from the receipt image
+       fetch('https://api.anthropic.com/v1/messages',{
+         method:'POST',
+         headers:{
+           'Content-Type':'application/json',
+           'anthropic-dangerous-direct-browser-access':'true'
+         },
+         body:JSON.stringify({
+           model:'claude-sonnet-4-20250514',
+           max_tokens:500,
+           messages:[{role:'user',content:[
+             {type:'image',source:{type:'base64',media_type:window._receiptMediaType||'image/jpeg',data:window._receiptImageBase64}},
+             {type:'text',text:'List ONLY the dental procedure names from this receipt, one per line, in Spanish as written. No explanations, no prices, no headers. Just the procedure names.'}
+           ]}]
+         })
+       })
+       .then(function(r){return r.json();})
+       .then(function(resp){
+         var text = resp.content&&resp.content[0]&&resp.content[0].text||'';
+         var procs = text.split('\n').map(function(s){return s.replace(/^[-\u2022\d\.\)]+\s*/,'').trim();}).filter(function(s){return s.length>3;});
+         if(procs.length > 0){ buildProcedureList(procs); }
+         else if(d.proc){ buildProcedureList([d.proc]); }
+       })
+       .catch(function(){ if(d.proc) buildProcedureList([d.proc]); });
      } else if(d.proc){
-       // Single procedure -- try to build list with just that one
        buildProcedureList([d.proc]);
      }
 
