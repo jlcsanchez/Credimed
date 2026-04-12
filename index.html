@@ -3214,61 +3214,92 @@ function s2RunOCR(imageBase64, mediaType){
 
      var procEl=document.getElementById('s2-proc');
      if(procEl && d.proc){
-       // Map Spanish/partial terms to English options
-       var spanishMap = {
-         'resina':'Filling / Composite / Resin (D2391)',
-         'composite':'Filling / Composite / Resin (D2391)',
-         'relleno':'Filling / Composite / Resin (D2391)',
-         'filling':'Filling / Composite / Resin (D2391)',
-         'limpieza':'Cleaning / Prophylaxis (D1110)',
-         'profilaxis':'Cleaning / Prophylaxis (D1110)',
-         'cleaning':'Cleaning / Prophylaxis (D1110)',
-         'prophy':'Cleaning / Prophylaxis (D1110)',
-         'corona':'Crown (D2740)',
-         'crown':'Crown (D2740)',
-         'implante':'Implant (D6010)',
-         'implant':'Implant (D6010)',
-         'endodoncia':'Root Canal (D3330)',
-         'conducto':'Root Canal (D3330)',
-         'root canal':'Root Canal (D3330)',
-         'extraccion':'Extraction (D7140)',
-         'exodoncia':'Extraction (D7140)',
-         'extraction':'Extraction (D7140)',
-         'puente':'Bridge (D6240)',
-         'bridge':'Bridge (D6240)',
-         'blanqueamiento':'Whitening (D9975)',
-         'whitening':'Whitening (D9975)',
-         'carilla':'Veneer (D2960)',
-         'veneer':'Veneer (D2960)',
-         'parcial':'Partial Denture (D5213)',
-         'partial':'Partial Denture (D5213)',
-         'radiografia':'X-Ray / Radiograph (D0210)',
-         'xray':'X-Ray / Radiograph (D0210)',
-         'consulta':'Exam / Evaluation (D0120)',
-         'evaluacion':'Exam / Evaluation (D0120)',
-         'exam':'Exam / Evaluation (D0120)'
+       // Map CDT codes directly first
+       var cdtMap = {
+         'D0120':'Exam / Evaluation (D0120)','D0150':'Exam / Evaluation (D0120)',
+         'D0210':'X-Ray / Radiograph (D0210)','D0220':'X-Ray / Radiograph (D0210)','D0330':'X-Ray / Radiograph (D0210)',
+         'D1110':'Cleaning / Prophylaxis (D1110)','D1120':'Cleaning / Prophylaxis (D1110)',
+         'D2140':'Filling - 1 surface (D2140)','D2150':'Filling - 1 surface (D2140)','D2160':'Filling - 1 surface (D2140)',
+         'D2391':'Filling / Composite / Resin (D2391)','D2392':'Filling / Composite / Resin (D2391)',
+         'D2393':'Filling / Composite / Resin (D2391)','D2394':'Filling / Composite / Resin (D2391)',
+         'D2740':'Crown (D2740)','D2750':'Crown (D2740)','D2751':'Crown (D2740)','D2752':'Crown (D2740)',
+         'D2780':'Crown (D2740)','D2790':'Crown (D2740)',
+         'D2960':'Veneer (D2960)','D2961':'Veneer (D2960)','D2962':'Veneer (D2960)',
+         'D3310':'Root Canal (D3330)','D3320':'Root Canal (D3330)','D3330':'Root Canal (D3330)',
+         'D5210':'Partial Denture (D5213)','D5211':'Partial Denture (D5213)','D5212':'Partial Denture (D5213)','D5213':'Partial Denture (D5213)',
+         'D6010':'Implant (D6010)','D6040':'Implant (D6010)','D6056':'Implant (D6010)','D6057':'Implant (D6010)',
+         'D6240':'Bridge (D6240)','D6241':'Bridge (D6240)','D6242':'Bridge (D6240)',
+         'D7140':'Extraction (D7140)','D7210':'Extraction (D7140)','D7240':'Extraction (D7140)',
+         'D9975':'Whitening (D9975)','D9972':'Whitening (D9975)'
        };
-       var procLower = d.proc.toLowerCase();
+       // Keyword map -- Spanish + English + common variants
+       var kwMap = [
+         {keys:['limpieza','profilaxis','cleaning','prophylaxis','prophy','higiene','higiene dental','dental cleaning','teeth cleaning','polish'],val:'Cleaning / Prophylaxis (D1110)'},
+         {keys:['resina','composite','compuesto','relleno','obturacion','obturación','amalgama','amalgam','empaste','filling','restauracion','restauración'],val:'Filling / Composite / Resin (D2391)'},
+         {keys:['corona','crown','porcelana','porcelain','zirconia','zirconio','ceramica','cerámica'],val:'Crown (D2740)'},
+         {keys:['implante','implant','oseointegrado'],val:'Implant (D6010)'},
+         {keys:['endodoncia','conducto','root canal','pulpectomia','pulpectomía','nervio','nerve'],val:'Root Canal (D3330)'},
+         {keys:['extraccion','extracción','exodoncia','exodoncia','extraction','muela','tooth removal'],val:'Extraction (D7140)'},
+         {keys:['puente','bridge','fixed partial'],val:'Bridge (D6240)'},
+         {keys:['blanqueamiento','whitening','bleaching','aclaramiento'],val:'Whitening (D9975)'},
+         {keys:['carilla','veneer','lamina','lámina','faceta'],val:'Veneer (D2960)'},
+         {keys:['parcial','partial denture','dentadura parcial','protesis parcial','prótesis parcial'],val:'Partial Denture (D5213)'},
+         {keys:['radiografia','radiografía','xray','x-ray','rx','panoramica','panorámica','bitewing','periapical'],val:'X-Ray / Radiograph (D0210)'},
+         {keys:['consulta','evaluacion','evaluación','examen','exam','revision','revisión','checkup','check-up','valoracion','valoración'],val:'Exam / Evaluation (D0120)'}
+       ];
+       var procLower = d.proc.toLowerCase().trim();
+       var cdtLower = (d.cdtCode||'').toUpperCase().trim();
        var mappedProc = null;
-       // Check Spanish map first
-       for(var key in spanishMap){
-         if(procLower.includes(key)){ mappedProc = spanishMap[key]; break; }
+       // 1. Try CDT code from OCR data directly
+       if(cdtLower && cdtMap[cdtLower]) mappedProc = cdtMap[cdtLower];
+       // 2. Try CDT code embedded in proc string (e.g. "D2140" or "(D2140)")
+       if(!mappedProc){
+         var cdtMatch = d.proc.match(/D\d{4}/i);
+         if(cdtMatch && cdtMap[cdtMatch[0].toUpperCase()]) mappedProc = cdtMap[cdtMatch[0].toUpperCase()];
        }
+       // 3. Try keyword map
+       if(!mappedProc){
+         for(var ki=0;ki<kwMap.length;ki++){
+           var found=false;
+           for(var kj=0;kj<kwMap[ki].keys.length;kj++){
+             if(procLower.includes(kwMap[ki].keys[kj])){ mappedProc=kwMap[ki].val; found=true; break; }
+           }
+           if(found) break;
+         }
+       }
+       // 4. Match against select options
        var matched = false;
        var searchProc = mappedProc ? mappedProc.toLowerCase() : procLower;
        for(var o=0;o<procEl.options.length;o++){
          var optText = procEl.options[o].text.toLowerCase();
          var optVal = procEl.options[o].value.toLowerCase();
-         if(optText === searchProc || searchProc.includes(optText) || optText.includes(searchProc) || optVal === searchProc){
+         if(optText === searchProc || searchProc.includes(optText) || optText.includes(searchProc) || optVal === cdtLower.toLowerCase()){
            procEl.selectedIndex=o; matched=true; break;
          }
        }
+       // 5. Fallback: reset to Select... and unlock so user picks manually
        if(!matched){
-         for(var o=0;o<procEl.options.length;o++){
-           if(procEl.options[o].text==='Other'){ procEl.selectedIndex=o; break; }
+         procEl.selectedIndex=0;
+         procEl.classList.remove('prefilled');
+         procEl.style.borderColor='#f59e0b';
+         procEl.style.background='#fffbeb';
+         // Show hint
+         var hint = document.getElementById('proc-hint');
+         if(!hint){
+           hint = document.createElement('div');
+           hint.id = 'proc-hint';
+           hint.style.cssText = 'font-size:11px;color:#92400e;margin-top:4px;font-weight:600';
+           hint.textContent = '⚠️ Please select the procedure manually';
+           procEl.parentNode.insertBefore(hint, procEl.nextSibling);
          }
+         hint.style.display = 'block';
+       } else {
+         var hint = document.getElementById('proc-hint');
+         if(hint) hint.style.display = 'none';
+         procEl.style.borderColor = '';
+         procEl.style.background = '';
+         procEl.classList.add('prefilled');
        }
-       procEl.classList.add('prefilled');
      }
 
      var amtEl=document.getElementById('s2-amount');
