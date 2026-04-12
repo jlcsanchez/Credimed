@@ -2750,41 +2750,25 @@ function s1StartScan(imageBase64, mediaType){
    else if(prog<60){ document.getElementById('s1-ocr-title').textContent='Reading text...'; document.getElementById('s1-ocr-sub').textContent='Extracting details'; }
    else { document.getElementById('s1-ocr-title').textContent='Identifying insurer...'; document.getElementById('s1-ocr-sub').textContent='Cross-referencing'; }
  },300);
- // Validate + OCR with Anthropic API directly
- fetch('https://api.anthropic.com/v1/messages',{
+ // Call OCR Lambda -- returns isValid + extracted fields
+ fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
    method:'POST',
    headers:{'Content-Type':'application/json'},
-   body:JSON.stringify({
-     model:'claude-sonnet-4-20250514',
-     max_tokens:500,
-     messages:[{
-       role:'user',
-       content:[
-         {type:'image',source:{type:'base64',media_type:mediaType,data:imageBase64}},
-         {type:'text',text:'Look at this image. Is it a US dental/health insurance card? If YES, extract and return ONLY valid JSON: {"isValid":true,"insurer":"...","memberId":"...","groupId":"...","memberName":"..."}. If NO (selfie, ID, receipt, random photo, etc.), return ONLY: {"isValid":false}. No explanation, only JSON.'}
-       ]
-     }]
-   })
+   body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType,type:'insurance'})
  })
  .then(function(r){return r.json();})
- .then(function(apiResp){
+ .then(function(data){
    clearInterval(iv);
    if(fill) fill.style.width='100%';
-   try{
-     var text = apiResp.content && apiResp.content[0] && apiResp.content[0].text || '{}';
-     var clean = text.replace(/```json|```/g,'').trim();
-     var data = JSON.parse(clean);
-     if(!data.isValid){
-       document.getElementById('s1-ocr-title').textContent='Not recognized';
-       document.getElementById('s1-ocr-sub').textContent='Wrong document';
-       setTimeout(function(){ s1ShowExtracted({}); },400);
-     } else {
-       document.getElementById('s1-ocr-title').textContent='Done!';
-       document.getElementById('s1-ocr-sub').textContent='Card verified';
-       setTimeout(function(){ s1ShowExtracted(data); },400);
-     }
-   } catch(e){
+   // Check isValid flag from Lambda -- if false, image is not an insurance card
+   if(data && data.isValid === false){
+     document.getElementById('s1-ocr-title').textContent='Not recognized';
+     document.getElementById('s1-ocr-sub').textContent='Wrong document';
      setTimeout(function(){ s1ShowExtracted({}); },400);
+   } else {
+     document.getElementById('s1-ocr-title').textContent='Done!';
+     document.getElementById('s1-ocr-sub').textContent='Details extracted';
+     setTimeout(function(){ s1ShowExtracted(data); },400);
    }
  })
  .catch(function(err){
@@ -3314,35 +3298,21 @@ function s2RunOCR(imageBase64, mediaType){
    }, 400);
  }
 
- // Validate + OCR receipt with Anthropic API
+ // Call OCR Lambda for receipt -- returns isValid + extracted fields
  if(imageBase64){
-   fetch('https://api.anthropic.com/v1/messages',{
+   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
      method:'POST',
      headers:{'Content-Type':'application/json'},
-     body:JSON.stringify({
-       model:'claude-sonnet-4-20250514',
-       max_tokens:600,
-       messages:[{
-         role:'user',
-         content:[
-           {type:'image',source:{type:'base64',media_type:mediaType||'image/jpeg',data:imageBase64}},
-           {type:'text',text:'Look at this image. Is it a dental receipt, dental invoice, or dental treatment document? If YES, return ONLY valid JSON: {"isValid":true,"dentist":"clinic name","procedure":"procedure name in English","amount":"number only","date":"YYYY-MM-DD","city":"city name"}. If NO (insurance card, selfie, ID, random photo, etc.), return ONLY: {"isValid":false}. No explanation, only JSON.'}
-         ]
-       }]
-     })
+     body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
    })
    .then(function(r){return r.json();})
-   .then(function(apiResp){
-     try{
-       var text = apiResp.content && apiResp.content[0] && apiResp.content[0].text || '{}';
-       var clean = text.replace(/```json|```/g,'').trim();
-       var data = JSON.parse(clean);
-       if(!data.isValid){
-         applyFields({});
-       } else {
-         applyFields(data);
-       }
-     } catch(e){ applyFields({}); }
+   .then(function(data){
+     // Check isValid flag from Lambda -- if false, image is not a dental receipt
+     if(data && data.isValid === false){
+       applyFields({});
+     } else {
+       applyFields(data);
+     }
    })
    .catch(function(err){ console.warn('Receipt OCR failed:', err); applyFields(null); });
  } else {
