@@ -4332,20 +4332,23 @@ async function doPayment(method){
       return;
     }
     try {
-      var cardData = await stripe.createToken('card', {
-        number: ccNum.replace(/\s/g,''),
-        exp_month: ccExp.split('/')[0].trim(),
-        exp_year: ccExp.split('/')[1].trim(),
-        cvc: ccCvc,
-        name: ccName
+      var cardElement = stripe.elements().create('card');
+      var pmResult = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+        billing_details: { name: ccName, email: currentUser&&currentUser.email }
       });
-      if(cardData.error){
-        if(errEl&&errTxt){errTxt.textContent=cardData.error.message;errEl.classList.add('show');}
-        if(btn){ btn.disabled=false; btn.textContent=' Pay $29.00'; }
-        return;
-      }
+      // Since we can't mount the element, use confirmCardPayment with raw card data via payment element
       var confirmResult = await stripe.confirmCardPayment(cs, {
-        payment_method: { card: { token: cardData.token.id }, billing_details: { name: ccName, email: currentUser&&currentUser.email } }
+        payment_method: {
+          card: {
+            number: ccNum.replace(/\s/g,''),
+            exp_month: parseInt(ccExp.split('/')[0].trim()),
+            exp_year: parseInt(ccExp.split('/')[1].trim()),
+            cvc: ccCvc
+          },
+          billing_details: { name: ccName, email: currentUser&&currentUser.email }
+        }
       });
       if(confirmResult.error){
         if(errEl&&errTxt){errTxt.textContent=confirmResult.error.message;errEl.classList.add('show');}
