@@ -2956,17 +2956,20 @@ function s1EditFields(){
 }
 function s2Confirm(){
  var dentist=document.getElementById('s2-dentist')?.value.trim()||'';
- var proc=document.getElementById('s2-proc')?.value||'';
+ var proc=document.getElementById('s2-proc')?.value||
+          (window._selectedProcedures&&window._selectedProcedures.length>0?'ok':'');
  var amount=parseFloat(document.getElementById('s2-amount')?.value)||0;
  if(!proc){
    var e=document.getElementById('s2-proc');
-   if(e){e.style.borderColor='#ef4444';e.style.background='#fef2f2';e.scrollIntoView({behavior:'smooth',block:'center'});}
    var hint=document.getElementById('proc-hint');
    if(!hint){hint=document.createElement('div');hint.id='proc-hint';hint.style.cssText='font-size:12px;color:#991b1b;margin-top:4px;font-weight:600;padding:6px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5';if(e&&e.parentNode)e.parentNode.insertBefore(hint,e.nextSibling);}
    hint.textContent='⚠️ Please select the procedure performed';
    hint.style.display='block';
    return;
  }
+ // Hide hint if proc is ok
+ var hint=document.getElementById('proc-hint');
+ if(hint) hint.style.display='none';
  if(!dentist || amount<=0){ return; }
  // Lock fields
  ['s2-dentist','s2-date','s2-amount','s2-city'].forEach(function(id){
@@ -3652,38 +3655,16 @@ function s2RunOCR(imageBase64, mediaType){
    }, 400);
  }
 
- // Call Claude API directly to extract receipt data with ALL procedures
+ // Call OCR Lambda for receipt
  if(imageBase64){
-   fetch('https://api.anthropic.com/v1/messages',{
+   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
      method:'POST',
-     headers:{
-       'Content-Type':'application/json',
-       'anthropic-dangerous-direct-browser-access':'true'
-     },
-     body:JSON.stringify({
-       model:'claude-sonnet-4-20250514',
-       max_tokens:600,
-       messages:[{role:'user',content:[
-         {type:'image',source:{type:'base64',media_type:mediaType||'image/jpeg',data:imageBase64}},
-         {type:'text',text:'This is a dental document (receipt, invoice, or insurance EOB). Return ONLY this JSON, no markdown: {"isValid":true,"dentist":"clinic or provider name","date":"YYYY-MM-DD","city":"city if visible","amount":"total amount charged number only","patientName":"patient name","procedures":["procedure 1","procedure 2"]} List every dental procedure or service found. Use the description text, not just the codes. If this is not a dental document at all return {"isValid":false}'}
-       ]}]
-     })
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
    })
    .then(function(r){return r.json();})
-   .then(function(resp){
-     var txt = (resp.content&&resp.content[0]&&resp.content[0].text)||'';
-     // API-level error (auth, rate limit, etc)
-     if(resp.error || !txt){ applyFields(null); return; }
-     var data = null;
-     try {
-       var clean = txt.replace(/```json|```/g,'').trim();
-       var start = clean.indexOf('{');
-       var end = clean.lastIndexOf('}');
-       if(start !== -1 && end !== -1) clean = clean.slice(start, end+1);
-       data = JSON.parse(clean);
-     } catch(e){}
-     if(!data){ applyFields(null); return; }
-     if(data.isValid===false){ applyFields({}); }
+   .then(function(data){
+     if(data && data.isValid === false){ applyFields({}); }
      else{ applyFields(data); }
    })
    .catch(function(){ applyFields(null); });
