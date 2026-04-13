@@ -1492,8 +1492,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px">Insurance Card</div>
    <div style="font-size:11px;color:rgba(255,255,255,.4)">Front &amp; back · Member ID &amp; Group #</div>
   </div>
-  <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+  <div style="width:22px;height:22px;border-radius:50%;border:2px solid #0D9488;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+   <div style="width:8px;height:8px;border-radius:50%;background:#0D9488"></div>
   </div>
  </div>
 
@@ -1507,8 +1507,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px">Dental Receipt</div>
    <div style="font-size:11px;color:rgba(255,255,255,.4)">From your dentist · Any country · PDF or photo</div>
   </div>
-  <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+  <div style="width:22px;height:22px;border-radius:50%;border:2px solid #5eead4;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+   <div style="width:8px;height:8px;border-radius:50%;background:#5eead4"></div>
   </div>
  </div>
 
@@ -1522,8 +1522,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px">X-Rays / Radiografías</div>
    <div style="font-size:11px;color:rgba(255,255,255,.4)">Required for crowns, implants, root canals</div>
   </div>
-  <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+  <div style="width:22px;height:22px;border-radius:50%;border:2px solid #f59e0b;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+   <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b"></div>
   </div>
  </div>
 
@@ -1537,8 +1537,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px">Government ID</div>
    <div style="font-size:11px;color:rgba(255,255,255,.4)">Front &amp; back · Driver's license or passport</div>
   </div>
-  <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+  <div style="width:22px;height:22px;border-radius:50%;border:2px solid #818cf8;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+   <div style="width:8px;height:8px;border-radius:50%;background:#818cf8"></div>
   </div>
  </div>
 
@@ -1557,7 +1557,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span style="font-size:14px;font-weight:700;color:rgba(255,255,255,.6)">Treatment Plan</span>
     <span style="font-size:9px;font-weight:700;background:rgba(245,158,11,.2);color:#f59e0b;border-radius:8px;padding:2px 8px">OPTIONAL</span>
    </div>
-   <div style="font-size:11px;color:rgba(255,255,255,.3)">If you have one · We can request it later</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.3)">Increases approval rate · We can request it if needed</div>
   </div>
  </div>
 
@@ -1766,6 +1766,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
    <div id="xray-intraoral-list" style="display:flex;flex-direction:column;gap:8px"></div>
    <input type="file" id="xray-intraoral-input" accept="image/*" style="display:none" onchange="window.xrayHandleFile&&window.xrayHandleFile(this,'intraoral')">
+
+   <!-- Confirm button -->
+
+   <div id="xray-confirm-bar" style="display:none;margin-top:20px">
+    <button onclick="window.switchDocTab&&window.switchDocTab('govid')" style="width:100%;height:50px;border-radius:14px;border:none;background:#0D9488;color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(13,148,136,.35)">
+     X-Rays confirmed · Next: Gov ID →
+    </button>
+   </div>
 
    <!-- hidden inputs -->
 
@@ -9051,6 +9059,8 @@ window.xrayHandleFile = function(input, side) {
   if(window._xrayUploads['final']) {
     window._docUploads['xrays'] = window._xrayUploads['final'];
     window.docMarkDone('xrays');
+    var bar = document.getElementById('xray-confirm-bar');
+    if(bar) bar.style.display = 'block';
   }
 };
 
@@ -9067,6 +9077,8 @@ window.xrayRemove = function(side) {
     if(badge) badge.style.display = 'none';
     var dsb = document.getElementById('dsb-xrays');
     if(dsb) dsb.style.display = 'none';
+    var bar = document.getElementById('xray-confirm-bar');
+    if(bar) bar.style.display = 'none';
     window.docCheckContinue();
   }
 };
