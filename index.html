@@ -1114,17 +1114,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Trust / HIPAA badges -->
 
 <div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px;animation:slideUp .6s .28s cubic-bezier(.16,1,.3,1) both;padding:0 12px;flex-wrap:nowrap">
- <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:12px 10px;flex:1">
-  <span style="font-size:22px">⚕️</span>
-  <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.5px;text-align:center;line-height:1.3">HIPAA<br>Compliant</span>
+ <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(13,148,136,.12);border:1px solid rgba(13,148,136,.35);border-radius:16px;padding:12px 10px;flex:1">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 5v6c0 5.25 3.5 10.14 8 11.34C16.5 21.14 20 16.25 20 11V5l-8-3z" fill="#0D9488" opacity=".25"/><path d="M12 2L4 5v6c0 5.25 3.5 10.14 8 11.34C16.5 21.14 20 16.25 20 11V5l-8-3z" stroke="#0D9488" stroke-width="1.5" fill="none"/><path d="M9 12l2 2 4-4" stroke="#5eead4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span style="font-size:9px;font-weight:700;color:#5eead4;letter-spacing:.5px;text-align:center;line-height:1.3">HIPAA<br>Compliant</span>
  </div>
- <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:12px 10px;flex:1">
-  <span style="font-size:22px">🛡️</span>
-  <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.5px;text-align:center;line-height:1.3">256-bit<br>Encrypted</span>
+ <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(13,148,136,.12);border:1px solid rgba(13,148,136,.35);border-radius:16px;padding:12px 10px;flex:1">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" fill="#0D9488" opacity=".25"/><rect x="5" y="11" width="14" height="10" rx="2" stroke="#0D9488" stroke-width="1.5"/><path d="M8 11V7a4 4 0 018 0v4" stroke="#5eead4" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="16" r="1.5" fill="#5eead4"/></svg>
+  <span style="font-size:9px;font-weight:700;color:#5eead4;letter-spacing:.5px;text-align:center;line-height:1.3">256-bit<br>Encrypted</span>
  </div>
- <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:12px 10px;flex:1">
+ <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(13,148,136,.12);border:1px solid rgba(13,148,136,.35);border-radius:16px;padding:12px 10px;flex:1">
   <span style="font-size:22px">🇺🇸</span>
-  <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.5px;text-align:center;line-height:1.3">US<br>Incorporated</span>
+  <span style="font-size:9px;font-weight:700;color:#5eead4;letter-spacing:.5px;text-align:center;line-height:1.3">US<br>Incorporated</span>
  </div>
 </div>
 
@@ -1672,18 +1672,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div id="docpanel-govid" class="doc-panel" style="display:none;padding:16px">
    <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#0f766e">
-    Required by your insurer. Must show your name and a US address (passport, driver's license, or state ID).
+    Required by your insurer. Upload both sides of your ID (driver's license, passport, or state ID).
    </div>
-   <div id="govid-upload-zone" onclick="window.triggerDocUpload&&window.triggerDocUpload('govid')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:14px">
-    <div style="font-size:36px;margin-bottom:8px">🪪</div>
-    <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px">Tap to upload Government ID</div>
-    <div style="font-size:12px;color:#94a3b8">Photo · PDF · Any file</div>
+
+   <!-- FRONT -->
+
+   <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+    <div style="background:#0D9488;color:white;border-radius:6px;padding:2px 8px;font-size:10px">FRONT</div> Front of ID
    </div>
-   <div id="govid-preview" style="display:none;position:relative;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="govid-preview-img" style="width:100%;max-height:160px;object-fit:cover;display:block">
-    <div id="govid-preview-file" style="display:none;padding:16px;background:#f0fdfa;text-align:center;font-size:13px;font-weight:600;color:#0f766e"></div>
-    <div style="position:absolute;top:8px;right:8px"><button onclick="window.docRemove&&window.docRemove('govid')" style="background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:4px 10px;color:white;font-size:11px;cursor:pointer">Remove</button></div>
+   <div id="govid-front-zone" onclick="window.triggerGovId&&window.triggerGovId('front')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:20px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:10px">
+    <div style="font-size:28px;margin-bottom:6px">🪪</div>
+    <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:2px">Tap to upload front</div>
+    <div style="font-size:11px;color:#94a3b8">Photo · Any file</div>
    </div>
+   <div id="govid-front-preview" style="display:none;position:relative;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:14px">
+    <img id="govid-front-img" style="width:100%;max-height:130px;object-fit:cover;display:block">
+    <div id="govid-front-file" style="display:none;padding:12px;background:#f0fdfa;text-align:center;font-size:12px;font-weight:600;color:#0f766e"></div>
+    <div style="position:absolute;top:6px;left:8px;background:#0D9488;color:white;border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700">FRONT</div>
+    <button onclick="window.govIdRemove&&window.govIdRemove('front')" style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:3px 8px;color:white;font-size:11px;cursor:pointer">Remove</button>
+   </div>
+
+   <!-- BACK -->
+
+   <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+    <div style="background:#64748b;color:white;border-radius:6px;padding:2px 8px;font-size:10px">BACK</div> Back of ID
+   </div>
+   <div id="govid-back-zone" onclick="window.triggerGovId&&window.triggerGovId('back')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:20px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:10px">
+    <div style="font-size:28px;margin-bottom:6px">🪪</div>
+    <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:2px">Tap to upload back</div>
+    <div style="font-size:11px;color:#94a3b8">Photo · Any file</div>
+   </div>
+   <div id="govid-back-preview" style="display:none;position:relative;border:2px solid #64748b;border-radius:12px;overflow:hidden;margin-bottom:14px">
+    <img id="govid-back-img" style="width:100%;max-height:130px;object-fit:cover;display:block">
+    <div id="govid-back-file" style="display:none;padding:12px;background:#f8fafc;text-align:center;font-size:12px;font-weight:600;color:#475569"></div>
+    <div style="position:absolute;top:6px;left:8px;background:#64748b;color:white;border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700">BACK</div>
+    <button onclick="window.govIdRemove&&window.govIdRemove('back')" style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:3px 8px;color:white;font-size:11px;cursor:pointer">Remove</button>
+   </div>
+
+   <!-- hidden inputs -->
+
+   <input type="file" id="govid-front-input" accept="*/*" style="display:none" onchange="window.govIdHandleFile&&window.govIdHandleFile(this,'front')">
+   <input type="file" id="govid-back-input" accept="*/*" style="display:none" onchange="window.govIdHandleFile&&window.govIdHandleFile(this,'back')">
   </div>
 
   <!-- ═══ TAB: OTHER ═══ -->
@@ -1724,7 +1753,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- DOCUMENT SUMMARY + CONTINUE -->
 
-  <div style="position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #e2e8f0;padding:12px 16px;z-index:20">
+  <div style="position:sticky;bottom:0;left:0;right:0;background:white;border-top:1px solid #e2e8f0;padding:12px 16px;z-index:20">
    <div id="doc-summary-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
     <span id="dsb-insurance" style="display:none;font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border:1px solid #86efac;border-radius:20px;padding:3px 10px">🪪 Insurance ✓</span>
     <span id="dsb-receipt" style="display:none;font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border:1px solid #86efac;border-radius:20px;padding:3px 10px">🧾 Receipt ✓</span>
@@ -8796,6 +8825,62 @@ document.addEventListener('input', function(e) {
     window.docCheckContinue();
   }
 });
+</script>
+
+<script>
+/* Gov ID front/back */
+window._govIdUploads = {};
+
+window.triggerGovId = function(side) {
+  var inp = document.getElementById('govid-' + side + '-input');
+  if(inp) { inp.value=''; inp.click(); }
+};
+
+window.govIdHandleFile = function(input, side) {
+  var file = input.files && input.files[0];
+  if(!file) return;
+  window._govIdUploads[side] = file;
+  var isImage = file.type.startsWith('image/');
+  var zone = document.getElementById('govid-' + side + '-zone');
+  var preview = document.getElementById('govid-' + side + '-preview');
+  var img = document.getElementById('govid-' + side + '-img');
+  var fileEl = document.getElementById('govid-' + side + '-file');
+  if(zone) zone.style.display = 'none';
+  if(preview) preview.style.display = 'block';
+  if(isImage) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      if(img) { img.src = e.target.result; img.style.display = 'block'; }
+      if(fileEl) fileEl.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    if(img) img.style.display = 'none';
+    if(fileEl) { fileEl.style.display = 'block'; fileEl.textContent = '📄 ' + file.name; }
+  }
+  // Mark done if at least front is uploaded
+  if(window._govIdUploads['front']) {
+    window.docMarkDone('govid');
+    window._docUploads['govid'] = window._govIdUploads['front'];
+  }
+};
+
+window.govIdRemove = function(side) {
+  delete window._govIdUploads[side];
+  var zone = document.getElementById('govid-' + side + '-zone');
+  var preview = document.getElementById('govid-' + side + '-preview');
+  if(zone) zone.style.display = 'block';
+  if(preview) preview.style.display = 'none';
+  // If front removed, clear badge
+  if(side === 'front') {
+    delete window._docUploads['govid'];
+    var badge = document.getElementById('tab-badge-govid');
+    if(badge) badge.style.display = 'none';
+    var dsb = document.getElementById('dsb-govid');
+    if(dsb) dsb.style.display = 'none';
+    window.docCheckContinue();
+  }
+};
 </script>
 
 </body>
