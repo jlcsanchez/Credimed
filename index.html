@@ -2157,6 +2157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <!-- Stripe element hidden -- used for actual payment processing -->
 
  <div id="stripe-payment-element" style="margin-bottom:16px;min-height:50px"></div>
+ <button id="stripe-submit-btn" style="display:none;width:100%;height:54px;background:var(--teal);color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px" onclick="window.doPayment&&window.doPayment('stripe')"> Pay $29.00</button>
  <div id="fallback-card-btn" style="display:none"></div>
  <!-- Card Form (hidden by default) -->
  <div id="card-form" style="display:none">
@@ -4164,6 +4165,9 @@ async function initStripePayment(){
       paymentEl.mount('#stripe-payment-element');
       stripePaymentElement = paymentEl;
       console.log('[Credimed] Stripe Payment Element mounted OK');
+      // Mostrar botón de pago
+      var submitBtn = document.getElementById('stripe-submit-btn');
+      if(submitBtn) submitBtn.style.display = 'block';
     }
   } catch(err) {
     console.warn('[Credimed] Stripe init error:', err);
@@ -4206,6 +4210,30 @@ function paymentSuccess(){
 async function doPayment(method){
   var plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   if(plan === 'standard'){ paymentSuccess(); return; }
+
+  // Stripe Payment Element submit
+  if(method === 'stripe'){
+    var stripe = getStripe();
+    var btn = document.getElementById('stripe-submit-btn');
+    if(btn){ btn.textContent = 'Processing...'; btn.disabled = true; }
+    try {
+      var result = await stripe.confirmPayment({
+        elements: stripeElements,
+        confirmParams: { return_url: window.location.href },
+        redirect: 'if_required'
+      });
+      if(result.error){
+        if(btn){ btn.textContent = ' Pay $29.00'; btn.disabled = false; }
+        alert(result.error.message);
+      } else {
+        paymentSuccess();
+      }
+    } catch(e){
+      if(btn){ btn.textContent = ' Pay $29.00'; btn.disabled = false; }
+      alert('Payment error: ' + e.message);
+    }
+    return;
+  }
 
   // Apple Pay / Google Pay via Stripe Payment Request Button
   if(method === 'applepay' || method === 'googlepay'){
