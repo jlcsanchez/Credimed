@@ -1653,6 +1653,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
    <!-- Hidden compat fields -->
    <div style="display:none"><input id="s1-m-name"><input id="s1-m-provider"><input id="s1-m-member"><input id="s1-m-group"></div>
+
+   <!-- Confirm button -->
+
+   <div id="ins-confirm-bar" style="display:none;margin-top:20px">
+    <button onclick="window.switchDocTab&&window.switchDocTab('receipt')" style="width:100%;height:50px;border-radius:14px;border:none;background:#0D9488;color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(13,148,136,.35)">
+     Insurance confirmed · Next: Dental Receipt →
+    </button>
+   </div>
   </div>
 
   <!-- ═══ TAB: DENTAL RECEIPT ═══ -->
@@ -1692,6 +1700,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana"></div>
    </div>
    <div style="text-align:center;margin-top:8px"><button onclick="var m=document.getElementById('rec-manual');if(m)m.style.display=m.style.display==='none'?'block':'none'" style="background:none;border:none;color:#0D9488;font-size:12px;font-weight:600;cursor:pointer">+ Enter manually instead</button></div>
+
+   <!-- Confirm button -->
+
+   <div id="rec-confirm-bar" style="display:none;margin-top:20px">
+    <button onclick="window.switchDocTab&&window.switchDocTab('xrays')" style="width:100%;height:50px;border-radius:14px;border:none;background:#0D9488;color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(13,148,136,.35)">
+     Receipt confirmed · Next: X-Rays →
+    </button>
+   </div>
   </div>
 
   <!-- ═══ TAB: X-RAYS ═══ -->
@@ -1771,7 +1787,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
    <div id="xray-confirm-bar" style="display:none;margin-top:20px">
     <button onclick="window.switchDocTab&&window.switchDocTab('govid')" style="width:100%;height:50px;border-radius:14px;border:none;background:#0D9488;color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(13,148,136,.35)">
-     X-Rays confirmed · Next: Gov ID →
+     X-Rays saved · Next: Gov ID →
     </button>
    </div>
 
@@ -8726,6 +8742,8 @@ window.docHandleFile = function(input) {
       if(previewFile) { previewFile.style.display = 'block'; previewFile.textContent = '📄 ' + file.name; }
     }
     window.docMarkDone('insurance');
+    var insBar = document.getElementById('ins-confirm-bar');
+    if(insBar) insBar.style.display = 'block';
 
   } else if(tab === 'receipt') {
     var zone2 = document.getElementById('rec-upload-zone');
@@ -8838,18 +8856,21 @@ window.docMarkDone = function(tab) {
 
 window.docCheckContinue = function() {
   var hasInsurance = !!window._docUploads['insurance'] || (document.getElementById('s1-ins-member') && document.getElementById('s1-ins-member').value.trim().length > 0);
-  var hasReceipt = !!window._docUploads['receipt'];
+  var hasGovId = !!window._govIdUploads && !!window._govIdUploads['front'];
   var btn = document.getElementById('doc-continue-btn');
   var lbl = document.getElementById('doc-continue-label');
-  if(hasInsurance && hasReceipt) {
-    if(btn) { btn.disabled = false; btn.style.background = 'var(--teal)'; btn.style.cursor = 'pointer'; }
-    if(lbl) lbl.textContent = '';
-  } else if(hasInsurance) {
-    if(btn) { btn.disabled = true; btn.style.background = '#94a3b8'; btn.style.cursor = 'not-allowed'; }
-    if(lbl) lbl.textContent = 'Add Dental Receipt to continue';
+  if(hasInsurance && hasGovId) {
+    if(btn) { btn.disabled = false; btn.style.background = 'var(--teal)'; btn.style.cursor = 'pointer'; btn.style.boxShadow = '0 6px 20px rgba(13,148,136,.35)'; }
+    if(lbl) lbl.textContent = 'Submit documents →';
+  } else if(hasInsurance && !hasGovId) {
+    if(btn) { btn.disabled = true; btn.style.background = '#94a3b8'; btn.style.cursor = 'not-allowed'; btn.style.boxShadow = 'none'; }
+    if(lbl) lbl.textContent = '→ Add your Government ID to continue';
+  } else if(hasGovId && !hasInsurance) {
+    if(btn) { btn.disabled = true; btn.style.background = '#94a3b8'; btn.style.cursor = 'not-allowed'; btn.style.boxShadow = 'none'; }
+    if(lbl) lbl.textContent = '→ Add your Insurance Card to continue';
   } else {
-    if(btn) { btn.disabled = true; btn.style.background = '#94a3b8'; btn.style.cursor = 'not-allowed'; }
-    if(lbl) lbl.textContent = 'Add Insurance Card & Receipt to continue';
+    if(btn) { btn.disabled = true; btn.style.background = '#94a3b8'; btn.style.cursor = 'not-allowed'; btn.style.boxShadow = 'none'; }
+    if(lbl) lbl.textContent = '→ Add Insurance Card & Government ID to continue';
   }
 };
 
@@ -8878,6 +8899,9 @@ window.runInsuranceOCR = function(base64, mediaType) {
     if(d.insurer) { var el2 = document.getElementById('s1-ins-provider'); if(el2) { el2.value = d.insurer; el2.classList.add('prefilled'); } }
     if(d.memberId) { var el3 = document.getElementById('s1-ins-member'); if(el3) { el3.value = d.memberId; el3.classList.add('prefilled'); } }
     if(d.groupId) { var el4 = document.getElementById('s1-ins-group'); if(el4) { el4.value = d.groupId; el4.classList.add('prefilled'); } }
+    window.docMarkDone('insurance');
+    var insBar = document.getElementById('ins-confirm-bar');
+    if(insBar) insBar.style.display = 'block';
     window.docCheckContinue();
   }).catch(function(){ clearInterval(iv); if(ocrEl) ocrEl.style.display = 'none'; });
 };
@@ -8928,6 +8952,8 @@ window.runReceiptOCR = function(base64, mediaType) {
     }
     if(d.city) { var e24 = document.getElementById('s2-city'); if(e24) e24.value = d.city; }
     window.docMarkDone('receipt');
+    var recBar = document.getElementById('rec-confirm-bar');
+    if(recBar) recBar.style.display = 'block';
     window.docCheckContinue();
   }).catch(function(){ clearInterval(iv); if(ocrEl) ocrEl.style.display = 'none'; var m = document.getElementById('rec-manual'); if(m) m.style.display = 'block'; });
 };
@@ -8935,7 +8961,11 @@ window.runReceiptOCR = function(base64, mediaType) {
 // Also enable continue if user types insurance info manually
 document.addEventListener('input', function(e) {
   if(e.target && (e.target.id === 's1-ins-member' || e.target.id === 's1-ins-provider')) {
-    if(e.target.value.trim().length > 0) window.docMarkDone('insurance');
+    if(e.target.value.trim().length > 0) {
+      window.docMarkDone('insurance');
+      var insBar = document.getElementById('ins-confirm-bar');
+      if(insBar) insBar.style.display = 'block';
+    }
     window.docCheckContinue();
   }
 });
@@ -8954,6 +8984,7 @@ window.govIdHandleFile = function(input, side) {
   var file = input.files && input.files[0];
   if(!file) return;
   window._govIdUploads[side] = file;
+  window.docCheckContinue();
   var isImage = file.type.startsWith('image/');
   var zone = document.getElementById('govid-' + side + '-zone');
   var preview = document.getElementById('govid-' + side + '-preview');
