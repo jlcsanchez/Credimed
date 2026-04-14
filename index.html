@@ -1882,13 +1882,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
    <!-- Results mini card -->
 
-   <div id="rq-results" style="display:none;background:rgba(13,148,136,.12);border:1px solid rgba(13,148,136,.3);border-radius:14px;padding:14px 16px;margin-bottom:20px">
-    <div style="font-size:10px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Detected from receipt</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+   <div id="rq-results" style="display:none;background:rgba(13,148,136,.12);border:1px solid rgba(13,148,136,.3);border-radius:14px;padding:14px 16px;margin-bottom:16px">
+    <div style="font-size:10px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Detected from receipt</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
      <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:3px">Amount</div><div style="font-size:16px;font-weight:700;color:#93c5fd" id="rq-r-amount">—</div></div>
      <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:3px">Currency</div><div style="font-size:14px;font-weight:600;color:white" id="rq-r-currency">—</div></div>
     </div>
-    <div style="margin-top:8px"><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:4px">Procedures</div><div id="rq-r-procs" style="display:flex;flex-wrap:wrap;gap:4px"></div></div>
+    <div style="margin-top:4px"><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:4px">Procedures</div><div id="rq-r-procs" style="display:flex;flex-wrap:wrap;gap:4px"></div></div>
+   </div>
+
+   <!-- Manual amount entry — shown when OCR misses amount or user wants to correct -->
+
+   <div id="rq-manual" style="display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;margin-bottom:16px">
+    <div style="font-size:12px;font-weight:700;color:white;margin-bottom:10px">💡 Enter the amount from your receipt</div>
+    <div style="display:flex;gap:8px;align-items:center">
+     <select id="rq-currency-select" onchange="window.rqUpdateCurrency&&window.rqUpdateCurrency()" style="height:46px;padding:0 10px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.08);color:white;font-size:14px;font-weight:600;outline:none;flex-shrink:0;-webkit-appearance:none;width:90px">
+      <option value="USD" style="background:#1e293b">USD $</option>
+      <option value="MXN" style="background:#1e293b">MXN $</option>
+     </select>
+     <input type="number" id="rq-manual-amount" inputmode="decimal" placeholder="0.00" oninput="window.rqManualInput&&window.rqManualInput()" style="flex:1;height:46px;padding:0 14px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.08);color:white;font-size:18px;font-weight:700;outline:none;-webkit-appearance:none">
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px">Enter the total you paid at the clinic · any currency</div>
    </div>
 
    <!-- Trust moment (shown after upload) -->
@@ -2870,7 +2884,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
  <!-- Stripe element hidden -- used for actual payment processing -->
 
- <div id="stripe-payment-element" style="margin-bottom:16px;min-height:50px"></div>
+ <!-- Stripe skeleton loader -->
+
+ <div id="stripe-skeleton" style="margin-bottom:16px;border-radius:12px;overflow:hidden">
+  <div style="height:14px;background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:200% 100%;border-radius:8px;margin-bottom:10px;animation:shimmer 1.2s infinite"></div>
+  <div style="height:48px;background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:200% 100%;border-radius:10px;margin-bottom:10px;animation:shimmer 1.2s infinite"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+   <div style="height:48px;background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:200% 100%;border-radius:10px;animation:shimmer 1.2s infinite"></div>
+   <div style="height:48px;background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:200% 100%;border-radius:10px;animation:shimmer 1.2s infinite"></div>
+  </div>
+  <div style="margin-top:10px;font-size:11px;color:#94a3b8;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px">
+   <div style="width:10px;height:10px;border:2px solid #94a3b8;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite"></div>
+   Loading secure payment form...
+  </div>
+ </div>
+ <div id="stripe-payment-element" style="margin-bottom:16px;min-height:50px;display:none"></div>
  <button id="stripe-submit-btn" style="display:none;width:100%;height:54px;background:var(--navy);color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px" onclick="window.doPayment&&window.doPayment('stripe')"> Pay $29.00</button>
  <div id="fallback-card-btn" style="display:none"></div>
  <!-- Card Form (hidden by default) -->
@@ -4902,9 +4930,15 @@ async function initStripePayment(){
       paymentEl.mount('#stripe-payment-element');
       stripePaymentElement = paymentEl;
       console.log('[Credimed] Stripe Payment Element mounted OK');
-      // Mostrar botón de pago
-      var submitBtn = document.getElementById('stripe-submit-btn');
-      if(submitBtn) submitBtn.style.display = 'block';
+      // Hide skeleton, show real element
+      paymentEl.on('ready', function() {
+        var skel = document.getElementById('stripe-skeleton');
+        var el = document.getElementById('stripe-payment-element');
+        if(skel) skel.style.display = 'none';
+        if(el) el.style.display = 'block';
+        var submitBtn = document.getElementById('stripe-submit-btn');
+        if(submitBtn) submitBtn.style.display = 'block';
+      });
     }
   } catch(err) {
     console.warn('[Credimed] Stripe init error:', err);
@@ -9711,16 +9745,69 @@ window.rqRunOCR = function(base64, mediaType) {
     // Show trust moment + enable continue
     var trustEl = document.getElementById('rq-trust-moment');
     if(trustEl) trustEl.style.display = 'block';
-    var btn = document.getElementById('rq-continue-btn');
-    if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
+    // If no amount detected → show manual entry, keep button disabled until filled
+    if(!d.amount || parseFloat(d.amount) <= 0) {
+      var manual = document.getElementById('rq-manual');
+      if(manual) manual.style.display = 'block';
+      var btn = document.getElementById('rq-continue-btn');
+      if(btn) { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
+    } else {
+      var btn = document.getElementById('rq-continue-btn');
+      if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
+    }
   }).catch(function(){
     clearInterval(iv);
     if(ocrEl) ocrEl.style.display='none';
+    // On error: show results card + manual entry
+    var results = document.getElementById('rq-results');
+    if(results) results.style.display = 'block';
+    var manual = document.getElementById('rq-manual');
+    if(manual) manual.style.display = 'block';
     var trustEl = document.getElementById('rq-trust-moment');
     if(trustEl) trustEl.style.display = 'block';
     var btn = document.getElementById('rq-continue-btn');
-    if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
+    if(btn) { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
   });
+};
+
+window.rqUpdateCurrency = function() {
+  var sel = document.getElementById('rq-currency-select');
+  if(sel) {
+    window._amountCurrency = sel.value;
+    window._currency = sel.value;
+    var curEl = document.getElementById('rq-r-currency');
+    if(curEl) curEl.textContent = sel.value;
+  }
+  window.rqManualInput && window.rqManualInput();
+};
+
+window.rqManualInput = function() {
+  var inp = document.getElementById('rq-manual-amount');
+  var sel = document.getElementById('rq-currency-select');
+  var val = parseFloat(inp && inp.value) || 0;
+  var currency = (sel && sel.value) || 'USD';
+  if(val > 0) {
+    window._lastOcrAmount = val;
+    window._amountCurrency = currency;
+    window._currency = currency;
+    // Update s2-amount field for downstream use
+    var s2amt = document.getElementById('s2-amount');
+    if(s2amt) { s2amt.value = val; s2amt.classList.add('prefilled'); }
+    if(window.currentUser) { window.currentUser.amount = val; window.currentUser.amountCurrency = currency; }
+    // Update displayed amount
+    var amtEl = document.getElementById('rq-r-amount');
+    if(amtEl) amtEl.textContent = currency + ' ' + val.toLocaleString();
+    var curEl = document.getElementById('rq-r-currency');
+    if(curEl) curEl.textContent = currency;
+    // Enable continue
+    var btn = document.getElementById('rq-continue-btn');
+    if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
+    var trustEl = document.getElementById('rq-trust-moment');
+    if(trustEl) trustEl.style.display = 'block';
+  } else {
+    var btn = document.getElementById('rq-continue-btn');
+    if(btn) { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
+  }
 };
 
 window.rqReset = function() {
