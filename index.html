@@ -1647,7 +1647,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="field"><label>Confirm Password <span class="req">*</span></label><div class="pw-wrap"><input type="password" id="r-pass2" placeholder="Repeat password" data-oi="checkMatch()" oninput="window.checkMatch&&window.checkMatch()"><button class="pw-toggle" type="button" data-oc="tPw('r-pass2',this)" onclick="window.tPw&&window.tPw('r-pass2',this)"></button></div><div class="pw-match" id="pw-match"></div></div>
  <div class="err-banner" id="reg-err"><span></span><span id="reg-err-txt"></span></div>
  <button class="btn-primary" data-oc="doRegister()" onclick="window.doRegister&&window.doRegister()" style="margin-top:4px">Create my account -></button>
- <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:var(--slate-mid);line-height:1.5;text-align:center">By signing up you agree to our <a href="#" style="color:var(--teal);font-weight:600" data-oc="showTerms()" onclick="window.showTerms&&window.showTerms()">Terms</a> and authorize Credimed to charge our success fee (Standard: 15% · Premium: 10%) on successful refunds.</div>
+ <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:var(--slate-mid);line-height:1.5;text-align:center">By signing up you agree to our <a href="#" style="color:var(--teal);font-weight:600" data-oc="showTerms()" onclick="window.showTerms&&window.showTerms()">Terms</a>. Credimed is a claims processing service only — we do not provide loans, advances, or financial products. Our success fee (Standard: 15% · Premium: $29 + 10%) applies only after your insurer pays.</div>
  <div style="text-align:center;font-size:13px;color:var(--slate-mid);margin-top:14px;margin-bottom:4px">Already have an account? <a data-oc="switchTab('login')" onclick="window.switchTab&&window.switchTab('login')" style="color:var(--teal);font-weight:600;cursor:pointer">Sign in</a></div>
  <div style="text-align:center;font-size:12px;color:var(--slate-light);cursor:pointer;padding-bottom:8px" data-oc="goBack()" onclick="window.goBack&&window.goBack()">← Back to home</div>
  </div>
@@ -2606,9 +2606,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-plan-confirm" style="background:linear-gradient(160deg,#0f172a 0%,#0d1f40 60%,#0f172a 100%)">
  <div style="min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px">
-  <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px">YOUR MONEY, RECOVERED</div>
+  <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px">YOUR CLAIM ESTIMATE</div>
+  <div id="pc-currency-badge" style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:3px 12px;border-radius:20px;border:1px solid rgba(13,148,136,.4);margin-bottom:10px;background:rgba(13,148,136,.2);color:#5eead4">USD</div>
   <div style="font-family:'Playfair Display',Georgia,serif;font-size:52px;font-weight:700;color:#93c5fd;line-height:1;margin-bottom:4px" id="pc-big-num">--</div>
-  <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:8px">we can recover for you</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:8px">estimated reimbursement from your insurer</div>
   <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:20px;background:rgba(255,255,255,.05);border-radius:8px;padding:6px 14px" id="refund-basis-2">Based on your insurance coverage · No upfront cost</div>
   <div style="width:100%;max-width:340px;background:rgba(255,255,255,.07);border-radius:16px;overflow:hidden;margin-bottom:24px">
    <div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08)">
@@ -2702,15 +2703,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="card-body">
  <p style="font-size:12px;color:var(--slate-mid);margin-bottom:10px">Scroll to the bottom to enable the checkboxes.</p>
  <div class="contract-scroll" id="c-scroll">
- <h4>CREDIMED · Service Agreement<br><span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:400;color:var(--slate-light)">Simple terms, plain language</span></h4>
- <div class="clause"><strong>1. What we do</strong>Credimed prepares and submits your dental insurance reimbursement claim on your behalf, and follows up until it's resolved.</div>
- <div class="clause"><strong>2. What it costs</strong>Standard plan: <span class="hl">15% of any refund you receive</span>. Premium plan: <span class="hl">$29 upfront + 10% on success</span>. If your insurance doesn't pay, you owe us nothing.</div>
- <div class="clause"><strong>3. When we get paid</strong>Our fee is collected only after your insurance refund is confirmed — never before. Payment is processed securely through Stripe.</div>
- <div class="clause"><strong>4. Acting on your behalf</strong>You authorize Credimed to contact your insurer, request claim status updates, and manage communication related to your claim. We act as your advocate throughout the process.</div>
- <div class="clause"><strong>5. Keeping us informed</strong>If you receive a reimbursement directly from your insurer, please let us know by messaging us on WhatsApp or email so we can close your case and calculate our fee.</div>
- <div class="clause"><strong>6. No guarantee</strong>We work hard on every claim, but insurance approval depends on your insurer. We cannot guarantee a specific outcome.</div>
- <div class="clause"><strong>7. Disputes</strong>If you have any concerns about our service or a charge, contact us directly at support@credimed.us and we'll make it right.</div>
- <div class="clause"><strong>8. Governing law</strong>This agreement is governed by US law and applies to patients who received dental care in Mexico and hold US insurance coverage.</div>
+ <h4>CREDIMED · Terms &amp; Conditions<br><span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:400;color:var(--slate-light)">Last updated: April 2026</span></h4>
+
+ <div class="clause"><strong>1. Overview of Services</strong>Credimed ("we", "us", "our") provides a digital platform that helps users prepare, manage, and submit dental insurance reimbursement claims. Our services include: document intake and organization, claim preparation and structuring, submission assistance to insurance providers, and claim status tracking and updates. We do not guarantee reimbursement outcomes.</div>
+
+ <div class="clause"><strong>2. No Insurance or Financial Services</strong>Credimed is not an insurance company, healthcare provider, financial institution, lender, or payment advance service. We do not approve or deny insurance claims, provide loans or advances, or guarantee reimbursement or payment amounts. All final decisions regarding claims are made by your insurance provider.</div>
+
+ <div class="clause"><strong>3. User Responsibility</strong>You agree that all information and documents you provide are accurate and complete, that you have the legal right to submit the documents provided, and that you will not submit fraudulent, altered, or misleading information. You are responsible for reviewing your insurance policy and eligibility.</div>
+
+ <div class="clause"><strong>4. Authorization to Act</strong>By using Credimed, you authorize us to prepare and structure your insurance claim, submit claims on your behalf to relevant insurance providers, and communicate with insurers regarding your claim status when necessary. This authorization is limited strictly to claims processing purposes.</div>
+
+ <div class="clause"><strong>5. No Guarantee of Results</strong>We do not guarantee approval of claims, reimbursement amounts, processing timelines, or outcomes from insurance providers. Insurance outcomes are subject to third-party policies and decisions.</div>
+
+ <div class="clause"><strong>6. Service Fees</strong>Standard plan: <span class="hl">15% of any reimbursement your insurer pays you</span>. Premium plan: <span class="hl">$29 upfront + 10% of any reimbursement received</span>. Fees are clearly disclosed before submission of any claim. Fees are earned for service execution, not for claim approval outcomes. If your insurance does not pay, you owe us nothing on the success fee.</div>
+
+ <div class="clause"><strong>7. Data &amp; Documentation</strong>By using Credimed, you agree that we may store and process submitted documents for claim processing, use anonymized and aggregated data to improve our services, and handle personal data in accordance with our Privacy Policy.</div>
+
+ <div class="clause"><strong>8. Future Services</strong>Credimed may in the future offer additional services powered by claims data, including automated claim insights, reimbursement prediction tools, and optional financial services (subject to regulatory approval). No such services are active unless explicitly stated.</div>
+
+ <div class="clause"><strong>9. Limitation of Liability</strong>To the maximum extent permitted by law, Credimed is not liable for insurance claim outcomes, delays, denials, or insurer decisions, and is not liable for indirect, incidental, or consequential damages arising from use of the service.</div>
+
+ <div class="clause"><strong>10. Termination</strong>We reserve the right to suspend or terminate access to the platform, or refuse service for fraudulent or abusive behavior. You may stop using Credimed at any time.</div>
+
+ <div class="clause"><strong>11. Governing Law</strong>These Terms shall be governed by the laws of the United States, without regard to conflict of law principles.</div>
+
+ <div class="clause"><strong>12. Changes to Terms</strong>We may update these Terms from time to time. Continued use of the platform constitutes acceptance of updated terms.</div>
+
+ <div class="clause"><strong>13. Contact</strong>For questions regarding these Terms: Credimed Support · support@credimed.us</div>
  </div>
  <div class="scroll-prog-wrap">
  <span>Read:</span>
@@ -2721,12 +2740,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  </div>
  <div class="card" id="c-cb-card" style="opacity:.5;pointer-events:none;transition:opacity .3s">
- <div class="card-head"><h3> Confirmations</h3></div>
+ <div class="card-head"><h3>✅ Confirmations</h3></div>
  <div class="card-body">
  <div class="cb-list">
- <label class="cb-item" id="cb-w1"><input type="checkbox" id="cb1" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I authorize Credimed to act on my behalf to contact my insurer and manage my claim.</div><div class="cb-ref">Section 4</div></div></label>
- <label class="cb-item" id="cb-w2"><input type="checkbox" id="cb2" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I agree that Credimed's fee (15% Standard or $29 + 10% Premium) is collected only after a successful refund.</div><div class="cb-ref">Section 2</div></div></label>
- <label class="cb-item" id="cb-w3"><input type="checkbox" id="cb3" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I will notify Credimed if I receive a reimbursement directly from my insurer.</div><div class="cb-ref">Section 5</div></div></label>
+ <label class="cb-item" id="cb-w1"><input type="checkbox" id="cb1" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I authorize Credimed to act on my behalf to prepare, submit, and manage my dental insurance claim. (Claims processing only — no loans or advances.)</div><div class="cb-ref">Section 4</div></div></label>
+ <label class="cb-item" id="cb-w2"><input type="checkbox" id="cb2" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I understand Credimed's service fee (Standard: 15% · Premium: $29 + 10%) applies only after my insurer issues a reimbursement. Credimed does not provide loans or advances.</div><div class="cb-ref">Section 6</div></div></label>
+ <label class="cb-item" id="cb-w3"><input type="checkbox" id="cb3" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I confirm all documents I submit are accurate and complete, and I understand that Credimed does not guarantee claim approval or reimbursement amounts.</div><div class="cb-ref">Sections 3 & 5</div></div></label>
  <label class="cb-item" id="cb-w4"><input type="checkbox" id="cb4" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I understand there is no guarantee of approval — insurance decisions are made by my insurer.</div><div class="cb-ref">Section 6</div></div></label>
  <label class="cb-item" id="cb-w5"><input type="checkbox" id="cb5" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I have read and agree to these terms and I am signing electronically.</div><div class="cb-ref">All sections</div></div></label>
  </div>
@@ -3181,22 +3200,29 @@ function goTo(id, param) {
    var plan = window._confirmedPlan || window._selectedPlan || 'standard';
    var isPremium = plan === 'premium';
    var amt = parseFloat(window._lastOcrAmount || (window.currentUser && window.currentUser.amount) || 0);
+   var curr = window._amountCurrency || window._currency || 'USD';
+   var isMXN = curr === 'MXN';
+   var currCode = isMXN ? 'MXN' : 'USD';
    var refund = Math.round(amt * 0.75);
    var fee = isPremium ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
    var net = refund - (isPremium ? Math.round(refund * 0.10) : Math.round(refund * 0.15));
-   var curr = window._amountCurrency || window._currency || 'USD';
-   var sym = curr === 'MXN' ? 'MXN $' : '$';
-   var fmt = function(n){ return sym + n.toLocaleString(); };
+   var fmt = function(n){ return '$' + n.toLocaleString() + ' ' + currCode; };
    var el = function(id){ return document.getElementById(id); };
    if(el('pc-big-num')) el('pc-big-num').textContent = fmt(refund);
+   // Badge de moneda visible
+   var currBadge = document.getElementById('pc-currency-badge');
+   if(currBadge) currBadge.textContent = isMXN ? 'MXN' : 'USD';
+   if(currBadge) currBadge.style.background = isMXN ? 'rgba(245,158,11,.2)' : 'rgba(13,148,136,.2)';
+   if(currBadge) currBadge.style.color = isMXN ? '#f59e0b' : '#5eead4';
+   if(currBadge) currBadge.style.borderColor = isMXN ? 'rgba(245,158,11,.4)' : 'rgba(13,148,136,.4)';
    if(el('pc-paid')) el('pc-paid').textContent = fmt(amt);
    if(el('pc-refund')) el('pc-refund').textContent = fmt(refund);
    if(el('pc-fee-label')) el('pc-fee-label').textContent = isPremium ? 'Credimed fee ($29 + 10%)' : 'Credimed fee (15%)';
-   if(el('pc-fee')) el('pc-fee').textContent = '-' + fmt(fee);
+   if(el('pc-fee')) el('pc-fee').textContent = '-$' + fee.toLocaleString() + ' ' + currCode;
    if(el('pc-net')) el('pc-net').textContent = fmt(net);
    if(el('pc-plan-note')) el('pc-plan-note').textContent = isPremium
      ? 'Premium · $29 upfront + 10% after you get paid'
-     : 'Standard · 15% only after you get paid · No win, no fee';
+     : 'Standard · 15% of your ' + currCode + ' reimbursement · No win, no fee';
    // Animate big number
    if(el('pc-big-num') && refund > 0){
      var current=0, steps=40, inc=refund/steps;
@@ -3210,22 +3236,24 @@ function goTo(id, param) {
 
  if (id === 's-plan') setTimeout(function(){
    var amt = parseFloat(window._lastOcrAmount || (window.currentUser && window.currentUser.amount) || 0);
+   var currDisp = window._amountCurrency || window._currency || 'USD';
+   var currCode = currDisp === 'MXN' ? 'MXN' : 'USD';
+   var fmt = function(n){ return '$' + n.toLocaleString() + ' ' + currCode; };
+   var fmtNeg = function(n){ return '-$' + n.toLocaleString() + ' ' + currCode; };
    var refund = Math.round(amt * 0.75);
    var stdFee = Math.round(refund * 0.15);
    var premFee = Math.round(refund * 0.10) + 29;
    var stdNet = refund - stdFee;
    var premNet = refund - Math.round(refund * 0.10);
-   var curr = window._amountCurrency || window._currency || 'USD';
-   var sym = curr === 'MXN' ? 'MXN $' : '$';
    var bd = document.getElementById('plan-breakdown');
    if(bd && amt > 0){
      bd.style.display = 'block';
-     document.getElementById('plan-bd-paid').textContent = sym + amt.toLocaleString();
-     document.getElementById('plan-bd-refund').textContent = sym + refund.toLocaleString();
-     document.getElementById('plan-bd-std-fee').textContent = '-' + sym + stdFee.toLocaleString();
-     document.getElementById('plan-bd-prem-fee').textContent = '-' + sym + premFee.toLocaleString();
-     document.getElementById('plan-bd-std-net').textContent = sym + stdNet.toLocaleString();
-     document.getElementById('plan-bd-prem-net').textContent = sym + premNet.toLocaleString();
+     document.getElementById('plan-bd-paid').textContent = fmt(amt);
+     document.getElementById('plan-bd-refund').textContent = fmt(refund);
+     document.getElementById('plan-bd-std-fee').textContent = fmtNeg(stdFee);
+     document.getElementById('plan-bd-prem-fee').textContent = fmtNeg(premFee);
+     document.getElementById('plan-bd-std-net').textContent = fmt(stdNet);
+     document.getElementById('plan-bd-prem-net').textContent = fmt(premNet);
    }
  }, 200);
  if (id === 's-ready') setTimeout(function(){ try{ runReadyScreen(); }catch(e){} }, 100);
@@ -4350,7 +4378,7 @@ function s2RunOCR(imageBase64, mediaType){
        // Show currency label based on amount size
        var lbl = document.getElementById('amt-currency-label');
        var currency = ocrData && ocrData.currency ? ocrData.currency : (parseFloat(d.amount) > 500 ? 'MXN' : 'USD');
-       if(lbl) lbl.textContent = '(' + currency + ')';
+       if(lbl) lbl.textContent = currency === 'MXN' ? '(MXN)' : '(USD)';
        window._currency = currency;
        window._amountCurrency = currency;
        window._lastOcrAmount = parseFloat(d.amount)||0;
@@ -5373,9 +5401,12 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  const insEl = document.getElementById('refund-insurance');
  const netEl = document.getElementById('refund-net');
  const cdtEl = document.getElementById('refund-cdt');
- if(paidEl) paidEl.textContent = '$' + amt.toLocaleString();
- if(insEl) insEl.textContent = '$' + refund.toLocaleString();
- if(netEl) netEl.textContent = '$' + net.toLocaleString();
+ var runCurr = window._amountCurrency || window._currency || 'USD';
+ var runCode = runCurr === 'MXN' ? 'MXN' : 'USD';
+ var runFmt = function(n){ return '$' + n.toLocaleString() + ' ' + runCode; };
+ if(paidEl) paidEl.textContent = runFmt(amt);
+ if(insEl) insEl.textContent = runFmt(refund);
+ if(netEl) netEl.textContent = runFmt(net);
  if(cdtEl) cdtEl.textContent = cdt;
 
  // Show agent analysis notes if available
@@ -9379,7 +9410,7 @@ window.runReceiptOCR = function(base64, mediaType) {
       window._lastOcrAmount = parseFloat(d.amount) || 0;
       window._currency = currency;
       window._amountCurrency = currency;
-      var lbl = document.getElementById('amt-currency-label'); if(lbl) lbl.textContent = '(' + currency + ')';
+      var lbl = document.getElementById('amt-currency-label'); if(lbl) lbl.textContent = currency === 'MXN' ? '(MXN)' : '(USD)';
     }
     if(d.procedures && Array.isArray(d.procedures)) {
       var procsEl = document.getElementById('rec-r-procs');
