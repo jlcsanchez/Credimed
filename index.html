@@ -2146,6 +2146,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </button>
  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">Free to start · We only get paid when you do</div>
 
+ <!-- Social proof -->
+
+ <div id="proc-social-proof" style="display:none;opacity:0;transition:opacity .5s;margin-top:14px;width:100%;max-width:300px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 14px;text-align:left">
+  <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.5">💡 <strong style="color:rgba(255,255,255,.7)">Most patients find $200–$800</strong> in recoverable refunds. Insurance often underpays without notice.</div>
+ </div>
+
  <!-- Share button — appears with CTA -->
 
  <div id="proc-share-row" style="display:none;opacity:0;transition:opacity .5s;margin-top:12px;width:100%;max-width:300px">
@@ -2677,8 +2683,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
  <!-- Prominent teal button -->
 
- <button class="btn-primary" style="background:var(--navy);color:white;margin-top:12px;width:100%;max-width:280px;box-shadow:0 8px 24px rgba(13,148,136,.4)" onclick="if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
- Go to my dashboard ->
+ <button class="btn-primary" style="background:var(--navy);color:white;margin-top:12px;width:100%;max-width:280px;box-shadow:0 8px 24px rgba(27,58,107,.4)" onclick="if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
+  Go to my dashboard →
+ </button>
+ <button onclick="window.startNewClaim&&window.startNewClaim()" style="margin-top:10px;width:100%;max-width:280px;height:44px;border-radius:12px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-size:13px;font-weight:600;cursor:pointer;display:block">
+  📄 Check another bill →
  </button>
  </div>
 </div>
@@ -5361,8 +5370,12 @@ function runProcessing() {
                  setTimeout(function(){
                    var ctaBtn=document.getElementById('proc-cta-btn');
                    if(ctaBtn){ctaBtn.style.display='flex';setTimeout(function(){ctaBtn.style.opacity='1';},50);}
-                   // Show share row
-                   setTimeout(function(){ if(window.showProcShare) window.showProcShare(); }, 600);
+                   // Show share row + social proof
+                   setTimeout(function(){
+                     if(window.showProcShare) window.showProcShare();
+                     var sp = document.getElementById('proc-social-proof');
+                     if(sp) { sp.style.display='block'; setTimeout(function(){ sp.style.opacity='1'; }, 100); }
+                   }, 600);
                  }, 5*120+200);
                },280);
              }
@@ -9571,7 +9584,8 @@ window.iqSkip = function() {
 window.shareResult = function(method) {
   var amt = document.getElementById('proc-big-number');
   var amtText = amt ? amt.textContent.trim() : 'money';
-  var msg = 'I just found out my insurance may owe me ' + amtText + '! Check if yours owes you too → credimed.us';
+  // Use the optimized viral message from ChatGPT
+  var msg = 'I just found out I may recover ' + amtText + ' from my insurance using Credimed. Check if yours owes you too → credimed.us';
 
   if(method === 'whatsapp') {
     window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
