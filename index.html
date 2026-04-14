@@ -331,8 +331,8 @@ SCREEN: STEP 4 - CONTRACT
 SCREEN: STEP 5 - PAYMENT
  */
 #s-step5{background:white}
-.pay-hero{background:var(--navy);padding:32px 20px 52px;text-align:center;flex-shrink:0;position:relative;z-index:2}
-.pay-amount{font-family:'Playfair Display',Georgia,serif;font-size:56px;font-weight:600;color:white;line-height:1}
+.pay-hero{background:var(--navy);padding:16px 20px 36px;text-align:center;flex-shrink:0;position:relative;z-index:2}
+.pay-amount{font-family:'Playfair Display',Georgia,serif;font-size:44px;font-weight:600;color:white;line-height:1}
 .pay-label{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px}
 .pay-body{flex:1;background:white;margin-top:-24px;border-radius:24px 24px 0 0;padding:24px 16px;overflow-y:auto;position:relative;z-index:1}
 .pay-summary{background:var(--teal-xlight);border:1px solid var(--teal-light);border-radius:12px;padding:14px 16px;margin-bottom:20px}
@@ -1445,7 +1445,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#475569"><span style="color:#27AE60;font-weight:700">✓</span> Standard processing time</div>
       <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#475569"><span style="color:#27AE60;font-weight:700">✓</span> Email updates on your claim</div>
      </div>
-     <button onclick="(function(){ document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});var s=document.getElementById('s-auth');s.classList.add('active');s.style.display='block'; try{window.initAuth&&window.initAuth('register');}catch(e){} })();" style="width:100%;height:46px;border-radius:12px;border:2px solid #27AE60;background:white;color:#27AE60;font-size:15px;font-weight:700;cursor:pointer">Start free →</button>
+     <button onclick="(function(){ document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});var s=document.getElementById('s-auth');s.classList.add('active');s.style.display='block'; try{window.initAuth&&window.initAuth('register');}catch(e){} })();" style="width:100%;height:46px;border-radius:12px;border:2px solid #27AE60;background:#27AE60;color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,.4)">Start free →</button>
     </div>
     <!-- Premium -->
     <div style="background:white;border:2px solid #27AE60;border-radius:16px;padding:20px;position:relative;overflow:hidden">
@@ -1683,7 +1683,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:800;color:white;margin-bottom:8px;line-height:1.2">Don't leave money<br>with your insurance</h2>
    <p style="font-size:14px;color:rgba(255,255,255,.6);margin-bottom:24px">Start your recovery in 3 minutes</p>
    <p style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:24px">No upfront cost · No risk · No win, no fee</p>
-   <button onclick="(function(){ document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});var s=document.getElementById('s-auth');s.classList.add('active');s.style.display='block'; try{window.initAuth&&window.initAuth('register');}catch(e){} })();" style="width:100%;max-width:320px;height:56px;border-radius:16px;border:none;background:#27AE60;color:white;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 8px 28px rgba(27,58,107,.45);background:#1F4E79">
+   <button onclick="(function(){ document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active');x.style.display='none';});var s=document.getElementById('s-auth');s.classList.add('active');s.style.display='block'; try{window.initAuth&&window.initAuth('register');}catch(e){} })();" style="width:100%;max-width:320px;height:56px;border-radius:16px;border:none;background:#27AE60;color:white;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 8px 32px rgba(39,174,96,.55)">
     Start my recovery →
    </button>
    <div style="margin-top:14px;font-size:11px;color:rgba(255,255,255,.35)">Standard: $0 upfront · Premium: $29 · Takes 3 minutes</div>
@@ -2933,7 +2933,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="screen" id="s-step5" style="background:var(--bg)">
  <div id="s5-form" style="display:flex;flex-direction:column;min-height:100vh">
  <div class="pay-hero">
- <div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:6px" id="s5-plan-label">Premium Fast-Track</div>
+ <div style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:2px" id="s5-plan-label">Premium Fast-Track</div>
  <div class="pay-amount" id="s5-amount">$29</div>
  <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;letter-spacing:.5px">IN US DOLLARS (USD)</div>
  <div class="pay-label">Secured by Stripe · Encrypted</div>
@@ -3267,6 +3267,22 @@ window._toUSD = function(n, currency) {
   n = parseFloat(n) || 0;
   return (currency === 'MXN' || window._amountCurrency === 'MXN') ? Math.round(n / window._MXN_RATE) : Math.round(n);
 };
+
+// ── Stripe redirect recovery ──────────────────────────────
+(function(){
+  try {
+    var p = new URLSearchParams(window.location.search);
+    if(p.get('payment_intent_client_secret')){
+      if(window.history) window.history.replaceState({}, '', window.location.pathname);
+      window.addEventListener('DOMContentLoaded', function(){
+        setTimeout(function(){
+          try{ initDashboard(); }catch(e){}
+          goTo('s-dashboard');
+        }, 400);
+      });
+    }
+  } catch(e){}
+})();
 
 function goTo(id, param) {
  try {
@@ -5062,6 +5078,11 @@ function paymentSuccess(){
   document.getElementById('s5-form').style.display='none';
   document.getElementById('s5-success').classList.add('show');
   try{launchConfetti();}catch(e){}
+  // Auto-advance to dashboard after 3 seconds
+  setTimeout(function(){
+    try{ initDashboard(); }catch(e){}
+    if(window.goTo) window.goTo('s-dashboard');
+  }, 3000);
   // Update plan labels
   var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   var planLbl = document.getElementById('s5-plan-label');
