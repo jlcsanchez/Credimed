@@ -3234,6 +3234,7 @@ function goTo(id, param) {
    var plan = window._confirmedPlan || window._selectedPlan || 'standard';
    var isPremium = plan === 'premium';
    var amt = window._toUSD(window._lastOcrAmount || (window.currentUser && window.currentUser.amount) || 0, window._amountCurrency || window._currency);
+   if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
    var refund = Math.round(amt * 0.75);
    var fee = isPremium ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
    var net = refund - (isPremium ? Math.round(refund * 0.10) : Math.round(refund * 0.15));
@@ -5328,7 +5329,7 @@ async function runRefundEstimate() {
  });
 
  // Get claim data
- const rawAmt = parseFloat(document.getElementById('s2-amount')?.value) || parseFloat(currentUser?.amount) || 850;
+ const rawAmt = parseFloat(document.getElementById('s2-amount')?.value) || parseFloat(currentUser?.amount) || 0;
  const amt = window._toUSD ? window._toUSD(rawAmt, window._amountCurrency || window._currency) : rawAmt;
  const proc = document.getElementById('s2-proc')?.value || currentUser?.procedure || 'Crown';
  const insurer = document.getElementById('s1-ins-provider')?.value ||
@@ -5525,7 +5526,7 @@ function runProcessing() {
  var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$0';
  var amtEl=document.getElementById('s2-amount'),procEl=document.getElementById('s2-proc');
  var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
- var rawAmt=parseFloat(amtEl&&amtEl.value)||parseFloat(currentUser&&currentUser.amount)||850;
+ var rawAmt=parseFloat(amtEl&&amtEl.value)||parseFloat(currentUser&&currentUser.amount)||0;
  var amt=window._toUSD?window._toUSD(rawAmt,window._amountCurrency||window._currency):rawAmt;
  var proc=(procEl&&procEl.value)||(currentUser&&currentUser.procedure)||'Crown';
  var insurer=(ins1&&ins1.value)||(ins2&&ins2.value)||(currentUser&&currentUser.insurer)||'Delta Dental';
@@ -5656,7 +5657,7 @@ function showRefundResultNow() {
  if(a) a.style.display = 'none';
  if(r) { r.style.display = 'flex'; }
  // populate with defaults
- const amt = parseFloat(document.getElementById('s2-amount')?.value) || 850;
+ const amt = parseFloat(document.getElementById('s2-amount')?.value) || parseFloat(window._lastOcrAmount) || 0;
  const refund = Math.round(amt * 0.75);
  const net = Math.round(amt - refund);
  const paidEl = document.getElementById('refund-paid');
