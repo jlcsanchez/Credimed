@@ -2056,31 +2056,84 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="screen" id="s-processing" style="background:linear-gradient(160deg,#0f172a 0%,#0d1f40 60%,#0f172a 100%);display:flex;flex-direction:column">
-<div id="proc-phase1" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;text-align:center">
- <div style="margin-bottom:18px;filter:drop-shadow(0 4px 20px rgba(13,148,136,.4))"><svg width="68" height="68" viewBox="0 0 72 72"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
- <div style="font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:700;color:white;margin-bottom:4px">Calculating your refund</div>
- <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:28px" id="proc-sub">Reviewing your coverage...</div>
- <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px">
- <div id="pc1" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)"><div id="pc1-circle" style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .4s,transform .3s"></div><div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Preparing ADA claim form</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc1-sub">Analyzing...</div></div><div id="pc1-check" style="opacity:0;font-size:18px;transition:opacity .3s"></div></div>
- <div id="pc2" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)"><div id="pc2-circle" style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .4s,transform .3s"></div><div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Attaching treatment details</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc2-sub">Analyzing...</div></div><div id="pc2-check" style="opacity:0;font-size:18px;transition:opacity .3s"></div></div>
- <div id="pc3" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)"><div id="pc3-circle" style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .4s,transform .3s"></div><div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Verifying CDT codes</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc3-sub">Analyzing...</div></div><div id="pc3-check" style="opacity:0;font-size:18px;transition:opacity .3s"></div></div>
- <div id="pc4" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px)"><div id="pc4-circle" style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .4s,transform .3s"></div><div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:white">Estimating your refund</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc4-sub">Analyzing...</div></div><div id="pc4-check" style="opacity:0;font-size:18px;transition:opacity .3s"></div></div>
+
+<!-- Phase 1: Finding your refund -->
+
+<div id="proc-phase1" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+ <div style="margin-bottom:24px">
+  <svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#1B3A6B"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#1B3A6B"/></svg>
+ </div>
+ <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:700;color:white;margin-bottom:6px">Finding your refund...</div>
+ <div style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:36px" id="proc-sub">Reviewing your coverage</div>
+
+ <!-- 3 simple steps — no technical language -->
+
+ <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:10px">
+  <div id="pc1" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;opacity:0;transition:opacity .5s,transform .5s;transform:translateY(10px)">
+   <div id="pc1-circle" style="width:32px;height:32px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;transition:all .4s"></div>
+   <div style="flex:1;text-align:left">
+    <div style="font-size:13px;font-weight:600;color:white">Coverage verified</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc1-sub">Checking your plan</div>
+   </div>
+   <div id="pc1-check" style="opacity:0;color:#4ade80;font-size:18px;transition:opacity .3s">✓</div>
+  </div>
+  <div id="pc2" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;opacity:0;transition:opacity .5s,transform .5s;transform:translateY(10px)">
+   <div id="pc2-circle" style="width:32px;height:32px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;transition:all .4s"></div>
+   <div style="flex:1;text-align:left">
+    <div style="font-size:13px;font-weight:600;color:white">Procedure matched</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc2-sub">Identifying your treatment</div>
+   </div>
+   <div id="pc2-check" style="opacity:0;color:#4ade80;font-size:18px;transition:opacity .3s">✓</div>
+  </div>
+  <div id="pc3" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;opacity:0;transition:opacity .5s,transform .5s;transform:translateY(10px)">
+   <div id="pc3-circle" style="width:32px;height:32px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;transition:all .4s"></div>
+   <div style="flex:1;text-align:left">
+    <div style="font-size:13px;font-weight:600;color:white">Calculating your refund</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px" id="pc3-sub">Estimating what you can recover</div>
+   </div>
+   <div id="pc3-check" style="opacity:0;color:#4ade80;font-size:18px;transition:opacity .3s">✓</div>
+  </div>
+  <!-- Hidden pc4 for compatibility -->
+  <div id="pc4" style="display:none"><div id="pc4-circle"></div><div id="pc4-sub"></div><div id="pc4-check"></div></div>
+ </div>
+
+ <!-- Trust reassurance during loading -->
+
+ <div style="margin-top:24px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+  <span style="font-size:11px;color:rgba(255,255,255,.3)">🔒 HIPAA protected</span>
+  <span style="font-size:11px;color:rgba(255,255,255,.3)">🔐 Encrypted</span>
+  <span style="font-size:11px;color:rgba(255,255,255,.3)">$0 upfront</span>
  </div>
 </div>
-<div id="proc-phase2" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
- <div style="font-size:34px;margin-bottom:14px;animation:popIn .5s cubic-bezier(.16,1,.3,1)"></div>
- <div style="font-size:13px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">We estimate you'll get back</div>
- <div id="proc-big-number" style="font-family:'Playfair Display',Georgia,serif;font-size:36px;font-weight:700;color:#93c5fd;line-height:1;margin-bottom:4px;transition:transform .25s ease;font-style:italic">Analyzing your claim...</div>
- <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:22px">from your insurance plan</div>
- <div style="width:100%;max-width:310px;display:flex;flex-direction:column;gap:7px;margin-bottom:20px">
- <div id="pb1" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(255,255,255,.05);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:13px;color:rgba(255,255,255,.5)">You paid</span><span style="font-size:13px;font-weight:700;color:white" id="pb1-val">—</span></div>
- <div id="pb2" style="display:flex;justify-content:space-between;padding:9px 13px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:13px;color:#93c5fd">Insurance reimburses (~75%)</span><span style="font-size:13px;font-weight:700;color:#93c5fd" id="pb2-val">—</span></div>
- <div id="pb3" style="display:none"></div>
- <div id="pb4" style="display:none"></div>
- <div id="proc-cdt-row" style="display:flex;justify-content:space-between;padding:7px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;opacity:0;transition:opacity .4s"><span style="font-size:11px;color:rgba(255,255,255,.3)">CDT Code assigned</span><span style="font-size:11px;font-weight:700;color:#93c5fd;background:rgba(13,148,136,.2);padding:1px 8px;border-radius:5px" id="proc-cdt-val">D2750</span></div>
+
+<!-- Phase 2: Result -->
+
+<div id="proc-phase2" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;text-align:center">
+ <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px">Here's what we found</div>
+ <div id="proc-big-number" style="font-family:'Playfair Display',Georgia,serif;font-size:58px;font-weight:800;color:#93c5fd;line-height:1;margin-bottom:6px;transition:transform .25s ease">Analyzing...</div>
+ <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:6px">estimated refund range</div>
+ <div style="font-size:11px;color:rgba(255,255,255,.25);margin-bottom:24px" id="proc-basis">Based on your coverage and procedure</div>
+
+ <!-- Simple 2-row breakdown -->
+
+ <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+  <div id="pb1" style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:10px;opacity:0;transition:opacity .4s">
+   <span style="font-size:13px;color:rgba(255,255,255,.5)">You paid</span>
+   <span style="font-size:13px;font-weight:700;color:white" id="pb1-val">—</span>
+  </div>
+  <div id="pb2" style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(27,58,107,.3);border:1px solid rgba(147,197,253,.2);border-radius:10px;opacity:0;transition:opacity .4s">
+   <span style="font-size:13px;color:#93c5fd">Insurance covers (~75%)</span>
+   <span style="font-size:13px;font-weight:700;color:#93c5fd" id="pb2-val">—</span>
+  </div>
+  <div id="pb3" style="display:none"></div>
+  <div id="pb4" style="display:none"></div>
+  <div id="proc-cdt-row" style="display:none"><span id="proc-cdt-val">D2750</span></div>
  </div>
- <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:310px;background:var(--navy);font-size:16px;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.45);display:none;opacity:0;transition:opacity .5s" onclick="window.goTo&&window.goTo('s-plan')">Yes, start my claim →</button>
- <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">15% only when you get paid · No win, no fee</div>
+
+ <button class="btn-primary" id="proc-cta-btn" style="width:100%;max-width:300px;background:var(--navy);font-size:16px;height:52px;display:none;opacity:0;transition:opacity .5s" onclick="window.goTo&&window.goTo(window._docUploads&&window._docUploads['insurance']?'s-plan':'s-insurance-quick')">
+  Yes — start my claim →
+ </button>
+ <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.25)">No upfront cost · We only win when you win</div>
 </div>
 </div>
 
@@ -2617,22 +2670,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <div class="dash-greeting-time" id="dash-time">Good morning </div>
  <div class="dash-greeting-name" id="dash-name-display">Welcome!</div>
- <div class="dash-stat-card" style="padding:10px 14px;margin-top:8px">
- <div><div class="stat-card-label">Estimated refund</div><div class="stat-card-val" id="dash-potential">--</div><div class="stat-card-sub" id="dash-insurer-sub">Submit a claim to see your estimate</div></div>
- <div><div class="stat-card-pct">75%</div><div class="stat-card-pct-lbl">Coverage</div></div>
+ <div class="dash-stat-card" style="padding:12px 16px;margin-top:8px;background:linear-gradient(135deg,#0d1f40,#1B3A6B)">
+ <div><div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Estimated refund</div><div style="font-size:28px;font-weight:800;color:#93c5fd;font-family:'Playfair Display',Georgia,serif" id="dash-potential">--</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px" id="dash-insurer-sub">Upload your receipt to see your estimate</div></div>
+ <div style="text-align:right"><div style="font-size:22px;font-weight:800;color:rgba(255,255,255,.6)">75%</div><div style="font-size:10px;color:rgba(255,255,255,.35)">avg coverage</div></div>
  </div>
 
  </div>
  <div class="dash-body">
 
-<button class="btn-new-claim" data-oc="startNewClaim()" onclick="window.startNewClaim&&window.startNewClaim()"> Submit New Claim</button>
+<button class="btn-new-claim" onclick="window.startNewClaim&&window.startNewClaim()" style="background:var(--navy)">📄 Upload a new receipt →</button>
 
 <div class="sec-label">Active Claim <a>View details</a></div>
 <div class="active-claim-card">
- <div class="active-claim-head"><h3> <span id="dash-claim-title">No active claim</span></h3><div class="active-tag">Active</div></div>
+ <div class="active-claim-head"><h3> <span id="dash-claim-title">No claim yet — upload your receipt to start</span></h3><div class="active-tag">Active</div></div>
  <div class="active-claim-body">
  <div class="claim-meta">
- <div><div class="claim-procedure" id="dash-procedure">--</div><div class="claim-dentist" id="dash-dentist">Submit your first claim to get started</div></div>
+ <div><div class="claim-procedure" id="dash-procedure" style="color:#94a3b8;font-style:italic">—</div><div class="claim-dentist" id="dash-dentist" style="color:#94a3b8">We handle everything once you upload</div></div>
  <div><div class="claim-amount-lbl">Paid</div><div class="claim-amount-val" id="dash-amount">--</div></div>
  </div>
  <div class="tracker">
@@ -2653,7 +2706,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  </div>
  <div style="background:#fffbeb;border-radius:8px;padding:8px 12px;margin:10px 0;font-size:12px;color:#92400e;display:flex;align-items:center;gap:6px">
- <span>⏳</span><span><strong>We are working on your claim</strong> · Est. 5-10 business days · Updates via WhatsApp</span>
+ <span>⏳</span><span><strong>We are working on your claim</strong> · Est. 2-6 weeks · We'll text you updates</span>
  </div>
  <div class="claim-footer"><span class="claim-insurer" id="dash-ins-name"></span><span class="claim-view-btn">View -></span><span class="claim-date">Mar 16, 2026</span></div>
  </div>
