@@ -3466,6 +3466,9 @@ function startNewClaim() {
   // Reset plan and processing flags for new claim
   window._selectedPlan = 'standard';
   window._skipProcessingAnim = false;
+  window._lastOcrAmount = 0;
+  window._amountCurrency = 'USD';
+  window._currency = 'USD';
 }
 function doLogout() {
  currentUser = null;
@@ -3884,7 +3887,8 @@ function s1TryEnableContinue(){
  // Receipt is "ready" if explicitly confirmed OR if fields are filled (allow submit without banner click)
  var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
  var proc = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
- var amount = parseFloat(document.getElementById('s2-amount') && document.getElementById('s2-amount').value) || 0;
+ var amount = parseFloat(document.getElementById('s2-amount') && document.getElementById('s2-amount').value) || window._lastOcrAmount || 0;
+ window._lastOcrAmount = amount; // keep in sync
  var receiptFieldsOk = !!(dentist && proc && amount > 0);
 
  // Insurance ready: explicitly confirmed OR fields filled
@@ -5560,8 +5564,9 @@ function runProcessing() {
  var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$0';
  var amtEl=document.getElementById('s2-amount'),procEl=document.getElementById('s2-proc');
  var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
- var rawAmt=parseFloat(amtEl&&amtEl.value)||parseFloat(currentUser&&currentUser.amount)||0;
+ var rawAmt=parseFloat(amtEl&&amtEl.value)||window._lastOcrAmount||parseFloat(currentUser&&currentUser.amount)||0;
  var amt=window._toUSD?window._toUSD(rawAmt,window._amountCurrency||window._currency):rawAmt;
+ if(!amt||amt<=0){ console.warn('[Credimed] No amount — aborting runProcessing'); return; }
  var proc=(procEl&&procEl.value)||(currentUser&&currentUser.procedure)||'Crown';
  var insurer=(ins1&&ins1.value)||(ins2&&ins2.value)||(currentUser&&currentUser.insurer)||'Delta Dental';
  var cdtMap={'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
