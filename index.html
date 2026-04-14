@@ -3271,7 +3271,7 @@ function goTo(id, param) {
  if (id === 's-plan-confirm') setTimeout(function(){
    var plan = window._confirmedPlan || window._selectedPlan || 'standard';
    var isPremium = plan === 'premium';
-   var amt = window._toUSD(window._lastOcrAmount || (window.currentUser && window.currentUser.amount) || 0, window._amountCurrency || window._currency);
+   var amt = window._toUSD(window._lastOcrAmount || 0, window._amountCurrency || window._currency);
    if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
    var currency2 = window._amountCurrency || window._currency || 'USD';
    var currLabel2 = (currency2 === 'MXN') ? 'MXN ' : '';
@@ -3302,7 +3302,7 @@ function goTo(id, param) {
  }, 200);
 
  if (id === 's-plan') setTimeout(function(){
-   var amt = window._toUSD(window._lastOcrAmount || (window.currentUser && window.currentUser.amount) || 0, window._amountCurrency || window._currency);
+   var amt = window._toUSD(window._lastOcrAmount || 0, window._amountCurrency || window._currency);
    var refund = Math.round(amt * 0.75);
    var stdFee = Math.round(refund * 0.15);
    var premFee = Math.round(refund * 0.10) + 29;
@@ -3481,6 +3481,8 @@ function startNewClaim() {
   window._lastOcrAmount = 0;
   window._amountCurrency = 'USD';
   window._currency = 'USD';
+  window._CLAIM_FETCH_SENT = false;
+  if(window.currentUser){ window.currentUser.amount = 0; window.currentUser.amountCurrency = 'USD'; }
 }
 function doLogout() {
  currentUser = null;
@@ -3899,7 +3901,7 @@ function s1TryEnableContinue(){
  // Receipt is "ready" if explicitly confirmed OR if fields are filled (allow submit without banner click)
  var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
  var proc = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
- var amount = parseFloat(document.getElementById('s2-amount') && document.getElementById('s2-amount').value) || window._lastOcrAmount || 0;
+ var amount = window._lastOcrAmount || 0; // only OCR amount
  window._lastOcrAmount = amount; // keep in sync
  var receiptFieldsOk = !!(dentist && proc && amount > 0);
 
@@ -5590,12 +5592,17 @@ function runProcessing() {
  if(currentUser){currentUser.cdtCode=cdt;currentUser.estimatedRefund=refund;}
  var sub=document.getElementById('proc-sub');if(sub)sub.textContent='Analyzing your '+insurer+' PPO claim...';
 
+ // ── Update proc-big-number with OCR-based refund ──
+ var bnEl=document.getElementById('proc-big-number');
+ if(bnEl){ bnEl.textContent='$'+refund.toLocaleString(); }
+
  // -- Save claim to AWS backend ---------------------------------
- // Singleton: only ONE claim save per session, ever
+ // Singleton: only ONE API call per session, but UI always updates
  if(window._CLAIM_FETCH_SENT === true){
-   console.log('Claim already sent this session - blocked');
-   return;
+   console.log('Claim already sent — skipping API, UI already updated');
+   // Still run the processing animation
  }
+ if(window._CLAIM_FETCH_SENT !== true) {
  window._CLAIM_FETCH_SENT = true;
  console.log('Sending claim to API - first and only time');
  (function saveClaim(){
@@ -5628,7 +5635,9 @@ function runProcessing() {
    })
    .catch(function(err){ console.warn('Claim save failed:', err); });
  })();
+ } // end if(!_CLAIM_FETCH_SENT)
  // -------------------------------------------------------------
+ // Animation always runs regardless of API call
  var steps=[{id:'pc1',done:'ADA form ready '},{id:'pc2',done:proc+' -- '+cdt+' attached '},{id:'pc3',done:'PPO out-of-network verified '},{id:'pc4',done:'Refund $'+refund.toLocaleString()+' estimated '}];
  var svgCheck = '<svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M1.5 6L6 10.5L14.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
  steps.forEach(function(s,i){
