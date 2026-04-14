@@ -3271,7 +3271,9 @@ function goTo(id, param) {
  if (id === 's-plan-confirm') setTimeout(function(){
    var plan = window._confirmedPlan || window._selectedPlan || 'standard';
    var isPremium = plan === 'premium';
-   var amt = window._toUSD(window._lastOcrAmount || 0, window._amountCurrency || window._currency);
+   var currency = window._amountCurrency || window._currency || 'USD';
+   var sym = currency === 'MXN' ? 'MXN $' : '$';
+   var amt = window._lastOcrAmount || 0;
    if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
    var currency2 = window._amountCurrency || window._currency || 'USD';
    var currLabel2 = (currency2 === 'MXN') ? 'MXN ' : '';
@@ -3302,7 +3304,9 @@ function goTo(id, param) {
  }, 200);
 
  if (id === 's-plan') setTimeout(function(){
-   var amt = window._toUSD(window._lastOcrAmount || 0, window._amountCurrency || window._currency);
+   var currency2 = window._amountCurrency || window._currency || 'USD';
+   var sym = currency2 === 'MXN' ? 'MXN $' : '$';
+   var amt = window._lastOcrAmount || 0;
    var refund = Math.round(amt * 0.75);
    var stdFee = Math.round(refund * 0.15);
    var premFee = Math.round(refund * 0.10) + 29;
@@ -5385,7 +5389,7 @@ async function runRefundEstimate() {
  const rawAmt = window._lastOcrAmount || 0;
  if (!rawAmt) { console.warn('[Credimed] No OCR amount — aborting runRefundEstimate'); return; }
  const currency = window._amountCurrency || window._currency || 'USD';
- const amt = window._toUSD ? window._toUSD(rawAmt, currency) : rawAmt;
+ const amt = rawAmt; // use raw OCR amount, no conversion
  const currLabel = currency === 'MXN' ? 'MXN ' : '';
  const proc = document.getElementById('s2-proc')?.value || currentUser?.procedure || 'Crown';
  const insurer = document.getElementById('s1-ins-provider')?.value ||
@@ -5584,7 +5588,9 @@ function runProcessing() {
  var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
  var rawAmt = window._lastOcrAmount || 0;
  if(!rawAmt){ console.warn('[Credimed] No OCR amount — aborting runProcessing'); return; }
- var amt=window._toUSD?window._toUSD(rawAmt,window._amountCurrency||window._currency):rawAmt;
+ var currency=window._amountCurrency||window._currency||'USD';
+ var currLabel=currency==='MXN'?'MXN $':'$';
+ var amt=rawAmt;
  var proc=(procEl&&procEl.value)||(currentUser&&currentUser.procedure)||'Crown';
  var insurer=(ins1&&ins1.value)||(ins2&&ins2.value)||(currentUser&&currentUser.insurer)||'Delta Dental';
  var cdtMap={'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
@@ -8769,8 +8775,13 @@ window.s1Submit = function s1Submit() {
 window.runProcessingDone = function() {
 var ph1=document.getElementById('proc-phase1'),ph2=document.getElementById('proc-phase2');
 if(ph1)ph1.style.display='none';if(ph2)ph2.style.display='flex';
-var refund=(currentUser&&currentUser.estimatedRefund)||637;
-var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$'+refund.toLocaleString();
+var rawAmt = window._lastOcrAmount || 0;
+var currency = window._amountCurrency || window._currency || 'USD';
+var currLabel = currency === 'MXN' ? 'MXN $' : '$';
+var amt = rawAmt;
+var refund = amt > 0 ? Math.round(amt * 0.75) : 0;
+if(currentUser) currentUser.estimatedRefund = refund;
+var bn=document.getElementById('proc-big-number');if(bn)bn.textContent= refund > 0 ? currLabel+refund.toLocaleString() : '--';
 ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.opacity='1';});
 var btn=document.getElementById('proc-cta-btn');
 if(btn){btn.style.display='block';btn.style.opacity='1';}
