@@ -3273,6 +3273,8 @@ function goTo(id, param) {
    var isPremium = plan === 'premium';
    var amt = window._toUSD(window._lastOcrAmount || (window.currentUser && window.currentUser.amount) || 0, window._amountCurrency || window._currency);
    if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
+   var currency2 = window._amountCurrency || window._currency || 'USD';
+   var currLabel2 = (currency2 === 'MXN') ? 'MXN ' : '';
    var refund = Math.round(amt * 0.75);
    var fee = isPremium ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
    var net = refund - (isPremium ? Math.round(refund * 0.10) : Math.round(refund * 0.15));
@@ -5377,8 +5379,12 @@ async function runRefundEstimate() {
  });
 
  // Get claim data
- const rawAmt = parseFloat(document.getElementById('s2-amount')?.value) || parseFloat(currentUser?.amount) || 0;
- const amt = window._toUSD ? window._toUSD(rawAmt, window._amountCurrency || window._currency) : rawAmt;
+ // Only use OCR-detected amount — never fallback to stale session data
+ const rawAmt = window._lastOcrAmount || 0;
+ if (!rawAmt) { console.warn('[Credimed] No OCR amount — aborting runRefundEstimate'); return; }
+ const currency = window._amountCurrency || window._currency || 'USD';
+ const amt = window._toUSD ? window._toUSD(rawAmt, currency) : rawAmt;
+ const currLabel = currency === 'MXN' ? 'MXN ' : '';
  const proc = document.getElementById('s2-proc')?.value || currentUser?.procedure || 'Crown';
  const insurer = document.getElementById('s1-ins-provider')?.value ||
  document.getElementById('s1-m-provider')?.value ||
@@ -5483,9 +5489,9 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  const insEl = document.getElementById('refund-insurance');
  const netEl = document.getElementById('refund-net');
  const cdtEl = document.getElementById('refund-cdt');
- if(paidEl) paidEl.textContent = '$' + amt.toLocaleString();
- if(insEl) insEl.textContent = '$' + refund.toLocaleString();
- if(netEl) netEl.textContent = '$' + net.toLocaleString();
+ if(paidEl) paidEl.textContent = currLabel + '$' + amt.toLocaleString();
+ if(insEl) insEl.textContent = currLabel + '$' + refund.toLocaleString();
+ if(netEl) netEl.textContent = currLabel + '$' + net.toLocaleString();
  if(cdtEl) cdtEl.textContent = cdt;
 
  // Show agent analysis notes if available
@@ -5518,7 +5524,7 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  bigNum.style.transform = 'scale(1.08)';
  setTimeout(() => bigNum.style.transform = 'scale(1)', 200);
  }
- bigNum.textContent = '$' + Math.round(current).toLocaleString();
+ bigNum.textContent = currLabel + '$' + Math.round(current).toLocaleString();
  }, interval);
  bigNum.style.transition = 'transform .2s ease';
  }
@@ -5574,9 +5580,9 @@ function runProcessing() {
  var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$0';
  var amtEl=document.getElementById('s2-amount'),procEl=document.getElementById('s2-proc');
  var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
- var rawAmt=parseFloat(amtEl&&amtEl.value)||window._lastOcrAmount||parseFloat(currentUser&&currentUser.amount)||0;
+ var rawAmt = window._lastOcrAmount || 0;
+ if(!rawAmt){ console.warn('[Credimed] No OCR amount — aborting runProcessing'); return; }
  var amt=window._toUSD?window._toUSD(rawAmt,window._amountCurrency||window._currency):rawAmt;
- if(!amt||amt<=0){ console.warn('[Credimed] No amount — aborting runProcessing'); return; }
  var proc=(procEl&&procEl.value)||(currentUser&&currentUser.procedure)||'Crown';
  var insurer=(ins1&&ins1.value)||(ins2&&ins2.value)||(currentUser&&currentUser.insurer)||'Delta Dental';
  var cdtMap={'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
