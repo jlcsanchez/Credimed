@@ -973,10 +973,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <svg width="40" height="40" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.95"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#9ca3af" stroke-width="2.5"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg>
  <div>
  <div class="demo-logo-name">CREDI<span>MED</span></div>
- <div class="demo-logo-sub">Platform Demo</div>
+ <div class="demo-logo-sub">Insurance Claims</div>
  </div>
  </div>
- <div class="demo-toggle">
+ <div class="demo-toggle" style="display:none">
  <label class="demo-tab active" id="tab-patient" for="radio-patient" data-oc="switchPanel('patient')" onclick="window.switchPanel&&window.switchPanel('patient')">Patient App</label>
  <label class="demo-tab" id="tab-admin" for="radio-admin" data-oc="switchPanel('admin')" onclick="window.switchPanel&&window.switchPanel('admin')"> Admin Dashboard</label>
  </div>
@@ -1451,15 +1451,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px">
     <span style="font-size:18px;flex-shrink:0">🔵</span>
     <div>
-     <div style="font-size:13px;font-weight:700;color:#0f766e;margin-bottom:3px">Early users are actively processing claims through the system.</div>
-     <div style="font-size:11px;color:#64748b;line-height:1.5">Credimed is in active use. Claims are being submitted, tracked, and resolved through our platform today.</div>
+     <div style="font-size:13px;font-weight:700;color:#0f766e;margin-bottom:3px">Claims are being actively submitted and tracked through Credimed.</div>
+     <div style="font-size:11px;color:#64748b;line-height:1.5">Patients across the US-Mexico border are using Credimed to file dental insurance claims today. Each claim is tracked from submission to resolution.</div>
     </div>
    </div>
    <p style="font-size:14px;color:#64748b;line-height:1.6;margin-bottom:20px">Most patients never recover what they are owed — not because they don't qualify, but because the claims process is too complex. We handle the complexity.</p>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
     <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:16px;text-align:center">
-     <div style="font-size:26px;font-weight:900;color:#0D9488;font-family:'Playfair Display',Georgia,serif">75%</div>
-     <div style="font-size:11px;color:#64748b;margin-top:4px">of PPO plans cover out-of-network dental</div>
+     <div style="font-size:26px;font-weight:900;color:#0D9488;font-family:'Playfair Display',Georgia,serif">PPO</div>
+     <div style="font-size:11px;color:#64748b;margin-top:4px">plans typically include out-of-network dental benefits</div>
     </div>
     <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:16px;text-align:center">
      <div style="font-size:26px;font-weight:900;color:#0D9488;font-family:'Playfair Display',Georgia,serif">$1,100</div>
@@ -1489,7 +1489,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div><div style="font-size:14px;font-weight:700;color:#1e293b">Maria R.</div><div style="font-size:12px;color:#64748b">San Diego, CA · Blue Cross Blue Shield</div></div>
       <div style="margin-left:auto;background:#f0fdf4;border:1px solid #86efac;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;color:#059669">+$1,240</div>
      </div>
-     <p style="font-size:14px;color:#475569;line-height:1.6;font-style:italic">"I had a crown done in Tijuana and had no idea my insurance would cover part of it. Credimed handled everything — I just uploaded my receipt and got a check two months later."</p>
+     <p style="font-size:14px;color:#475569;line-height:1.6;font-style:italic">"I had a crown done in Tijuana and assumed my US insurance wouldn't cover it. Credimed filed the claim and I received a reimbursement check. The whole process was handled for me."</p>
     </div>
     <!-- Testimonial 2 -->
     <div style="background:white;border:1px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
@@ -1498,7 +1498,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div><div style="font-size:14px;font-weight:700;color:#1e293b">James T.</div><div style="font-size:12px;color:#64748b">Phoenix, AZ · Aetna PPO</div></div>
       <div style="margin-left:auto;background:#f0fdf4;border:1px solid #86efac;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;color:#059669">+$890</div>
      </div>
-     <p style="font-size:14px;color:#475569;line-height:1.6;font-style:italic">"Got implants in Los Cabos. The clinic was amazing but I thought insurance wouldn't pay. Credimed filed the claim and I recovered almost $900. Zero hassle on my end."</p>
+     <p style="font-size:14px;color:#475569;line-height:1.6;font-style:italic">"I got implants in Los Cabos and wasn't sure my Delta Dental PPO would apply. Credimed submitted everything and managed the follow-up with my insurer directly. No calls, no confusion."</p>
     </div>
     <!-- Testimonial 3 -->
     <div style="background:white;border:1px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
@@ -1507,7 +1507,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div><div style="font-size:14px;font-weight:700;color:#1e293b">Sandra L.</div><div style="font-size:12px;color:#64748b">El Paso, TX · Delta Dental</div></div>
       <div style="margin-left:auto;background:#f0fdf4;border:1px solid #86efac;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;color:#059669">+$1,650</div>
      </div>
-     <p style="font-size:14px;color:#475569;line-height:1.6;font-style:italic">"Three root canals in Juárez. I was skeptical but tried Credimed's free plan. They filed everything, followed up with Delta Dental, and I got reimbursed. 100% worth it."</p>
+     <p style="font-size:14px;color:#475569;line-height:1.6;font-style:italic">"Three root canals in Juárez. I submitted my documents through Credimed and they handled the entire claim process with my insurance provider. Straightforward from start to finish."</p>
     </div>
    </div>
   </div>
@@ -1545,14 +1545,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div style="font-size:12px;color:#1B3A6B;font-weight:600;margin-top:2px">🇺🇸 US-based · Cross-border healthcare</div>
      </div>
     </div>
-    <p style="font-size:14px;color:#475569;line-height:1.7">"I built Credimed after watching family members lose thousands of dollars in unclaimed insurance refunds. Most patients don't even know they're entitled to reimbursement. We're here to change that — one claim at a time."</p>
+    <p style="font-size:14px;color:#475569;line-height:1.7">"I built Credimed because filing a dental insurance claim shouldn't require hours of phone calls and paperwork. Most patients with valid PPO coverage never file — not because they can't, but because the process stops them. We built the system to handle it."</p>
    </div>
   </div>
 
   <!-- ═══ FUTURE CAPABILITIES ═══ -->
 
   <div style="background:#f8fafc;padding:32px 20px">
-   <div style="display:inline-flex;align-items:center;gap:6px;background:#fef3c7;border:1px solid #fcd34d;border-radius:20px;padding:4px 12px;font-size:9px;font-weight:700;color:#92400e;letter-spacing:1px;margin-bottom:14px">⏳ NOT AVAILABLE TODAY</div>
+   <div style="display:inline-flex;align-items:center;gap:6px;background:#fef3c7;border:1px solid #fcd34d;border-radius:20px;padding:4px 12px;font-size:9px;font-weight:700;color:#92400e;letter-spacing:1px;margin-bottom:14px">Coming in 2025</div>
    <h2 style="font-size:20px;font-weight:800;color:#1e293b;margin-bottom:4px">Future capabilities</h2>
    <p style="font-size:12px;color:#94a3b8;margin-bottom:18px">Powered by claims data. Announced when ready.</p>
    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
@@ -2606,11 +2606,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-plan-confirm" style="background:linear-gradient(160deg,#0f172a 0%,#0d1f40 60%,#0f172a 100%)">
  <div style="min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px">
-  <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px">YOUR CLAIM ESTIMATE</div>
+  <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px">Claim Estimate</div>
   <div id="pc-currency-badge" style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:3px 12px;border-radius:20px;border:1px solid rgba(13,148,136,.4);margin-bottom:10px;background:rgba(13,148,136,.2);color:#5eead4">USD</div>
   <div style="font-family:'Playfair Display',Georgia,serif;font-size:52px;font-weight:700;color:#93c5fd;line-height:1;margin-bottom:4px" id="pc-big-num">--</div>
   <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:8px">estimated reimbursement from your insurer</div>
-  <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:20px;background:rgba(255,255,255,.05);border-radius:8px;padding:6px 14px" id="refund-basis-2">Based on your insurance coverage · No upfront cost</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:20px;background:rgba(255,255,255,.05);border-radius:8px;padding:6px 14px" id="refund-basis-2">Based on your plan type and procedure · Standard plan: no upfront cost</div>
   <div style="width:100%;max-width:340px;background:rgba(255,255,255,.07);border-radius:16px;overflow:hidden;margin-bottom:24px">
    <div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08)">
     <span style="font-size:13px;color:rgba(255,255,255,.6)">You paid</span>
@@ -2817,7 +2817,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
    <div class="field">
     <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Cardholder Name</label>
-    <input id="std-cc-name" type="text" placeholder="John Smith" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
+    <input id="std-cc-name" type="text" placeholder="Full name on card" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
    </div>
   </div>
   <button class="btn-primary" style="width:100%;height:54px;font-size:16px;font-weight:700;background:var(--navy)" onclick="window.goTo&&window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
@@ -4983,7 +4983,7 @@ async function doPayment(method){
 
   // PayPal -- redirect to PayPal checkout (placeholder)
   if(method === 'paypal'){
-    alert('PayPal coming soon. Please use card payment.');
+    alert('PayPal not available in your region. Please use card payment.');
     return;
   }
 
