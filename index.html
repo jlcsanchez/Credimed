@@ -1646,12 +1646,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="margin-top:8px"><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:4px">Procedures</div><div id="rq-r-procs" style="display:flex;flex-wrap:wrap;gap:4px"></div></div>
    </div>
 
+   <!-- Trust moment (shown after upload) -->
+
+   <div id="rq-trust-moment" style="display:none;background:rgba(5,150,105,.12);border:1px solid rgba(5,150,105,.3);border-radius:14px;padding:12px 14px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 5v6c0 5.25 3.5 10.14 8 11.34C16.5 21.14 20 16.25 20 11V5l-8-3z" fill="#059669" opacity=".3"/><path d="M12 2L4 5v6c0 5.25 3.5 10.14 8 11.34C16.5 21.14 20 16.25 20 11V5l-8-3z" stroke="#059669" stroke-width="1.5" fill="none"/><path d="M9 12l2 2 4-4" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+     <span style="font-size:13px;font-weight:700;color:#34d399">Your file has been securely received</span>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+     <span style="font-size:11px;color:rgba(255,255,255,.5)">🔒 HIPAA protected</span>
+     <span style="font-size:11px;color:rgba(255,255,255,.5)">🔐 Encrypted</span>
+     <span style="font-size:11px;color:rgba(255,255,255,.5)">$0 upfront</span>
+    </div>
+   </div>
+
    <!-- CTA -->
 
    <button id="rq-continue-btn" onclick="window.rqContinue&&window.rqContinue()" disabled style="width:100%;height:54px;border-radius:16px;border:none;background:#94a3b8;color:white;font-size:16px;font-weight:700;cursor:not-allowed;margin-bottom:12px">
     See my estimate →
    </button>
-   <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.35)">Takes less than 30 seconds · No account needed yet</div>
+   <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.35)">No credit card required · Cancel anytime</div>
   </div>
 
   <input type="file" id="rq-file-input" accept="*/*" style="display:none" onchange="window.rqHandleFile&&window.rqHandleFile(this)">
@@ -2192,7 +2206,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <button class="btn-primary" style="width:100%;background:var(--navy)" onclick="window.goTo&&window.goTo(window._docUploads&&window._docUploads['insurance']?'s-plan':'s-insurance-quick')">
  Yes, start my claim →
  </button>
- <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.3);text-align:center">15% commission · Only when you get paid</div>
+ <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.3);text-align:center">No upfront cost · We only win when you win</div>
 </div>
 
  </div>
@@ -2241,6 +2255,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    Choose my plan →
   </button>
   <div style="text-align:center"><button onclick="window.iqSkip&&window.iqSkip()" style="background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer;text-decoration:underline">Skip for now →</button></div>
+  <div style="margin-top:16px;background:#EFF6FF;border:1px solid #DBEAFE;border-radius:12px;padding:10px 14px;display:flex;gap:12px;flex-wrap:wrap">
+   <span style="font-size:11px;color:#1B3A6B;font-weight:600">🔒 HIPAA compliant</span>
+   <span style="font-size:11px;color:#1B3A6B;font-weight:600">🔐 Encrypted storage</span>
+   <span style="font-size:11px;color:#1B3A6B;font-weight:600">🚫 Never sold</span>
+  </div>
  </div>
  <input type="file" id="iq-file-input" accept="image/*" style="display:none" onchange="window.iqHandleFile&&window.iqHandleFile(this)">
 </div>
@@ -2300,9 +2319,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-plan-confirm" style="background:linear-gradient(160deg,#0f172a 0%,#0d1f40 60%,#0f172a 100%)">
  <div style="min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px">
-  <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px">YOUR REFUND BREAKDOWN</div>
+  <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px">HERE'S WHAT WE FOUND</div>
   <div style="font-family:'Playfair Display',Georgia,serif;font-size:52px;font-weight:700;color:#93c5fd;line-height:1;margin-bottom:4px" id="pc-big-num">--</div>
-  <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:28px">estimated from your insurance plan</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:8px">estimated refund range</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:20px;background:rgba(255,255,255,.05);border-radius:8px;padding:6px 14px" id="refund-basis-2">Based on your coverage and procedure</div>
   <div style="width:100%;max-width:340px;background:rgba(255,255,255,.07);border-radius:16px;overflow:hidden;margin-bottom:24px">
    <div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08)">
     <span style="font-size:13px;color:rgba(255,255,255,.6)">You paid</span>
@@ -2325,9 +2345,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <span style="font-size:11px;color:rgba(255,255,255,.35)" id="pc-plan-note">Standard · 15% only after you get paid · No win, no fee</span>
   </div>
   <button class="btn-primary" style="width:100%;max-width:340px;background:var(--navy);font-size:16px;font-weight:700;height:54px;box-shadow:0 8px 28px rgba(13,148,136,.4)" onclick="if(window.goTo)window.goTo('s-step3')">
-   Agree & continue to sign →
+   I agree — start my claim →
   </button>
-  <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,.3);cursor:pointer" onclick="if(window.goTo)window.goTo('s-plan')">← Change plan</div>
+  <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.3);text-align:center">No upfront cost · Cancel anytime · HIPAA protected</div>
+  <div style="margin-top:8px;font-size:12px;color:rgba(255,255,255,.3);cursor:pointer;text-align:center" onclick="if(window.goTo)window.goTo('s-plan')">← Change plan</div>
  </div>
 </div>
 
@@ -2632,7 +2653,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  </div>
  <div style="background:#fffbeb;border-radius:8px;padding:8px 12px;margin:10px 0;font-size:12px;color:#92400e;display:flex;align-items:center;gap:6px">
- <span>⏳</span><span><strong>Awaiting insurer response</strong> · Est. 5-10 business days · Next update via WhatsApp</span>
+ <span>⏳</span><span><strong>We are working on your claim</strong> · Est. 5-10 business days · Updates via WhatsApp</span>
  </div>
  <div class="claim-footer"><span class="claim-insurer" id="dash-ins-name"></span><span class="claim-view-btn">View -></span><span class="claim-date">Mar 16, 2026</span></div>
  </div>
@@ -9328,15 +9349,18 @@ window.rqRunOCR = function(base64, mediaType) {
     // Mark receipt as done in full flow
     window._docUploads = window._docUploads || {};
     window._docUploads['receipt'] = window._rqFile;
-    // Enable continue
+    // Show trust moment + enable continue
+    var trustEl = document.getElementById('rq-trust-moment');
+    if(trustEl) trustEl.style.display = 'block';
     var btn = document.getElementById('rq-continue-btn');
-    if(btn) { btn.disabled=false; btn.style.background='var(--teal)'; btn.style.cursor='pointer'; }
+    if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
   }).catch(function(){
     clearInterval(iv);
     if(ocrEl) ocrEl.style.display='none';
-    // Still enable continue even if OCR fails
+    var trustEl = document.getElementById('rq-trust-moment');
+    if(trustEl) trustEl.style.display = 'block';
     var btn = document.getElementById('rq-continue-btn');
-    if(btn) { btn.disabled=false; btn.style.background='var(--teal)'; btn.style.cursor='pointer'; }
+    if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
   });
 };
 
