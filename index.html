@@ -3332,10 +3332,13 @@ window._toUSD = function(n, currency) {
 // ── Stripe redirect recovery ──────────────────────────────
 (function(){
   try {
+    // Always restore currentUser from sessionStorage on every load
+    try { var s=sessionStorage.getItem('_cUser'); if(s && !window.currentUser) window.currentUser=JSON.parse(s); } catch(e){}
+    // Always restore claimData
+    try { var cd=sessionStorage.getItem('_claimData'); if(cd && !window.claimData) window.claimData=JSON.parse(cd); } catch(e){}
     var p = new URLSearchParams(window.location.search);
     if(p.get('payment_intent_client_secret')){
       window.history.replaceState({}, '', window.location.pathname);
-      try { var s=sessionStorage.getItem('_cUser'); if(s) window.currentUser=JSON.parse(s); } catch(e){}
       window._stripeRedirect = true;
     }
   } catch(e){}
@@ -5629,6 +5632,7 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  'Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'
  };
  const cdt = agentResult?.cdtCode || cdtMap[proc] || 'D2750';
+ const coveragePct = 75;
  const refund = Math.round(amt * 0.75);
  const net = Math.round(amt - refund);
  const agentNotes = agentResult?.notes || '';
