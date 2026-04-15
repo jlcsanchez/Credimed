@@ -2986,43 +2986,58 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-std-payment" style="background:var(--bg)">
  <div class="top-bar">
-  <div class="top-row"><div class="back-btn" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Payment Method</div></div>
+  <div class="top-row"><div class="back-btn" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Billing Method</div></div>
  </div>
  <div style="padding:24px 16px">
-  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:16px;margin-bottom:24px;text-align:center">
-   <div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:4px">✓ Claim submitted · Standard Plan</div>
+
+  <!-- Trust banner -->
+
+  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:14px 16px;margin-bottom:20px;text-align:center">
+   <div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:3px">✓ Claim submitted · Standard Plan</div>
    <div style="font-size:12px;color:#15803d">We only charge 15% after your insurance pays you. Nothing today.</div>
   </div>
-  <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin-bottom:6px">Add a card for future payment</h3>
-  <p style="font-size:13px;color:#94a3b8;margin-bottom:20px">We'll charge 15% automatically only after we verify your insurance deposit. You can update this anytime.</p>
-  <!-- Card form -->
+
+  <!-- Header -->
+
+  <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin-bottom:6px">Add a card for backup billing</h3>
+  <p style="font-size:13px;color:#64748b;margin-bottom:4px">We only use your card if your insurance pays you directly.</p>
+  <p style="font-size:13px;font-weight:600;color:#0D9488;margin-bottom:20px">You will never be charged upfront.</p>
+
+  <!-- Stripe Card Element container -->
+
   <div style="background:var(--teal-xlight);border:1px solid var(--teal-light);border-radius:12px;padding:16px;margin-bottom:16px">
-   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--teal-dark);margin-bottom:14px">Card Details</div>
-   <div class="field" style="margin-bottom:12px">
-    <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Card Number</label>
-    <input id="std-cc-number" type="tel" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box" oninput="var v=this.value.replace(/\D/g,'').slice(0,16);this.value=v.replace(/(.{4})/g,'$1 ').trim()">
+   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--teal-dark);margin-bottom:12px">🔒 Secure card details</div>
+   <!-- Skeleton while Stripe loads -->
+   <div id="std-stripe-skeleton" style="margin-bottom:4px">
+    <div style="height:44px;background:linear-gradient(90deg,#e8f5f3 25%,#f0faf9 50%,#e8f5f3 75%);background-size:200% 100%;border-radius:8px;border:1px solid #a7f3d0;animation:shimmer 1.4s infinite"></div>
+    <div style="font-size:11px;color:#94a3b8;margin-top:8px;text-align:center">Connecting to secure card form...</div>
    </div>
-   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-    <div class="field">
-     <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Expiry</label>
-     <input id="std-cc-exp" type="tel" maxlength="5" placeholder="MM/YY" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box" oninput="var v=this.value.replace(/\D/g,'');if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2);this.value=v">
-    </div>
-    <div class="field">
-     <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">CVC</label>
-     <input id="std-cc-cvc" type="tel" maxlength="3" placeholder="123" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
-    </div>
-   </div>
-   <div class="field">
-    <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Cardholder Name</label>
-    <input id="std-cc-name" type="text" placeholder="John Smith" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
-   </div>
+   <!-- Stripe CardElement mounts here -->
+   <div id="std-card-element" style="display:none;padding:12px;border:1.5px solid var(--teal-light);border-radius:10px;background:white;min-height:44px"></div>
+   <div id="std-card-error" style="display:none;color:#ef4444;font-size:12px;margin-top:8px"></div>
   </div>
-  <button class="btn-primary" style="width:100%;height:54px;font-size:16px;font-weight:700;background:var(--navy)" onclick="window.goTo&&window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
-   Save & go to dashboard →
+
+  <!-- Success state (hidden) -->
+
+  <div id="std-card-success" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:14px 16px;margin-bottom:16px;text-align:center">
+   <div style="font-size:22px;margin-bottom:4px">✓</div>
+   <div style="font-size:14px;font-weight:700;color:#16a34a">Card saved securely</div>
+   <div style="font-size:12px;color:#15803d;margin-top:3px">We'll only charge after you receive your insurance payment.</div>
+  </div>
+
+  <!-- Primary CTA -->
+
+  <button id="std-setup-btn" onclick="window.doStdSetup&&window.doStdSetup()" style="width:100%;height:54px;border-radius:14px;border:none;background:var(--navy);color:white;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:12px;opacity:.5;pointer-events:none">
+   Add card (only if needed)
   </button>
-  <div style="text-align:center;margin-top:12px;font-size:12px;color:#94a3b8;cursor:pointer" onclick="window.goTo&&window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
-   Skip for now
+
+  <!-- Skip -->
+
+  <div style="text-align:center;font-size:13px;color:#94a3b8;cursor:pointer;padding:8px" onclick="window.stdSkipCard&&window.stdSkipCard()">
+   Skip for now →
   </div>
+
+  <div style="text-align:center;font-size:11px;color:#cbd5e1;margin-top:12px">🔒 Card stored securely via Stripe · Never charged without notice</div>
  </div>
 </div>
 
@@ -10374,7 +10389,169 @@ window.showProcShare = function() {
     setTimeout(function(){ shareRow.style.opacity = '1'; }, 100);
   }
 };
-</script>
 
-</body>
-</html>
+// ══════════════════════════════════════════════════════════════
+// STD PAYMENT — Stripe SetupIntent (save card, no charge)
+// ══════════════════════════════════════════════════════════════
+
+var _stdStripeInstance = null;
+var _stdCardElement    = null;
+var _stdSetupDone      = false;
+
+window.initStdSetup = function() {
+  if(_stdSetupDone) return;
+  var LAMBDA = 'https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/';
+
+  // Load Stripe.js if not already loaded
+  function getStdStripe(cb) {
+    if(typeof Stripe !== 'undefined') { cb(Stripe(STRIPE_PK)); return; }
+    var s = document.createElement('script');
+    s.src = 'https://js.stripe.com/v3/';
+    s.onload = function() { cb(Stripe(STRIPE_PK)); };
+    document.head.appendChild(s);
+  }
+
+  getStdStripe(function(stripe) {
+    _stdStripeInstance = stripe;
+
+    // Create SetupIntent via Lambda
+    fetch(LAMBDA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create_setup_intent' })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var clientSecret = data.client_secret || data.clientSecret;
+      if(!clientSecret) throw new Error('No client_secret');
+
+      var elements = stripe.elements();
+      _stdCardElement = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px',
+            color: '#1e293b',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            '::placeholder': { color: '#94a3b8' }
+          }
+        }
+      });
+
+      // Hide skeleton, show real element
+      var skel = document.getElementById('std-stripe-skeleton');
+      var el   = document.getElementById('std-card-element');
+      var btn  = document.getElementById('std-setup-btn');
+      if(skel) skel.style.display = 'none';
+      if(el)   el.style.display = 'block';
+
+      _stdCardElement.mount('#std-card-element');
+
+      _stdCardElement.on('change', function(event) {
+        var errEl = document.getElementById('std-card-error');
+        if(event.error) {
+          if(errEl) { errEl.textContent = event.error.message; errEl.style.display = 'block'; }
+        } else {
+          if(errEl) errEl.style.display = 'none';
+        }
+        if(btn) {
+          var ready = event.complete && !event.error;
+          btn.style.opacity    = ready ? '1' : '.5';
+          btn.style.pointerEvents = ready ? 'auto' : 'none';
+        }
+      });
+
+      // Store client secret for confirm step
+      window._stdClientSecret = clientSecret;
+    })
+    .catch(function(err) {
+      console.warn('[Credimed] SetupIntent error:', err);
+      // Fallback: allow skip without error blocking user
+      var skel = document.getElementById('std-stripe-skeleton');
+      if(skel) skel.innerHTML = '<div style="font-size:12px;color:#94a3b8;text-align:center;padding:8px">Unable to load secure card form. You can skip for now.</div>';
+    });
+  });
+};
+
+window.doStdSetup = async function() {
+  if(!_stdStripeInstance || !_stdCardElement || !window._stdClientSecret) return;
+  var btn  = document.getElementById('std-setup-btn');
+  var errEl = document.getElementById('std-card-error');
+  if(btn) { btn.textContent = 'Saving...'; btn.style.opacity = '.7'; btn.style.pointerEvents = 'none'; }
+
+  try {
+    var cu = window.currentUser || {};
+    var result = await _stdStripeInstance.confirmCardSetup(window._stdClientSecret, {
+      payment_method: {
+        card: _stdCardElement,
+        billing_details: { name: cu.first ? cu.first + ' ' + (cu.last||'') : undefined }
+      }
+    });
+
+    if(result.error) {
+      if(errEl) { errEl.textContent = result.error.message; errEl.style.display = 'block'; }
+      if(btn) { btn.textContent = 'Add card (only if needed)'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+      return;
+    }
+
+    // Success — store payment_method_id in backend
+    var pmId = result.setupIntent.payment_method;
+    _stdSetupDone = true;
+
+    // Save to backend (best-effort, non-blocking)
+    var LAMBDA = 'https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/';
+    fetch(LAMBDA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'save_payment_method',
+        paymentMethodId: pmId,
+        userId: cu.uid || cu.email || ''
+      })
+    }).catch(function(){});
+
+    // Show success UI
+    var cardSection = document.querySelector('#s-std-payment .teal-xlight') ||
+                      document.getElementById('std-card-element') && document.getElementById('std-card-element').parentNode;
+    var setupBtn  = document.getElementById('std-setup-btn');
+    var successEl = document.getElementById('std-card-success');
+    if(cardSection) cardSection.style.display = 'none';
+    if(setupBtn)    setupBtn.style.display = 'none';
+    if(successEl)   successEl.style.display = 'block';
+
+    // Auto-navigate to dashboard after 1.5s
+    setTimeout(function() {
+      if(window.goTo) window.goTo('s-dashboard');
+      try { initDashboard(); } catch(e) {}
+    }, 1500);
+
+  } catch(e) {
+    console.warn('[Credimed] confirmCardSetup error:', e);
+    if(errEl) { errEl.textContent = 'Something went wrong. Please try again.'; errEl.style.display = 'block'; }
+    if(btn) { btn.textContent = 'Add card (only if needed)'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+  }
+};
+
+window.stdSkipCard = function() {
+  if(window.goTo) window.goTo('s-dashboard');
+  try { initDashboard(); } catch(e) {}
+};
+
+// Auto-init when s-std-payment is shown
+(function() {
+  var _origGoTo = window.goTo;
+  // Hook into goTo to detect navigation to s-std-payment
+  // Using a MutationObserver on the screen activation instead
+  var _stdObs = new MutationObserver(function() {
+    var screen = document.getElementById('s-std-payment');
+    if(screen && (screen.classList.contains('active') || screen.style.display === 'block')) {
+      window.initStdSetup && window.initStdSetup();
+    }
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    var screen = document.getElementById('s-std-payment');
+    if(screen) _stdObs.observe(screen, { attributes: true, attributeFilter: ['class', 'style'] });
+  });
+})();
+// ══════════════════════════════════════════════════════════════
+
+</script>
