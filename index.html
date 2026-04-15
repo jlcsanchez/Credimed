@@ -3378,65 +3378,21 @@ window._toUSD = function(n, currency) {
   return (currency === 'MXN' || window._amountCurrency === 'MXN') ? Math.round(n / window._MXN_RATE) : Math.round(n);
 };
 
-// ── Stripe redirect recovery ──────────────────────────────
+// ── Stripe redirect recovery — flag only, overlay handled at end of file ──
 (function(){
   try {
     var p = new URLSearchParams(window.location.search);
     if(p.get('payment_intent_client_secret')){
-      if(window.history) window.history.replaceState({}, '', window.location.pathname);
-      // Restore session
+      window.history.replaceState({}, '', window.location.pathname);
       try {
         var saved = sessionStorage.getItem('_cUser');
         if(saved) window.currentUser = JSON.parse(saved);
       } catch(e){}
-      // Show success overlay immediately — no SPA dependency
-      window._pendingDashboard = true;
-      document.addEventListener('DOMContentLoaded', function() {
-        var overlay = document.createElement('div');
-        overlay.id = '_stripe-success-overlay';
-        overlay.style.cssText = [
-          'position:fixed','inset:0','z-index:99999',
-          'background:#0B1F3A','display:flex','flex-direction:column',
-          'align-items:center','justify-content:center','gap:20px',
-          'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
-        ].join(';');
-        overlay.innerHTML =
-          '<div style="width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center">'
-          + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-          + '</div>'
-          + '<div style="text-align:center">'
-          + '<div style="font-size:20px;font-weight:700;color:white;margin-bottom:8px">Payment successful</div>'
-          + '<div style="font-size:14px;color:rgba(255,255,255,.6)">Loading your dashboard...</div>'
-          + '</div>'
-          + '<div style="width:40px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden">'
-          + '<div id="_sso-bar" style="height:100%;width:0%;background:#0D9488;transition:width 1.4s ease"></div>'
-          + '</div>';
-        document.body.appendChild(overlay);
-        // Animate progress bar
-        requestAnimationFrame(function(){
-          requestAnimationFrame(function(){
-            var bar = document.getElementById('_sso-bar');
-            if(bar) bar.style.width = '100%';
-          });
-        });
-        // Navigate after 1500ms
-        setTimeout(function(){
-          try { initDashboard(); } catch(e){}
-          try {
-            goTo('s-dashboard');
-            overlay.style.display = 'none';
-          } catch(e){
-            console.warn('[Credimed] goTo failed:', e);
-            // goTo not ready yet — retry once
-            setTimeout(function(){
-              try { goTo('s-dashboard'); overlay.style.display = 'none'; } catch(e2){}
-            }, 500);
-          }
-        }, 1500);
-      });
+      window._stripeRedirect = true;
     }
-  } catch(e){ console.warn('[Credimed] Recovery error:', e); }
+  } catch(e){}
 })();
+
 
 function goTo(id, param) {
  try {
@@ -5453,50 +5409,39 @@ async function doPayment(method){
 // DASHBOARD
 // 
 function initDashboard(){
- console.log('Dashboard mounted');
- console.log('User:', currentUser || window.currentUser);
+ console.log('Dashboard rendering');
 
- // Restore from session if currentUser lost after redirect
+ // Restore session if lost
  if(!currentUser) {
-   try {
-     var saved = sessionStorage.getItem('_cUser');
-     if(saved) currentUser = JSON.parse(saved);
-   } catch(e){}
+   try { var s = sessionStorage.getItem('_cUser'); if(s) currentUser = JSON.parse(s); } catch(e){}
  }
+ console.log('User:', currentUser);
+ console.log('Claim:', currentUser);
 
- // Always show bottom nav
+ // Bottom nav
  var bn = document.getElementById('bottom-nav');
  if(bn){ bn.classList.add('show'); bn.style.display='flex'; bn.style.position='absolute'; }
 
- // Safe helper
+ // Safe setter — never throws
  function _set(id, val) {
-   var el = document.getElementById(id);
-   if(el && val != null) el.textContent = val;
+   try { var el = document.getElementById(id); if(el && val != null) el.textContent = val; } catch(e){}
  }
 
  try {
    var hr = new Date().getHours();
-   var greet = hr<12 ? 'Good morning ' : hr<18 ? 'Good afternoon ' : 'Good evening ';
-   _set('dash-time', greet);
-
+   _set('dash-time', hr<12 ? 'Good morning ' : hr<18 ? 'Good afternoon ' : 'Good evening ');
    var u = currentUser || {};
-   console.log('Claim:', u);
    _set('dash-name-display', u.first ? 'Welcome, ' + u.first + '!' : 'Welcome!');
    _set('dash-avatar', (u.first||'U')[0].toUpperCase());
-
    if(u.insurer) _set('dash-insurer-sub', 'Estimated from your ' + u.insurer + ' plan');
-   if(u.procedure) _set('dash-claim-title', u.procedure + (u.dentist ? ' — ' + u.dentist.split('--')[0].trim() : ''));
+   if(u.procedure) _set('dash-claim-title', u.procedure + (u.dentist ? ' — ' + String(u.dentist).split('--')[0].trim() : ''));
    if(u.procedure) _set('dash-procedure', u.procedure);
-   if(u.dentist)   _set('dash-dentist', u.dentist.split('--')[0].trim());
+   if(u.dentist)   _set('dash-dentist', String(u.dentist).split('--')[0].trim());
    if(u.amount)    _set('dash-amount', '$' + parseFloat(u.amount).toFixed(2));
    if(u.insurer)   _set('dash-ins-name', u.insurer);
-   if(u.amount) {
-     var pot = parseFloat(u.amount) * 0.8;
-     _set('dash-potential', '$' + pot.toFixed(0));
-   }
+   if(u.amount)    _set('dash-potential', '$' + (parseFloat(u.amount)*0.8).toFixed(0));
  } catch(e) {
-   console.warn('Dashboard render error:', e);
-   // Fallback — show something, never blank
+   console.warn('[Credimed] Dashboard render error:', e);
    _set('dash-name-display', 'Welcome!');
    _set('dash-time', 'Good day ');
  }
@@ -10709,5 +10654,54 @@ window.stdSkipCard = function() {
 </script>
 
 <script>
-// ── Stripe redirect poller removed — handled by recovery overlay ──
+
+</script>
+
+<script>
+// ── STRIPE REDIRECT FINAL HANDLER ────────────────────────────────
+// Runs after ALL scripts are parsed — goTo and initDashboard are guaranteed defined
+(function() {
+  if(!window._stripeRedirect) return;
+  window._stripeRedirect = false;
+
+  // Show overlay — body exists here
+  var ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0B1F3A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:-apple-system,BlinkMacSystemFont,sans-serif';
+  ov.innerHTML =
+    '<div style="width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center">'
+    + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    + '</div>'
+    + '<div style="text-align:center">'
+    + '<div style="font-size:20px;font-weight:700;color:white;margin-bottom:8px">Payment successful</div>'
+    + '<div style="font-size:14px;color:rgba(255,255,255,.6)">Loading your dashboard...</div>'
+    + '</div>'
+    + '<div style="width:180px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden">'
+    + '<div id="_sso-bar" style="height:100%;width:0%;background:#0D9488;transition:width 1.4s ease"></div>'
+    + '</div>';
+  document.body.appendChild(ov);
+
+  // Animate bar
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      var bar = document.getElementById('_sso-bar');
+      if(bar) bar.style.width = '100%';
+    });
+  });
+
+  // Navigate after 1500ms — goTo and initDashboard are defined here
+  setTimeout(function() {
+    try { initDashboard(); } catch(e) {}
+    try {
+      goTo('s-dashboard');
+      ov.style.display = 'none';
+    } catch(e) {
+      console.warn('[Credimed] goTo error:', e);
+      // Absolute fallback
+      ov.innerHTML = '<div style="text-align:center;padding:32px">'
+        + '<div style="font-size:18px;font-weight:700;color:white;margin-bottom:16px">Your claim has been submitted successfully</div>'
+        + '<button onclick="try{goTo('s-dashboard')}catch(e){}" style="padding:14px 28px;background:#0D9488;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer">Go to dashboard</button>'
+        + '</div>';
+    }
+  }, 1500);
+})();
 </script>
