@@ -3345,58 +3345,13 @@ function goTo(id, param) {
  if (id === 's-processing' && !window._skipProcessingAnim) setTimeout(function(){ try{ runProcessing(); }catch(e){} }, 300);
  if (id === 's-refund') setTimeout(function(){ try{ runRefundEstimate(); }catch(e){ console.warn('refund error',e); } }, 300);;
  if (id === 's-plan-confirm') setTimeout(function(){
-   var plan = window._confirmedPlan || window._selectedPlan || 'standard';
-   var isPremium = plan === 'premium';
-   var currency = window._amountCurrency || window._currency || 'USD';
-   var sym = currency === 'MXN' ? 'MXN $' : 'USD $';
-   var amt = window._lastOcrAmount || 0;
-   if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
-   var refund = Math.round(amt * 0.75);
-   var fee = isPremium ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
-   var net = refund - (isPremium ? Math.round(refund * 0.10) : Math.round(refund * 0.15));
-   var fmt = function(n){ return sym + n.toLocaleString(); };
-   var el = function(id){ return document.getElementById(id); };
-   if(el('pc-big-num')) el('pc-big-num').textContent = fmt(refund);
-   if(el('pc-paid')) el('pc-paid').textContent = fmt(amt);
-   if(el('pc-refund')) el('pc-refund').textContent = fmt(refund);
-   if(el('pc-fee-label')) el('pc-fee-label').textContent = isPremium ? 'Credimed fee ($29 + 10%)' : 'Credimed fee (15%)';
-   if(el('pc-fee')) el('pc-fee').textContent = '-' + fmt(fee);
-   if(el('pc-net')) el('pc-net').textContent = fmt(net);
-   if(el('pc-plan-note')) el('pc-plan-note').textContent = isPremium
-     ? 'Premium · USD $29 upfront + 10% after you get paid · Refund in ' + currency
-     : 'Standard · 15% only after you get paid · Refund in ' + currency + ' · No win, no fee';
-   // Animate big number
-   if(el('pc-big-num') && refund > 0){
-     var current=0, steps=40, inc=refund/steps;
-     var iv = setInterval(function(){
-       current = Math.min(current+inc, refund);
-       el('pc-big-num').textContent = fmt(Math.round(current));
-       if(current >= refund) clearInterval(iv);
-     }, 30);
+   if(window.claimData && window.claimData.paid <= 0){
+     var bn=document.getElementById('pc-big-num'); if(bn) bn.textContent='--'; return;
    }
+   window.updateRefundCalculation && window.updateRefundCalculation();
  }, 200);
 
- if (id === 's-plan') setTimeout(function(){
-   var currency2 = window._amountCurrency || window._currency || 'USD';
-   var sym = currency2 === 'MXN' ? 'MXN $' : '$';
-   var amt = window._lastOcrAmount || 0;
-   var refund = Math.round(amt * 0.75);
-   var stdFee = Math.round(refund * 0.15);
-   var premFee = Math.round(refund * 0.10) + 29;
-   var stdNet = refund - stdFee;
-   var premNet = refund - Math.round(refund * 0.10);
-   var sym = '$';
-   var bd = document.getElementById('plan-breakdown');
-   if(bd && amt > 0){
-     bd.style.display = 'block';
-     document.getElementById('plan-bd-paid').textContent = sym + amt.toLocaleString();
-     document.getElementById('plan-bd-refund').textContent = sym + refund.toLocaleString();
-     document.getElementById('plan-bd-std-fee').textContent = '-' + sym + stdFee.toLocaleString();
-     document.getElementById('plan-bd-prem-fee').textContent = '-' + sym + premFee.toLocaleString();
-     document.getElementById('plan-bd-std-net').textContent = sym + stdNet.toLocaleString();
-     document.getElementById('plan-bd-prem-net').textContent = sym + premNet.toLocaleString();
-   }
- }, 200);
+  if (id === 's-plan') setTimeout(function(){ window.updateRefundCalculation && window.updateRefundCalculation(); }, 200);
  if (id === 's-ready') setTimeout(function(){ try{ runReadyScreen(); }catch(e){} }, 100);
  if (id === 's-step5') {
  // Reset payment screen - hide success, show form
@@ -4336,10 +4291,9 @@ function s2RunOCR(imageBase64, mediaType){
 
    var amtEl = document.getElementById('s2-amount');
    if(amtEl) amtEl.addEventListener('input', function(){
-    window._lastOcrAmount = parseFloat(amtEl.value) || 0;
-    if(window.currentUser) window.currentUser.amount = window._lastOcrAmount;
+    window.claimData.paid = parseFloat(amtEl.value) || 0;
     window._updateProcSummary && window._updateProcSummary();
-    window.updateRefundPill && window.updateRefundPill(window._lastOcrAmount);
+    window.updateRefundCalculation && window.updateRefundCalculation();
   });
 
    window.onProcCheck();
@@ -4539,15 +4493,15 @@ function s2RunOCR(imageBase64, mediaType){
      if(amtEl){
        amtEl.value = d.amount;
        amtEl.classList.add('prefilled');
-       // Show currency label based on amount size
+       // Detect currency
        var lbl = document.getElementById('amt-currency-label');
-       var currency = ocrData && ocrData.currency ? ocrData.currency : (parseFloat(d.amount) > 500 ? 'MXN' : 'USD');
+       var currency = (ocrData && ocrData.currency) ? ocrData.currency : (parseFloat(d.amount) > 500 ? 'MXN' : 'USD');
        if(lbl) lbl.textContent = '(' + currency + ')';
-       window._currency = currency;
-       window._amountCurrency = currency;
-       window._lastOcrAmount = parseFloat(d.amount)||0;
-       window._amountCurrency = d.currency || window._amountCurrency || 'USD';
-       if(currentUser){ currentUser.amount = window._lastOcrAmount; currentUser.amountCurrency = window._amountCurrency; }
+       // ── Write to single source of truth ──
+       window.claimData.paid     = parseFloat(d.amount) || 0;
+       window.claimData.currency = currency;
+       // ── Trigger full calculation pipeline ──
+       window.updateRefundCalculation();
      }
 
      var cityEl=document.getElementById('s2-city');
@@ -4569,16 +4523,7 @@ function s2RunOCR(imageBase64, mediaType){
      var rcCard=document.getElementById('s2-receipt-card');
      if(imgEl&&!imgEl.src){ if(rcCard) rcCard.style.display='block'; }
 
-     // ── OCR → State → Calculation → UI pipeline ──────────────────
-     var _ocrAmt = parseFloat((document.getElementById('s2-amount')||{}).value)
-                   || window._lastOcrAmount || 0;
-     // 1. Normalize state
-     window._lastOcrAmount = _ocrAmt;
-     if(window.currentUser) window.currentUser.amount = _ocrAmt;
-     // 2. Trigger full calculation + UI update
-     if(_ocrAmt > 0 && window.updateRefundPill) window.updateRefundPill(_ocrAmt);
-     if(window.s2CheckFields) window.s2CheckFields();
-     // ──────────────────────────────────────────────────────────────
+     // Pipeline ya ejecutado arriba vía updateRefundCalculation()
      s2Summary();
      // Show procedure summary box
      if(window._updateProcSummary) window._updateProcSummary();
@@ -4693,7 +4638,7 @@ function s2Summary(){
  // ── Always trigger refund calculation pipeline ──
  var amt = parseFloat((document.getElementById('s2-amount')||{}).value)
            || window._lastOcrAmount || 0;
- if(amt > 0 && window.updateRefundPill) window.updateRefundPill(amt);
+ if(amt > 0 && window.updateRefundCalculation) window.updateRefundCalculation();
 }
 
 window.s2CheckFields = function s2CheckFields(){
@@ -4703,7 +4648,9 @@ window.s2CheckFields = function s2CheckFields(){
  const btn = document.getElementById('s2-continue-btn');
  if(btn) btn.disabled = !(dentist && proc && amount > 0);
  // Update live refund pill
- window.updateRefundPill && window.updateRefundPill(amount);
+ // ── Sync claimData and run full pipeline ──
+ window.claimData.paid = amount;
+ window.updateRefundCalculation && window.updateRefundCalculation();
  // Also re-evaluate the main submit button (fields may now satisfy requirements)
  try { window.s1TryEnableContinue && window.s1TryEnableContinue(); } catch(e) {}
 }
@@ -8718,6 +8665,128 @@ window._setUser = function(u){ currentUser = u; };
 </div>
 
 <script>
+// ══════════════════════════════════════════════════════════════════
+// CREDIMED — SINGLE SOURCE OF TRUTH + CALCULATION ENGINE
+// ══════════════════════════════════════════════════════════════════
+
+// Central state object — ALL numeric values live here
+window.claimData = {
+  paid: 0,          // amount patient paid (from OCR or manual)
+  currency: 'USD',  // 'USD' or 'MXN'
+  plan: 'standard', // 'standard' or 'premium'
+  // Computed (read-only, set by updateRefundCalculation)
+  reimbursement: 0,
+  fee: 0,
+  net: 0
+};
+
+// The ONE function that reads claimData and updates ALL refund UI
+window.updateRefundCalculation = function() {
+  var cd = window.claimData;
+
+  // Sync plan from live selector (may change after OCR)
+  cd.plan = window._selectedPlan
+    || (window.currentUser && window.currentUser.plan)
+    || cd.plan
+    || 'standard';
+  var isPrem = cd.plan === 'premium';
+
+  // Compute
+  var paid          = cd.paid;
+  var reimbursement = Math.round(paid * 0.75);
+  var fee           = isPrem
+                        ? (29 + Math.round(reimbursement * 0.10))
+                        : Math.round(reimbursement * 0.15);
+  var net           = reimbursement - (isPrem
+                        ? Math.round(reimbursement * 0.10)
+                        : Math.round(reimbursement * 0.15));
+
+  // Write back to state
+  cd.reimbursement = reimbursement;
+  cd.fee           = fee;
+  cd.net           = net;
+
+  // Keep legacy vars in sync (other screens still read them)
+  window._lastOcrAmount = paid;
+  if (window.currentUser) {
+    window.currentUser.amount        = paid;
+    window.currentUser.amountCurrency = cd.currency;
+  }
+
+  var sym = cd.currency === 'MXN' ? 'MXN $' : '$';
+  var fmt = function(n) { return sym + Math.round(n).toLocaleString(); };
+
+  // ── Live Refund Pill (s-step1 / s-step2) ──────────────────────
+  var pill = document.getElementById('live-refund-pill');
+  if (pill) {
+    if (paid <= 0) {
+      pill.style.display = 'none';
+    } else {
+      pill.style.display = 'block';
+      var paidEl = document.getElementById('pill-paid');
+      var insEl  = document.getElementById('pill-insures');
+      var feeEl  = document.getElementById('pill-fee');
+      var netEl  = document.getElementById('pill-net');
+      if (paidEl) paidEl.textContent = fmt(paid);
+      if (insEl)  insEl.textContent  = fmt(reimbursement);
+      if (feeEl)  feeEl.textContent  = '-' + fmt(fee);
+      if (netEl)  netEl.textContent  = fmt(net);
+      // Animate big number
+      var bigNum = document.getElementById('pill-big-number');
+      if (bigNum) {
+        var from = parseFloat(bigNum.dataset.current) || 0;
+        bigNum.dataset.current = net;
+        if (window._pillTimer) clearInterval(window._pillTimer);
+        var steps = 30, inc = (net - from) / steps, cur = from, s = 0;
+        window._pillTimer = setInterval(function() {
+          cur = Math.min(cur + inc, net);
+          bigNum.textContent = fmt(Math.round(cur));
+          if (++s >= steps) { clearInterval(window._pillTimer); bigNum.textContent = fmt(net); }
+        }, 20);
+      }
+    }
+  }
+
+  // ── Receipt review card (rc-amount) ───────────────────────────
+  var rcA = document.getElementById('s2-rc-amount');
+  if (rcA && paid > 0) rcA.textContent = fmt(paid);
+
+  // ── Plan-confirm screen (s-plan-confirm) ──────────────────────
+  var el = function(id) { return document.getElementById(id); };
+  if (el('pc-paid'))      el('pc-paid').textContent      = fmt(paid);
+  if (el('pc-refund'))    el('pc-refund').textContent    = fmt(reimbursement);
+  if (el('pc-big-num'))   el('pc-big-num').textContent   = fmt(reimbursement);
+  if (el('pc-fee'))       el('pc-fee').textContent       = '-' + fmt(fee);
+  if (el('pc-net'))       el('pc-net').textContent       = fmt(net);
+  if (el('pc-fee-label')) el('pc-fee-label').textContent = isPrem
+    ? 'Credimed fee ($29 + 10%)' : 'Credimed fee (15%)';
+  if (el('pc-plan-note')) el('pc-plan-note').textContent = isPrem
+    ? 'Premium · $29 upfront + 10% after you get paid · Refund in ' + cd.currency
+    : 'Standard · 15% only after you get paid · No win, no fee · Refund in ' + cd.currency;
+
+  // ── Plan selection screen (s-plan) ────────────────────────────
+  var bd = el('plan-breakdown');
+  if (bd && paid > 0) {
+    bd.style.display = 'block';
+    var stdFee  = Math.round(reimbursement * 0.15);
+    var premFee = 29 + Math.round(reimbursement * 0.10);
+    var stdNet  = reimbursement - stdFee;
+    var premNet = reimbursement - Math.round(reimbursement * 0.10);
+    if (el('plan-bd-paid'))     el('plan-bd-paid').textContent     = fmt(paid);
+    if (el('plan-bd-refund'))   el('plan-bd-refund').textContent   = fmt(reimbursement);
+    if (el('plan-bd-std-fee'))  el('plan-bd-std-fee').textContent  = '-' + sym + stdFee.toLocaleString();
+    if (el('plan-bd-prem-fee')) el('plan-bd-prem-fee').textContent = '-' + sym + premFee.toLocaleString();
+    if (el('plan-bd-std-net'))  el('plan-bd-std-net').textContent  = sym + stdNet.toLocaleString();
+    if (el('plan-bd-prem-net')) el('plan-bd-prem-net').textContent = sym + premNet.toLocaleString();
+  }
+
+  // ── Step-5 / payment confirmation ─────────────────────────────
+  var refundNetEl = el('refund-net');
+  if (refundNetEl) refundNetEl.textContent = fmt(net);
+};
+</script>
+
+<script>
 // LIVE REFUND PILL 
 window.updateRefundPill = function updateRefundPill(amount) {
  var pill = document.getElementById('live-refund-pill');
@@ -9629,10 +9698,12 @@ window.runReceiptOCR = function(base64, mediaType) {
       var el3 = document.getElementById('rec-r-amount'); if(el3) el3.textContent = currency + ' ' + d.amount;
       var el3c = document.getElementById('rec-r-currency'); if(el3c) el3c.textContent = currency;
       var e23 = document.getElementById('s2-amount'); if(e23) { e23.value = d.amount; e23.classList.add('prefilled'); }
-      window._lastOcrAmount = parseFloat(d.amount) || 0;
-      window._currency = currency;
-      window._amountCurrency = currency;
+      window.claimData.paid     = parseFloat(d.amount) || 0;
+      window.claimData.currency  = currency;
+      window._currency = currency;          // legacy compat
+      window._amountCurrency = currency;    // legacy compat
       var lbl = document.getElementById('amt-currency-label'); if(lbl) lbl.textContent = '(' + currency + ')';
+      window.updateRefundCalculation && window.updateRefundCalculation();
     }
     if(d.procedures && Array.isArray(d.procedures)) {
       var procsEl = document.getElementById('rec-r-procs');
@@ -9870,12 +9941,14 @@ window.rqRunOCR = function(base64, mediaType) {
     if(d.amount) {
       var el = document.getElementById('rq-r-amount');
       if(el) el.textContent = currency + ' ' + d.amount;
-      window._lastOcrAmount = parseFloat(d.amount)||0;
-      window._currency = currency;
-      window._amountCurrency = currency;
+      window.claimData.paid    = parseFloat(d.amount) || 0;
+      window.claimData.currency = currency;
+      window._currency = currency;         // legacy compat
+      window._amountCurrency = currency;   // legacy compat
       // Also populate the full flow fields
       var s2amt = document.getElementById('s2-amount');
       if(s2amt) { s2amt.value = d.amount; s2amt.classList.add('prefilled'); }
+      window.updateRefundCalculation && window.updateRefundCalculation();
     }
     var curEl = document.getElementById('rq-r-currency');
     if(curEl) curEl.textContent = currency;
