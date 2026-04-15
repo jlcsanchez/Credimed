@@ -3385,6 +3385,15 @@ function goTo(id, param) {
    }
  }, 200);
 
+ if (id === 's-plan') {
+   // Preload Stripe.js early so it's ready when user hits payment
+   if(!window._stripePreloading && !window.Stripe){
+     window._stripePreloading = true;
+     var _s = document.createElement('script');
+     _s.src = 'https://js.stripe.com/v3/';
+     document.head.appendChild(_s);
+   }
+ }
  if (id === 's-plan') setTimeout(function(){
    var currency2 = window._amountCurrency || window._currency || 'USD';
    var sym = currency2 === 'MXN' ? 'MXN $' : '$';
@@ -4552,8 +4561,9 @@ function s2RunOCR(imageBase64, mediaType){
        window._amountCurrency = currency;
        window._lastOcrAmount = parseFloat(d.amount)||0;
        window._amountCurrency = d.currency || window._amountCurrency || 'USD';
-       if(currentUser){ currentUser.amount = window._lastOcrAmount; currentUser.amountCurrency = window._amountCurrency; if(ocrData && ocrData.procedure) currentUser.procedure = ocrData.procedure; if(ocrData && ocrData.insurer) currentUser.insurer = ocrData.insurer; try { sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); } catch(e){} }
-       window.claimData = { amountPaid: window._lastOcrAmount };
+       var _usdAmt2 = (window._amountCurrency === 'MXN' && window._MXN_RATE) ? Math.round(window._lastOcrAmount / window._MXN_RATE) : window._lastOcrAmount;
+       if(currentUser){ currentUser.amount = _usdAmt2; currentUser.amountCurrency = 'USD'; if(ocrData && ocrData.procedure) currentUser.procedure = ocrData.procedure; if(ocrData && ocrData.insurer) currentUser.insurer = ocrData.insurer; try { sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); } catch(e){} }
+       window.claimData = { amountPaid: _usdAmt2 };
        try { sessionStorage.setItem('_claimData', JSON.stringify(window.claimData)); } catch(e){}
      }
 
@@ -5708,7 +5718,7 @@ function runProcessing() {
  var rawAmt = window._lastOcrAmount || 0;
  if(!rawAmt){ console.warn('[Credimed] No OCR amount — aborting'); return; }
  var currency = window._amountCurrency || window._currency || 'USD';
- var amt = rawAmt;
+ var amt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(rawAmt / window._MXN_RATE) : rawAmt;
  var proc = (procEl && procEl.value) || (currentUser && currentUser.procedure) || 'Crown';
  var insurer = (ins1 && ins1.value) || (ins2 && ins2.value) || (currentUser && currentUser.insurer) || 'Delta Dental';
  var cdtMap = {'Crown':'D2750','Implant':'D6010','Root Canal':'D3330','Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110','Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'};
@@ -9897,9 +9907,14 @@ window.rqRunOCR = function(base64, mediaType) {
     if(d.amount) {
       var el = document.getElementById('rq-r-amount');
       if(el) el.textContent = currency + ' ' + d.amount;
-      window._lastOcrAmount = parseFloat(d.amount)||0;
+      var _rawOcr = parseFloat(d.amount)||0;
+      window._lastOcrAmount = _rawOcr;
       window._currency = currency;
       window._amountCurrency = currency;
+      var _usdAmt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(_rawOcr / window._MXN_RATE) : _rawOcr;
+      window.claimData = { amountPaid: _usdAmt };
+      try { sessionStorage.setItem('_claimData', JSON.stringify(window.claimData)); } catch(e){}
+      if(window.currentUser){ window.currentUser.amount = _usdAmt; try { sessionStorage.setItem('_cUser', JSON.stringify(window.currentUser)); } catch(e){} }
       // Also populate the full flow fields
       var s2amt = document.getElementById('s2-amount');
       if(s2amt) { s2amt.value = d.amount; s2amt.classList.add('prefilled'); }
@@ -10007,8 +10022,8 @@ window.rqReset = function() {
 };
 
 window.rqContinue = function() {
-  // Go to processing → estimate → then ask for insurance card
-  if(window.goTo) window.goTo('s-processing');
+  // Receipt done → ask for insurance card next
+  if(window.goTo) window.goTo('s-insurance-quick');
 };
 </script>
 
