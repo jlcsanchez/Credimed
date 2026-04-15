@@ -1954,48 +1954,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
      <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:3px">Currency</div><div style="font-size:14px;font-weight:600;color:white" id="rq-r-currency">—</div></div>
     </div>
     <div style="margin-top:4px"><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:4px">Procedures</div><div id="rq-r-procs" style="display:flex;flex-wrap:wrap;gap:4px"></div></div>
-   </div>
-
-   <!-- Manual amount entry — shown when OCR misses amount or user wants to correct -->
-
-   <div id="rq-manual" style="display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;margin-bottom:16px">
-    <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:10px">💡 OCR could not read the amount — enter it manually</div>
-    <div style="display:flex;gap:8px;align-items:center">
-     <select id="rq-currency-select" onchange="window.rqUpdateCurrency&&window.rqUpdateCurrency()" style="height:46px;padding:0 10px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.08);color:white;font-size:14px;font-weight:600;outline:none;flex-shrink:0;-webkit-appearance:none;width:90px">
-      <option value="USD" style="background:#1e293b">USD $</option>
-      <option value="MXN" style="background:#1e293b">MXN $</option>
-     </select>
-     <input type="number" id="rq-manual-amount" inputmode="decimal" placeholder="0.00" oninput="window.rqManualInput&&window.rqManualInput()" style="flex:1;height:46px;padding:0 14px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.08);color:white;font-size:18px;font-weight:700;outline:none;-webkit-appearance:none">
-    </div>
-    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px">Enter the total you paid at the clinic · any currency</div>
-   </div>
-
-   <!-- Trust moment (shown after upload) -->
-
-   <div id="rq-trust-moment" style="display:none;background:rgba(5,150,105,.12);border:1px solid rgba(5,150,105,.3);border-radius:14px;padding:12px 14px;margin-bottom:16px">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-     <div style="width:36px;height:36px;background:rgba(5,150,105,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">✓</div>
-     <div>
-      <div style="font-size:13px;font-weight:700;color:#34d399">Your file has been securely received</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">A specialist will review your case</div>
-     </div>
-    </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap">
-     <span style="font-size:11px;color:rgba(255,255,255,.4)">🔒 HIPAA protected</span>
-     <span style="font-size:11px;color:rgba(255,255,255,.4)">🔐 Encrypted</span>
-     <span style="font-size:11px;color:rgba(255,255,255,.4)">$0 upfront</span>
-    </div>
-   </div>
-
    <!-- OPTIONAL SUPPORTING DOCS -->
 
-   <!-- X-ray recommendation hint (shown by JS when proc matches) -->
+   <!-- X-ray recommendation hint -->
 
    <div id="rq-xray-hint" style="display:none;font-size:11px;color:#fbbf24;margin-bottom:10px;padding:8px 10px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:10px">
     💡 This type of treatment usually benefits from X-rays
    </div>
 
-   <div id="rq-extra-docs" style="display:none;margin-bottom:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 14px 10px">
+   <div id="rq-extra-docs" style="display:none;margin-bottom:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 14px 10px;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease">
 
 ```
 <!-- Header -->
@@ -2007,7 +1974,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Progress bar -->
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
  <div style="flex:1;height:10px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden">
-  <div id="rq-strength-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#0D9488,#5eead4);border-radius:6px;transition:width .5s ease"></div>
+  <div id="rq-strength-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#0D9488,#5eead4);border-radius:6px;transition:width .6s cubic-bezier(.4,0,.2,1)"></div>
  </div>
  <div style="font-size:12px;font-weight:700;color:#5eead4;white-space:nowrap" id="rq-strength-pct">0% strong claim</div>
 </div>
@@ -2082,6 +2049,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div><!-- /rq-extra-docs -->
 
    <div id="rq-cta-nudge" style="display:none;text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-bottom:10px">You're close — don't leave money on the table</div>
+   </div>
+
+   <!-- Manual amount entry — shown when OCR misses amount or user wants to correct -->
+
+   <div id="rq-manual" style="display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;margin-bottom:16px">
+    <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:10px">💡 OCR could not read the amount — enter it manually</div>
+    <div style="display:flex;gap:8px;align-items:center">
+     <select id="rq-currency-select" onchange="window.rqUpdateCurrency&&window.rqUpdateCurrency()" style="height:46px;padding:0 10px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.08);color:white;font-size:14px;font-weight:600;outline:none;flex-shrink:0;-webkit-appearance:none;width:90px">
+      <option value="USD" style="background:#1e293b">USD $</option>
+      <option value="MXN" style="background:#1e293b">MXN $</option>
+     </select>
+     <input type="number" id="rq-manual-amount" inputmode="decimal" placeholder="0.00" oninput="window.rqManualInput&&window.rqManualInput()" style="flex:1;height:46px;padding:0 14px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.08);color:white;font-size:18px;font-weight:700;outline:none;-webkit-appearance:none">
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px">Enter the total you paid at the clinic · any currency</div>
+   </div>
+
+   <!-- Trust moment (shown after upload) -->
+
+   <div id="rq-trust-moment" style="display:none;background:rgba(5,150,105,.12);border:1px solid rgba(5,150,105,.3);border-radius:14px;padding:12px 14px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+     <div style="width:36px;height:36px;background:rgba(5,150,105,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">✓</div>
+     <div>
+      <div style="font-size:13px;font-weight:700;color:#34d399">Your file has been securely received</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">A specialist will review your case</div>
+     </div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+     <span style="font-size:11px;color:rgba(255,255,255,.4)">🔒 HIPAA protected</span>
+     <span style="font-size:11px;color:rgba(255,255,255,.4)">🔐 Encrypted</span>
+     <span style="font-size:11px;color:rgba(255,255,255,.4)">$0 upfront</span>
+    </div>
+   </div>
 
    <!-- CTA -->
 
@@ -10174,14 +10173,35 @@ window._rqCheckStrengthen = function() {
   console.log('ocrComplete:', window._rqOcrComplete);
   console.log('hasValidData:', window._rqHasValidData);
   var show = window._rqHasReceipt && window._rqOcrComplete && window._rqHasValidData;
-  var el = document.getElementById('rq-extra-docs');
+  var el    = document.getElementById('rq-extra-docs');
   var nudge = document.getElementById('rq-cta-nudge');
-  if(el)    el.style.display    = show ? 'block' : 'none';
-  if(nudge) nudge.style.display = show ? 'block' : 'none';
-  if(show && window._rqStrength < 60) {
+  if(!show) {
+    if(el)    { el.style.display = 'none'; el.style.opacity = '0'; }
+    if(nudge) nudge.style.display = 'none';
+    return;
+  }
+  // Show with fade-in + slide-up
+  if(el) {
+    el.style.display   = 'block';
+    el.style.opacity   = '0';
+    el.style.transform = 'translateY(8px)';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        el.style.opacity   = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    });
+  }
+  if(nudge) nudge.style.display = 'block';
+  // Animate bar from 0 → 60%
+  window._rqStrength = 0;
+  var bar = document.getElementById('rq-strength-bar');
+  var lbl = document.getElementById('rq-strength-pct');
+  if(bar) bar.style.width = '0%';
+  setTimeout(function() {
     window._rqStrength = 60;
     window._rqUpdateStrength && window._rqUpdateStrength();
-  }
+  }, 350); // after fade-in starts
 };
 
 window._rqUpdateStrength = function() {
