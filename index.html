@@ -1987,6 +1987,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
    </div>
 
+   <!-- X-ray tip — shown when procedure benefits from X-rays -->
+
+   <div id="rq-xray-tip" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:10px 14px;margin-bottom:12px">
+    <div style="font-size:12px;color:#fbbf24">💡 This type of treatment usually benefits from X-rays</div>
+   </div>
+
+   <!-- Strengthen your claim -->
+
+   <div id="rq-strengthen" style="display:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;margin-bottom:16px">
+    <div style="font-size:13px;font-weight:700;color:white;margin-bottom:2px">💰 Strengthen your claim</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px">Add documents to increase your refund</div>
+    <!-- Progress bar -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+     <div style="flex:1;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden">
+      <div id="rq-strength-fill" style="height:100%;width:65%;background:linear-gradient(90deg,#0D9488,#34d399);border-radius:3px;transition:width .4s"></div>
+     </div>
+     <div id="rq-strength-label" style="font-size:11px;font-weight:700;color:#34d399;white-space:nowrap">65% strong claim</div>
+    </div>
+    <!-- Checklist items -->
+    <div style="display:flex;flex-direction:column;gap:8px">
+     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;cursor:pointer" onclick="window.rqAddXrays&&window.rqAddXrays()">
+      <div id="rq-check-xray" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
+      <div style="flex:1">
+       <div style="font-size:13px;font-weight:600;color:white">Add X-rays <span style="background:#0D9488;color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;margin-left:4px">⭐ Recommended</span></div>
+       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Most important for getting your full refund</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#34d399;background:rgba(52,211,153,.12);padding:3px 8px;border-radius:8px">+35%</div>
+     </div>
+     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;cursor:pointer" onclick="window.rqAddTreatment&&window.rqAddTreatment()">
+      <div id="rq-check-treatment" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
+      <div style="flex:1">
+       <div style="font-size:13px;font-weight:600;color:white">Add treatment plan</div>
+       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Medium impact — confirms procedures and costs</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">+10%</div>
+     </div>
+     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;cursor:pointer" onclick="window.rqAddId&&window.rqAddId()">
+      <div id="rq-check-id" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
+      <div style="flex:1">
+       <div style="font-size:13px;font-weight:600;color:white">Add ID</div>
+       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Low impact — speeds up processing</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">+5%</div>
+     </div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:10px">You're close — don't leave money on the table</div>
+   </div>
+
+   <!-- Hidden file inputs for strengthen docs -->
+
+   <input type="file" id="rq-xray-input" accept="image/*,application/pdf" style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'xray')">
+   <input type="file" id="rq-treatment-input" accept="image/*,application/pdf" style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'treatment')">
+   <input type="file" id="rq-id-input" accept="image/*,application/pdf" style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'id')">
+
    <!-- CTA -->
 
    <button id="rq-continue-btn" onclick="window.rqContinue&&window.rqContinue()" disabled style="width:100%;height:54px;border-radius:16px;border:none;background:#94a3b8;color:white;font-size:16px;font-weight:700;cursor:not-allowed;margin-bottom:12px">
@@ -9946,6 +10000,9 @@ window.rqRunOCR = function(base64, mediaType) {
     // Show trust moment + enable continue
     var trustEl = document.getElementById('rq-trust-moment');
     if(trustEl) trustEl.style.display = 'block';
+    // Show strengthen your claim block
+    var _proc0 = (d.procedures && d.procedures[0]) || '';
+    if(window.rqShowStrengthen) window.rqShowStrengthen(_proc0);
     // If no amount detected → show manual entry, keep button disabled until filled
     if(!d.amount || parseFloat(d.amount) <= 0) {
       var manual = document.getElementById('rq-manual');
@@ -10027,6 +10084,63 @@ window.rqReset = function() {
 window.rqContinue = function() {
   // Receipt done → ask for insurance card next
   if(window.goTo) window.goTo('s-insurance-quick');
+};
+
+// Show strengthen block after OCR succeeds
+window.rqShowStrengthen = function(proc) {
+  var el = document.getElementById('rq-strengthen');
+  if(el) el.style.display = 'block';
+  // Show X-ray tip for relevant procedures
+  var xrayProcs = ['crown','implant','root canal','endodonci','corona','implante','extraccion','extraction','bridge'];
+  var procLower = (proc || '').toLowerCase();
+  var needsXray = xrayProcs.some(function(p){ return procLower.includes(p); });
+  var tip = document.getElementById('rq-xray-tip');
+  if(tip && needsXray) tip.style.display = 'block';
+};
+
+// Strengthen doc handlers
+window._rqStrength = { xray: false, treatment: false, id: false };
+window._rqStrengthPcts = { xray: 35, treatment: 10, id: 5 };
+
+window.rqUpdateStrengthBar = function() {
+  var base = 65;
+  var total = base;
+  Object.keys(window._rqStrength).forEach(function(k){
+    if(window._rqStrength[k]) total += window._rqStrengthPcts[k];
+  });
+  total = Math.min(total, 100);
+  var fill = document.getElementById('rq-strength-fill');
+  var lbl = document.getElementById('rq-strength-label');
+  if(fill) fill.style.width = total + '%';
+  if(lbl) lbl.textContent = total + '% strong claim';
+};
+
+window.rqMarkCheck = function(key) {
+  window._rqStrength[key] = true;
+  var box = document.getElementById('rq-check-' + key);
+  if(box) { box.style.background = '#0D9488'; box.style.borderColor = '#0D9488'; box.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>'; }
+  window.rqUpdateStrengthBar();
+};
+
+window.rqAddXrays = function() {
+  var inp = document.getElementById('rq-xray-input');
+  if(inp) { inp.value=''; inp.click(); }
+};
+window.rqAddTreatment = function() {
+  var inp = document.getElementById('rq-treatment-input');
+  if(inp) { inp.value=''; inp.click(); }
+};
+window.rqAddId = function() {
+  var inp = document.getElementById('rq-id-input');
+  if(inp) { inp.value=''; inp.click(); }
+};
+
+window.rqHandleStrengthen = function(input, key) {
+  var file = input.files && input.files[0];
+  if(!file) return;
+  window._docUploads = window._docUploads || {};
+  window._docUploads[key] = file;
+  window.rqMarkCheck(key);
 };
 </script>
 
