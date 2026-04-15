@@ -5518,7 +5518,7 @@ async function runRefundEstimate() {
  const rawAmt = (window.claimData && window.claimData.amountPaid) || window._lastOcrAmount || 0;
  if (!rawAmt) { console.warn('[Credimed] No OCR amount — aborting runRefundEstimate'); return; }
  const currency = window._amountCurrency || window._currency || 'USD';
- const amt = rawAmt; // use raw OCR amount, no conversion
+ const amt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(rawAmt / window._MXN_RATE) : rawAmt;
  const currLabel = currency === 'MXN' ? 'MXN ' : '';
  const proc = document.getElementById('s2-proc')?.value || currentUser?.procedure || 'Crown';
  const insurer = document.getElementById('s1-ins-provider')?.value ||
@@ -5575,7 +5575,7 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  'Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'
  };
  const cdt = agentResult?.cdtCode || cdtMap[proc] || 'D2750';
- const refund = Math.round((window.claimData && window.claimData.amountPaid) || amt) * 0.75 | 0;
+ const refund = Math.round(amt * 0.75);
  const net = Math.round(amt - refund);
  const agentNotes = agentResult?.notes || '';
 
@@ -5583,8 +5583,11 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  if(currentUser) {
  currentUser.cdtCode = cdt;
  currentUser.estimatedRefund = refund;
- currentUser.amount = rawAmt;
+ currentUser.amount = amt;
+ currentUser.procedure = proc;
+ currentUser.insurer = insurer;
  currentUser.agentNotes = agentNotes;
+ try { sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); } catch(e){}
  }
 
  if(sub) sub.textContent = 'Analysis complete -- ' + insurer + ' PPO confirmed';
