@@ -3355,7 +3355,7 @@ function goTo(id, param) {
    var isPremium = plan === 'premium';
    var currency = window._amountCurrency || window._currency || 'USD';
    var sym = currency === 'MXN' ? 'MXN $' : 'USD $';
-   var amt = window._lastOcrAmount || parseFloat(document.getElementById('s2-amount')?.value) || 0;
+   var amt = window._lastOcrAmount || parseFloat((document.getElementById('s2-amount')||{}).value) || 0;
    if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
    var refund = Math.round(amt * 0.75);
    var fee = isPremium ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
@@ -3385,7 +3385,7 @@ function goTo(id, param) {
  if (id === 's-plan') setTimeout(function(){
    var currency2 = window._amountCurrency || window._currency || 'USD';
    var sym = currency2 === 'MXN' ? 'MXN $' : '$';
-   var amt = window._lastOcrAmount || parseFloat(document.getElementById('s2-amount')?.value) || 0;
+   var amt = window._lastOcrAmount || parseFloat((document.getElementById('s2-amount')||{}).value) || 0;
    var refund = Math.round(amt * 0.75);
    var stdFee = Math.round(refund * 0.15);
    var premFee = Math.round(refund * 0.10) + 29;
@@ -3996,7 +3996,7 @@ function s1TryEnableContinue(){
  // Receipt is "ready" if explicitly confirmed OR if fields are filled (allow submit without banner click)
  var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
  var proc = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
- var amount = window._lastOcrAmount || parseFloat(document.getElementById('s2-amount')?.value) || 0; // only OCR amount
+ var amount = window._lastOcrAmount || parseFloat((document.getElementById('s2-amount')||{}).value) || 0; // only OCR amount
  window._lastOcrAmount = amount; // keep in sync
  var receiptFieldsOk = !!(dentist && proc && amount > 0);
 
@@ -5075,13 +5075,17 @@ function showWalletError(msg){
 }
 
 function paymentSuccess(){
-  document.getElementById('s5-form').style.display='none';
-  document.getElementById('s5-success').classList.add('show');
+  var s5form = document.getElementById('s5-form');
+  var s5succ = document.getElementById('s5-success');
+  if(s5form) s5form.style.display='none';
+  if(s5succ) s5succ.classList.add('show');
   try{launchConfetti();}catch(e){}
   // Auto-advance to dashboard after 3 seconds
   setTimeout(function(){
-    try{ initDashboard(); }catch(e){}
-    if(window.goTo) window.goTo('s-dashboard');
+    try{ initDashboard(); }catch(e){ console.warn('initDashboard error',e); }
+    setTimeout(function(){
+      if(window.goTo) window.goTo('s-dashboard');
+    }, 100);
   }, 3000);
   // Update plan labels
   var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
@@ -5482,7 +5486,7 @@ async function runRefundEstimate() {
 
  // Get claim data
  // Only use OCR-detected amount — never fallback to stale session data
- const rawAmt = window._lastOcrAmount || parseFloat(document.getElementById('s2-amount')?.value) || 0;
+ const rawAmt = window._lastOcrAmount || parseFloat((document.getElementById('s2-amount')||{}).value) || 0;
  if (!rawAmt) { console.warn('[Credimed] No OCR amount — aborting runRefundEstimate'); return; }
  const currency = window._amountCurrency || window._currency || 'USD';
  const amt = rawAmt; // use raw OCR amount, no conversion
@@ -5682,7 +5686,7 @@ function runProcessing() {
  var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$0';
  var amtEl=document.getElementById('s2-amount'),procEl=document.getElementById('s2-proc');
  var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
- var rawAmt = window._lastOcrAmount || parseFloat(document.getElementById('s2-amount')?.value) || 0;
+ var rawAmt = window._lastOcrAmount || parseFloat((document.getElementById('s2-amount')||{}).value) || 0;
  if(!rawAmt){ console.warn('[Credimed] No OCR amount — aborting runProcessing'); return; }
  var currency=window._amountCurrency||window._currency||'USD';
  var currLabel=currency==='MXN'?'MXN $':'$';
@@ -8871,7 +8875,7 @@ window.s1Submit = function s1Submit() {
 window.runProcessingDone = function() {
 var ph1=document.getElementById('proc-phase1'),ph2=document.getElementById('proc-phase2');
 if(ph1)ph1.style.display='none';if(ph2)ph2.style.display='flex';
-var rawAmt = window._lastOcrAmount || parseFloat(document.getElementById('s2-amount')?.value) || 0;
+var rawAmt = window._lastOcrAmount || parseFloat((document.getElementById('s2-amount')||{}).value) || 0;
 var currency = window._amountCurrency || window._currency || 'USD';
 var currLabel = currency === 'MXN' ? 'MXN $' : '$';
 var amt = rawAmt;
