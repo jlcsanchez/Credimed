@@ -2975,10 +2975,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <input id="std-cc-name" type="text" placeholder="John Smith" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
    </div>
   </div>
-  <button class="btn-primary" style="width:100%;height:54px;font-size:16px;font-weight:700;background:var(--navy)" onclick="window.goTo&&window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
+  <button class="btn-primary" style="width:100%;height:54px;font-size:16px;font-weight:700;background:var(--navy)" onclick="try{initDashboard();}catch(e){}setTimeout(function(){window.goTo&&window.goTo('s-dashboard');},50)">
    Save & go to dashboard →
   </button>
-  <div style="text-align:center;margin-top:12px;font-size:12px;color:#94a3b8;cursor:pointer" onclick="window.goTo&&window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
+  <div style="text-align:center;margin-top:12px;font-size:12px;color:#94a3b8;cursor:pointer" onclick="try{initDashboard();}catch(e){}setTimeout(function(){window.goTo&&window.goTo('s-dashboard');},50)">
    Skip for now
   </div>
  </div>
@@ -3523,6 +3523,11 @@ function goTo(id, param) {
    if(rowTotal) rowTotal.textContent = '$0.00';
    if(payBtn) payBtn.textContent = 'Continue ->';
  }
+ }
+ if (id === 's-std-payment') {
+   // Persist currentUser so dashboard has data after navigation
+   if(currentUser) { try { sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); } catch(e){} }
+   if(window.claimData) { try { sessionStorage.setItem('_claimData', JSON.stringify(window.claimData)); } catch(e){} }
  }
  if (id === 's-checklist') {
  // Auth guard -- must be logged in
