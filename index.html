@@ -960,7 +960,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 </style>
 
-<script src="https://js.stripe.com/v3/"></script>
+<!-- Stripe loaded on demand -->
 
 </head>
 <body>
@@ -1954,107 +1954,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
      <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:3px">Currency</div><div style="font-size:14px;font-weight:600;color:white" id="rq-r-currency">—</div></div>
     </div>
     <div style="margin-top:4px"><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:4px">Procedures</div><div id="rq-r-procs" style="display:flex;flex-wrap:wrap;gap:4px"></div></div>
-   <!-- OPTIONAL SUPPORTING DOCS -->
-
-   <!-- X-ray recommendation hint -->
-
-   <div id="rq-xray-hint" style="display:none;font-size:11px;color:#fbbf24;margin-bottom:10px;padding:8px 10px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:10px">
-    💡 This type of treatment usually benefits from X-rays
-   </div>
-
-   <div id="rq-extra-docs" style="display:none;margin-bottom:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 14px 10px;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease">
-
-```
-<!-- Header -->
-<div style="margin-bottom:10px">
- <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.85)">💰 Strengthen your claim</div>
- <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">💰 Add documents to increase your refund</div>
-</div>
-
-<!-- Progress bar -->
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
- <div style="flex:1;height:10px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden">
-  <div id="rq-strength-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#0D9488,#5eead4);border-radius:6px;transition:width .6s cubic-bezier(.4,0,.2,1)"></div>
- </div>
- <div style="font-size:12px;font-weight:700;color:#5eead4;white-space:nowrap" id="rq-strength-pct">0% strong claim</div>
-</div>
-<div id="rq-strength-feedback" style="display:none;font-size:11px;color:#5eead4;margin-bottom:8px">✓ Claim strength increased</div>
-
-<!-- Document options — always visible -->
-
-<!-- X-rays — High impact -->
-<label style="display:flex;align-items:center;gap:10px;padding:10px 8px;cursor:pointer;border-top:1px solid rgba(255,255,255,.07);background:rgba(13,148,136,.07);border-radius:8px;margin-top:4px">
- <input type="checkbox" id="cb-xray" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('xray',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
- <div style="flex:1">
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-   <span style="font-size:13px;color:rgba(255,255,255,.95);font-weight:700">Add X-rays</span>
-   <span style="font-size:9px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.25);border:1px solid rgba(13,148,136,.4);border-radius:4px;padding:1px 5px">⭐ Recommended</span>
-  </div>
-  <div style="font-size:11px;color:rgba(255,255,255,.55)">Most important for getting your full refund</div>
- </div>
- <div style="font-size:10px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);border:1px solid rgba(13,148,136,.35);border-radius:6px;padding:2px 7px;flex-shrink:0">+35%</div>
-</label>
-<div id="upload-xray" style="display:none;margin-bottom:8px">
- <div onclick="document.getElementById('rq-xray-input').click()" id="rq-xray-zone" style="border:2px dashed rgba(94,234,212,.3);border-radius:10px;padding:12px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
-  <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5)">🦷 Tap to upload X-ray · Photo or PDF</div>
- </div>
- <div id="rq-xray-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:7px 12px;background:rgba(13,148,136,.1);border-radius:10px;align-items:center;justify-content:space-between">
-  <span id="rq-xray-name"></span>
-  <span onclick="window.rqClearExtra&&window.rqClearExtra('xray')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕</span>
- </div>
- <input type="file" id="rq-xray-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('xray',this)">
-</div>
-
-<!-- Treatment plan — Medium impact -->
-<label style="display:flex;align-items:center;gap:10px;padding:9px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
- <input type="checkbox" id="cb-tx" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('tx',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
- <div style="flex:1">
-  <div style="font-size:13px;color:rgba(255,255,255,.85);font-weight:600">Add treatment plan</div>
-  <div style="font-size:11px;color:rgba(255,255,255,.4)">Medium impact — confirms procedures and costs</div>
- </div>
- <div style="font-size:10px;font-weight:700;color:#93c5fd;background:rgba(147,197,253,.1);border:1px solid rgba(147,197,253,.25);border-radius:6px;padding:2px 7px;flex-shrink:0">+10%</div>
-</label>
-<div id="upload-tx" style="display:none;margin-bottom:8px">
- <div onclick="document.getElementById('rq-tx-input').click()" style="border:2px dashed rgba(94,234,212,.3);border-radius:10px;padding:12px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
-  <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5)">📋 Tap to upload treatment plan · Photo or PDF</div>
- </div>
- <div id="rq-tx-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:7px 12px;background:rgba(13,148,136,.1);border-radius:10px;align-items:center;justify-content:space-between">
-  <span id="rq-tx-name"></span>
-  <span onclick="window.rqClearExtra&&window.rqClearExtra('tx')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕</span>
- </div>
- <input type="file" id="rq-tx-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('tx',this)">
-</div>
-
-<!-- ID — Low impact -->
-<label style="display:flex;align-items:center;gap:10px;padding:9px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
- <input type="checkbox" id="cb-govid" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('govid',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
- <div style="flex:1">
-  <div style="font-size:13px;color:rgba(255,255,255,.85);font-weight:600">Add ID</div>
-  <div style="font-size:11px;color:rgba(255,255,255,.4)">Low impact — speeds up processing</div>
- </div>
- <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:2px 7px;flex-shrink:0">+5%</div>
-</label>
-<div id="upload-govid" style="display:none;margin-bottom:8px">
- <div onclick="document.getElementById('rq-govid-input').click()" style="border:2px dashed rgba(94,234,212,.3);border-radius:10px;padding:12px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
-  <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5)">🪪 Tap to upload ID · Photo or PDF</div>
- </div>
- <div id="rq-govid-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:7px 12px;background:rgba(13,148,136,.1);border-radius:10px;align-items:center;justify-content:space-between">
-  <span id="rq-govid-name"></span>
-  <span onclick="window.rqClearExtra&&window.rqClearExtra('govid')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕</span>
- </div>
- <input type="file" id="rq-govid-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('govid',this)">
-</div>
-```
-
-   </div><!-- /rq-extra-docs -->
-
-   <div id="rq-cta-nudge" style="display:none;text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-bottom:10px">You're close — don't leave money on the table</div>
    </div>
 
    <!-- Manual amount entry — shown when OCR misses amount or user wants to correct -->
 
    <div id="rq-manual" style="display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;margin-bottom:16px">
-    <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:10px">💡 OCR could not read the amount — enter it manually</div>
+    <div style="font-size:12px;font-weight:700;color:white;margin-bottom:10px">💡 Enter the amount from your receipt</div>
     <div style="display:flex;gap:8px;align-items:center">
      <select id="rq-currency-select" onchange="window.rqUpdateCurrency&&window.rqUpdateCurrency()" style="height:46px;padding:0 10px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.08);color:white;font-size:14px;font-weight:600;outline:none;flex-shrink:0;-webkit-appearance:none;width:90px">
       <option value="USD" style="background:#1e293b">USD $</option>
@@ -2985,58 +2890,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-std-payment" style="background:var(--bg)">
  <div class="top-bar">
-  <div class="top-row"><div class="back-btn" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Billing Method</div></div>
+  <div class="top-row"><div class="back-btn" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Payment Method</div></div>
  </div>
  <div style="padding:24px 16px">
-
-  <!-- Trust banner -->
-
-  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:14px 16px;margin-bottom:20px;text-align:center">
-   <div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:3px">✓ Claim submitted · Standard Plan</div>
+  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:16px;margin-bottom:24px;text-align:center">
+   <div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:4px">✓ Claim submitted · Standard Plan</div>
    <div style="font-size:12px;color:#15803d">We only charge 15% after your insurance pays you. Nothing today.</div>
   </div>
-
-  <!-- Header -->
-
-  <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin-bottom:6px">Add a card for backup billing</h3>
-  <p style="font-size:13px;color:#64748b;margin-bottom:4px">We only use your card if your insurance pays you directly.</p>
-  <p style="font-size:13px;font-weight:600;color:#0D9488;margin-bottom:20px">You will never be charged upfront.</p>
-
-  <!-- Stripe Card Element container -->
-
+  <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin-bottom:6px">Add a card for future payment</h3>
+  <p style="font-size:13px;color:#94a3b8;margin-bottom:20px">We'll charge 15% automatically only after we verify your insurance deposit. You can update this anytime.</p>
+  <!-- Card form -->
   <div style="background:var(--teal-xlight);border:1px solid var(--teal-light);border-radius:12px;padding:16px;margin-bottom:16px">
-   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--teal-dark);margin-bottom:12px">🔒 Secure card details</div>
-   <!-- Skeleton while Stripe loads -->
-   <div id="std-stripe-skeleton" style="margin-bottom:4px">
-    <div style="height:44px;background:linear-gradient(90deg,#e8f5f3 25%,#f0faf9 50%,#e8f5f3 75%);background-size:200% 100%;border-radius:8px;border:1px solid #a7f3d0;animation:shimmer 1.4s infinite"></div>
-    <div style="font-size:11px;color:#94a3b8;margin-top:8px;text-align:center">Connecting to secure card form...</div>
+   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--teal-dark);margin-bottom:14px">Card Details</div>
+   <div class="field" style="margin-bottom:12px">
+    <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Card Number</label>
+    <input id="std-cc-number" type="tel" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box" oninput="var v=this.value.replace(/\D/g,'').slice(0,16);this.value=v.replace(/(.{4})/g,'$1 ').trim()">
    </div>
-   <!-- Stripe CardElement mounts here -->
-   <div id="std-card-element" style="display:none;padding:12px;border:1.5px solid var(--teal-light);border-radius:10px;background:white;min-height:44px"></div>
-   <div id="std-card-error" style="display:none;color:#ef4444;font-size:12px;margin-top:8px"></div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <div class="field">
+     <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Expiry</label>
+     <input id="std-cc-exp" type="tel" maxlength="5" placeholder="MM/YY" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box" oninput="var v=this.value.replace(/\D/g,'');if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2);this.value=v">
+    </div>
+    <div class="field">
+     <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">CVC</label>
+     <input id="std-cc-cvc" type="tel" maxlength="3" placeholder="123" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
+    </div>
+   </div>
+   <div class="field">
+    <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Cardholder Name</label>
+    <input id="std-cc-name" type="text" placeholder="John Smith" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
+   </div>
   </div>
-
-  <!-- Success state (hidden) -->
-
-  <div id="std-card-success" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:14px 16px;margin-bottom:16px;text-align:center">
-   <div style="font-size:22px;margin-bottom:4px">✓</div>
-   <div style="font-size:14px;font-weight:700;color:#16a34a">Card saved securely</div>
-   <div style="font-size:12px;color:#15803d;margin-top:3px">We'll only charge after you receive your insurance payment.</div>
-  </div>
-
-  <!-- Primary CTA -->
-
-  <button id="std-setup-btn" onclick="window.doStdSetup&&window.doStdSetup()" style="width:100%;height:54px;border-radius:14px;border:none;background:var(--navy);color:white;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:12px;opacity:.5;pointer-events:none">
-   Add card (only if needed)
+  <button class="btn-primary" style="width:100%;height:54px;font-size:16px;font-weight:700;background:var(--navy)" onclick="window.goTo&&window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
+   Save & go to dashboard →
   </button>
-
-  <!-- Skip -->
-
-  <div style="text-align:center;font-size:13px;color:#94a3b8;cursor:pointer;padding:8px" onclick="window.stdSkipCard&&window.stdSkipCard()">
-   Skip for now →
+  <div style="text-align:center;margin-top:12px;font-size:12px;color:#94a3b8;cursor:pointer" onclick="window.goTo&&window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
+   Skip for now
   </div>
-
-  <div style="text-align:center;font-size:11px;color:#cbd5e1;margin-top:12px">🔒 Card stored securely via Stripe · Never charged without notice</div>
  </div>
 </div>
 
@@ -3368,6 +3258,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 // 
 const users = {'ceo@credimed.us':{first:'CEO',last:'Credimed',email:'ceo@credimed.us',phone:'',pass:'Credimed2026!',role:'admin',hasCompletedOnce:true}};
 let currentUser = null;
+// ── Global error catch ──
+window.onerror = function(msg, src, line, col, err) {
+  if(src && src.indexOf('stripe') >= 0) return false; // ignore Stripe.js CORS errors
+  console.log('APP ERROR:', msg, 'L'+line, err);
+  return false;
+};
+
 let navHistory = ['s-landing'];
 let lang = 'en';
 
@@ -3378,21 +3275,17 @@ window._toUSD = function(n, currency) {
   return (currency === 'MXN' || window._amountCurrency === 'MXN') ? Math.round(n / window._MXN_RATE) : Math.round(n);
 };
 
-// ── Stripe redirect recovery — flag only, overlay handled at end of file ──
+// ── Stripe redirect recovery ──────────────────────────────
 (function(){
   try {
     var p = new URLSearchParams(window.location.search);
     if(p.get('payment_intent_client_secret')){
       window.history.replaceState({}, '', window.location.pathname);
-      try {
-        var saved = sessionStorage.getItem('_cUser');
-        if(saved) window.currentUser = JSON.parse(saved);
-      } catch(e){}
+      try { var s=sessionStorage.getItem('_cUser'); if(s) window.currentUser=JSON.parse(s); } catch(e){}
       window._stripeRedirect = true;
     }
   } catch(e){}
 })();
-
 
 function goTo(id, param) {
  try {
@@ -3465,9 +3358,7 @@ function goTo(id, param) {
    var isPremium = plan === 'premium';
    var currency = window._amountCurrency || window._currency || 'USD';
    var sym = currency === 'MXN' ? 'MXN $' : 'USD $';
-   var amt = window._lastOcrAmount
-     || (window.currentUser && window.currentUser.amount)
-     || 0;
+   var amt = window._lastOcrAmount || 0;
    if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
    var refund = Math.round(amt * 0.75);
    var fee = isPremium ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
@@ -3497,9 +3388,7 @@ function goTo(id, param) {
  if (id === 's-plan') setTimeout(function(){
    var currency2 = window._amountCurrency || window._currency || 'USD';
    var sym = currency2 === 'MXN' ? 'MXN $' : '$';
-   var amt = window._lastOcrAmount
-     || (window.currentUser && window.currentUser.amount)
-     || 0;
+   var amt = window._lastOcrAmount || 0;
    var refund = Math.round(amt * 0.75);
    var stdFee = Math.round(refund * 0.15);
    var premFee = Math.round(refund * 0.10) + 29;
@@ -3642,8 +3531,8 @@ function navTo(screenId, navId) {
  next.scrollTop = 0;
  if (screenId === 's-profile') initProfile();
  if (screenId === 's-dashboard') initDashboard();
- document.getElementById('bottom-nav').classList.add('show');
- document.getElementById('bottom-nav').style.display = 'flex';
+ var _navBn=document.getElementById('bottom-nav');
+ if(_navBn){_navBn.classList.add('show');_navBn.style.display='flex';}
  } catch(e) {}
 }
 function startNewClaim() {
@@ -4111,10 +4000,8 @@ function s1TryEnableContinue(){
  // Receipt is "ready" if explicitly confirmed OR if fields are filled (allow submit without banner click)
  var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
  var proc = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
- // Read amount — never overwrite _lastOcrAmount from here (would freeze stale value)
- var amount = window._lastOcrAmount
-   || (currentUser && currentUser.amount)
-   || 0;
+ var amount = window._lastOcrAmount || 0; // only OCR amount
+ window._lastOcrAmount = amount; // keep in sync
  var receiptFieldsOk = !!(dentist && proc && amount > 0);
 
  // Insurance ready: explicitly confirmed OR fields filled
@@ -5127,9 +5014,7 @@ async function initStripePayment(){
           amount: 2900,
           currency: 'usd',
           email: currentUser && currentUser.email,
-          userId: currentUser && (currentUser.uid || currentUser.email),
-          claimId: currentUser && currentUser.claimId,
-          setup_future_usage: 'off_session'
+          claimId: currentUser && currentUser.claimId
         })
       });
       var data = await resp.json();
@@ -5197,36 +5082,6 @@ function paymentSuccess(){
   document.getElementById('s5-form').style.display='none';
   document.getElementById('s5-success').classList.add('show');
   try{launchConfetti();}catch(e){}
-
-  // ── Save customer + payment_method for future off_session billing ──
-  (function() {
-    try {
-      var cu = window.currentUser || {};
-      // stripeInstance is the live Stripe object from initStripePayment
-      // After confirmPayment, Stripe attaches the PM to the PI automatically
-      // We call backend to retrieve and store customer_id + payment_method_id
-      fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'save_billing_profile',
-          userId: cu.uid || cu.email || '',
-          email:  cu.email || '',
-          claimId: cu.claimId || ''
-        })
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        // Store locally so app knows billing is set up
-        if(d.customerId)      { if(cu) cu.stripeCustomerId = d.customerId; }
-        if(d.paymentMethodId) { if(cu) cu.stripePaymentMethodId = d.paymentMethodId; }
-        console.log('[Credimed] Billing profile saved:', d.customerId);
-      })
-      .catch(function(e){ console.warn('[Credimed] save_billing_profile error:', e); });
-    } catch(e){}
-  })();
-  // ──────────────────────────────────────────────────────────────────
-
   // Auto-advance to dashboard after 3 seconds
   setTimeout(function(){
     try{ initDashboard(); }catch(e){}
@@ -5284,7 +5139,7 @@ async function doPayment(method){
     try {
       var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/',{
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email,userId:currentUser&&(currentUser.uid||currentUser.email),setup_future_usage:'off_session'})
+        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
       });
       var data = await resp.json();
       var cs = data.clientSecret || data.client_secret;
@@ -5355,7 +5210,7 @@ async function doPayment(method){
     try {
       var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/',{
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email,userId:currentUser&&(currentUser.uid||currentUser.email),setup_future_usage:'off_session'})
+        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
       });
       var pdata = await resp.json();
       cs = pdata.clientSecret || pdata.client_secret;
@@ -5410,41 +5265,28 @@ async function doPayment(method){
 // 
 function initDashboard(){
  console.log('Dashboard rendering');
-
- // Restore session if lost
- if(!currentUser) {
-   try { var s = sessionStorage.getItem('_cUser'); if(s) currentUser = JSON.parse(s); } catch(e){}
- }
- console.log('User:', currentUser);
- console.log('Claim:', currentUser);
-
- // Bottom nav
- var bn = document.getElementById('bottom-nav');
- if(bn){ bn.classList.add('show'); bn.style.display='flex'; bn.style.position='absolute'; }
-
- // Safe setter — never throws
- function _set(id, val) {
-   try { var el = document.getElementById(id); if(el && val != null) el.textContent = val; } catch(e){}
- }
-
  try {
-   var hr = new Date().getHours();
-   _set('dash-time', hr<12 ? 'Good morning ' : hr<18 ? 'Good afternoon ' : 'Good evening ');
+   var bn = document.getElementById('bottom-nav');
+   if(bn){ bn.classList.add('show'); bn.style.display='flex'; bn.style.position='absolute'; }
+   var _d = function(id){ return document.getElementById(id); };
+   var _s = function(id, val){ var e=_d(id); if(e&&val!=null) e.textContent=val; };
+   var hr=new Date().getHours();
+   _s('dash-time', hr<12?'Good morning ':hr<18?'Good afternoon ':'Good evening ');
    var u = currentUser || {};
-   _set('dash-name-display', u.first ? 'Welcome, ' + u.first + '!' : 'Welcome!');
-   _set('dash-avatar', (u.first||'U')[0].toUpperCase());
-   if(u.insurer) _set('dash-insurer-sub', 'Estimated from your ' + u.insurer + ' plan');
-   if(u.procedure) _set('dash-claim-title', u.procedure + (u.dentist ? ' — ' + String(u.dentist).split('--')[0].trim() : ''));
-   if(u.procedure) _set('dash-procedure', u.procedure);
-   if(u.dentist)   _set('dash-dentist', String(u.dentist).split('--')[0].trim());
-   if(u.amount)    _set('dash-amount', '$' + parseFloat(u.amount).toFixed(2));
-   if(u.insurer)   _set('dash-ins-name', u.insurer);
-   if(u.amount)    _set('dash-potential', '$' + (parseFloat(u.amount)*0.8).toFixed(0));
- } catch(e) {
-   console.warn('[Credimed] Dashboard render error:', e);
-   _set('dash-name-display', 'Welcome!');
-   _set('dash-time', 'Good day ');
- }
+   console.log('User:', u);
+   _s('dash-name-display', u.first ? 'Welcome, '+u.first+'!' : 'Welcome!');
+   _s('dash-avatar', (u.first||'U')[0].toUpperCase());
+   if(u.insurer) _s('dash-insurer-sub','Estimated from your '+u.insurer+' plan');
+   if(u.procedure&&u.amount){
+     var den = u.dentist ? String(u.dentist).split('--')[0].trim() : '';
+     _s('dash-claim-title', u.procedure+(den?' -- '+den:''));
+     _s('dash-procedure', u.procedure);
+     _s('dash-dentist', den||'--');
+     _s('dash-amount','$'+parseFloat(u.amount).toFixed(2));
+     _s('dash-ins-name', u.insurer||'--');
+     _s('dash-potential','$'+(parseFloat(u.amount)*0.8).toFixed(0));
+   }
+ } catch(e){ console.warn('Dashboard error:',e); }
 }
 
 // 
@@ -5848,21 +5690,8 @@ function runProcessing() {
  var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$0';
  var amtEl=document.getElementById('s2-amount'),procEl=document.getElementById('s2-proc');
  var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
- // Read amount from all sources — OCR may have saved to currentUser but not _lastOcrAmount
-var rawAmt = window._lastOcrAmount
-  || (currentUser && currentUser.amount)
-  || parseFloat((document.getElementById('s2-amount')||{}).value && document.getElementById('s2-amount').value !== '2' ? document.getElementById('s2-amount').value : '0')
-  || 0;
- if(!rawAmt || rawAmt < 10){
-   // Amount too low or missing — show fallback message instead of aborting
-   var bnEl2=document.getElementById('proc-big-number');
-   if(bnEl2) bnEl2.textContent='Calculating...';
-   console.warn('[Credimed] No valid OCR amount — check OCR pipeline');
-   return;
- }
- // Sync all sources
- window._lastOcrAmount = rawAmt;
- if(currentUser) currentUser.amount = rawAmt;
+ var rawAmt = window._lastOcrAmount || 0;
+ if(!rawAmt){ console.warn('[Credimed] No OCR amount — aborting runProcessing'); return; }
  var currency=window._amountCurrency||window._currency||'USD';
  var currLabel=currency==='MXN'?'MXN $':'$';
  var amt=rawAmt;
@@ -9050,14 +8879,10 @@ window.s1Submit = function s1Submit() {
 window.runProcessingDone = function() {
 var ph1=document.getElementById('proc-phase1'),ph2=document.getElementById('proc-phase2');
 if(ph1)ph1.style.display='none';if(ph2)ph2.style.display='flex';
-var rawAmt = window._lastOcrAmount
-  || (currentUser && currentUser.amount)
-  || 0;
+var rawAmt = window._lastOcrAmount || 0;
 var currency = window._amountCurrency || window._currency || 'USD';
 var currLabel = currency === 'MXN' ? 'MXN $' : '$';
 var amt = rawAmt;
-// Sync
-if(rawAmt > 0){ window._lastOcrAmount = rawAmt; if(currentUser) currentUser.amount = rawAmt; }
 var refund = amt > 0 ? Math.round(amt * 0.75) : 0;
 if(currentUser) currentUser.estimatedRefund = refund;
 var bn=document.getElementById('proc-big-number');if(bn)bn.textContent= refund > 0 ? currLabel+refund.toLocaleString() : '--';
@@ -9546,8 +9371,10 @@ window.selectPlan = function(plan) {
     }, 100);
   }
 
-  // Navigate immediately — no setTimeout (causes iOS tap issues)
-  if(window.goTo) window.goTo('s-plan-confirm');
+  // Show breakdown confirmation before going to sign
+  setTimeout(function(){
+    if(window.goTo) window.goTo('s-plan-confirm');
+  }, 300);
 };
 </script>
 
@@ -9992,13 +9819,6 @@ window.triggerReceiptQuick = function() {
 window.rqHandleFile = function(input) {
   var file = input.files && input.files[0];
   if(!file) return;
-  // Reset state from previous upload
-  var manualEl = document.getElementById('rq-manual');
-  if(manualEl) manualEl.style.display = 'none';
-  var resultsEl = document.getElementById('rq-results');
-  if(resultsEl) resultsEl.style.display = 'none';
-  var noteEl = document.getElementById('rq-amount-note');
-  if(noteEl) noteEl.remove();
   var isImage = file.type.startsWith('image/');
   var zone = document.getElementById('rq-upload-zone');
   var preview = document.getElementById('rq-preview');
@@ -10023,11 +9843,6 @@ window.rqHandleFile = function(input) {
   }
   // Store for later use in full doc flow
   window._rqFile = file;
-  // Mark receipt uploaded — section still hidden until OCR completes
-  window._rqHasReceipt  = true;
-  window._rqOcrComplete = false;
-  window._rqHasValidData = false;
-  window._rqStrength    = 0;
 };
 
 window.rqRunOCR = function(base64, mediaType) {
@@ -10048,47 +9863,19 @@ window.rqRunOCR = function(base64, mediaType) {
     // Show results
     var results = document.getElementById('rq-results');
     if(results) results.style.display = 'block';
-    // Check if X-ray hint applies to detected procedure
-    setTimeout(function(){ window.rqCheckXrayHint && window.rqCheckXrayHint(); }, 200);
-    // ── Normalize Lambda response — same keys as applyFields() ──
-    if(!d.amount) d.amount = d.total || d.cost || d.price || '';
-    if(!d.currency) d.currency = d.curr || '';
-    if(d.amount) {
-      var rawAmt = String(d.amount);
-      // Auto-detect MXN if no currency and amount > 500
-      if(!d.currency) {
-        d.currency = (rawAmt.indexOf('MXN') >= 0 || parseFloat(rawAmt.replace(/[^0-9.]/g,'')) > 500) ? 'MXN' : 'USD';
-      }
-      d.amount = rawAmt.replace(/[^0-9.]/g,''); // strip commas, symbols
-    }
-    // ─────────────────────────────────────────────────────────────
     var currency = d.currency || 'USD';
     if(d.amount) {
       var el = document.getElementById('rq-r-amount');
-      if(el) el.textContent = currency + ' ' + parseFloat(d.amount).toLocaleString();
+      if(el) el.textContent = currency + ' ' + d.amount;
       window._lastOcrAmount = parseFloat(d.amount)||0;
       window._currency = currency;
       window._amountCurrency = currency;
-      // Populate full flow fields
+      // Also populate the full flow fields
       var s2amt = document.getElementById('s2-amount');
       if(s2amt) { s2amt.value = d.amount; s2amt.classList.add('prefilled'); }
-      // OCR succeeded — force-hide manual input
-      var manualEl = document.getElementById('rq-manual');
-      if(manualEl) manualEl.style.display = 'none';
     }
     var curEl = document.getElementById('rq-r-currency');
-    if(curEl) curEl.textContent = currency || '—';
-    // Add clarification note under detected amount (only once)
-    if(d.amount && !document.getElementById('rq-amount-note')) {
-      var resultsCard = document.getElementById('rq-results');
-      if(resultsCard) {
-        var note = document.createElement('div');
-        note.id = 'rq-amount-note';
-        note.style.cssText = 'font-size:10px;color:rgba(255,255,255,.3);margin-top:10px;line-height:1.5;border-top:1px solid rgba(255,255,255,.07);padding-top:8px';
-        note.textContent = 'This amount is based on your receipt. Final reimbursement is determined by your insurance provider.';
-        resultsCard.appendChild(note);
-      }
-    }
+    if(curEl) curEl.textContent = currency;
     if(d.procedures && Array.isArray(d.procedures)) {
       var procsEl = document.getElementById('rq-r-procs');
       if(procsEl) {
@@ -10111,10 +9898,6 @@ window.rqRunOCR = function(base64, mediaType) {
     // Show trust moment + enable continue
     var trustEl = document.getElementById('rq-trust-moment');
     if(trustEl) trustEl.style.display = 'block';
-    // OCR complete — evaluate gate
-    window._rqOcrComplete  = true;
-    window._rqHasValidData = !!(d.amount || (d.procedures && d.procedures.length > 0));
-    window._rqCheckStrengthen && window._rqCheckStrengthen();
     // If no amount detected → show manual entry, keep button disabled until filled
     if(!d.amount || parseFloat(d.amount) <= 0) {
       var manual = document.getElementById('rq-manual');
@@ -10181,17 +9964,6 @@ window.rqManualInput = function() {
 };
 
 window.rqReset = function() {
-  // Hide strengthen section and reset strength
-  var extraDocs = document.getElementById('rq-extra-docs');
-  if(extraDocs) extraDocs.style.display = 'none';
-  var nudge = document.getElementById('rq-cta-nudge');
-  if(nudge) nudge.style.display = 'none';
-  window._rqHasReceipt   = false;
-  window._rqOcrComplete  = false;
-  window._rqHasValidData = false;
-  window._rqStrength     = 0;
-  window._rqExtraDocs    = {};
-  window._rqUpdateStrength && window._rqUpdateStrength();
   var zone = document.getElementById('rq-upload-zone');
   var preview = document.getElementById('rq-preview');
   var results = document.getElementById('rq-results');
@@ -10208,125 +9980,6 @@ window.rqContinue = function() {
   // Go to processing → estimate → then ask for insurance card
   if(window.goTo) window.goTo('s-processing');
 };
-
-// ── CLAIM STRENGTH — SUPPORTING DOCS ──────────────────────────
-window._rqExtraDocs  = {};     // { xray: File, tx: File, govid: File }
-window._rqExtraOpen  = false;
-// ── Strengthen section state ──
-window._rqHasReceipt  = false;
-window._rqOcrComplete = false;
-window._rqHasValidData = false;
-window._rqStrength    = 0;
-
-window._rqCheckStrengthen = function() {
-  console.log('hasReceipt:', window._rqHasReceipt);
-  console.log('ocrComplete:', window._rqOcrComplete);
-  console.log('hasValidData:', window._rqHasValidData);
-  var show = window._rqHasReceipt && window._rqOcrComplete && window._rqHasValidData;
-  var el    = document.getElementById('rq-extra-docs');
-  var nudge = document.getElementById('rq-cta-nudge');
-  if(!show) {
-    if(el)    { el.style.display = 'none'; el.style.opacity = '0'; }
-    if(nudge) nudge.style.display = 'none';
-    return;
-  }
-  // Show with fade-in + slide-up
-  if(el) {
-    el.style.display   = 'block';
-    el.style.opacity   = '0';
-    el.style.transform = 'translateY(8px)';
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        el.style.opacity   = '1';
-        el.style.transform = 'translateY(0)';
-      });
-    });
-  }
-  if(nudge) nudge.style.display = 'block';
-  // Animate bar from 0 → 60%
-  window._rqStrength = 0;
-  var bar = document.getElementById('rq-strength-bar');
-  var lbl = document.getElementById('rq-strength-pct');
-  if(bar) bar.style.width = '0%';
-  setTimeout(function() {
-    window._rqStrength = 60;
-    window._rqUpdateStrength && window._rqUpdateStrength();
-  }, 350); // after fade-in starts
-};
-
-window._rqUpdateStrength = function() {
-  var base = (window._rqOcrComplete && window._rqHasValidData) ? 60 : 0;
-  var pct = base;
-  if(window._rqExtraDocs.xray)  pct += 25;
-  if(window._rqExtraDocs.tx)    pct += 10;
-  if(window._rqExtraDocs.govid) pct += 5;
-  pct = Math.min(pct, 100);
-  window._rqStrength = pct;
-  var label = pct >= 100 ? 'Optimized for maximum reimbursement'
-            : pct >= 80  ? 'Strong claim'
-            : pct >= 60  ? 'Good claim'
-            : 'Getting started';
-  var bar = document.getElementById('rq-strength-bar');
-  var lbl = document.getElementById('rq-strength-pct');
-  if(bar) bar.style.width = pct + '%';
-  if(lbl) lbl.textContent = pct + '% — ' + label;
-};
-
-window.rqToggleExtraDocs = function() {
-  // Options are always visible — no expand/collapse needed
-};
-
-window.rqToggleExtraUpload = function(type, checked) {
-  var box = document.getElementById('upload-' + type);
-  if(box) box.style.display = checked ? 'block' : 'none';
-  if(!checked) {
-    var inp = document.getElementById('rq-' + type + '-input');
-    if(inp) inp.value = '';
-    var prev = document.getElementById('rq-' + type + '-preview');
-    if(prev) prev.style.display = 'none';
-    delete window._rqExtraDocs[type];
-    window._rqUpdateStrength();
-  }
-};
-
-window.rqExtraFile = function(type, input) {
-  if(!input || !input.files || !input.files[0]) return;
-  var file = input.files[0];
-  window._rqExtraDocs[type] = file;
-  var prev = document.getElementById('rq-' + type + '-preview');
-  var name = document.getElementById('rq-' + type + '-name');
-  if(name) name.textContent = '✓ ' + file.name;
-  if(prev) prev.style.display = 'flex';
-  window._rqUpdateStrength();
-  // Show feedback flash
-  var fb = document.getElementById('rq-strength-feedback');
-  var msgs = { xray: '+35% — your claim just got stronger', tx: '+25% — procedures confirmed', govid: '+10% — processing accelerated' };
-  if(fb) {
-    fb.textContent = '✓ ' + (msgs[type] || 'Claim strength increased');
-    fb.style.display = 'block';
-    setTimeout(function(){ if(fb) fb.style.display = 'none'; }, 2800);
-  }
-};
-
-window.rqClearExtra = function(type) {
-  var inp = document.getElementById('rq-' + type + '-input');
-  if(inp) inp.value = '';
-  var prev = document.getElementById('rq-' + type + '-preview');
-  if(prev) prev.style.display = 'none';
-  delete window._rqExtraDocs[type];
-  window._rqUpdateStrength();
-};
-
-// Show X-ray hint if detected procedure matches
-window.rqCheckXrayHint = function() {
-  var proc = (document.getElementById('rq-r-procs') && document.getElementById('rq-r-procs').textContent) || '';
-  var triggers = ['radiograf','implant','crown','root canal','implante','corona','endodont'];
-  var show = triggers.some(function(k){ return proc.toLowerCase().indexOf(k) >= 0; });
-  var hint = document.getElementById('rq-xray-hint');
-  if(hint) hint.style.display = show ? 'block' : 'none';
-};
-// ───────────────────────────────────────────────────────────────
-
 </script>
 
 <script>
@@ -10486,222 +10139,75 @@ window.showProcShare = function() {
     setTimeout(function(){ shareRow.style.opacity = '1'; }, 100);
   }
 };
-
-// ══════════════════════════════════════════════════════════════
-// STD PAYMENT — Stripe SetupIntent (save card, no charge)
-// ══════════════════════════════════════════════════════════════
-
-var _stdStripeInstance = null;
-var _stdCardElement    = null;
-var _stdSetupDone      = false;
-
-window.initStdSetup = function() {
-  if(_stdSetupDone) return;
-  var LAMBDA = 'https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/';
-
-  // Load Stripe.js if not already loaded
-  function getStdStripe(cb) {
-    if(typeof Stripe !== 'undefined') { cb(Stripe(STRIPE_PK)); return; }
-    var s = document.createElement('script');
-    s.src = 'https://js.stripe.com/v3/';
-    s.onload = function() { cb(Stripe(STRIPE_PK)); };
-    document.head.appendChild(s);
-  }
-
-  getStdStripe(function(stripe) {
-    _stdStripeInstance = stripe;
-
-    // Create SetupIntent via Lambda
-    fetch(LAMBDA, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'create_setup_intent' })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var clientSecret = data.client_secret || data.clientSecret;
-      if(!clientSecret) throw new Error('No client_secret');
-
-      var elements = stripe.elements();
-      _stdCardElement = elements.create('card', {
-        style: {
-          base: {
-            fontSize: '16px',
-            color: '#1e293b',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            '::placeholder': { color: '#94a3b8' }
-          }
-        }
-      });
-
-      // Hide skeleton, show real element
-      var skel = document.getElementById('std-stripe-skeleton');
-      var el   = document.getElementById('std-card-element');
-      var btn  = document.getElementById('std-setup-btn');
-      if(skel) skel.style.display = 'none';
-      if(el)   el.style.display = 'block';
-
-      _stdCardElement.mount('#std-card-element');
-
-      _stdCardElement.on('change', function(event) {
-        var errEl = document.getElementById('std-card-error');
-        if(event.error) {
-          if(errEl) { errEl.textContent = event.error.message; errEl.style.display = 'block'; }
-        } else {
-          if(errEl) errEl.style.display = 'none';
-        }
-        if(btn) {
-          var ready = event.complete && !event.error;
-          btn.style.opacity    = ready ? '1' : '.5';
-          btn.style.pointerEvents = ready ? 'auto' : 'none';
-        }
-      });
-
-      // Store client secret for confirm step
-      window._stdClientSecret = clientSecret;
-    })
-    .catch(function(err) {
-      console.warn('[Credimed] SetupIntent error:', err);
-      // Fallback: allow skip without error blocking user
-      var skel = document.getElementById('std-stripe-skeleton');
-      if(skel) skel.innerHTML = '<div style="font-size:12px;color:#94a3b8;text-align:center;padding:8px">Unable to load secure card form. You can skip for now.</div>';
-    });
-  });
-};
-
-window.doStdSetup = async function() {
-  if(!_stdStripeInstance || !_stdCardElement || !window._stdClientSecret) return;
-  var btn  = document.getElementById('std-setup-btn');
-  var errEl = document.getElementById('std-card-error');
-  if(btn) { btn.textContent = 'Saving...'; btn.style.opacity = '.7'; btn.style.pointerEvents = 'none'; }
-
-  try {
-    var cu = window.currentUser || {};
-    var result = await _stdStripeInstance.confirmCardSetup(window._stdClientSecret, {
-      payment_method: {
-        card: _stdCardElement,
-        billing_details: { name: cu.first ? cu.first + ' ' + (cu.last||'') : undefined }
-      }
-    });
-
-    if(result.error) {
-      if(errEl) { errEl.textContent = result.error.message; errEl.style.display = 'block'; }
-      if(btn) { btn.textContent = 'Add card (only if needed)'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
-      return;
-    }
-
-    // Success — store payment_method_id in backend
-    var pmId = result.setupIntent.payment_method;
-    _stdSetupDone = true;
-
-    // Save to backend (best-effort, non-blocking)
-    var LAMBDA = 'https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/';
-    fetch(LAMBDA, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'save_payment_method',
-        paymentMethodId: pmId,
-        userId: cu.uid || cu.email || ''
-      })
-    }).catch(function(){});
-
-    // Show success UI
-    var cardSection = document.querySelector('#s-std-payment .teal-xlight') ||
-                      document.getElementById('std-card-element') && document.getElementById('std-card-element').parentNode;
-    var setupBtn  = document.getElementById('std-setup-btn');
-    var successEl = document.getElementById('std-card-success');
-    if(cardSection) cardSection.style.display = 'none';
-    if(setupBtn)    setupBtn.style.display = 'none';
-    if(successEl)   successEl.style.display = 'block';
-
-    // Auto-navigate to dashboard after 1.5s
-    setTimeout(function() {
-      if(window.goTo) window.goTo('s-dashboard');
-      try { initDashboard(); } catch(e) {}
-    }, 1500);
-
-  } catch(e) {
-    console.warn('[Credimed] confirmCardSetup error:', e);
-    if(errEl) { errEl.textContent = 'Something went wrong. Please try again.'; errEl.style.display = 'block'; }
-    if(btn) { btn.textContent = 'Add card (only if needed)'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
-  }
-};
-
-window.stdSkipCard = function() {
-  if(window.goTo) window.goTo('s-dashboard');
-  try { initDashboard(); } catch(e) {}
-};
-
-// Auto-init when s-std-payment is shown
-(function() {
-  var _origGoTo = window.goTo;
-  // Hook into goTo to detect navigation to s-std-payment
-  // Using a MutationObserver on the screen activation instead
-  var _stdObs = new MutationObserver(function() {
-    var screen = document.getElementById('s-std-payment');
-    if(screen && (screen.classList.contains('active') || screen.style.display === 'block')) {
-      window.initStdSetup && window.initStdSetup();
-    }
-  });
-  document.addEventListener('DOMContentLoaded', function() {
-    var screen = document.getElementById('s-std-payment');
-    if(screen) _stdObs.observe(screen, { attributes: true, attributeFilter: ['class', 'style'] });
-  });
-})();
-// ══════════════════════════════════════════════════════════════
-
 </script>
 
+</body>
+</html>
 <script>
-
-</script>
-
-<script>
-// ── STRIPE REDIRECT FINAL HANDLER ────────────────────────────────
-// Runs after ALL scripts are parsed — goTo and initDashboard are guaranteed defined
+// ── STRIPE REDIRECT FINAL HANDLER ──
 (function() {
   if(!window._stripeRedirect) return;
   window._stripeRedirect = false;
 
-  // Show overlay — body exists here
-  var ov = document.createElement('div');
-  ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0B1F3A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:-apple-system,BlinkMacSystemFont,sans-serif';
-  ov.innerHTML =
-    '<div style="width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center">'
-    + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    + '</div>'
-    + '<div style="text-align:center">'
-    + '<div style="font-size:20px;font-weight:700;color:white;margin-bottom:8px">Payment successful</div>'
-    + '<div style="font-size:14px;color:rgba(255,255,255,.6)">Loading your dashboard...</div>'
-    + '</div>'
-    + '<div style="width:180px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden">'
-    + '<div id="_sso-bar" style="height:100%;width:0%;background:#0D9488;transition:width 1.4s ease"></div>'
-    + '</div>';
-  document.body.appendChild(ov);
+var ov = document.createElement(‘div’);
+ov.style.cssText = ‘position:fixed;inset:0;z-index:99999;background:#0B1F3A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:-apple-system,sans-serif’;
 
-  // Animate bar
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      var bar = document.getElementById('_sso-bar');
-      if(bar) bar.style.width = '100%';
-    });
-  });
+var icon = document.createElement(‘div’);
+icon.style.cssText = ‘width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center’;
+icon.innerHTML = ‘<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>’;
 
-  // Navigate after 1500ms — goTo and initDashboard are defined here
-  setTimeout(function() {
-    try { initDashboard(); } catch(e) {}
-    try {
-      goTo('s-dashboard');
-      ov.style.display = 'none';
-    } catch(e) {
-      console.warn('[Credimed] goTo error:', e);
-      // Absolute fallback
-      ov.innerHTML = '<div style="text-align:center;padding:32px">'
-        + '<div style="font-size:18px;font-weight:700;color:white;margin-bottom:16px">Your claim has been submitted successfully</div>'
-        + '<button onclick="try{goTo('s-dashboard')}catch(e){}" style="padding:14px 28px;background:#0D9488;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer">Go to dashboard</button>'
-        + '</div>';
-    }
-  }, 1500);
+var msg = document.createElement(‘div’);
+msg.style.textAlign = ‘center’;
+var title = document.createElement(‘div’);
+title.style.cssText = ‘font-size:20px;font-weight:700;color:white;margin-bottom:8px’;
+title.textContent = ‘Payment successful’;
+var sub = document.createElement(‘div’);
+sub.style.cssText = ‘font-size:14px;color:rgba(255,255,255,.6)’;
+sub.textContent = ‘Loading your dashboard…’;
+msg.appendChild(title);
+msg.appendChild(sub);
+
+var barWrap = document.createElement(‘div’);
+barWrap.style.cssText = ‘width:180px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden’;
+var bar = document.createElement(‘div’);
+bar.id = ‘_ssob’;
+bar.style.cssText = ‘height:100%;width:0%;background:#0D9488;transition:width 1.4s ease’;
+barWrap.appendChild(bar);
+
+ov.appendChild(icon);
+ov.appendChild(msg);
+ov.appendChild(barWrap);
+document.body.appendChild(ov);
+
+requestAnimationFrame(function(){ requestAnimationFrame(function(){ bar.style.width = ‘100%’; }); });
+
+setTimeout(function() {
+try { initDashboard(); } catch(e) {}
+try {
+goTo(‘s-dashboard’);
+ov.style.display = ‘none’;
+} catch(e) {
+setTimeout(function() {
+try { goTo(‘s-dashboard’); ov.style.display = ‘none’; } catch(e2) {
+// Static fallback — no inline onclick strings
+var btn = document.createElement(‘button’);
+btn.textContent = ‘Go to dashboard’;
+btn.style.cssText = ‘padding:14px 28px;background:#0D9488;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer’;
+btn.addEventListener(‘click’, function() {
+try { goTo(‘s-dashboard’); ov.style.display = ‘none’; } catch(e3) {}
+});
+ov.innerHTML = ‘’;
+var fb = document.createElement(‘div’);
+fb.style.cssText = ‘text-align:center;padding:32px’;
+var fbTitle = document.createElement(‘div’);
+fbTitle.style.cssText = ‘font-size:18px;font-weight:700;color:white;margin-bottom:16px’;
+fbTitle.textContent = ‘Your claim has been submitted successfully’;
+fb.appendChild(fbTitle);
+fb.appendChild(btn);
+ov.appendChild(fb);
+}
+}, 600);
+}
+}, 1500);
 })();
 </script>
