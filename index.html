@@ -1987,6 +1987,88 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
    </div>
 
+   <!-- OPTIONAL SUPPORTING DOCS -->
+
+   <div id="rq-extra-docs" style="margin-bottom:16px">
+    <div onclick="window.rqToggleExtraDocs&&window.rqToggleExtraDocs()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 0 6px">
+     <div>
+      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.7)">📎 Maximize your refund <span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.35)">(optional)</span></div>
+      <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px">Some claims get higher payouts with extra documents</div>
+     </div>
+     <div id="rq-extra-chevron" style="font-size:14px;color:rgba(255,255,255,.3);transition:transform .2s">›</div>
+    </div>
+
+```
+<div id="rq-extra-body" style="display:none">
+
+ <!-- X-rays -->
+ <label style="display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
+  <input type="checkbox" id="cb-xray" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('xray',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
+  <div>
+   <div style="font-size:13px;color:rgba(255,255,255,.75);font-weight:600">Add X-rays</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.35)">Recommended for major treatments</div>
+  </div>
+ </label>
+ <div id="upload-xray" style="display:none;margin-bottom:10px">
+  <div onclick="document.getElementById('rq-xray-input').click()" id="rq-xray-zone" style="border:2px dashed rgba(94,234,212,.3);border-radius:14px;padding:18px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
+   <div style="font-size:22px;margin-bottom:4px">🦷</div>
+   <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.6)">Tap to upload X-ray</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Photo or PDF</div>
+  </div>
+  <div id="rq-xray-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:8px 12px;background:rgba(13,148,136,.1);border-radius:10px;display:none;align-items:center;justify-content:space-between">
+   <span id="rq-xray-name"></span>
+   <span onclick="window.rqClearExtra&&window.rqClearExtra('xray')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕ Remove</span>
+  </div>
+  <input type="file" id="rq-xray-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('xray',this)">
+ </div>
+
+ <!-- Treatment plan -->
+ <label style="display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
+  <input type="checkbox" id="cb-tx" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('tx',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
+  <div>
+   <div style="font-size:13px;color:rgba(255,255,255,.75);font-weight:600">Add treatment plan</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.35)">Helps insurers approve complex claims</div>
+  </div>
+ </label>
+ <div id="upload-tx" style="display:none;margin-bottom:10px">
+  <div onclick="document.getElementById('rq-tx-input').click()" style="border:2px dashed rgba(94,234,212,.3);border-radius:14px;padding:18px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
+   <div style="font-size:22px;margin-bottom:4px">📋</div>
+   <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.6)">Tap to upload treatment plan</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Photo or PDF</div>
+  </div>
+  <div id="rq-tx-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:8px 12px;background:rgba(13,148,136,.1);border-radius:10px;display:none;align-items:center;justify-content:space-between">
+   <span id="rq-tx-name"></span>
+   <span onclick="window.rqClearExtra&&window.rqClearExtra('tx')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕ Remove</span>
+  </div>
+  <input type="file" id="rq-tx-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('tx',this)">
+ </div>
+
+ <!-- Government ID -->
+ <label style="display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
+  <input type="checkbox" id="cb-govid" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('govid',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
+  <div>
+   <div style="font-size:13px;color:rgba(255,255,255,.75);font-weight:600">Add ID</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.35)">If available — speeds up verification</div>
+  </div>
+ </label>
+ <div id="upload-govid" style="display:none;margin-bottom:10px">
+  <div onclick="document.getElementById('rq-govid-input').click()" style="border:2px dashed rgba(94,234,212,.3);border-radius:14px;padding:18px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
+   <div style="font-size:22px;margin-bottom:4px">🪪</div>
+   <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.6)">Tap to upload ID</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Photo or PDF</div>
+  </div>
+  <div id="rq-govid-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:8px 12px;background:rgba(13,148,136,.1);border-radius:10px;display:none;align-items:center;justify-content:space-between">
+   <span id="rq-govid-name"></span>
+   <span onclick="window.rqClearExtra&&window.rqClearExtra('govid')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕ Remove</span>
+  </div>
+  <input type="file" id="rq-govid-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('govid',this)">
+ </div>
+
+</div><!-- /rq-extra-body -->
+```
+
+   </div><!-- /rq-extra-docs -->
+
    <!-- CTA -->
 
    <button id="rq-continue-btn" onclick="window.rqContinue&&window.rqContinue()" disabled style="width:100%;height:54px;border-radius:16px;border:none;background:#94a3b8;color:white;font-size:16px;font-weight:700;cursor:not-allowed;margin-bottom:12px">
@@ -2805,6 +2887,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="field"><label>Insurance</label><input type="text" id="c-insurer" class="prefilled"></div>
  <div class="field"><label>Member ID</label><input type="text" id="c-member" class="prefilled"></div>
  </div>
+ <div class="divider-line"></div>
+ <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);margin-bottom:12px">Bank Account for Reimbursement</p>
+ <div class="field-row">
+ <div class="field"><label>Routing # <span class="req">*</span></label><input type="tel" inputmode="numeric" id="routing" class="numpad-field" placeholder="9 digits" maxlength="9" data-oi="sanitizeAndCheck(this)" oninput="window.sanitizeAndCheck&&window.sanitizeAndCheck(this)"></div>
+ <div class="field"><label>Account # <span class="req">*</span></label><input type="tel" inputmode="numeric" id="account" class="numpad-field" placeholder="Up to 17 digits" maxlength="17" data-oi="sanitizeAndCheck(this)" oninput="window.sanitizeAndCheck&&window.sanitizeAndCheck(this)"></div>
+ </div>
  <div class="field-row">
  <div class="field"><label>Account Holder</label><input type="text" id="c-holder" class="prefilled"></div>
  <div class="field"><label>Date</label><input type="text" id="c-date" readonly style="background:#f1f5f9;color:var(--slate-mid);font-style:italic;border-color:var(--border)"></div>
@@ -3014,7 +3102,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="success-title">Payment Received!</div>
  <div class="success-sub" style="margin-bottom:20px">Your claim is being submitted now</div>
  <div style="width:100%;max-width:280px;background:rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:left">
- <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Plan</span><span id="s5-plan-label-2" style="color:#4ade80">Premium</span></div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Plan</span><span id="s5-plan-label" style="color:#4ade80">Premium</span></div>
  <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim filed</span><span id="s5-fee-label" style="color:#4ade80">Free to start</span></div>
  <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim status</span><span style="color:#93c5fd">Submitting...</span></div>
  <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7)"><span>WhatsApp updates</span><span style="color:#93c5fd">Enabled </span></div>
@@ -3345,13 +3433,62 @@ function goTo(id, param) {
  if (id === 's-processing' && !window._skipProcessingAnim) setTimeout(function(){ try{ runProcessing(); }catch(e){} }, 300);
  if (id === 's-refund') setTimeout(function(){ try{ runRefundEstimate(); }catch(e){ console.warn('refund error',e); } }, 300);;
  if (id === 's-plan-confirm') setTimeout(function(){
-   if(window.claimData && window.claimData.paid <= 0){
-     var bn=document.getElementById('pc-big-num'); if(bn) bn.textContent='--'; return;
+   var plan = window._confirmedPlan || window._selectedPlan || 'standard';
+   var isPremium = plan === 'premium';
+   var currency = window._amountCurrency || window._currency || 'USD';
+   var sym = currency === 'MXN' ? 'MXN $' : 'USD $';
+   var amt = window._lastOcrAmount
+     || (window.currentUser && window.currentUser.amount)
+     || 0;
+   if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
+   var refund = Math.round(amt * 0.75);
+   var fee = isPremium ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
+   var net = refund - (isPremium ? Math.round(refund * 0.10) : Math.round(refund * 0.15));
+   var fmt = function(n){ return sym + n.toLocaleString(); };
+   var el = function(id){ return document.getElementById(id); };
+   if(el('pc-big-num')) el('pc-big-num').textContent = fmt(refund);
+   if(el('pc-paid')) el('pc-paid').textContent = fmt(amt);
+   if(el('pc-refund')) el('pc-refund').textContent = fmt(refund);
+   if(el('pc-fee-label')) el('pc-fee-label').textContent = isPremium ? 'Credimed fee ($29 + 10%)' : 'Credimed fee (15%)';
+   if(el('pc-fee')) el('pc-fee').textContent = '-' + fmt(fee);
+   if(el('pc-net')) el('pc-net').textContent = fmt(net);
+   if(el('pc-plan-note')) el('pc-plan-note').textContent = isPremium
+     ? 'Premium · USD $29 upfront + 10% after you get paid · Refund in ' + currency
+     : 'Standard · 15% only after you get paid · Refund in ' + currency + ' · No win, no fee';
+   // Animate big number
+   if(el('pc-big-num') && refund > 0){
+     var current=0, steps=40, inc=refund/steps;
+     var iv = setInterval(function(){
+       current = Math.min(current+inc, refund);
+       el('pc-big-num').textContent = fmt(Math.round(current));
+       if(current >= refund) clearInterval(iv);
+     }, 30);
    }
-   window.updateRefundCalculation && window.updateRefundCalculation();
  }, 200);
 
-  if (id === 's-plan') setTimeout(function(){ window.updateRefundCalculation && window.updateRefundCalculation(); }, 200);
+ if (id === 's-plan') setTimeout(function(){
+   var currency2 = window._amountCurrency || window._currency || 'USD';
+   var sym = currency2 === 'MXN' ? 'MXN $' : '$';
+   var amt = window._lastOcrAmount
+     || (window.currentUser && window.currentUser.amount)
+     || 0;
+   var refund = Math.round(amt * 0.75);
+   var stdFee = Math.round(refund * 0.15);
+   var premFee = Math.round(refund * 0.10) + 29;
+   var stdNet = refund - stdFee;
+   var premNet = refund - Math.round(refund * 0.10);
+   var sym = '$';
+   var bd = document.getElementById('plan-breakdown');
+   if(bd && amt > 0){
+     bd.style.display = 'block';
+     document.getElementById('plan-bd-paid').textContent = sym + amt.toLocaleString();
+     document.getElementById('plan-bd-refund').textContent = sym + refund.toLocaleString();
+     document.getElementById('plan-bd-std-fee').textContent = '-' + sym + stdFee.toLocaleString();
+     document.getElementById('plan-bd-prem-fee').textContent = '-' + sym + premFee.toLocaleString();
+     document.getElementById('plan-bd-std-net').textContent = sym + stdNet.toLocaleString();
+     document.getElementById('plan-bd-prem-net').textContent = sym + premNet.toLocaleString();
+   }
+ }, 200);
  if (id === 's-ready') setTimeout(function(){ try{ runReadyScreen(); }catch(e){} }, 100);
  if (id === 's-step5') {
  // Reset payment screen - hide success, show form
@@ -3712,7 +3849,7 @@ function s1StartScan(imageBase64, mediaType){
  .then(function(data){
    clearInterval(iv);
    if(fill) fill.style.width='100%';
-   // [OCR response logged — removed for security);
+   console.log('[Credimed OCR insurance response]', JSON.stringify(data));
    // Check isValid flag from Lambda -- if false, image is not an insurance card
    if(data && data.isValid === false){
      document.getElementById('s1-ocr-title').textContent='Not recognized';
@@ -3945,8 +4082,10 @@ function s1TryEnableContinue(){
  // Receipt is "ready" if explicitly confirmed OR if fields are filled (allow submit without banner click)
  var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
  var proc = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
- var amount = window._lastOcrAmount || 0; // only OCR amount
- window._lastOcrAmount = amount; // keep in sync
+ // Read amount — never overwrite _lastOcrAmount from here (would freeze stale value)
+ var amount = window._lastOcrAmount
+   || (currentUser && currentUser.amount)
+   || 0;
  var receiptFieldsOk = !!(dentist && proc && amount > 0);
 
  // Insurance ready: explicitly confirmed OR fields filled
@@ -4290,11 +4429,7 @@ function s2RunOCR(imageBase64, mediaType){
    };
 
    var amtEl = document.getElementById('s2-amount');
-   if(amtEl) amtEl.addEventListener('input', function(){
-    window.claimData.paid = parseFloat(amtEl.value) || 0;
-    window._updateProcSummary && window._updateProcSummary();
-    window.updateRefundCalculation && window.updateRefundCalculation();
-  });
+   if(amtEl) amtEl.addEventListener('input', function(){ window._updateProcSummary && window._updateProcSummary(); });
 
    window.onProcCheck();
    setTimeout(window._updateProcSummary, 400);
@@ -4493,15 +4628,15 @@ function s2RunOCR(imageBase64, mediaType){
      if(amtEl){
        amtEl.value = d.amount;
        amtEl.classList.add('prefilled');
-       // Detect currency
+       // Show currency label based on amount size
        var lbl = document.getElementById('amt-currency-label');
-       var currency = (ocrData && ocrData.currency) ? ocrData.currency : (parseFloat(d.amount) > 500 ? 'MXN' : 'USD');
+       var currency = ocrData && ocrData.currency ? ocrData.currency : (parseFloat(d.amount) > 500 ? 'MXN' : 'USD');
        if(lbl) lbl.textContent = '(' + currency + ')';
-       // ── Write to single source of truth ──
-       window.claimData.paid     = parseFloat(d.amount) || 0;
-       window.claimData.currency = currency;
-       // ── Trigger full calculation pipeline ──
-       window.updateRefundCalculation();
+       window._currency = currency;
+       window._amountCurrency = currency;
+       window._lastOcrAmount = parseFloat(d.amount)||0;
+       window._amountCurrency = d.currency || window._amountCurrency || 'USD';
+       if(currentUser){ currentUser.amount = window._lastOcrAmount; currentUser.amountCurrency = window._amountCurrency; }
      }
 
      var cityEl=document.getElementById('s2-city');
@@ -4523,7 +4658,6 @@ function s2RunOCR(imageBase64, mediaType){
      var rcCard=document.getElementById('s2-receipt-card');
      if(imgEl&&!imgEl.src){ if(rcCard) rcCard.style.display='block'; }
 
-     // Pipeline ya ejecutado arriba vía updateRefundCalculation()
      s2Summary();
      // Show procedure summary box
      if(window._updateProcSummary) window._updateProcSummary();
@@ -4630,15 +4764,11 @@ function s2Summary(){
  // Fields are displayed directly in s2-fields card -- no separate summary needed
  var fields = document.getElementById('s2-fields');
  if(fields && fields.style.display === 'none'){
- var dentist = document.getElementById('s2-dentist')&&document.getElementById('s2-dentist').value.trim();
- var proc = document.getElementById('s2-proc')&&document.getElementById('s2-proc').value;
- var amt = parseFloat((document.getElementById('s2-amount')||{}).value)||0;
+ var dentist = document.getElementById('s2-dentist')?.value.trim();
+ var proc = document.getElementById('s2-proc')?.value;
+ var amt = parseFloat(document.getElementById('s2-amount')?.value)||0;
  if(dentist || proc || amt > 0) fields.style.display = 'block';
  }
- // ── Always trigger refund calculation pipeline ──
- var amt = parseFloat((document.getElementById('s2-amount')||{}).value)
-           || window._lastOcrAmount || 0;
- if(amt > 0 && window.updateRefundCalculation) window.updateRefundCalculation();
 }
 
 window.s2CheckFields = function s2CheckFields(){
@@ -4648,9 +4778,7 @@ window.s2CheckFields = function s2CheckFields(){
  const btn = document.getElementById('s2-continue-btn');
  if(btn) btn.disabled = !(dentist && proc && amount > 0);
  // Update live refund pill
- // ── Sync claimData and run full pipeline ──
- window.claimData.paid = amount;
- window.updateRefundCalculation && window.updateRefundCalculation();
+ window.updateRefundPill && window.updateRefundPill(amount);
  // Also re-evaluate the main submit button (fields may now satisfy requirements)
  try { window.s1TryEnableContinue && window.s1TryEnableContinue(); } catch(e) {}
 }
@@ -4799,9 +4927,13 @@ window.confirmSig = function confirmSig(){
 
 window.checkSubmit = function checkSubmit(){const btn=document.getElementById('c-submit-btn');if(btn)btn.disabled=!cSigConfirmed}
 function cSubmit(){
- var err=document.getElementById('c-err');
- var errTxt=document.getElementById('c-err-txt');
- if(err) err.classList.remove('show');
+ const routing=document.getElementById('routing').value.replace(/\D/g,'');
+ const account=document.getElementById('account').value.replace(/\D/g,'');
+ const err=document.getElementById('c-err');
+ const errTxt=document.getElementById('c-err-txt');
+ err.classList.remove('show');
+ if(routing.length!==9){errTxt.textContent='Routing number must be exactly 9 digits.';err.classList.add('show');return}
+ if(account.length<4){errTxt.textContent='Please enter a valid account number (min 4 digits).';err.classList.add('show');return}
  // Go to payment screen (Step 5) instead of dashboard
  // Read plan from all sources -- _selectedPlan is the most reliable
  var plan = window._selectedPlan
@@ -5638,8 +5770,21 @@ function runProcessing() {
  var bn=document.getElementById('proc-big-number');if(bn)bn.textContent='$0';
  var amtEl=document.getElementById('s2-amount'),procEl=document.getElementById('s2-proc');
  var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
- var rawAmt = window._lastOcrAmount || 0;
- if(!rawAmt){ console.warn('[Credimed] No OCR amount — aborting runProcessing'); return; }
+ // Read amount from all sources — OCR may have saved to currentUser but not _lastOcrAmount
+var rawAmt = window._lastOcrAmount
+  || (currentUser && currentUser.amount)
+  || parseFloat((document.getElementById('s2-amount')||{}).value && document.getElementById('s2-amount').value !== '2' ? document.getElementById('s2-amount').value : '0')
+  || 0;
+ if(!rawAmt || rawAmt < 10){
+   // Amount too low or missing — show fallback message instead of aborting
+   var bnEl2=document.getElementById('proc-big-number');
+   if(bnEl2) bnEl2.textContent='Calculating...';
+   console.warn('[Credimed] No valid OCR amount — check OCR pipeline');
+   return;
+ }
+ // Sync all sources
+ window._lastOcrAmount = rawAmt;
+ if(currentUser) currentUser.amount = rawAmt;
  var currency=window._amountCurrency||window._currency||'USD';
  var currLabel=currency==='MXN'?'MXN $':'$';
  var amt=rawAmt;
@@ -5689,7 +5834,7 @@ function runProcessing() {
    .then(function(r){ return r.json(); })
    .then(function(data){
      if(data.claimId && currentUser) currentUser.claimId = data.claimId;
-     // [Claim saved — claimId removed for security];
+     console.log('Claim saved:', data.claimId);
    })
    .catch(function(err){ console.warn('Claim save failed:', err); });
  })();
@@ -8665,128 +8810,6 @@ window._setUser = function(u){ currentUser = u; };
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════════
-// CREDIMED — SINGLE SOURCE OF TRUTH + CALCULATION ENGINE
-// ══════════════════════════════════════════════════════════════════
-
-// Central state object — ALL numeric values live here
-window.claimData = {
-  paid: 0,          // amount patient paid (from OCR or manual)
-  currency: 'USD',  // 'USD' or 'MXN'
-  plan: 'standard', // 'standard' or 'premium'
-  // Computed (read-only, set by updateRefundCalculation)
-  reimbursement: 0,
-  fee: 0,
-  net: 0
-};
-
-// The ONE function that reads claimData and updates ALL refund UI
-window.updateRefundCalculation = function() {
-  var cd = window.claimData;
-
-  // Sync plan from live selector (may change after OCR)
-  cd.plan = window._selectedPlan
-    || (window.currentUser && window.currentUser.plan)
-    || cd.plan
-    || 'standard';
-  var isPrem = cd.plan === 'premium';
-
-  // Compute
-  var paid          = cd.paid;
-  var reimbursement = Math.round(paid * 0.75);
-  var fee           = isPrem
-                        ? (29 + Math.round(reimbursement * 0.10))
-                        : Math.round(reimbursement * 0.15);
-  var net           = reimbursement - (isPrem
-                        ? Math.round(reimbursement * 0.10)
-                        : Math.round(reimbursement * 0.15));
-
-  // Write back to state
-  cd.reimbursement = reimbursement;
-  cd.fee           = fee;
-  cd.net           = net;
-
-  // Keep legacy vars in sync (other screens still read them)
-  window._lastOcrAmount = paid;
-  if (window.currentUser) {
-    window.currentUser.amount        = paid;
-    window.currentUser.amountCurrency = cd.currency;
-  }
-
-  var sym = cd.currency === 'MXN' ? 'MXN $' : '$';
-  var fmt = function(n) { return sym + Math.round(n).toLocaleString(); };
-
-  // ── Live Refund Pill (s-step1 / s-step2) ──────────────────────
-  var pill = document.getElementById('live-refund-pill');
-  if (pill) {
-    if (paid <= 0) {
-      pill.style.display = 'none';
-    } else {
-      pill.style.display = 'block';
-      var paidEl = document.getElementById('pill-paid');
-      var insEl  = document.getElementById('pill-insures');
-      var feeEl  = document.getElementById('pill-fee');
-      var netEl  = document.getElementById('pill-net');
-      if (paidEl) paidEl.textContent = fmt(paid);
-      if (insEl)  insEl.textContent  = fmt(reimbursement);
-      if (feeEl)  feeEl.textContent  = '-' + fmt(fee);
-      if (netEl)  netEl.textContent  = fmt(net);
-      // Animate big number
-      var bigNum = document.getElementById('pill-big-number');
-      if (bigNum) {
-        var from = parseFloat(bigNum.dataset.current) || 0;
-        bigNum.dataset.current = net;
-        if (window._pillTimer) clearInterval(window._pillTimer);
-        var steps = 30, inc = (net - from) / steps, cur = from, s = 0;
-        window._pillTimer = setInterval(function() {
-          cur = Math.min(cur + inc, net);
-          bigNum.textContent = fmt(Math.round(cur));
-          if (++s >= steps) { clearInterval(window._pillTimer); bigNum.textContent = fmt(net); }
-        }, 20);
-      }
-    }
-  }
-
-  // ── Receipt review card (rc-amount) ───────────────────────────
-  var rcA = document.getElementById('s2-rc-amount');
-  if (rcA && paid > 0) rcA.textContent = fmt(paid);
-
-  // ── Plan-confirm screen (s-plan-confirm) ──────────────────────
-  var el = function(id) { return document.getElementById(id); };
-  if (el('pc-paid'))      el('pc-paid').textContent      = fmt(paid);
-  if (el('pc-refund'))    el('pc-refund').textContent    = fmt(reimbursement);
-  if (el('pc-big-num'))   el('pc-big-num').textContent   = fmt(reimbursement);
-  if (el('pc-fee'))       el('pc-fee').textContent       = '-' + fmt(fee);
-  if (el('pc-net'))       el('pc-net').textContent       = fmt(net);
-  if (el('pc-fee-label')) el('pc-fee-label').textContent = isPrem
-    ? 'Credimed fee ($29 + 10%)' : 'Credimed fee (15%)';
-  if (el('pc-plan-note')) el('pc-plan-note').textContent = isPrem
-    ? 'Premium · $29 upfront + 10% after you get paid · Refund in ' + cd.currency
-    : 'Standard · 15% only after you get paid · No win, no fee · Refund in ' + cd.currency;
-
-  // ── Plan selection screen (s-plan) ────────────────────────────
-  var bd = el('plan-breakdown');
-  if (bd && paid > 0) {
-    bd.style.display = 'block';
-    var stdFee  = Math.round(reimbursement * 0.15);
-    var premFee = 29 + Math.round(reimbursement * 0.10);
-    var stdNet  = reimbursement - stdFee;
-    var premNet = reimbursement - Math.round(reimbursement * 0.10);
-    if (el('plan-bd-paid'))     el('plan-bd-paid').textContent     = fmt(paid);
-    if (el('plan-bd-refund'))   el('plan-bd-refund').textContent   = fmt(reimbursement);
-    if (el('plan-bd-std-fee'))  el('plan-bd-std-fee').textContent  = '-' + sym + stdFee.toLocaleString();
-    if (el('plan-bd-prem-fee')) el('plan-bd-prem-fee').textContent = '-' + sym + premFee.toLocaleString();
-    if (el('plan-bd-std-net'))  el('plan-bd-std-net').textContent  = sym + stdNet.toLocaleString();
-    if (el('plan-bd-prem-net')) el('plan-bd-prem-net').textContent = sym + premNet.toLocaleString();
-  }
-
-  // ── Step-5 / payment confirmation ─────────────────────────────
-  var refundNetEl = el('refund-net');
-  if (refundNetEl) refundNetEl.textContent = fmt(net);
-};
-</script>
-
-<script>
 // LIVE REFUND PILL 
 window.updateRefundPill = function updateRefundPill(amount) {
  var pill = document.getElementById('live-refund-pill');
@@ -8800,10 +8823,8 @@ return;
 pill.style.display = 'block';
 
 var refund = Math.round(amount * 0.75);
-var _plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
-var _isPrem = _plan === 'premium';
-var fee = _isPrem ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
-var net = refund - (_isPrem ? Math.round(refund * 0.10) : Math.round(refund * 0.15));
+var fee = Math.round(refund * 0.15) + 25;
+var net = refund - fee;
 
 // Instant fill for breakdown rows
 var paidEl = document.getElementById('pill-paid');
@@ -8858,7 +8879,7 @@ return;
 }
 if (currentUser) { currentUser.insurer = provider; currentUser.memberId = member; currentUser.group = group; }
 window._s1CardOk = true;
-// s-step1b removed — stay on s-step1 and scroll to receipt section
+if (window.goTo) window.goTo('s-step1b');
 };
 
 window.s1Submit = function s1Submit() {
@@ -8951,10 +8972,14 @@ window.s1Submit = function s1Submit() {
 window.runProcessingDone = function() {
 var ph1=document.getElementById('proc-phase1'),ph2=document.getElementById('proc-phase2');
 if(ph1)ph1.style.display='none';if(ph2)ph2.style.display='flex';
-var rawAmt = window._lastOcrAmount || 0;
+var rawAmt = window._lastOcrAmount
+  || (currentUser && currentUser.amount)
+  || 0;
 var currency = window._amountCurrency || window._currency || 'USD';
 var currLabel = currency === 'MXN' ? 'MXN $' : '$';
 var amt = rawAmt;
+// Sync
+if(rawAmt > 0){ window._lastOcrAmount = rawAmt; if(currentUser) currentUser.amount = rawAmt; }
 var refund = amt > 0 ? Math.round(amt * 0.75) : 0;
 if(currentUser) currentUser.estimatedRefund = refund;
 var bn=document.getElementById('proc-big-number');if(bn)bn.textContent= refund > 0 ? currLabel+refund.toLocaleString() : '--';
@@ -9443,10 +9468,8 @@ window.selectPlan = function(plan) {
     }, 100);
   }
 
-  // Show breakdown confirmation before going to sign
-  setTimeout(function(){
-    if(window.goTo) window.goTo('s-plan-confirm');
-  }, 300);
+  // Navigate immediately — no setTimeout (causes iOS tap issues)
+  if(window.goTo) window.goTo('s-plan-confirm');
 };
 </script>
 
@@ -9698,12 +9721,10 @@ window.runReceiptOCR = function(base64, mediaType) {
       var el3 = document.getElementById('rec-r-amount'); if(el3) el3.textContent = currency + ' ' + d.amount;
       var el3c = document.getElementById('rec-r-currency'); if(el3c) el3c.textContent = currency;
       var e23 = document.getElementById('s2-amount'); if(e23) { e23.value = d.amount; e23.classList.add('prefilled'); }
-      window.claimData.paid     = parseFloat(d.amount) || 0;
-      window.claimData.currency  = currency;
-      window._currency = currency;          // legacy compat
-      window._amountCurrency = currency;    // legacy compat
+      window._lastOcrAmount = parseFloat(d.amount) || 0;
+      window._currency = currency;
+      window._amountCurrency = currency;
       var lbl = document.getElementById('amt-currency-label'); if(lbl) lbl.textContent = '(' + currency + ')';
-      window.updateRefundCalculation && window.updateRefundCalculation();
     }
     if(d.procedures && Array.isArray(d.procedures)) {
       var procsEl = document.getElementById('rec-r-procs');
@@ -9941,14 +9962,12 @@ window.rqRunOCR = function(base64, mediaType) {
     if(d.amount) {
       var el = document.getElementById('rq-r-amount');
       if(el) el.textContent = currency + ' ' + d.amount;
-      window.claimData.paid    = parseFloat(d.amount) || 0;
-      window.claimData.currency = currency;
-      window._currency = currency;         // legacy compat
-      window._amountCurrency = currency;   // legacy compat
+      window._lastOcrAmount = parseFloat(d.amount)||0;
+      window._currency = currency;
+      window._amountCurrency = currency;
       // Also populate the full flow fields
       var s2amt = document.getElementById('s2-amount');
       if(s2amt) { s2amt.value = d.amount; s2amt.classList.add('prefilled'); }
-      window.updateRefundCalculation && window.updateRefundCalculation();
     }
     var curEl = document.getElementById('rq-r-currency');
     if(curEl) curEl.textContent = currency;
@@ -10056,6 +10075,54 @@ window.rqContinue = function() {
   // Go to processing → estimate → then ask for insurance card
   if(window.goTo) window.goTo('s-processing');
 };
+
+// ── OPTIONAL SUPPORTING DOCS ────────────────────────────────────
+window._rqExtraDocs = {};        // { xray: File, tx: File, govid: File }
+window._rqExtraOpen = false;
+
+window.rqToggleExtraDocs = function() {
+  var body = document.getElementById('rq-extra-body');
+  var chev = document.getElementById('rq-extra-chevron');
+  window._rqExtraOpen = !window._rqExtraOpen;
+  if(body) body.style.display = window._rqExtraOpen ? 'block' : 'none';
+  if(chev) chev.style.transform = window._rqExtraOpen ? 'rotate(90deg)' : '';
+};
+
+window.rqToggleExtraUpload = function(type, checked) {
+  var box = document.getElementById('upload-' + type);
+  if(box) box.style.display = checked ? 'block' : 'none';
+  if(!checked) {
+    // Clear file if unchecked
+    var inp = document.getElementById('rq-' + type + '-input');
+    if(inp) inp.value = '';
+    var prev = document.getElementById('rq-' + type + '-preview');
+    if(prev) prev.style.display = 'none';
+    delete window._rqExtraDocs[type];
+  }
+};
+
+window.rqExtraFile = function(type, input) {
+  if(!input || !input.files || !input.files[0]) return;
+  var file = input.files[0];
+  window._rqExtraDocs[type] = file;
+  // Show preview row
+  var prev = document.getElementById('rq-' + type + '-preview');
+  var name = document.getElementById('rq-' + type + '-name');
+  if(name) name.textContent = '✓ ' + file.name;
+  if(prev) { prev.style.display = 'flex'; }
+};
+
+window.rqClearExtra = function(type) {
+  var inp = document.getElementById('rq-' + type + '-input');
+  if(inp) inp.value = '';
+  var prev = document.getElementById('rq-' + type + '-preview');
+  if(prev) prev.style.display = 'none';
+  // Reset zone
+  var zone = document.getElementById('rq-' + type + '-zone');
+  delete window._rqExtraDocs[type];
+};
+// ────────────────────────────────────────────────────────────────
+
 </script>
 
 <script>
@@ -10215,9 +10282,6 @@ window.showProcShare = function() {
     setTimeout(function(){ shareRow.style.opacity = '1'; }, 100);
   }
 };
-
-// ── selectPlan alias ──────────────────
-function selectPlan(plan){ if(window.selectPlan) window.selectPlan(plan); }
 </script>
 
 </body>
