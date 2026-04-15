@@ -9974,14 +9974,11 @@ window.rqHandleFile = function(input) {
   }
   // Store for later use in full doc flow
   window._rqFile = file;
-  // Show strengthen section now that receipt is uploaded
-  var extraDocs = document.getElementById('rq-extra-docs');
-  if(extraDocs) extraDocs.style.display = 'block';
-  var nudge = document.getElementById('rq-cta-nudge');
-  if(nudge) nudge.style.display = 'block';
-  // Set base 65% now that receipt exists
-  window._rqStrength = 65;
-  window._rqUpdateStrength && window._rqUpdateStrength();
+  // Mark receipt uploaded — section still hidden until OCR completes
+  window._rqHasReceipt  = true;
+  window._rqOcrComplete = false;
+  window._rqHasValidData = false;
+  window._rqStrength    = 0;
 };
 
 window.rqRunOCR = function(base64, mediaType) {
@@ -10065,6 +10062,10 @@ window.rqRunOCR = function(base64, mediaType) {
     // Show trust moment + enable continue
     var trustEl = document.getElementById('rq-trust-moment');
     if(trustEl) trustEl.style.display = 'block';
+    // OCR complete — evaluate gate
+    window._rqOcrComplete  = true;
+    window._rqHasValidData = !!(d.amount || (d.procedures && d.procedures.length > 0));
+    window._rqCheckStrengthen && window._rqCheckStrengthen();
     // If no amount detected → show manual entry, keep button disabled until filled
     if(!d.amount || parseFloat(d.amount) <= 0) {
       var manual = document.getElementById('rq-manual');
@@ -10136,8 +10137,11 @@ window.rqReset = function() {
   if(extraDocs) extraDocs.style.display = 'none';
   var nudge = document.getElementById('rq-cta-nudge');
   if(nudge) nudge.style.display = 'none';
-  window._rqStrength = 0;
-  window._rqExtraDocs = {};
+  window._rqHasReceipt   = false;
+  window._rqOcrComplete  = false;
+  window._rqHasValidData = false;
+  window._rqStrength     = 0;
+  window._rqExtraDocs    = {};
   window._rqUpdateStrength && window._rqUpdateStrength();
   var zone = document.getElementById('rq-upload-zone');
   var preview = document.getElementById('rq-preview');
@@ -10159,20 +10163,43 @@ window.rqContinue = function() {
 // ── CLAIM STRENGTH — SUPPORTING DOCS ──────────────────────────
 window._rqExtraDocs  = {};     // { xray: File, tx: File, govid: File }
 window._rqExtraOpen  = false;
-window._rqStrength   = 0;  // stays 0 until receipt uploaded
+// ── Strengthen section state ──
+window._rqHasReceipt  = false;
+window._rqOcrComplete = false;
+window._rqHasValidData = false;
+window._rqStrength    = 0;
+
+window._rqCheckStrengthen = function() {
+  console.log('hasReceipt:', window._rqHasReceipt);
+  console.log('ocrComplete:', window._rqOcrComplete);
+  console.log('hasValidData:', window._rqHasValidData);
+  var show = window._rqHasReceipt && window._rqOcrComplete && window._rqHasValidData;
+  var el = document.getElementById('rq-extra-docs');
+  var nudge = document.getElementById('rq-cta-nudge');
+  if(el)    el.style.display    = show ? 'block' : 'none';
+  if(nudge) nudge.style.display = show ? 'block' : 'none';
+  if(show && window._rqStrength < 60) {
+    window._rqStrength = 60;
+    window._rqUpdateStrength && window._rqUpdateStrength();
+  }
+};
 
 window._rqUpdateStrength = function() {
-  var base = window._rqFile ? 65 : 0;  // 65 only after receipt uploaded
+  var base = (window._rqOcrComplete && window._rqHasValidData) ? 60 : 0;
   var pct = base;
-  if(window._rqExtraDocs.xray)  pct += 20;
+  if(window._rqExtraDocs.xray)  pct += 25;
   if(window._rqExtraDocs.tx)    pct += 10;
   if(window._rqExtraDocs.govid) pct += 5;
-  pct = Math.min(pct, 95);
+  pct = Math.min(pct, 100);
   window._rqStrength = pct;
+  var label = pct >= 100 ? 'Optimized for maximum reimbursement'
+            : pct >= 80  ? 'Strong claim'
+            : pct >= 60  ? 'Good claim'
+            : 'Getting started';
   var bar = document.getElementById('rq-strength-bar');
   var lbl = document.getElementById('rq-strength-pct');
   if(bar) bar.style.width = pct + '%';
-  if(lbl) lbl.textContent = pct + '% strong claim';
+  if(lbl) lbl.textContent = pct + '% — ' + label;
 };
 
 window.rqToggleExtraDocs = function() {
