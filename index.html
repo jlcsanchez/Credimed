@@ -4335,7 +4335,12 @@ function s2RunOCR(imageBase64, mediaType){
    };
 
    var amtEl = document.getElementById('s2-amount');
-   if(amtEl) amtEl.addEventListener('input', function(){ window._updateProcSummary && window._updateProcSummary(); });
+   if(amtEl) amtEl.addEventListener('input', function(){
+    window._lastOcrAmount = parseFloat(amtEl.value) || 0;
+    if(window.currentUser) window.currentUser.amount = window._lastOcrAmount;
+    window._updateProcSummary && window._updateProcSummary();
+    window.updateRefundPill && window.updateRefundPill(window._lastOcrAmount);
+  });
 
    window.onProcCheck();
    setTimeout(window._updateProcSummary, 400);
@@ -4564,6 +4569,16 @@ function s2RunOCR(imageBase64, mediaType){
      var rcCard=document.getElementById('s2-receipt-card');
      if(imgEl&&!imgEl.src){ if(rcCard) rcCard.style.display='block'; }
 
+     // ── OCR → State → Calculation → UI pipeline ──────────────────
+     var _ocrAmt = parseFloat((document.getElementById('s2-amount')||{}).value)
+                   || window._lastOcrAmount || 0;
+     // 1. Normalize state
+     window._lastOcrAmount = _ocrAmt;
+     if(window.currentUser) window.currentUser.amount = _ocrAmt;
+     // 2. Trigger full calculation + UI update
+     if(_ocrAmt > 0 && window.updateRefundPill) window.updateRefundPill(_ocrAmt);
+     if(window.s2CheckFields) window.s2CheckFields();
+     // ──────────────────────────────────────────────────────────────
      s2Summary();
      // Show procedure summary box
      if(window._updateProcSummary) window._updateProcSummary();
@@ -4670,11 +4685,15 @@ function s2Summary(){
  // Fields are displayed directly in s2-fields card -- no separate summary needed
  var fields = document.getElementById('s2-fields');
  if(fields && fields.style.display === 'none'){
- var dentist = document.getElementById('s2-dentist')?.value.trim();
- var proc = document.getElementById('s2-proc')?.value;
- var amt = parseFloat(document.getElementById('s2-amount')?.value)||0;
+ var dentist = document.getElementById('s2-dentist')&&document.getElementById('s2-dentist').value.trim();
+ var proc = document.getElementById('s2-proc')&&document.getElementById('s2-proc').value;
+ var amt = parseFloat((document.getElementById('s2-amount')||{}).value)||0;
  if(dentist || proc || amt > 0) fields.style.display = 'block';
  }
+ // ── Always trigger refund calculation pipeline ──
+ var amt = parseFloat((document.getElementById('s2-amount')||{}).value)
+           || window._lastOcrAmount || 0;
+ if(amt > 0 && window.updateRefundPill) window.updateRefundPill(amt);
 }
 
 window.s2CheckFields = function s2CheckFields(){
@@ -8712,8 +8731,10 @@ return;
 pill.style.display = 'block';
 
 var refund = Math.round(amount * 0.75);
-var fee = Math.round(refund * 0.15) + 25;
-var net = refund - fee;
+var _plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
+var _isPrem = _plan === 'premium';
+var fee = _isPrem ? (Math.round(refund * 0.10) + 29) : Math.round(refund * 0.15);
+var net = refund - (_isPrem ? Math.round(refund * 0.10) : Math.round(refund * 0.15));
 
 // Instant fill for breakdown rows
 var paidEl = document.getElementById('pill-paid');
