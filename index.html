@@ -3359,7 +3359,7 @@ function goTo(id, param) {
  const next = document.getElementById(id);
  if(!next) { console.warn('Screen not found:', id); return; }
  next.classList.add('active');
- next.style.display = 'block';
+ next.style.display = (id === 's-dashboard') ? 'flex' : 'block';
  next.scrollTop = 0;
  var inner = next.firstElementChild;
  if(inner) inner.scrollTop = 0;
@@ -10386,4 +10386,4 @@ ov.appendChild(fb);
 }
 }, 1500);
 })();
-</script>p
+</script>
