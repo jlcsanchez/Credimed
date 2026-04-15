@@ -4430,7 +4430,7 @@ function s2RunOCR(imageBase64, mediaType){
      if(!ocrData.procedure) ocrData.procedure = ocrData.treatment || ocrData.service || ocrData.proc || '';
      if(!ocrData.amount) ocrData.amount = ocrData.total || ocrData.cost || ocrData.price || '';
      if(ocrData.amount){
-       var rawAmt = String(ocrData.amount);
+       var rawAmt = String(ocrData.amount).replace(/,/g,'');
        var isMXN = ocrData.currency === 'MXN' || rawAmt.includes('MXN') || rawAmt.includes('pesos') || parseFloat(rawAmt.replace(/[^0-9.]/g,'')) > 500;
        ocrData.amount = rawAmt.replace(/[^0-9.]/g,'');
        ocrData.isMXN = isMXN;
@@ -8974,10 +8974,10 @@ var ph1=document.getElementById('proc-phase1'),ph2=document.getElementById('proc
 if(ph1)ph1.style.display='none';if(ph2)ph2.style.display='flex';
 var rawAmt = window._lastOcrAmount || 0;
 window.currentUser = window.currentUser || {};
-currentUser.amount = rawAmt;
 var currency = window._amountCurrency || window._currency || 'USD';
-var currLabel = currency === 'MXN' ? 'MXN $' : '$';
-var amt = rawAmt;
+var currLabel = '$';
+var amt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(rawAmt / window._MXN_RATE) : rawAmt;
+currentUser.amount = amt;
 var refund = amt > 0 ? Math.round(amt * 0.75) : 0;
 if(currentUser) currentUser.estimatedRefund = refund;
 var bn=document.getElementById('proc-big-number');if(bn)bn.textContent= refund > 0 ? currLabel+refund.toLocaleString() : '--';
@@ -9968,7 +9968,7 @@ window.rqRunOCR = function(base64, mediaType) {
     if(d.amount) {
       var el = document.getElementById('rq-r-amount');
       if(el) el.textContent = currency + ' ' + d.amount;
-      var _rawOcr = parseFloat(d.amount)||0;
+      var _rawOcr = parseFloat(String(d.amount).replace(/,/g,''))||0;
       window._lastOcrAmount = _rawOcr;
       window._currency = currency;
       window._amountCurrency = currency;
