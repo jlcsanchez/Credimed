@@ -5357,7 +5357,7 @@ async function doPayment(method){
 // 
 function initDashboard(){
    var bn = document.getElementById('bottom-nav');
-   if(bn){ bn.classList.add('show'); bn.style.display='flex'; bn.style.position='absolute'; }
+   if(bn){ bn.classList.add('show'); bn.style.display='flex'; }
    var _d = function(id){ return document.getElementById(id); };
    var _s = function(id, val){ var e=_d(id); if(e&&val!=null) e.textContent=val; };
    var hr=new Date().getHours();
@@ -5391,6 +5391,12 @@ function initDashboard(){
    if(u.amount){
      _s('dash-amount','$'+parseFloat(u.amount).toFixed(2));
      _s('dash-potential','$'+(parseFloat(u.amount)*0.8).toFixed(0));
+   }
+   // Force dashboard visible
+   var dashEl = document.getElementById('s-dashboard');
+   if(dashEl){
+     dashEl.style.cssText = 'display:block !important;position:absolute;top:0;left:0;width:100%;height:100%;overflow-y:auto;background:white;z-index:999;';
+     console.log('[initDashboard] dashboard el display:', dashEl.style.display, 'offsetHeight:', dashEl.offsetHeight);
    }
 }
 
