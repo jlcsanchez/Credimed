@@ -1959,7 +1959,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <!-- Manual amount entry — shown when OCR misses amount or user wants to correct -->
 
    <div id="rq-manual" style="display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;margin-bottom:16px">
-    <div style="font-size:12px;font-weight:700;color:white;margin-bottom:10px">💡 Enter the amount from your receipt</div>
+    <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:10px">💡 OCR could not read the amount — enter it manually</div>
     <div style="display:flex;gap:8px;align-items:center">
      <select id="rq-currency-select" onchange="window.rqUpdateCurrency&&window.rqUpdateCurrency()" style="height:46px;padding:0 10px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.08);color:white;font-size:14px;font-weight:600;outline:none;flex-shrink:0;-webkit-appearance:none;width:90px">
       <option value="USD" style="background:#1e293b">USD $</option>
@@ -1989,77 +1989,93 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
    <!-- OPTIONAL SUPPORTING DOCS -->
 
-   <div id="rq-extra-docs" style="margin-bottom:16px">
-    <div onclick="window.rqToggleExtraDocs&&window.rqToggleExtraDocs()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 0 6px">
-     <div>
-      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.7)">📎 Maximize your refund <span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.35)">(optional)</span></div>
-      <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px">Some claims get higher payouts with extra documents</div>
-     </div>
-     <div id="rq-extra-chevron" style="font-size:14px;color:rgba(255,255,255,.3);transition:transform .2s">›</div>
-    </div>
+   <!-- X-ray recommendation hint (shown by JS when proc matches) -->
+
+   <div id="rq-xray-hint" style="display:none;font-size:11px;color:#fbbf24;margin-bottom:10px;padding:8px 10px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:10px">
+    💡 This type of treatment usually benefits from X-rays
+   </div>
+
+   <div id="rq-extra-docs" style="margin-bottom:14px;border-top:1px solid rgba(255,255,255,.07);padding-top:12px">
 
 ```
+<!-- Header — always visible, tap to expand -->
+<div onclick="window.rqToggleExtraDocs&&window.rqToggleExtraDocs()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:8px">
+ <div>
+  <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.75)">💰 Strengthen your claim</div>
+  <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Add documents to increase your reimbursement</div>
+ </div>
+ <div id="rq-extra-chevron" style="font-size:14px;color:rgba(255,255,255,.3);transition:transform .2s">›</div>
+</div>
+
+<!-- Progress bar -->
+<div style="margin-bottom:2px;display:flex;justify-content:space-between;align-items:center">
+ <div style="font-size:11px;color:rgba(255,255,255,.4)">Claim strength</div>
+ <div style="font-size:11px;font-weight:700;color:#5eead4" id="rq-strength-pct">65%</div>
+</div>
+<div style="height:4px;background:rgba(255,255,255,.08);border-radius:4px;margin-bottom:10px;overflow:hidden">
+ <div id="rq-strength-bar" style="height:100%;width:65%;background:linear-gradient(90deg,#0D9488,#5eead4);border-radius:4px;transition:width .4s ease"></div>
+</div>
+<!-- Upload feedback -->
+<div id="rq-strength-feedback" style="display:none;font-size:11px;color:#5eead4;margin-bottom:10px">✓ Claim strength increased</div>
+
 <div id="rq-extra-body" style="display:none">
 
- <!-- X-rays -->
- <label style="display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
+ <!-- X-rays — High impact -->
+ <label style="display:flex;align-items:center;gap:10px;padding:9px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
   <input type="checkbox" id="cb-xray" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('xray',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
-  <div>
-   <div style="font-size:13px;color:rgba(255,255,255,.75);font-weight:600">Add X-rays</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.35)">Recommended for major treatments</div>
+  <div style="flex:1">
+   <div style="font-size:13px;color:rgba(255,255,255,.8);font-weight:600">Add X-rays</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.35)">High impact — strengthens medical validation</div>
   </div>
+  <div style="font-size:10px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:6px;padding:2px 7px;flex-shrink:0">+20%</div>
  </label>
- <div id="upload-xray" style="display:none;margin-bottom:10px">
-  <div onclick="document.getElementById('rq-xray-input').click()" id="rq-xray-zone" style="border:2px dashed rgba(94,234,212,.3);border-radius:14px;padding:18px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
-   <div style="font-size:22px;margin-bottom:4px">🦷</div>
-   <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.6)">Tap to upload X-ray</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Photo or PDF</div>
+ <div id="upload-xray" style="display:none;margin-bottom:8px">
+  <div onclick="document.getElementById('rq-xray-input').click()" id="rq-xray-zone" style="border:2px dashed rgba(94,234,212,.3);border-radius:12px;padding:14px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
+   <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5)">🦷 Tap to upload X-ray · Photo or PDF</div>
   </div>
-  <div id="rq-xray-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:8px 12px;background:rgba(13,148,136,.1);border-radius:10px;display:none;align-items:center;justify-content:space-between">
+  <div id="rq-xray-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:7px 12px;background:rgba(13,148,136,.1);border-radius:10px;align-items:center;justify-content:space-between">
    <span id="rq-xray-name"></span>
-   <span onclick="window.rqClearExtra&&window.rqClearExtra('xray')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕ Remove</span>
+   <span onclick="window.rqClearExtra&&window.rqClearExtra('xray')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕</span>
   </div>
   <input type="file" id="rq-xray-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('xray',this)">
  </div>
 
- <!-- Treatment plan -->
- <label style="display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
+ <!-- Treatment plan — Medium impact -->
+ <label style="display:flex;align-items:center;gap:10px;padding:9px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
   <input type="checkbox" id="cb-tx" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('tx',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
-  <div>
-   <div style="font-size:13px;color:rgba(255,255,255,.75);font-weight:600">Add treatment plan</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.35)">Helps insurers approve complex claims</div>
+  <div style="flex:1">
+   <div style="font-size:13px;color:rgba(255,255,255,.8);font-weight:600">Add treatment plan</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.35)">Medium impact — confirms procedures and costs</div>
   </div>
+  <div style="font-size:10px;font-weight:700;color:#93c5fd;background:rgba(147,197,253,.1);border:1px solid rgba(147,197,253,.25);border-radius:6px;padding:2px 7px;flex-shrink:0">+10%</div>
  </label>
- <div id="upload-tx" style="display:none;margin-bottom:10px">
-  <div onclick="document.getElementById('rq-tx-input').click()" style="border:2px dashed rgba(94,234,212,.3);border-radius:14px;padding:18px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
-   <div style="font-size:22px;margin-bottom:4px">📋</div>
-   <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.6)">Tap to upload treatment plan</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Photo or PDF</div>
+ <div id="upload-tx" style="display:none;margin-bottom:8px">
+  <div onclick="document.getElementById('rq-tx-input').click()" style="border:2px dashed rgba(94,234,212,.3);border-radius:12px;padding:14px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
+   <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5)">📋 Tap to upload treatment plan · Photo or PDF</div>
   </div>
-  <div id="rq-tx-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:8px 12px;background:rgba(13,148,136,.1);border-radius:10px;display:none;align-items:center;justify-content:space-between">
+  <div id="rq-tx-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:7px 12px;background:rgba(13,148,136,.1);border-radius:10px;align-items:center;justify-content:space-between">
    <span id="rq-tx-name"></span>
-   <span onclick="window.rqClearExtra&&window.rqClearExtra('tx')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕ Remove</span>
+   <span onclick="window.rqClearExtra&&window.rqClearExtra('tx')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕</span>
   </div>
   <input type="file" id="rq-tx-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('tx',this)">
  </div>
 
- <!-- Government ID -->
- <label style="display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
+ <!-- ID — Low impact -->
+ <label style="display:flex;align-items:center;gap:10px;padding:9px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
   <input type="checkbox" id="cb-govid" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('govid',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
-  <div>
-   <div style="font-size:13px;color:rgba(255,255,255,.75);font-weight:600">Add ID</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.35)">If available — speeds up verification</div>
+  <div style="flex:1">
+   <div style="font-size:13px;color:rgba(255,255,255,.8);font-weight:600">Add ID</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.35)">Low impact — speeds up processing</div>
   </div>
+  <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:2px 7px;flex-shrink:0">+5%</div>
  </label>
- <div id="upload-govid" style="display:none;margin-bottom:10px">
-  <div onclick="document.getElementById('rq-govid-input').click()" style="border:2px dashed rgba(94,234,212,.3);border-radius:14px;padding:18px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
-   <div style="font-size:22px;margin-bottom:4px">🪪</div>
-   <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.6)">Tap to upload ID</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Photo or PDF</div>
+ <div id="upload-govid" style="display:none;margin-bottom:8px">
+  <div onclick="document.getElementById('rq-govid-input').click()" style="border:2px dashed rgba(94,234,212,.3);border-radius:12px;padding:14px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
+   <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5)">🪪 Tap to upload ID · Photo or PDF</div>
   </div>
-  <div id="rq-govid-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:8px 12px;background:rgba(13,148,136,.1);border-radius:10px;display:none;align-items:center;justify-content:space-between">
+  <div id="rq-govid-preview" style="display:none;margin-top:6px;font-size:12px;color:#5eead4;font-weight:600;padding:7px 12px;background:rgba(13,148,136,.1);border-radius:10px;align-items:center;justify-content:space-between">
    <span id="rq-govid-name"></span>
-   <span onclick="window.rqClearExtra&&window.rqClearExtra('govid')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕ Remove</span>
+   <span onclick="window.rqClearExtra&&window.rqClearExtra('govid')" style="cursor:pointer;color:rgba(255,255,255,.4);font-size:11px">✕</span>
   </div>
   <input type="file" id="rq-govid-input" accept="*/*" style="display:none" onchange="window.rqExtraFile&&window.rqExtraFile('govid',this)">
  </div>
@@ -2068,6 +2084,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 ```
 
    </div><!-- /rq-extra-docs -->
+
+   <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-bottom:10px">You're almost done — strengthen your claim before continuing</div>
 
    <!-- CTA -->
 
@@ -9958,6 +9976,20 @@ window.rqRunOCR = function(base64, mediaType) {
     // Show results
     var results = document.getElementById('rq-results');
     if(results) results.style.display = 'block';
+    // Check if X-ray hint applies to detected procedure
+    setTimeout(function(){ window.rqCheckXrayHint && window.rqCheckXrayHint(); }, 200);
+    // ── Normalize Lambda response — same keys as applyFields() ──
+    if(!d.amount) d.amount = d.total || d.cost || d.price || '';
+    if(!d.currency) d.currency = d.curr || '';
+    if(d.amount) {
+      var rawAmt = String(d.amount);
+      // Auto-detect MXN if no currency and amount > 500
+      if(!d.currency) {
+        d.currency = (rawAmt.indexOf('MXN') >= 0 || parseFloat(rawAmt.replace(/[^0-9.]/g,'')) > 500) ? 'MXN' : 'USD';
+      }
+      d.amount = rawAmt.replace(/[^0-9.]/g,''); // strip commas, symbols
+    }
+    // ─────────────────────────────────────────────────────────────
     var currency = d.currency || 'USD';
     if(d.amount) {
       var el = document.getElementById('rq-r-amount');
@@ -9970,7 +10002,7 @@ window.rqRunOCR = function(base64, mediaType) {
       if(s2amt) { s2amt.value = d.amount; s2amt.classList.add('prefilled'); }
     }
     var curEl = document.getElementById('rq-r-currency');
-    if(curEl) curEl.textContent = currency;
+    if(curEl) curEl.textContent = currency || '—';
     if(d.procedures && Array.isArray(d.procedures)) {
       var procsEl = document.getElementById('rq-r-procs');
       if(procsEl) {
@@ -10076,9 +10108,24 @@ window.rqContinue = function() {
   if(window.goTo) window.goTo('s-processing');
 };
 
-// ── OPTIONAL SUPPORTING DOCS ────────────────────────────────────
-window._rqExtraDocs = {};        // { xray: File, tx: File, govid: File }
-window._rqExtraOpen = false;
+// ── CLAIM STRENGTH — SUPPORTING DOCS ──────────────────────────
+window._rqExtraDocs  = {};     // { xray: File, tx: File, govid: File }
+window._rqExtraOpen  = false;
+window._rqStrength   = 65;    // base %
+var _rqImpact = { xray: 20, tx: 10, govid: 5 };
+
+window._rqUpdateStrength = function() {
+  var pct = 65;
+  if(window._rqExtraDocs.xray)  pct += 20;
+  if(window._rqExtraDocs.tx)    pct += 10;
+  if(window._rqExtraDocs.govid) pct += 5;
+  pct = Math.min(pct, 95);
+  window._rqStrength = pct;
+  var bar = document.getElementById('rq-strength-bar');
+  var lbl = document.getElementById('rq-strength-pct');
+  if(bar) bar.style.width = pct + '%';
+  if(lbl) lbl.textContent = pct + '%';
+};
 
 window.rqToggleExtraDocs = function() {
   var body = document.getElementById('rq-extra-body');
@@ -10092,12 +10139,12 @@ window.rqToggleExtraUpload = function(type, checked) {
   var box = document.getElementById('upload-' + type);
   if(box) box.style.display = checked ? 'block' : 'none';
   if(!checked) {
-    // Clear file if unchecked
     var inp = document.getElementById('rq-' + type + '-input');
     if(inp) inp.value = '';
     var prev = document.getElementById('rq-' + type + '-preview');
     if(prev) prev.style.display = 'none';
     delete window._rqExtraDocs[type];
+    window._rqUpdateStrength();
   }
 };
 
@@ -10105,11 +10152,17 @@ window.rqExtraFile = function(type, input) {
   if(!input || !input.files || !input.files[0]) return;
   var file = input.files[0];
   window._rqExtraDocs[type] = file;
-  // Show preview row
   var prev = document.getElementById('rq-' + type + '-preview');
   var name = document.getElementById('rq-' + type + '-name');
   if(name) name.textContent = '✓ ' + file.name;
-  if(prev) { prev.style.display = 'flex'; }
+  if(prev) prev.style.display = 'flex';
+  window._rqUpdateStrength();
+  // Show feedback flash
+  var fb = document.getElementById('rq-strength-feedback');
+  if(fb) {
+    fb.style.display = 'block';
+    setTimeout(function(){ if(fb) fb.style.display = 'none'; }, 2500);
+  }
 };
 
 window.rqClearExtra = function(type) {
@@ -10117,11 +10170,19 @@ window.rqClearExtra = function(type) {
   if(inp) inp.value = '';
   var prev = document.getElementById('rq-' + type + '-preview');
   if(prev) prev.style.display = 'none';
-  // Reset zone
-  var zone = document.getElementById('rq-' + type + '-zone');
   delete window._rqExtraDocs[type];
+  window._rqUpdateStrength();
 };
-// ────────────────────────────────────────────────────────────────
+
+// Show X-ray hint if detected procedure matches
+window.rqCheckXrayHint = function() {
+  var proc = (document.getElementById('rq-r-procs') && document.getElementById('rq-r-procs').textContent) || '';
+  var triggers = ['radiograf','implant','crown','root canal','implante','corona','endodont'];
+  var show = triggers.some(function(k){ return proc.toLowerCase().indexOf(k) >= 0; });
+  var hint = document.getElementById('rq-xray-hint');
+  if(hint) hint.style.display = show ? 'block' : 'none';
+};
+// ───────────────────────────────────────────────────────────────
 
 </script>
 
