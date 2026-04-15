@@ -2001,28 +2001,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- Header -->
 <div style="margin-bottom:10px">
  <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.85)">💰 Strengthen your claim</div>
- <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Adding documents can increase your reimbursement</div>
+ <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">💰 Add documents to increase your refund</div>
 </div>
 
 <!-- Progress bar -->
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
  <div style="flex:1;height:10px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden">
-  <div id="rq-strength-bar" style="height:100%;width:65%;background:linear-gradient(90deg,#0D9488,#5eead4);border-radius:6px;transition:width .4s ease"></div>
+  <div id="rq-strength-bar" style="height:100%;width:65%;background:linear-gradient(90deg,#0D9488,#5eead4);border-radius:6px;transition:width .5s ease"></div>
  </div>
- <div style="font-size:12px;font-weight:700;color:#5eead4;white-space:nowrap" id="rq-strength-pct">65% complete</div>
+ <div style="font-size:12px;font-weight:700;color:#5eead4;white-space:nowrap" id="rq-strength-pct">65% strong claim</div>
 </div>
 <div id="rq-strength-feedback" style="display:none;font-size:11px;color:#5eead4;margin-bottom:8px">✓ Claim strength increased</div>
 
 <!-- Document options — always visible -->
 
 <!-- X-rays — High impact -->
-<label style="display:flex;align-items:center;gap:10px;padding:9px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,.07)">
+<label style="display:flex;align-items:center;gap:10px;padding:10px 8px;cursor:pointer;border-top:1px solid rgba(255,255,255,.07);background:rgba(13,148,136,.07);border-radius:8px;margin-top:4px">
  <input type="checkbox" id="cb-xray" onchange="window.rqToggleExtraUpload&&window.rqToggleExtraUpload('xray',this.checked)" style="width:18px;height:18px;accent-color:#0D9488;cursor:pointer;flex-shrink:0">
  <div style="flex:1">
-  <div style="font-size:13px;color:rgba(255,255,255,.85);font-weight:600">Add X-rays</div>
-  <div style="font-size:11px;color:rgba(255,255,255,.4)">High impact — strengthens medical validation</div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+   <span style="font-size:13px;color:rgba(255,255,255,.95);font-weight:700">Add X-rays</span>
+   <span style="font-size:9px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.25);border:1px solid rgba(13,148,136,.4);border-radius:4px;padding:1px 5px">⭐ Recommended</span>
+  </div>
+  <div style="font-size:11px;color:rgba(255,255,255,.55)">Most important for getting your full refund</div>
  </div>
- <div style="font-size:10px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:6px;padding:2px 7px;flex-shrink:0">+20%</div>
+ <div style="font-size:10px;font-weight:700;color:#5eead4;background:rgba(13,148,136,.2);border:1px solid rgba(13,148,136,.35);border-radius:6px;padding:2px 7px;flex-shrink:0">+35%</div>
 </label>
 <div id="upload-xray" style="display:none;margin-bottom:8px">
  <div onclick="document.getElementById('rq-xray-input').click()" id="rq-xray-zone" style="border:2px dashed rgba(94,234,212,.3);border-radius:10px;padding:12px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03)">
@@ -2078,7 +2081,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
    </div><!-- /rq-extra-docs -->
 
-   <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-bottom:10px">You're almost done — strengthen your claim before continuing</div>
+   <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-bottom:10px">You're close — don't leave money on the table</div>
 
    <!-- CTA -->
 
@@ -10125,8 +10128,7 @@ window.rqContinue = function() {
 // ── CLAIM STRENGTH — SUPPORTING DOCS ──────────────────────────
 window._rqExtraDocs  = {};     // { xray: File, tx: File, govid: File }
 window._rqExtraOpen  = false;
-window._rqStrength   = 65;    // base %
-var _rqImpact = { xray: 20, tx: 10, govid: 5 };
+window._rqStrength   = 65;
 
 window._rqUpdateStrength = function() {
   var pct = 65;
@@ -10138,7 +10140,7 @@ window._rqUpdateStrength = function() {
   var bar = document.getElementById('rq-strength-bar');
   var lbl = document.getElementById('rq-strength-pct');
   if(bar) bar.style.width = pct + '%';
-  if(lbl) lbl.textContent = pct + '% complete';
+  if(lbl) lbl.textContent = pct + '% strong claim';
 };
 
 window.rqToggleExtraDocs = function() {
@@ -10169,9 +10171,11 @@ window.rqExtraFile = function(type, input) {
   window._rqUpdateStrength();
   // Show feedback flash
   var fb = document.getElementById('rq-strength-feedback');
+  var msgs = { xray: '+35% — your claim just got stronger', tx: '+25% — procedures confirmed', govid: '+10% — processing accelerated' };
   if(fb) {
+    fb.textContent = '✓ ' + (msgs[type] || 'Claim strength increased');
     fb.style.display = 'block';
-    setTimeout(function(){ if(fb) fb.style.display = 'none'; }, 2500);
+    setTimeout(function(){ if(fb) fb.style.display = 'none'; }, 2800);
   }
 };
 
