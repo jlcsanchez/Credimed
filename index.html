@@ -5193,7 +5193,9 @@ async function initStripePayment(){
           amount: 2900,
           currency: 'usd',
           email: currentUser && currentUser.email,
-          claimId: currentUser && currentUser.claimId
+          userId: currentUser && (currentUser.uid || currentUser.email),
+          claimId: currentUser && currentUser.claimId,
+          setup_future_usage: 'off_session'
         })
       });
       var data = await resp.json();
@@ -5261,6 +5263,36 @@ function paymentSuccess(){
   document.getElementById('s5-form').style.display='none';
   document.getElementById('s5-success').classList.add('show');
   try{launchConfetti();}catch(e){}
+
+  // ── Save customer + payment_method for future off_session billing ──
+  (function() {
+    try {
+      var cu = window.currentUser || {};
+      // stripeInstance is the live Stripe object from initStripePayment
+      // After confirmPayment, Stripe attaches the PM to the PI automatically
+      // We call backend to retrieve and store customer_id + payment_method_id
+      fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'save_billing_profile',
+          userId: cu.uid || cu.email || '',
+          email:  cu.email || '',
+          claimId: cu.claimId || ''
+        })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        // Store locally so app knows billing is set up
+        if(d.customerId)      { if(cu) cu.stripeCustomerId = d.customerId; }
+        if(d.paymentMethodId) { if(cu) cu.stripePaymentMethodId = d.paymentMethodId; }
+        console.log('[Credimed] Billing profile saved:', d.customerId);
+      })
+      .catch(function(e){ console.warn('[Credimed] save_billing_profile error:', e); });
+    } catch(e){}
+  })();
+  // ──────────────────────────────────────────────────────────────────
+
   // Auto-advance to dashboard after 3 seconds
   setTimeout(function(){
     try{ initDashboard(); }catch(e){}
@@ -5318,7 +5350,7 @@ async function doPayment(method){
     try {
       var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/',{
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
+        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email,userId:currentUser&&(currentUser.uid||currentUser.email),setup_future_usage:'off_session'})
       });
       var data = await resp.json();
       var cs = data.clientSecret || data.client_secret;
@@ -5389,7 +5421,7 @@ async function doPayment(method){
     try {
       var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/',{
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
+        body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email,userId:currentUser&&(currentUser.uid||currentUser.email),setup_future_usage:'off_session'})
       });
       var pdata = await resp.json();
       cs = pdata.clientSecret || pdata.client_secret;
