@@ -3384,7 +3384,11 @@ window._toUSD = function(n, currency) {
     var p = new URLSearchParams(window.location.search);
     if(p.get('payment_intent_client_secret')){
       if(window.history) window.history.replaceState({}, '', window.location.pathname);
-      // Flag picked up by initApp once the full app JS has loaded
+      // Restore session before navigating
+      try {
+        var saved = sessionStorage.getItem('_cUser');
+        if(saved) { window.currentUser = JSON.parse(saved); }
+      } catch(e){}
       window._pendingDashboard = true;
     }
   } catch(e){}
@@ -3796,6 +3800,7 @@ function doLogin(){
 }
 function loginUser(u){
  currentUser=u;
+ try { sessionStorage.setItem('_cUser', JSON.stringify(u)); } catch(e){}
  if(u.role==='admin'){
    // 1. Unlock body (patient app locks it with position:fixed)
    document.documentElement.style.cssText='height:auto;overflow-y:auto;position:static;width:100%';
@@ -5404,24 +5409,52 @@ async function doPayment(method){
 // DASHBOARD
 // 
 function initDashboard(){
- // Always show bottom nav on dashboard
+ console.log('Dashboard mounted');
+ console.log('User:', currentUser || window.currentUser);
+
+ // Restore from session if currentUser lost after redirect
+ if(!currentUser) {
+   try {
+     var saved = sessionStorage.getItem('_cUser');
+     if(saved) currentUser = JSON.parse(saved);
+   } catch(e){}
+ }
+
+ // Always show bottom nav
  var bn = document.getElementById('bottom-nav');
  if(bn){ bn.classList.add('show'); bn.style.display='flex'; bn.style.position='absolute'; }
- const hr=new Date().getHours();
- const greet=hr<12?'Good morning ':hr<18?'Good afternoon ':'Good evening ';
- document.getElementById('dash-time').textContent=greet;
- if(currentUser){
- document.getElementById('dash-name-display').textContent='Welcome, '+currentUser.first+'!';
- document.getElementById('dash-avatar').textContent=(currentUser.first||'U')[0].toUpperCase();
- if(currentUser.insurer)document.getElementById('dash-insurer-sub').textContent='Estimated from your '+currentUser.insurer+' plan';
- if(currentUser.procedure&&currentUser.amount){
- document.getElementById('dash-claim-title').textContent=currentUser.procedure+' -- '+currentUser.dentist?.split('--')[0].trim();
- document.getElementById('dash-procedure').textContent=currentUser.procedure;
- document.getElementById('dash-dentist').textContent=currentUser.dentist?.split('--')[0].trim()||'--';
- document.getElementById('dash-amount').textContent='$'+parseFloat(currentUser.amount).toFixed(2);
- document.getElementById('dash-ins-name').textContent=currentUser.insurer||'--';
- const pot=parseFloat(currentUser.amount)*0.8;document.getElementById('dash-potential').textContent='$'+pot.toFixed(0);
+
+ // Safe helper
+ function _set(id, val) {
+   var el = document.getElementById(id);
+   if(el && val != null) el.textContent = val;
  }
+
+ try {
+   var hr = new Date().getHours();
+   var greet = hr<12 ? 'Good morning ' : hr<18 ? 'Good afternoon ' : 'Good evening ';
+   _set('dash-time', greet);
+
+   var u = currentUser || {};
+   console.log('Claim:', u);
+   _set('dash-name-display', u.first ? 'Welcome, ' + u.first + '!' : 'Welcome!');
+   _set('dash-avatar', (u.first||'U')[0].toUpperCase());
+
+   if(u.insurer) _set('dash-insurer-sub', 'Estimated from your ' + u.insurer + ' plan');
+   if(u.procedure) _set('dash-claim-title', u.procedure + (u.dentist ? ' — ' + u.dentist.split('--')[0].trim() : ''));
+   if(u.procedure) _set('dash-procedure', u.procedure);
+   if(u.dentist)   _set('dash-dentist', u.dentist.split('--')[0].trim());
+   if(u.amount)    _set('dash-amount', '$' + parseFloat(u.amount).toFixed(2));
+   if(u.insurer)   _set('dash-ins-name', u.insurer);
+   if(u.amount) {
+     var pot = parseFloat(u.amount) * 0.8;
+     _set('dash-potential', '$' + pot.toFixed(0));
+   }
+ } catch(e) {
+   console.warn('Dashboard render error:', e);
+   // Fallback — show something, never blank
+   _set('dash-name-display', 'Welcome!');
+   _set('dash-time', 'Good day ');
  }
 }
 
