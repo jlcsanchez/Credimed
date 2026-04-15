@@ -5500,7 +5500,7 @@ function getSmartReply(text, cu) {
    return 'You need two things: 1) Your US insurance card (front) and 2) The receipt from your dentist. That is it · we handle all the paperwork.';
  if (/cost|fee|precio|cobran|charge|15%|10%|premium|standard/.test(t))
    return isPremium
-     ? 'You chose Premium: $29 upfront + 10% of your refund on success. On a $1,000 refund you would pay $129 total — less than Standard.'
+     ? 'You chose Premium: $29 upfront + 10% of your refund on success. On a $1,000 refund you would pay $129 total -- less than Standard.'
      : 'Standard plan: $0 upfront. We only charge 15% after your insurance pays you. No win, no fee. Or upgrade to Premium: $29 upfront + 10% on success.';
  if (/hmo|ppo|insurance|seguro|plan|delta|aetna|cigna|metlife/.test(t))
    return 'We work with US PPO dental plans · Delta Dental, Aetna, Cigna, MetLife, Guardian, Humana and others. HMO plans typically do not cover out-of-network care.';
@@ -5594,9 +5594,9 @@ async function runRefundEstimate() {
  });
 
  // Get claim data
- // Only use OCR-detected amount — never fallback to stale session data
+ // Only use OCR-detected amount -- never fallback to stale session data
  const rawAmt = (window.claimData && window.claimData.amountPaid) || window._lastOcrAmount || 0;
- if (!rawAmt) { console.warn('[Credimed] No OCR amount — aborting runRefundEstimate'); return; }
+ if (!rawAmt) { console.warn('[Credimed] No OCR amount -- aborting runRefundEstimate'); return; }
  const currency = window._amountCurrency || window._currency || 'USD';
  const amt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(rawAmt / window._MXN_RATE) : rawAmt;
  const currLabel = currency === 'MXN' ? 'MXN ' : '';
@@ -5800,7 +5800,7 @@ function runProcessing() {
  var amtEl=document.getElementById('s2-amount'),procEl=document.getElementById('s2-proc');
  var ins1=document.getElementById('s1-ins-provider'),ins2=document.getElementById('s1-m-provider');
  var rawAmt = window._lastOcrAmount || 0;
- if(!rawAmt){ console.warn('[Credimed] No OCR amount — aborting'); return; }
+ if(!rawAmt){ console.warn('[Credimed] No OCR amount -- aborting'); return; }
  var currency = window._amountCurrency || window._currency || 'USD';
  var amt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(rawAmt / window._MXN_RATE) : rawAmt;
  var proc = (procEl && procEl.value) || (currentUser && currentUser.procedure) || 'Crown';
@@ -5825,7 +5825,7 @@ function runProcessing() {
  // -- Save claim to AWS backend ---------------------------------
  // Singleton: only ONE API call per session, but UI always updates
  if(window._CLAIM_FETCH_SENT === true){
-   console.log('Claim already sent — skipping API, UI already updated');
+   console.log('Claim already sent -- skipping API, UI already updated');
    // Still run the processing animation
  }
  if(window._CLAIM_FETCH_SENT !== true) {
@@ -9589,7 +9589,7 @@ window.docHandleFile = function(input) {
     window.docMarkDone('receipt');
 
   } else if(tab === 'xrays') {
-    // Multiple files allowed — add to list
+    // Multiple files allowed -- add to list
     var list = document.getElementById('xray-files-list');
     if(list) {
       var item = document.createElement('div');
@@ -10313,7 +10313,7 @@ window.shareResult = function(method) {
   // Also try native share if available
   if(method === 'native' && navigator.share) {
     navigator.share({
-      title: 'Credimed — Insurance Recovery',
+      title: 'Credimed -- Insurance Recovery',
       text: msg,
       url: 'https://credimed.us'
     }).catch(function(){});
@@ -10331,37 +10331,35 @@ window.showProcShare = function() {
 };
 </script>
 
-</body>
-</html>
 <script>
 // ── STRIPE REDIRECT FINAL HANDLER ──
 (function() {
   if(!window._stripeRedirect) return;
   window._stripeRedirect = false;
 
-var ov = document.createElement(‘div’);
-ov.style.cssText = ‘position:fixed;inset:0;z-index:99999;background:#0B1F3A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:-apple-system,sans-serif’;
+var ov = document.createElement('div');
+ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0B1F3A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:-apple-system,sans-serif';
 
-var icon = document.createElement(‘div’);
-icon.style.cssText = ‘width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center’;
-icon.innerHTML = ‘<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>’;
+var icon = document.createElement('div');
+icon.style.cssText = 'width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center';
+icon.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-var msg = document.createElement(‘div’);
-msg.style.textAlign = ‘center’;
-var title = document.createElement(‘div’);
-title.style.cssText = ‘font-size:20px;font-weight:700;color:white;margin-bottom:8px’;
-title.textContent = ‘Payment successful’;
-var sub = document.createElement(‘div’);
-sub.style.cssText = ‘font-size:14px;color:rgba(255,255,255,.6)’;
-sub.textContent = ‘Loading your dashboard…’;
+var msg = document.createElement('div');
+msg.style.textAlign = 'center';
+var title = document.createElement('div');
+title.style.cssText = 'font-size:20px;font-weight:700;color:white;margin-bottom:8px';
+title.textContent = 'Payment successful';
+var sub = document.createElement('div');
+sub.style.cssText = 'font-size:14px;color:rgba(255,255,255,.6)';
+sub.textContent = 'Loading your dashboard...';
 msg.appendChild(title);
 msg.appendChild(sub);
 
-var barWrap = document.createElement(‘div’);
-barWrap.style.cssText = ‘width:180px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden’;
-var bar = document.createElement(‘div’);
-bar.id = ‘_ssob’;
-bar.style.cssText = ‘height:100%;width:0%;background:#0D9488;transition:width 1.4s ease’;
+var barWrap = document.createElement('div');
+barWrap.style.cssText = 'width:180px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden';
+var bar = document.createElement('div');
+bar.id = '_ssob';
+bar.style.cssText = 'height:100%;width:0%;background:#0D9488;transition:width 1.4s ease';
 barWrap.appendChild(bar);
 
 ov.appendChild(icon);
@@ -10369,33 +10367,33 @@ ov.appendChild(msg);
 ov.appendChild(barWrap);
 document.body.appendChild(ov);
 
-requestAnimationFrame(function(){ requestAnimationFrame(function(){ bar.style.width = ‘100%’; }); });
+requestAnimationFrame(function(){ requestAnimationFrame(function(){ bar.style.width = '100%'; }); });
 
-sessionStorage.setItem(‘paid’, ‘true’);
+sessionStorage.setItem('paid', 'true');
 try { if(window.initDashboard) window.initDashboard(); } catch(e) {}
-try { if(window.goTo) window.goTo(‘s-dashboard’); ov.style.display = ‘none’; } catch(e) {}
+try { if(window.goTo) window.goTo('s-dashboard'); ov.style.display = 'none'; } catch(e) {}
 
 setTimeout(function() {
 try { if(window.initDashboard) window.initDashboard(); } catch(e) {}
 try {
-if(window.goTo) window.goTo(‘s-dashboard’);
-ov.style.display = ‘none’;
+if(window.goTo) window.goTo('s-dashboard');
+ov.style.display = 'none';
 } catch(e) {
 setTimeout(function() {
-try { goTo(‘s-dashboard’); ov.style.display = ‘none’; } catch(e2) {
-// Static fallback — no inline onclick strings
-var btn = document.createElement(‘button’);
-btn.textContent = ‘Go to dashboard’;
-btn.style.cssText = ‘padding:14px 28px;background:#0D9488;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer’;
-btn.addEventListener(‘click’, function() {
-try { goTo(‘s-dashboard’); ov.style.display = ‘none’; } catch(e3) {}
+try { goTo('s-dashboard'); ov.style.display = 'none'; } catch(e2) {
+// Static fallback -- no inline onclick strings
+var btn = document.createElement('button');
+btn.textContent = 'Go to dashboard';
+btn.style.cssText = 'padding:14px 28px;background:#0D9488;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer';
+btn.addEventListener('click', function() {
+try { goTo('s-dashboard'); ov.style.display = 'none'; } catch(e3) {}
 });
-ov.innerHTML = ‘’;
-var fb = document.createElement(‘div’);
-fb.style.cssText = ‘text-align:center;padding:32px’;
-var fbTitle = document.createElement(‘div’);
-fbTitle.style.cssText = ‘font-size:18px;font-weight:700;color:white;margin-bottom:16px’;
-fbTitle.textContent = ‘Your claim has been submitted successfully’;
+ov.innerHTML = '';
+var fb = document.createElement('div');
+fb.style.cssText = 'text-align:center;padding:32px';
+var fbTitle = document.createElement('div');
+fbTitle.style.cssText = 'font-size:18px;font-weight:700;color:white;margin-bottom:16px';
+fbTitle.textContent = 'Your claim has been submitted successfully';
 fb.appendChild(fbTitle);
 fb.appendChild(btn);
 ov.appendChild(fb);
@@ -10405,3 +10403,6 @@ ov.appendChild(fb);
 }, 1500);
 })();
 </script>
+
+</body>
+</html>
