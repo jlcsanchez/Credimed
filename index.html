@@ -3384,14 +3384,58 @@ window._toUSD = function(n, currency) {
     var p = new URLSearchParams(window.location.search);
     if(p.get('payment_intent_client_secret')){
       if(window.history) window.history.replaceState({}, '', window.location.pathname);
-      // Restore session before navigating
+      // Restore session
       try {
         var saved = sessionStorage.getItem('_cUser');
-        if(saved) { window.currentUser = JSON.parse(saved); }
+        if(saved) window.currentUser = JSON.parse(saved);
       } catch(e){}
+      // Show success overlay immediately — no SPA dependency
       window._pendingDashboard = true;
+      document.addEventListener('DOMContentLoaded', function() {
+        var overlay = document.createElement('div');
+        overlay.id = '_stripe-success-overlay';
+        overlay.style.cssText = [
+          'position:fixed','inset:0','z-index:99999',
+          'background:#0B1F3A','display:flex','flex-direction:column',
+          'align-items:center','justify-content:center','gap:20px',
+          'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
+        ].join(';');
+        overlay.innerHTML =
+          '<div style="width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center">'
+          + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+          + '</div>'
+          + '<div style="text-align:center">'
+          + '<div style="font-size:20px;font-weight:700;color:white;margin-bottom:8px">Payment successful</div>'
+          + '<div style="font-size:14px;color:rgba(255,255,255,.6)">Loading your dashboard...</div>'
+          + '</div>'
+          + '<div style="width:40px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden">'
+          + '<div id="_sso-bar" style="height:100%;width:0%;background:#0D9488;transition:width 1.4s ease"></div>'
+          + '</div>';
+        document.body.appendChild(overlay);
+        // Animate progress bar
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            var bar = document.getElementById('_sso-bar');
+            if(bar) bar.style.width = '100%';
+          });
+        });
+        // Navigate after 1500ms
+        setTimeout(function(){
+          try { initDashboard(); } catch(e){}
+          try {
+            goTo('s-dashboard');
+            overlay.style.display = 'none';
+          } catch(e){
+            console.warn('[Credimed] goTo failed:', e);
+            // goTo not ready yet — retry once
+            setTimeout(function(){
+              try { goTo('s-dashboard'); overlay.style.display = 'none'; } catch(e2){}
+            }, 500);
+          }
+        }, 1500);
+      });
     }
-  } catch(e){}
+  } catch(e){ console.warn('[Credimed] Recovery error:', e); }
 })();
 
 function goTo(id, param) {
@@ -10665,22 +10709,5 @@ window.stdSkipCard = function() {
 </script>
 
 <script>
-// ── Stripe redirect: apply pending dashboard after full app load ──
-(function() {
-  function _applyPendingDashboard() {
-    if(!window._pendingDashboard) return;
-    window._pendingDashboard = false;
-    console.log('Redirecting to dashboard');
-    console.log('User state:', window.currentUser);
-    setTimeout(function() {
-      try { initDashboard(); } catch(e) {}
-      try { goTo('s-dashboard'); } catch(e) { console.warn('goTo failed:', e); }
-    }, 200);
-  }
-  if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', _applyPendingDashboard);
-  } else {
-    _applyPendingDashboard();
-  }
-})();
+// ── Stripe redirect poller removed — handled by recovery overlay ──
 </script>
