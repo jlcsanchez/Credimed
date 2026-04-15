@@ -3382,83 +3382,12 @@ window._toUSD = function(n, currency) {
 (function(){
   try {
     var p = new URLSearchParams(window.location.search);
-    var piSecret  = p.get('payment_intent_client_secret');
-    var piId      = p.get('payment_intent');
-    var piStatus  = p.get('redirect_status');
-    var isSuccess = p.get('payment') === 'success';
-
-    if(piSecret || isSuccess) {
-      // Clean URL immediately
+    if(p.get('payment_intent_client_secret')){
       if(window.history) window.history.replaceState({}, '', window.location.pathname);
-
-      function _recoverToDashboard() {
-        // Show loading overlay while we verify
-        var overlay = document.getElementById('_stripe-recover-overlay');
-        if(!overlay) {
-          overlay = document.createElement('div');
-          overlay.id = '_stripe-recover-overlay';
-          overlay.style.cssText = 'position:fixed;inset:0;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;font-family:-apple-system,sans-serif';
-          overlay.innerHTML = '<div style="width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#0D9488;border-radius:50%;animation:spin 1s linear infinite"></div>'
-                            + '<div style="font-size:15px;font-weight:600;color:#1e293b">Finalizing your payment...</div>'
-                            + '<div style="font-size:12px;color:#94a3b8">Please wait a moment</div>';
-          document.body.appendChild(overlay);
-        }
-
-        // Verify payment status via backend if we have a PI id
-        var verifyDone = false;
-        function _goDashboard() {
-          if(verifyDone) return;
-          verifyDone = true;
-          if(overlay) overlay.style.display = 'none';
-          try {
-            // Mark plan as premium in session
-            if(!window.currentUser) window.currentUser = {};
-            window.currentUser.plan = 'premium';
-            window._selectedPlan = 'premium';
-            window._confirmedPlan = 'premium';
-          } catch(e){}
-          try { initDashboard(); } catch(e){}
-          try { goTo('s-dashboard'); } catch(e) {
-            // goTo not yet defined — wait for DOMContentLoaded
-            window.addEventListener('DOMContentLoaded', function(){
-              try{ initDashboard(); }catch(e){}
-              try{ goTo('s-dashboard'); }catch(e){}
-            });
-          }
-        }
-
-        if(piId) {
-          // Verify with backend
-          fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'verify_payment', paymentIntentId: piId })
-          })
-          .then(function(r){ return r.json(); })
-          .then(function(d){
-            console.log('[Credimed] Payment verified:', d.status || d);
-            _goDashboard();
-          })
-          .catch(function(err){
-            console.warn('[Credimed] Verify failed, going to dashboard anyway:', err);
-            _goDashboard();
-          });
-          // Safety timeout — go to dashboard regardless after 4s
-          setTimeout(_goDashboard, 4000);
-        } else {
-          // No PI id to verify — go directly
-          setTimeout(_goDashboard, 800);
-        }
-      }
-
-      // Run immediately if DOM is ready, otherwise wait
-      if(document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', _recoverToDashboard);
-      } else {
-        _recoverToDashboard();
-      }
+      // Flag picked up by initApp once the full app JS has loaded
+      window._pendingDashboard = true;
     }
-  } catch(e){ console.warn('[Credimed] Recovery error:', e); }
+  } catch(e){}
 })();
 
 function goTo(id, param) {
@@ -5323,7 +5252,7 @@ async function doPayment(method){
     try {
       var result = await stripe.confirmPayment({
         elements: stripeElements,
-        confirmParams: { return_url: window.location.origin + window.location.pathname + '?payment=success' },
+        confirmParams: { return_url: window.location.href },
         redirect: 'if_required'
       });
       if(result.error){
@@ -5449,7 +5378,7 @@ async function doPayment(method){
       var confirmResult = await stripe.confirmPayment({
         elements: stripeElements,
         confirmParams: {
-          return_url: window.location.origin + window.location.pathname + '?payment=success',
+          return_url: window.location.href,
           payment_method_data: { billing_details: { name: ccName, email: currentUser&&currentUser.email } }
         },
         redirect: 'if_required'
@@ -10700,4 +10629,25 @@ window.stdSkipCard = function() {
 })();
 // ══════════════════════════════════════════════════════════════
 
+</script>
+
+<script>
+// ── Stripe redirect: apply pending dashboard after full app load ──
+(function() {
+  function _applyPendingDashboard() {
+    if(!window._pendingDashboard) return;
+    window._pendingDashboard = false;
+    console.log('Redirecting to dashboard');
+    console.log('User state:', window.currentUser);
+    setTimeout(function() {
+      try { initDashboard(); } catch(e) {}
+      try { goTo('s-dashboard'); } catch(e) { console.warn('goTo failed:', e); }
+    }, 200);
+  }
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _applyPendingDashboard);
+  } else {
+    _applyPendingDashboard();
+  }
+})();
 </script>
