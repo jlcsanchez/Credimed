@@ -3261,11 +3261,6 @@ let currentUser = null;
 let navHistory = ['s-landing'];
 let lang = 'en';
 
-// ── API endpoints (single source of truth) ──────────────────
-var CREDIMED_OCR_URL    = CREDIMED_OCR_URL;
-var CREDIMED_CLAIMS_URL = CREDIMED_CLAIMS_URL;
-var CREDIMED_LAMBDA_URL = CREDIMED_LAMBDA_URL;
-
 /* ── MXN to USD conversion ── */
 window._MXN_RATE = 17.5;
 window._toUSD = function(n, currency) {
@@ -3759,7 +3754,7 @@ function s1StartScan(imageBase64, mediaType){
    else { document.getElementById('s1-ocr-title').textContent='Identifying insurer...'; document.getElementById('s1-ocr-sub').textContent='Cross-referencing'; }
  },300);
  // Call OCR Lambda -- returns isValid + extracted fields
- fetch(CREDIMED_OCR_URL,{
+ fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
    method:'POST',
    headers:{'Content-Type':'application/json'},
    body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType,type:'insurance'})
@@ -3768,6 +3763,7 @@ function s1StartScan(imageBase64, mediaType){
  .then(function(data){
    clearInterval(iv);
    if(fill) fill.style.width='100%';
+   console.log('[Credimed OCR insurance response]', JSON.stringify(data));
    // Check isValid flag from Lambda -- if false, image is not an insurance card
    if(data && data.isValid === false){
      document.getElementById('s1-ocr-title').textContent='Not recognized';
@@ -4598,7 +4594,7 @@ function s2RunOCR(imageBase64, mediaType){
 
  // Call OCR Lambda for receipt
  if(imageBase64){
-   fetch(CREDIMED_OCR_URL,{
+   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
      method:'POST',
      headers:{'Content-Type':'application/json'},
      body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
@@ -5005,7 +5001,7 @@ async function initStripePayment(){
     // Step 1: Create payment intent via Lambda
     var clientSecret = null;
     try {
-      var resp = await fetch(CREDIMED_LAMBDA_URL, {
+      var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -5018,6 +5014,7 @@ async function initStripePayment(){
         })
       });
       var data = await resp.json();
+      console.log('[Credimed] Payment intent response:', JSON.stringify(data));
       clientSecret = data.clientSecret || data.client_secret || data.paymentIntentClientSecret || null;
     } catch(fetchErr) {
       console.warn('[Credimed] Lambda payment failed:', fetchErr);
@@ -5045,6 +5042,7 @@ async function initStripePayment(){
     if(container){
       paymentEl.mount('#stripe-payment-element');
       stripePaymentElement = paymentEl;
+      console.log('[Credimed] Stripe Payment Element mounted OK');
       // Hide skeleton, show real element
       paymentEl.on('ready', function() {
         var skel = document.getElementById('stripe-skeleton');
@@ -5115,13 +5113,13 @@ async function doPayment(method){
       });
       if(result.error){
         if(btn){ btn.textContent = ' Pay $29.00'; btn.disabled = false; }
-        showWalletError(result.error.message);
+        alert(result.error.message);
       } else {
         paymentSuccess();
       }
     } catch(e){
       if(btn){ btn.textContent = ' Pay $29.00'; btn.disabled = false; }
-      showWalletError('Payment error. Please try again.');
+      alert('Payment error: ' + e.message);
     }
     return;
   }
@@ -5135,7 +5133,7 @@ async function doPayment(method){
       return;
     }
     try {
-      var resp = await fetch(CREDIMED_LAMBDA_URL,{
+      var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/',{
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
       });
@@ -5170,7 +5168,7 @@ async function doPayment(method){
 
   // PayPal -- redirect to PayPal checkout (placeholder)
   if(method === 'paypal'){
-    showWalletError('PayPal coming soon. Please use card payment.');
+    alert('PayPal coming soon. Please use card payment.');
     return;
   }
 
@@ -5206,7 +5204,7 @@ async function doPayment(method){
     // Get fresh clientSecret from Lambda
     var cs = null;
     try {
-      var resp = await fetch(CREDIMED_LAMBDA_URL,{
+      var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/',{
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({action:'create_payment_intent',plan:'premium',amount:2900,currency:'usd',email:currentUser&&currentUser.email})
       });
@@ -5702,11 +5700,13 @@ function runProcessing() {
  // -- Save claim to AWS backend ---------------------------------
  // Singleton: only ONE API call per session, but UI always updates
  if(window._CLAIM_FETCH_SENT === true){
+   console.log('Claim already sent — skipping API, UI already updated');
    // Still run the processing animation
  }
  if(window._CLAIM_FETCH_SENT !== true) {
  window._CLAIM_FETCH_SENT = true;
-  (function saveClaim(){
+ console.log('Sending claim to API - first and only time');
+ (function saveClaim(){
    var payload = {
      email:     (currentUser && currentUser.email)     || '',
      firstName: (currentUser && currentUser.first)     || '',
@@ -5724,7 +5724,7 @@ function runProcessing() {
      city:      (currentUser && currentUser.city)      || '',
      dentist:   (currentUser && currentUser.dentist)   || '',
    };
-   fetch(CREDIMED_CLAIMS_URL, {
+   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/claims', {
      method: 'POST',
      headers: { 'Content-Type': 'application/json' },
      body: JSON.stringify(payload)
@@ -5732,6 +5732,7 @@ function runProcessing() {
    .then(function(r){ return r.json(); })
    .then(function(data){
      if(data.claimId && currentUser) currentUser.claimId = data.claimId;
+     console.log('Claim saved:', data.claimId);
    })
    .catch(function(err){ console.warn('Claim save failed:', err); });
  })();
@@ -9143,7 +9144,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 /* -- LOAD REAL CLAIMS FROM AWS ------------------------------------ */
-window.CREDIMED_API = CREDIMED_OCR_URL.replace('/ocr','');
+window.CREDIMED_API = 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com';
 
 window.loadRealClaims = async function() {
   var tbody = document.getElementById('claims-table');
@@ -9278,7 +9279,7 @@ window.handleIdUpload = function(input) {
     document.getElementById('id-ocr-name').textContent = 'Reading...';
     document.getElementById('id-ocr-address').textContent = 'Reading...';
 
-    fetch(CREDIMED_OCR_URL, {
+    fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ imageBase64: base64, mediaType: mediaType, type: 'id' })
@@ -9571,7 +9572,7 @@ window.runInsuranceOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct + 3, 85); if(fill) fill.style.width = pct + '%'; }, 80);
   var b64 = base64.split(',')[1] || base64;
-  fetch(CREDIMED_OCR_URL, {
+  fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64: b64, mediaType: mediaType || 'image/jpeg', type:'insurance'})
@@ -9598,7 +9599,7 @@ window.runReceiptOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct + 2, 85); if(fill) fill.style.width = pct + '%'; }, 100);
   var b64 = base64.split(',')[1] || base64;
-  fetch(CREDIMED_OCR_URL, {
+  fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64: b64, mediaType: mediaType || 'image/jpeg', type:'receipt'})
@@ -9842,7 +9843,7 @@ window.rqRunOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct+2, 85); if(fill) fill.style.width=pct+'%'; }, 100);
   var b64 = base64.split(',')[1] || base64;
-  fetch(CREDIMED_OCR_URL, {
+  fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64:b64, mediaType:mediaType||'image/jpeg', type:'receipt'})
@@ -10006,7 +10007,7 @@ window.iqRunOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct+3, 85); if(fill) fill.style.width=pct+'%'; }, 80);
   var b64 = base64.split(',')[1] || base64;
-  fetch(CREDIMED_OCR_URL, {
+  fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64:b64, mediaType:mediaType||'image/jpeg', type:'insurance'})
