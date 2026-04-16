@@ -9114,8 +9114,11 @@ setTimeout(function(){if(window.goTo)window.goTo('s-plan');},2500);
 <script>
 /* -- ADMIN SWITCH (injected last, overrides broken script) ------- */
 document.addEventListener('DOMContentLoaded', function() {
-  if (sessionStorage.getItem('paid') === 'true') {
+  if (sessionStorage.getItem('paid') === 'true' && sessionStorage.getItem('_cUser')) {
     setTimeout(function(){ if(window.showDashboard) window.showDashboard(); }, 300);
+  } else {
+    // Clear stale paid flag if no user data
+    sessionStorage.removeItem('paid');
   }
 });
 
