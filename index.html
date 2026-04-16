@@ -2005,29 +2005,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <!-- Checklist items -->
     <div style="display:flex;flex-direction:column;gap:8px">
-     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;cursor:pointer" onclick="window.rqAddXrays&&window.rqAddXrays()">
-      <div id="rq-check-xray" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
-      <div style="flex:1">
-       <div style="font-size:13px;font-weight:600;color:white">Add X-rays <span style="background:#0D9488;color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;margin-left:4px">⭐ Recommended</span></div>
-       <div id="rq-xray-sub" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Most important for getting your full refund</div>
+     <div style="background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer" onclick="window.rqAddXrays&&window.rqAddXrays()">
+       <div id="rq-check-xray" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
+       <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:white">Add X-rays <span style="background:#0D9488;color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;margin-left:4px">⭐ Recommended</span></div>
+        <div id="rq-xray-sub" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Most important for getting your full refund</div>
+       </div>
+       <div style="font-size:11px;font-weight:700;color:#34d399;background:rgba(52,211,153,.12);padding:3px 8px;border-radius:8px">High impact</div>
       </div>
-      <div style="font-size:11px;font-weight:700;color:#34d399;background:rgba(52,211,153,.12);padding:3px 8px;border-radius:8px">High impact</div>
+      <div id="rq-xray-files" style="display:none;padding:0 12px 10px;display:none;flex-direction:column;gap:4px"></div>
      </div>
-     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;cursor:pointer" onclick="window.rqAddTreatment&&window.rqAddTreatment()">
-      <div id="rq-check-treatment" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
-      <div style="flex:1">
-       <div style="font-size:13px;font-weight:600;color:white">Add treatment plan</div>
-       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Confirms procedures and costs</div>
+     <div style="background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer" onclick="window.rqAddTreatment&&window.rqAddTreatment()">
+       <div id="rq-check-treatment" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
+       <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:white">Add treatment plan</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Confirms procedures and costs</div>
+       </div>
+       <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">Medium impact</div>
       </div>
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">Medium impact</div>
+      <div id="rq-treatment-files" style="display:none;flex-direction:column;gap:4px;padding:0 12px 10px"></div>
      </div>
-     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;cursor:pointer" onclick="window.rqAddId&&window.rqAddId()">
-      <div id="rq-check-id" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
-      <div style="flex:1">
-       <div style="font-size:13px;font-weight:600;color:white">Add ID</div>
-       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Speeds up processing</div>
+     <div style="background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer" onclick="window.rqAddId&&window.rqAddId()">
+       <div id="rq-check-id" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
+       <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:white">Add ID</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Speeds up processing</div>
+       </div>
+       <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">Low impact</div>
       </div>
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">Low impact</div>
+      <div id="rq-id-files" style="display:none;flex-direction:column;gap:4px;padding:0 12px 10px"></div>
      </div>
     </div>
     <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:10px">Adding these documents can increase your chances of a higher reimbursement</div>
@@ -10128,20 +10137,65 @@ window.rqAddId = function() {
   if(inp) { inp.value=''; inp.click(); }
 };
 
+window._docUploads = window._docUploads || {};
+
+window.rqRenderFiles = function(key) {
+  var container = document.getElementById('rq-' + key + '-files');
+  if(!container) return;
+  var files = window._docUploads[key] || [];
+  if(!Array.isArray(files)) files = [files];
+  if(files.length === 0) { container.style.display = 'none'; return; }
+  container.style.display = 'flex';
+  container.innerHTML = '';
+  files.forEach(function(f, idx) {
+    var chip = document.createElement('div');
+    chip.style.cssText = 'display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;';
+    var ext = (f.name || '').split('.').pop().toUpperCase();
+    chip.innerHTML = '<span style="font-size:12px">📄</span>'
+      + '<span style="font-size:11px;color:rgba(255,255,255,.7);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (f.name || 'file') + '</span>'
+      + '<button onclick="window.rqRemoveFile(\'' + key + '\',' + idx + ')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;padding:0;line-height:1;flex-shrink:0">×</button>';
+    container.appendChild(chip);
+  });
+};
+
+window.rqRemoveFile = function(key, idx) {
+  var files = window._docUploads[key] || [];
+  if(!Array.isArray(files)) files = [files];
+  files.splice(idx, 1);
+  window._docUploads[key] = files;
+  if(files.length === 0) {
+    // Uncheck
+    window._rqStrength[key] = false;
+    var box = document.getElementById('rq-check-' + key);
+    if(box) { box.style.background = ''; box.style.borderColor = 'rgba(255,255,255,.3)'; box.innerHTML = ''; }
+    if(key === 'xray') {
+      var sub = document.getElementById('rq-xray-sub');
+      if(sub) sub.textContent = 'Most important for getting your full refund';
+    }
+    window.rqUpdateStrengthBar();
+    // Reset input
+    var inp = document.getElementById('rq-' + key + '-input');
+    if(inp) inp.value = '';
+  }
+  window.rqRenderFiles(key);
+};
+
 window.rqHandleStrengthen = function(input, key) {
   var files = input.files;
   if(!files || files.length === 0) return;
   window._docUploads = window._docUploads || {};
   if(key === 'xray') {
-    // Support multiple x-ray files
-    window._docUploads[key] = Array.from(files);
+    var existing = window._docUploads[key] || [];
+    if(!Array.isArray(existing)) existing = [existing];
+    window._docUploads[key] = existing.concat(Array.from(files));
+    var count = window._docUploads[key].length;
     var sub = document.getElementById('rq-xray-sub');
-    var label = files.length > 1 ? files.length + ' X-rays added' : 'X-ray added';
-    if(sub) sub.textContent = label;
+    if(sub) sub.textContent = count > 1 ? count + ' X-rays added' : 'X-ray added';
   } else {
-    window._docUploads[key] = files[0];
+    window._docUploads[key] = [files[0]];
   }
   window.rqMarkCheck(key);
+  window.rqRenderFiles(key);
 };
 </script>
 
