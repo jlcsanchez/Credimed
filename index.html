@@ -615,11 +615,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tap-hint-badge{animation:tapPulseWhite 2s infinite;border-radius:20px}
 .tap-hint-badge-dark{animation:tapPulse 2s infinite;border-radius:20px}
 
-@media(min-width:600px){
+@media(min-width:600px) and (max-width:639px){
  .patient-panel{background:#1e293b !important;align-items:center !important;padding:24px 0 !important}
  .phone-frame{width:100% !important;height:100% !important;border-radius:0 !important;box-shadow:none !important}
  .patient-viewport{width:375px !important;height:812px !important}
- .patient-viewport .screen{width:375px !important;position:absolute !important}
+ .patient-viewport .screen{width:375px !important;position:absolute !important;top:0 !important;left:0 !important;height:100% !important}
 }
 @media(max-width:599px){
  .patient-label{display:none}
@@ -861,7 +861,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    Triggers at 760px wide (landscape phone or tablet/desktop)
 ═══════════════════════════════════════════════════════ */
 
-@media (min-width: 760px) {
+@media (min-width: 640px) {
   html, body { overflow: auto !important; position: static !important; height: auto !important; }
 
   .demo-wrapper {
@@ -940,6 +940,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .patient-viewport .screen {
     width: 375px !important;
     position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100% !important;
   }
 
   .phone-notch { display: none !important; }
@@ -3208,10 +3211,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <!-- Quick replies -->
  <div id="quick-replies" style="display:flex;flex-wrap:wrap;gap:8px;margin-left:42px">
- <button data-oc="sendQuick(this,'How does the 15% fee work?')" onclick="window.sendQuick&&window.sendQuick(this,'How does the 15% fee work?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">How does the 15% fee work?</button>
- <button data-oc="sendQuick(this,'How long does a claim take?')" onclick="window.sendQuick&&window.sendQuick(this,'How long does a claim take?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">How long does a claim take?</button>
- <button data-oc="sendQuick(this,'What insurance plans are accepted?')" onclick="window.sendQuick&&window.sendQuick(this,'What insurance plans are accepted?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">What insurance plans are accepted?</button>
- <button data-oc="sendQuick(this,'Is the $25 fee refundable?')" onclick="window.sendQuick&&window.sendQuick(this,'Is the $25 fee refundable?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">Is the $25 fee refundable?</button>
+ <button onclick="window.sendQuick&&window.sendQuick(this,'How much can I recover?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">💰 How much can I recover?</button>
+ <button onclick="window.sendQuick&&window.sendQuick(this,'How long does my claim take?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">⏱ How long does my claim take?</button>
+ <button onclick="window.sendQuick&&window.sendQuick(this,'What documents do I need?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📄 What documents do I need?</button>
+ <button onclick="window.sendQuick&&window.sendQuick(this,'What is the difference between Standard and Premium?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">⭐ Standard vs Premium?</button>
+ <button onclick="window.sendQuick&&window.sendQuick(this,'What is the status of my claim?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📋 Status of my claim</button>
+ <button onclick="window.sendQuick&&window.sendQuick(this,'Does my insurance cover dental work in Mexico?')" style="background:white;border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;cursor:pointer">🦷 Does my insurance cover Mexico?</button>
  </div>
  </div>
  <!-- Input bar -->
@@ -3969,7 +3974,12 @@ function s1ShowExtracted(ocrData){
  if(currentUser){
  var pv=document.getElementById('s1-ins-provider');
  var mv=document.getElementById('s1-ins-member');
- if(pv&&mv){ currentUser.insurer=pv.value; currentUser.memberId=mv.value; }
+ if(pv&&mv){
+   currentUser.insurer=pv.value;
+   currentUser.memberId=mv.value;
+   if(document.getElementById('s1-m-group')) currentUser.groupId=document.getElementById('s1-m-group').value||'';
+   try{ sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); }catch(e){}
+ }
  }
  window._s1CardOk=true;
  // Lock fields to prevent accidental edits
@@ -4019,7 +4029,11 @@ function s1UseCard(){
  var provider=document.getElementById('s1-ins-provider')?.value.trim()||'';
  var member=document.getElementById('s1-ins-member')?.value.trim()||'';
  if(!provider||!member){return;}
- if(currentUser){currentUser.insurer=provider;currentUser.memberId=member;}
+ if(currentUser){
+   currentUser.insurer=provider;
+   currentUser.memberId=member;
+   try{ sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); }catch(e){}
+ }
  // Lock the visible manual-entry fields
  ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
  var el=document.getElementById(id);
@@ -5586,6 +5600,7 @@ async function sendChat() {
  input.value = '';
  autoResize(input);
  appendBubble('user', text);
+ chatHistory.push({ role: 'user', content: text });
 
  if (needsHuman(text)) {
    const typingId = appendTyping();
@@ -5594,8 +5609,61 @@ async function sendChat() {
  }
 
  const typingId = appendTyping();
- const cu = (window._getUser && window._getUser()) || {};
- const plan = cu.plan || window._selectedPlan || 'standard';
+ var cu = window.currentUser || {};
+ if(!cu.first){ try{ var s=sessionStorage.getItem('_cUser'); if(s) cu=JSON.parse(s); }catch(e){} }
+ var plan = window._confirmedPlan || cu.plan || window._selectedPlan || 'standard';
+ var isPremium = plan === 'premium';
+
+ var systemPrompt = [
+   'You are Sofia, the Credimed patient support assistant. You are warm, concise, and helpful.',
+   '',
+   'ABOUT CREDIMED:',
+   'Credimed helps US patients with PPO dental insurance recover reimbursements for dental work done in Mexico. We file the claim, handle all paperwork, and fight denials. Patients typically recover 40-80% of what they paid.',
+   '',
+   'PLANS:',
+   '- Standard: $0 upfront. 15% fee ONLY if we recover money. No win, no fee.',
+   '- Premium Fast-Track: $29 upfront + 10% fee on success. Faster processing, priority support, WhatsApp updates.',
+   '',
+   'PROCESS:',
+   '1. Patient uploads dental receipt (photo or PDF, any currency)',
+   '2. Patient uploads US insurance card',
+   '3. Credimed analyzes coverage and estimates refund',
+   '4. Patient chooses Standard or Premium plan',
+   '5. Credimed files the claim with the insurance company',
+   '6. Insurance responds in 5-45 business days depending on insurer',
+   '7. Patient receives reimbursement check directly from insurance',
+   '8. Credimed collects its fee after patient is paid',
+   '',
+   'INSURANCE:',
+   'We work with US PPO dental plans: Delta Dental, Aetna, Cigna, MetLife, Guardian, Humana, Blue Cross Blue Shield, United Healthcare, and most major PPO plans.',
+   'HMO plans and Medicaid typically do NOT cover out-of-network care.',
+   '',
+   'DOCUMENTS NEEDED:',
+   '- Dental receipt from the Mexican dentist (shows procedures and amount paid)',
+   '- US insurance card (front side)',
+   '- Optional but helpful: X-rays, treatment plan, government ID',
+   '',
+   'CLAIM STATUS:',
+   'Once filed, claims typically process in 5-15 business days for routine procedures, up to 45 days for complex cases or appeals.',
+   '',
+   'THIS PATIENT:',
+   'Name: ' + ((cu.first||'') + ' ' + (cu.last||'')).trim(),
+   'Plan: ' + (isPremium ? 'Premium Fast-Track ($29 + 10%)' : 'Standard (free + 15%)'),
+   (cu.insurer ? 'Insurance: ' + cu.insurer : ''),
+   (cu.amount ? 'Amount paid: $' + cu.amount : ''),
+   (cu.procedure ? 'Procedure: ' + cu.procedure : ''),
+   '',
+   'INSTRUCTIONS:',
+   '- Keep responses SHORT (2-4 sentences max) and conversational',
+   '- Be warm and reassuring — patients are often stressed about money',
+   '- Answer in the same language the user writes in (English or Spanish)',
+   '- If asked about claim status, say we are actively working on it and they will get WhatsApp updates',
+   '- If you cannot answer something specific, offer to connect them with the human team via WhatsApp: +1 (617) 803-3831',
+   '- Never make up specific numbers unless you have them from the patient context above'
+ ].filter(Boolean).join('\n');
+
+ // Build message history (keep last 10 turns)
+ var messages = chatHistory.slice(-10);
 
  try {
    const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -5603,19 +5671,21 @@ async function sendChat() {
      headers: { 'Content-Type': 'application/json' },
      body: JSON.stringify({
        model: 'claude-sonnet-4-20250514',
-       max_tokens: 300,
-       system: 'You are the Credimed support assistant. Credimed helps US patients recover dental insurance reimbursements for dental work done in Mexico. Keep answers short, friendly, and accurate. Pricing: Standard plan = $0 upfront, 15% fee only on successful reimbursement. Premium plan = $29 upfront + 10% fee on successful reimbursement. The patient plan is: ' + plan + '. Patient info: ' + (cu.first ? 'Name: ' + cu.first + ' ' + (cu.last||'') : '') + (cu.insurer ? ', Insurance: ' + cu.insurer : '') + (cu.amount ? ', Amount paid: $' + cu.amount : '') + '. Answer in the same language the user writes in.',
-       messages: [{ role: 'user', content: text }]
+       max_tokens: 400,
+       system: systemPrompt,
+       messages: messages
      })
    });
    const data = await resp.json();
    const reply = (data.content && data.content[0] && data.content[0].text) || getSmartReply(text, cu);
    removeTyping(typingId);
    appendBubble('assistant', reply);
+   chatHistory.push({ role: 'assistant', content: reply });
  } catch(e) {
    removeTyping(typingId);
    const reply = getSmartReply(text, cu);
    appendBubble('assistant', reply);
+   chatHistory.push({ role: 'assistant', content: reply });
  }
 }
 
