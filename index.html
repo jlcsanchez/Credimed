@@ -953,7 +953,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   }
 
   .admin-panel { width: 100%; overflow-y: auto; }
-}/style>
+}
+
+
+</style>
 
 <!-- Stripe loaded on demand -->
 
@@ -1983,11 +1986,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
 
    <!-- X-ray tip — shown when procedure benefits from X-rays -->
+
    <div id="rq-xray-tip" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:10px 14px;margin-bottom:12px">
     <div style="font-size:12px;color:#fbbf24">💡 This type of treatment usually benefits from X-rays</div>
    </div>
 
    <!-- Strengthen your claim -->
+
    <div id="rq-strengthen" style="display:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;margin-bottom:16px">
     <div style="font-size:13px;font-weight:700;color:white;margin-bottom:2px">💰 Strengthen your claim</div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px">Add documents to increase your refund</div>
@@ -2029,6 +2034,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
 
    <!-- Hidden file inputs for strengthen docs -->
+
    <input type="file" id="rq-xray-input" accept="image/*,application/pdf" multiple style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'xray')">
    <input type="file" id="rq-treatment-input" accept="image/*,application/pdf" style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'treatment')">
    <input type="file" id="rq-id-input" accept="image/*,application/pdf" style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'id')">
@@ -3181,7 +3187,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <!-- Input bar -->
  <div style="position:sticky;bottom:0;background:white;border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:flex-end;z-index:10" id="chat-input-bar">
  <textarea id="chat-input" placeholder="Ask anything about your claim..." rows="1" data-oi="autoResize(this)" oninput="window.autoResize&&window.autoResize(this)" data-okd="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" style="flex:1;border:1.5px solid var(--border);border-radius:20px;padding:10px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--slate);resize:none;outline:none;line-height:1.4;max-height:100px;overflow-y:auto;transition:border-color .15s" data-of="focusBorder(this)" data-ob="blurBorder(this)"></textarea>
-
  <button data-oc="sendChat()" onclick="window.sendChat&&window.sendChat()" id="chat-send-btn" style="width:40px;height:40px;background:var(--navy);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s" data-omo="this.style.background='var(--teal-dark)'" data-omout="this.style.background='var(--teal)'">
  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14.5 8L1.5 1.5L5 8L1.5 14.5L14.5 8Z" fill="white"/></svg>
  </button>
