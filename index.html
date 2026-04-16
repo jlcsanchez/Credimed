@@ -363,8 +363,8 @@ SCREEN: DASHBOARD
 .notif-dot{width:7px;height:7px;background:var(--red);border-radius:50%;position:absolute;top:6px;right:6px;border:1.5px solid #0f172a;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
 .dash-avatar{width:36px;height:36px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;border:2px solid rgba(255,255,255,.3);cursor:pointer}
-.dash-greeting-time{font-size:11px;color:rgba(255,255,255,.55);margin-bottom:1px;position:relative;z-index:1}
-.dash-greeting-name{font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:600;color:white;letter-spacing:-.3px;margin-bottom:12px;position:relative;z-index:1}
+.dash-greeting-time{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:1px;position:relative;z-index:1}
+.dash-greeting-name{font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:600;color:white;letter-spacing:-.3px;margin-bottom:12px;position:relative;z-index:1}
 .dash-stat-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
 .stat-card-label{font-size:10px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
 .stat-card-val{font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:600;color:white;line-height:1}
@@ -389,9 +389,9 @@ SCREEN: DASHBOARD
 .active-tag{font-size:10px;font-weight:700;background:var(--navy);color:white;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
 .active-claim-body{padding:14px 16px}
 .claim-meta{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.claim-procedure{font-size:15px;font-weight:600;color:var(--slate);margin-bottom:2px}
+.claim-procedure{font-size:17px;font-weight:600;color:var(--slate);margin-bottom:2px}
 .claim-dentist{font-size:12px;color:var(--slate-light)}
-.claim-amount-val{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:600;color:var(--teal)}
+.claim-amount-val{font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:600;color:var(--teal)}
 .claim-amount-lbl{font-size:10px;color:var(--slate-light);text-align:right;margin-bottom:2px}
 .tracker{margin-bottom:12px}
 .tracker-row{display:flex;align-items:center}
@@ -403,10 +403,10 @@ SCREEN: DASHBOARD
 .tracker-line{flex:1;height:2px;background:var(--border);transition:background .3s}
 .tracker-line.done{background:var(--navy)}
 .tracker-labels{display:flex;margin-top:6px}
-.tracker-lbl{flex:1;text-align:center;font-size:9px;font-weight:600;color:var(--slate-light);text-transform:uppercase;letter-spacing:.3px;line-height:1.3}
+.tracker-lbl{flex:1;text-align:center;font-size:11px;font-weight:600;color:var(--slate-light);text-transform:uppercase;letter-spacing:.3px;line-height:1.3}
 .tracker-lbl.done,.tracker-lbl.active{color:var(--teal)}
 .claim-footer{border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center}
-.claim-insurer{font-size:12px;color:var(--slate-light)}
+.claim-insurer{font-size:14px;color:var(--slate-light)}
 .claim-view-btn{font-size:12px;color:var(--teal);font-weight:600;cursor:pointer;padding:3px 10px;border-radius:6px;background:var(--teal-xlight);border:1px solid var(--teal-light)}
 .claim-date{font-size:12px;color:var(--slate-light)}
 .past-claim-item{background:white;border:1px solid var(--border);border-radius:14px;padding:13px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:pointer;transition:all .15s}
@@ -416,10 +416,10 @@ SCREEN: DASHBOARD
 .past-claim-icon.sent{background:#eff6ff}
 .past-claim-icon.review{background:#fef3c7}
 .past-claim-info{flex:1;min-width:0}
-.past-claim-title{font-size:14px;font-weight:600;color:var(--slate);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.past-claim-sub{font-size:12px;color:var(--slate-light)}
-.past-claim-amount{font-family:'Playfair Display',Georgia,serif;font-size:16px;font-weight:600;color:var(--teal)}
-.past-claim-amount.pending{color:var(--slate-light);font-size:13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.past-claim-title{font-size:16px;font-weight:600;color:var(--slate);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.past-claim-sub{font-size:14px;color:var(--slate-light)}
+.past-claim-amount{font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:600;color:var(--teal)}
+.past-claim-amount.pending{color:var(--slate-light);font-size:15px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .status-pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
 .status-pill.paid{background:var(--teal-light);color:var(--teal-dark)}
 .status-pill.sent{background:#eff6ff;color:#1e40af}
@@ -430,7 +430,7 @@ SCREEN: DASHBOARD
 .nav-item .ni{width:26px;height:26px;display:flex;align-items:center;justify-content:center}
 .nav-item .ni svg{width:26px;height:26px;fill:var(--slate-light);transition:fill .15s}
 .nav-item.active .ni svg{fill:var(--teal)}
-.nav-item .nl{font-size:12px;font-weight:600;color:var(--slate-light);letter-spacing:.2px}
+.nav-item .nl{font-size:13px;font-weight:600;color:var(--slate-light);letter-spacing:.2px}
 .nav-item.active .nl{color:var(--teal);font-weight:700}
 
 /* SUCCESS SCREEN */
