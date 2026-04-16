@@ -2974,44 +2974,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- STANDARD: PAYMENT METHOD FOR 15% FEE -->
 
 <div class="screen" id="s-std-payment" style="background:var(--bg)">
- <div class="top-bar">
-  <div class="top-row"><div class="back-btn" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Payment Method</div></div>
- </div>
- <div style="padding:24px 16px">
-  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:16px;margin-bottom:24px;text-align:center">
-   <div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:4px">✓ Claim submitted · Standard Plan</div>
-   <div style="font-size:12px;color:#15803d">We only charge 15% after your insurance pays you. Nothing today.</div>
+ <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;text-align:center">
+  <div style="width:72px;height:72px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px">
+   <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
-  <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin-bottom:6px">Add a card for future payment</h3>
-  <p style="font-size:13px;color:#94a3b8;margin-bottom:20px">We'll charge 15% automatically only after we verify your insurance deposit. You can update this anytime.</p>
-  <!-- Card form -->
-  <div style="background:var(--teal-xlight);border:1px solid var(--teal-light);border-radius:12px;padding:16px;margin-bottom:16px">
-   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--teal-dark);margin-bottom:14px">Card Details</div>
-   <div class="field" style="margin-bottom:12px">
-    <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Card Number</label>
-    <input id="std-cc-number" type="tel" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box" oninput="var v=this.value.replace(/\D/g,'').slice(0,16);this.value=v.replace(/(.{4})/g,'$1 ').trim()">
-   </div>
-   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-    <div class="field">
-     <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Expiry</label>
-     <input id="std-cc-exp" type="tel" maxlength="5" placeholder="MM/YY" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box" oninput="var v=this.value.replace(/\D/g,'');if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2);this.value=v">
-    </div>
-    <div class="field">
-     <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">CVC</label>
-     <input id="std-cc-cvc" type="tel" maxlength="3" placeholder="123" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
-    </div>
-   </div>
-   <div class="field">
-    <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);display:block;margin-bottom:6px">Cardholder Name</label>
-    <input id="std-cc-name" type="text" placeholder="John Smith" style="width:100%;height:44px;border:1.5px solid var(--teal-light);border-radius:10px;padding:0 12px;font-size:16px;background:white;box-sizing:border-box">
-   </div>
+  <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:700;color:#0f172a;margin-bottom:10px">Claim Submitted!</div>
+  <div style="font-size:16px;color:#64748b;line-height:1.6;margin-bottom:8px">Your claim is now being processed. We'll notify you via WhatsApp with updates.</div>
+  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:16px 20px;margin:24px 0;width:100%;box-sizing:border-box">
+   <div style="font-size:15px;font-weight:700;color:#16a34a;margin-bottom:4px">✓ Standard Plan · No charge today</div>
+   <div style="font-size:14px;color:#15803d">We only charge 15% after your insurance pays you.</div>
   </div>
-  <button class="btn-primary" style="width:100%;height:54px;font-size:16px;font-weight:700;background:var(--navy)" onclick="window.showDashboard&&window.showDashboard()">
-   Save & go to dashboard →
+  <button class="btn-primary" style="width:100%;height:56px;font-size:17px;font-weight:700;" onclick="window.showDashboard&&window.showDashboard()">
+   Go to my dashboard →
   </button>
-  <div style="text-align:center;margin-top:12px;font-size:12px;color:#94a3b8;cursor:pointer" onclick="window.showDashboard&&window.showDashboard()">
-   Skip for now
-  </div>
  </div>
 </div>
 
@@ -5546,6 +5521,8 @@ window.showProfile = function() {
 };
 
 window.showDashboard = function() {
+  // Reset nav history so profile/support don't loop back
+  window.navHistory = ['s-dashboard'];
   // Restore data
   if(!window.currentUser){ try{ var s=sessionStorage.getItem('_cUser'); if(s) window.currentUser=JSON.parse(s); }catch(e){} }
   if(!window.claimData){ try{ var cd=sessionStorage.getItem('_claimData'); if(cd) window.claimData=JSON.parse(cd); }catch(e){} }
