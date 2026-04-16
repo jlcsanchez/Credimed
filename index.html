@@ -904,39 +904,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   }
 
   .desktop-hero {
-    flex: 0 0 38% !important;
-    width: 38% !important;
+    flex: 0 0 33.333% !important;
+    width: 33.333% !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    padding: 40px 52px !important;
+    padding: 40px 48px !important;
     overflow-y: auto;
     background: transparent;
   }
 
   .phone-frame {
-    flex: 0 0 62% !important;
-    width: 62% !important;
+    flex: 0 0 66.666% !important;
+    width: 66.666% !important;
+    min-width: 0 !important;
+    max-width: none !important;
     height: 100% !important;
     border-radius: 0 !important;
     box-shadow: -4px 0 40px rgba(0,0,0,.6) !important;
     position: relative !important;
     overflow: hidden !important;
     background: #0a0f1e;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
   }
 
   .patient-viewport {
-    width: 420px !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    position: relative !important;
+    width: 375px !important;
+    height: 812px !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
     overflow: hidden !important;
   }
+
   .patient-viewport .screen {
-    width: 100% !important;
+    width: 375px !important;
     position: absolute !important;
   }
 
@@ -944,17 +946,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .patient-label { display: none !important; }
 
   #s-dashboard {
-    left: 38% !important;
-    width: 62% !important;
+    left: 33.333% !important;
+    width: 66.666% !important;
     max-width: none !important;
     transform: none !important;
   }
 
   .admin-panel { width: 100%; overflow-y: auto; }
-}
-
-
-</style>
+}/style>
 
 <!-- Stripe loaded on demand -->
 
@@ -1984,13 +1983,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
 
    <!-- X-ray tip — shown when procedure benefits from X-rays -->
-
    <div id="rq-xray-tip" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:10px 14px;margin-bottom:12px">
     <div style="font-size:12px;color:#fbbf24">💡 This type of treatment usually benefits from X-rays</div>
    </div>
 
    <!-- Strengthen your claim -->
-
    <div id="rq-strengthen" style="display:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;margin-bottom:16px">
     <div style="font-size:13px;font-weight:700;color:white;margin-bottom:2px">💰 Strengthen your claim</div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px">Add documents to increase your refund</div>
@@ -2007,33 +2004,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="rq-check-xray" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
       <div style="flex:1">
        <div style="font-size:13px;font-weight:600;color:white">Add X-rays <span style="background:#0D9488;color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;margin-left:4px">⭐ Recommended</span></div>
-       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Most important for getting your full refund</div>
+       <div id="rq-xray-sub" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Most important for getting your full refund</div>
       </div>
-      <div style="font-size:11px;font-weight:700;color:#34d399;background:rgba(52,211,153,.12);padding:3px 8px;border-radius:8px">+35%</div>
+      <div style="font-size:11px;font-weight:700;color:#34d399;background:rgba(52,211,153,.12);padding:3px 8px;border-radius:8px">High impact</div>
      </div>
      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;cursor:pointer" onclick="window.rqAddTreatment&&window.rqAddTreatment()">
       <div id="rq-check-treatment" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
       <div style="flex:1">
        <div style="font-size:13px;font-weight:600;color:white">Add treatment plan</div>
-       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Medium impact — confirms procedures and costs</div>
+       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Confirms procedures and costs</div>
       </div>
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">+10%</div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">Medium impact</div>
      </div>
      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;cursor:pointer" onclick="window.rqAddId&&window.rqAddId()">
       <div id="rq-check-id" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
       <div style="flex:1">
        <div style="font-size:13px;font-weight:600;color:white">Add ID</div>
-       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Low impact — speeds up processing</div>
+       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Speeds up processing</div>
       </div>
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">+5%</div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px">Low impact</div>
      </div>
     </div>
-    <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:10px">You're close — don't leave money on the table</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:10px">Adding these documents can increase your chances of a higher reimbursement</div>
    </div>
 
    <!-- Hidden file inputs for strengthen docs -->
-
-   <input type="file" id="rq-xray-input" accept="image/*,application/pdf" style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'xray')">
+   <input type="file" id="rq-xray-input" accept="image/*,application/pdf" multiple style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'xray')">
    <input type="file" id="rq-treatment-input" accept="image/*,application/pdf" style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'treatment')">
    <input type="file" id="rq-id-input" accept="image/*,application/pdf" style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'id')">
 
@@ -3185,6 +3181,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <!-- Input bar -->
  <div style="position:sticky;bottom:0;background:white;border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:flex-end;z-index:10" id="chat-input-bar">
  <textarea id="chat-input" placeholder="Ask anything about your claim..." rows="1" data-oi="autoResize(this)" oninput="window.autoResize&&window.autoResize(this)" data-okd="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" style="flex:1;border:1.5px solid var(--border);border-radius:20px;padding:10px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--slate);resize:none;outline:none;line-height:1.4;max-height:100px;overflow-y:auto;transition:border-color .15s" data-of="focusBorder(this)" data-ob="blurBorder(this)"></textarea>
+
  <button data-oc="sendChat()" onclick="window.sendChat&&window.sendChat()" id="chat-send-btn" style="width:40px;height:40px;background:var(--navy);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s" data-omo="this.style.background='var(--teal-dark)'" data-omout="this.style.background='var(--teal)'">
  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14.5 8L1.5 1.5L5 8L1.5 14.5L14.5 8Z" fill="white"/></svg>
  </button>
@@ -10088,10 +10085,10 @@ window.rqShowStrengthen = function(proc) {
 
 // Strengthen doc handlers
 window._rqStrength = { xray: false, treatment: false, id: false };
-window._rqStrengthPcts = { xray: 35, treatment: 10, id: 5 };
+window._rqStrengthPcts = { xray: 22, treatment: 10, id: 6 };
 
 window.rqUpdateStrengthBar = function() {
-  var base = 65;
+  var base = 62;
   var total = base;
   Object.keys(window._rqStrength).forEach(function(k){
     if(window._rqStrength[k]) total += window._rqStrengthPcts[k];
@@ -10124,10 +10121,18 @@ window.rqAddId = function() {
 };
 
 window.rqHandleStrengthen = function(input, key) {
-  var file = input.files && input.files[0];
-  if(!file) return;
+  var files = input.files;
+  if(!files || files.length === 0) return;
   window._docUploads = window._docUploads || {};
-  window._docUploads[key] = file;
+  if(key === 'xray') {
+    // Support multiple x-ray files
+    window._docUploads[key] = Array.from(files);
+    var sub = document.getElementById('rq-xray-sub');
+    var label = files.length > 1 ? files.length + ' X-rays added' : 'X-ray added';
+    if(sub) sub.textContent = label;
+  } else {
+    window._docUploads[key] = files[0];
+  }
   window.rqMarkCheck(key);
 };
 </script>
