@@ -892,36 +892,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     min-height: 0;
   }
 
-  /* Patient panel: hero LEFT + phone RIGHT */
   .patient-panel {
     display: flex !important;
     flex-direction: row !important;
     align-items: stretch !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     padding: 0 !important;
     background: #060d14 !important;
     width: 100%;
     overflow: hidden !important;
-    gap: 0;
   }
 
-  /* Left hero — fixed 380px max */
   .desktop-hero {
-    flex: 0 0 380px !important;
-    width: 380px !important;
-    max-width: 40% !important;
+    flex: 0 0 38% !important;
+    width: 38% !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    padding: 40px 48px !important;
+    padding: 40px 52px !important;
     overflow-y: auto;
     background: transparent;
   }
 
-  /* Right phone frame — fills remaining, centers a 480px column */
   .phone-frame {
-    flex: 1 !important;
-    width: auto !important;
+    flex: 0 0 62% !important;
+    width: 62% !important;
     height: 100% !important;
     border-radius: 0 !important;
     box-shadow: -4px 0 40px rgba(0,0,0,.6) !important;
@@ -933,31 +928,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     justify-content: center !important;
   }
 
-  /* Patient viewport — 480px centered, scales down on small screens */
   .patient-viewport {
-    width: min(480px, 100%) !important;
+    width: 420px !important;
+    max-width: 100% !important;
     height: 100% !important;
     position: relative !important;
-    margin: 0 auto !important;
-    box-shadow: 0 0 80px rgba(0,0,0,.6) !important;
   }
   .patient-viewport .screen {
-    width: 100% !important;
+    width: 420px !important;
+    max-width: 100% !important;
     position: absolute !important;
   }
 
   .phone-notch { display: none !important; }
   .patient-label { display: none !important; }
 
-  /* Dashboard overlay — covers phone frame area */
   #s-dashboard {
-    position: fixed !important;
-    top: 0 !important; bottom: 0 !important;
-    right: 0 !important;
-    left: calc(min(380px, 40%) + 40px) !important;
-    width: auto !important;
-    max-width: 480px !important;
-    margin: 0 auto !important;
+    left: 38% !important;
+    width: 62% !important;
+    max-width: none !important;
+    transform: none !important;
   }
 
   .admin-panel { width: 100%; overflow-y: auto; }
