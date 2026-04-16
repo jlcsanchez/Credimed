@@ -5365,6 +5365,8 @@ window.showDashboard = function() {
   // Show dashboard — it's fixed/independent, just toggle display
   var dash = document.getElementById('s-dashboard');
   if(dash) dash.style.display = 'block';
+  // Clear paid flag so refresh returns to landing, not dashboard
+  sessionStorage.removeItem('paid');
   console.log('[showDashboard] visible:', dash ? dash.offsetHeight : 'not found');
 };// 
 // SUPPORT CHATBOT
