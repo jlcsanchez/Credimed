@@ -3227,16 +3227,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  SCREEN: PROFILE
  -->
 
-<div class="screen" id="s-profile" style="background:var(--bg);overflow-y:auto;">
+<div id="s-profile" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#f8fafc;overflow-y:auto;z-index:4999;">
 
  <!-- Header -->
 
- <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:24px 20px 52px;position:relative;overflow:hidden;flex-shrink:0">
+ <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:24px 20px 48px;position:relative;overflow:hidden;flex-shrink:0">
   <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(13,148,136,.25) 0%,transparent 70%)"></div>
-  <!-- Back button -->
-  <div onclick="var d=document.getElementById('s-dashboard');if(d&&d.style.display!=='none'){return;}window.goBack&&window.goBack()" style="width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:16px;color:white;font-size:16px">←</div>
+  <div onclick="var p=document.getElementById('s-profile');if(p)p.style.display='none';var d=document.getElementById('s-dashboard');if(d)d.style.display='block';" style="width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:16px;color:white;font-size:16px;position:relative;z-index:1">←</div>
   <div style="display:flex;flex-direction:column;align-items:center;position:relative;z-index:1">
-   <div id="profile-avatar-big" style="width:80px;height:80px;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:white;margin-bottom:12px">J</div>
+   <div id="profile-avatar-big" style="width:76px;height:76px;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:white;margin-bottom:10px">J</div>
    <div id="profile-name-big" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;margin-bottom:3px">--</div>
    <div id="profile-email-big" style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:10px">--</div>
    <div id="profile-plan-badge" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1px">Standard Plan</div>
@@ -3245,50 +3244,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
  <!-- Body -->
 
- <div style="background:var(--bg);margin-top:-22px;border-radius:22px 22px 0 0;padding:20px 16px 100px;position:relative;z-index:2">
-
-  <!-- Stats row -->
-
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
-   <div style="background:white;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div id="pf-stat-claims" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:#0D9488">1</div>
-    <div style="font-size:10px;color:#94a3b8;margin-top:2px;font-weight:600">Claims</div>
-   </div>
-   <div style="background:white;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div id="pf-stat-refund" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:#0D9488">--</div>
-    <div style="font-size:10px;color:#94a3b8;margin-top:2px;font-weight:600">Est. Refund</div>
-   </div>
-   <div style="background:white;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div id="pf-stat-status" style="font-size:18px">⏳</div>
-    <div style="font-size:10px;color:#94a3b8;margin-top:2px;font-weight:600">In Progress</div>
-   </div>
-  </div>
+ <div style="margin-top:-20px;border-radius:22px 22px 0 0;background:#f8fafc;padding:20px 16px 100px;position:relative;z-index:2">
 
   <!-- Personal Info -->
 
   <div style="background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">👤 Personal Info</div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Full Name</span><span id="pf-name" style="font-size:14px;font-weight:600;color:#0f172a">--</span></div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Email</span><span id="pf-email" style="font-size:13px;color:#0f172a;word-break:break-all;text-align:right;max-width:60%">--</span></div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><span style="font-size:12px;color:#94a3b8;font-weight:600">WhatsApp</span><span id="pf-phone" style="font-size:13px;color:#0f172a">--</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9">
+    <span style="font-size:12px;color:#94a3b8;font-weight:600">Full Name</span>
+    <span id="pf-name" style="font-size:14px;font-weight:600;color:#0f172a">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9">
+    <span style="font-size:12px;color:#94a3b8;font-weight:600">Email</span>
+    <span id="pf-email" style="font-size:13px;color:#0f172a;word-break:break-all;text-align:right;max-width:60%">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0">
+    <span style="font-size:12px;color:#94a3b8;font-weight:600">WhatsApp</span>
+    <span id="pf-phone" style="font-size:13px;color:#0f172a">--</span>
+   </div>
   </div>
 
   <!-- Insurance -->
 
   <div style="background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">🦷 Insurance</div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Provider</span><span id="pf-insurer" style="font-size:13px;font-weight:600;color:#0D9488">--</span></div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Member ID</span><span id="pf-member" style="font-size:13px;color:#0f172a">--</span></div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><span style="font-size:12px;color:#94a3b8;font-weight:600">Group #</span><span id="pf-group" style="font-size:13px;color:#0f172a">--</span></div>
-  </div>
-
-  <!-- Active Claim -->
-
-  <div style="background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-   <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">📋 Active Claim</div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Procedure</span><span id="pf-procedure" style="font-size:13px;color:#0f172a;text-align:right;max-width:60%">--</span></div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Amount Paid</span><span id="pf-amount" style="font-size:13px;font-weight:700;color:#0f172a">--</span></div>
-   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><span style="font-size:12px;color:#94a3b8;font-weight:600">Est. Refund</span><span id="pf-refund" style="font-size:13px;font-weight:700;color:#0D9488">--</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9">
+    <span style="font-size:12px;color:#94a3b8;font-weight:600">Provider</span>
+    <span id="pf-insurer" style="font-size:13px;font-weight:600;color:#0D9488;text-align:right;max-width:60%">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9">
+    <span style="font-size:12px;color:#94a3b8;font-weight:600">Member ID</span>
+    <span id="pf-member" style="font-size:13px;color:#0f172a">--</span>
+   </div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0">
+    <span style="font-size:12px;color:#94a3b8;font-weight:600">Group #</span>
+    <span id="pf-group" style="font-size:13px;color:#0f172a">--</span>
+   </div>
   </div>
 
   <!-- My Plan -->
@@ -3301,19 +3292,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
   </div>
 
-  <!-- Account Actions -->
+  <!-- Account -->
 
   <div style="background:white;border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;padding:16px 16px 8px">⚙️ Account</div>
-   <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';window.goTo&&window.goTo('s-support')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
+   <div onclick="var p=document.getElementById('s-profile');if(p)p.style.display='none';var pp=document.getElementById('panel-patient');if(pp)pp.style.display='flex';window.navTo&&window.navTo('s-support','nav-support')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
     <span style="font-size:18px">💬</span>
     <span style="font-size:14px;color:#0f172a;flex:1">Contact Support</span>
     <span style="color:#94a3b8;font-size:18px">›</span>
    </div>
-   <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
-    <span style="font-size:18px">🔔</span>
-    <span style="font-size:14px;color:#0f172a;flex:1">Notifications</span>
-    <div style="width:44px;height:24px;background:#0D9488;border-radius:12px;position:relative;cursor:pointer"><div style="position:absolute;right:3px;top:3px;width:18px;height:18px;background:white;border-radius:50%"></div></div>
+   <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-top:1px solid #f1f5f9">
+    <div style="display:flex;align-items:center;gap:12px">
+     <span style="font-size:18px">🔔</span>
+     <span style="font-size:14px;color:#0f172a">Notifications</span>
+    </div>
+    <div onclick="this.classList.toggle('off');var inner=this.querySelector('div');inner.style.left=this.classList.contains('off')?'3px':'calc(100% - 21px)';this.style.background=this.classList.contains('off')?'#e2e8f0':'#0D9488';" style="width:44px;height:24px;background:#0D9488;border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0"><div style="position:absolute;left:calc(100% - 21px);top:3px;width:18px;height:18px;background:white;border-radius:50%;transition:left .2s"></div></div>
    </div>
    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
     <span style="font-size:18px">🔒</span>
@@ -3327,9 +3320,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
   </div>
 
-  <!-- App info -->
-
-  <div style="text-align:center;padding:8px 0 16px">
+  <div style="text-align:center;padding:4px 0 16px">
    <div style="font-size:12px;color:#94a3b8">Credimed · Version 1.0</div>
    <div style="font-size:11px;color:#cbd5e1;margin-top:2px">HIPAA Compliant · 256-bit Encrypted</div>
   </div>
@@ -3632,7 +3623,13 @@ function navTo(screenId, navId) {
  next.classList.add('active');
  next.style.display = 'block';
  next.scrollTop = 0;
- if (screenId === 's-profile') initProfile();
+ if (screenId === 's-profile') {
+   // Profile is a fixed overlay — show it directly
+   var prof = document.getElementById('s-profile');
+   if(prof) prof.style.display = 'block';
+   initProfile();
+   return;
+ }
  if (screenId === 's-dashboard') initDashboard();
  var _navBn=document.getElementById('bottom-nav');
  if(_navBn){_navBn.classList.add('show');_navBn.style.display='flex';}
@@ -3696,13 +3693,17 @@ function doLogout() {
  sessionStorage.removeItem('_claimData');
  var dash = document.getElementById('s-dashboard');
  if(dash) dash.style.display = 'none';
+ var prof = document.getElementById('s-profile');
+ if(prof) prof.style.display = 'none';
  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
  document.getElementById('s-landing').classList.add('active');
  document.getElementById('bottom-nav').classList.remove('show');
 }
 function initProfile() {
- if (!currentUser) return;
- var u = currentUser;
+ var u = window.currentUser || {};
+ if(!u.first && sessionStorage.getItem('_cUser')){
+   try { u = JSON.parse(sessionStorage.getItem('_cUser')); } catch(e){}
+ }
  var name = ((u.first||'') + ' ' + (u.last||'')).trim() || 'User';
  var plan = window._confirmedPlan || u.plan || 'standard';
  var isPremium = plan === 'premium';
@@ -3710,42 +3711,28 @@ function initProfile() {
  // Header
  set('profile-avatar-big', (u.first||'U')[0].toUpperCase());
  set('profile-name-big', name);
- set('profile-email-big', u.email || '--');
+ set('profile-email-big', u.email||'--');
  set('profile-plan-badge', isPremium ? 'Premium Plan' : 'Standard Plan');
  // Personal
  set('pf-name', name);
- set('pf-email', u.email || '--');
- set('pf-phone', u.phone || u.whatsapp || '--');
+ set('pf-email', u.email||'--');
+ set('pf-phone', u.phone||u.whatsapp||'--');
  // Insurance
- set('pf-insurer', u.insurer || '--');
- set('pf-member', u.memberId || '--');
- set('pf-group', u.groupId || '--');
- // Claim
- set('pf-procedure', u.procedure || '--');
- if(u.amount){ set('pf-amount', '$' + parseFloat(u.amount).toFixed(2)); set('pf-stat-refund', '$' + (parseFloat(u.amount)*0.75).toFixed(0)); set('pf-refund', '$' + (parseFloat(u.amount)*0.75).toFixed(0)); }
- // Plan detail
+ set('pf-insurer', u.insurer||'--');
+ set('pf-member', u.memberId||'--');
+ set('pf-group', u.groupId||'--');
+ // Plan
  var planEl = document.getElementById('pf-plan-detail');
  var planName = document.getElementById('pf-plan-name');
  var planDesc = document.getElementById('pf-plan-desc');
- var badge = document.getElementById('profile-plan-badge');
  if(isPremium){
    if(planEl){ planEl.style.background='#eff6ff'; planEl.style.borderColor='#bfdbfe'; }
    if(planName){ planName.textContent='Premium Fast-Track'; planName.style.color='#1d4ed8'; }
-   if(planDesc) planDesc.textContent='$29 paid upfront · 10% only after you get paid';
-   if(planDesc) planDesc.style.color='#2563eb';
-   if(badge) badge.textContent='Premium Plan';
+   if(planDesc){ planDesc.textContent='$29 paid · 10% only after you get paid'; planDesc.style.color='#2563eb'; }
  } else {
    if(planName) planName.textContent='Standard Plan';
    if(planDesc) planDesc.textContent='Free to start · 15% only after you get paid';
  }
- document.getElementById('pf-name').textContent = name.trim() || '--';
- document.getElementById('pf-email').textContent = u.email || '--';
- document.getElementById('pf-phone').textContent = u.phone || '--';
- document.getElementById('pf-insurer').textContent = u.insurer || '--';
- document.getElementById('pf-member').textContent = u.memberId || '--';
- // Also sync avatar in claims
- if (document.getElementById('claims-avatar'))
- document.getElementById('claims-avatar').textContent = (u.first||'U')[0].toUpperCase();
 }
 
 // 
@@ -5234,7 +5221,7 @@ function paymentSuccess(){
   if(sucEl) sucEl.classList.add('show');
   try{launchConfetti();}catch(e){}
   // Go to dashboard after 2 seconds
-  setTimeout(function(){ window.showDashboard(); }, 800);
+  setTimeout(function(){ window.showDashboard(); }, 200);
   // Update plan labels
   var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   var planLbl = document.getElementById('s5-plan-label');
@@ -10535,9 +10522,9 @@ window.showProcShare = function() {
       setTimeout(function(){
         if(window.showDashboard) window.showDashboard();
         ov.style.display = 'none';
-      }, 1000);
+      }, 300);
     }
-  }, 1500);
+  }, 300);
 })();
 </script>
 
