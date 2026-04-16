@@ -862,14 +862,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 ═══════════════════════════════════════════════════════ */
 
 @media (min-width: 760px) {
-  /* Unlock scroll */
-  html, body {
-    overflow: auto !important;
-    position: static !important;
-    height: auto !important;
-  }
+  html, body { overflow: auto !important; position: static !important; height: auto !important; }
 
-  /* Wrapper fills viewport as flex row */
   .demo-wrapper {
     position: fixed !important;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -879,7 +873,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     background: #060d14;
   }
 
-  /* Show top nav */
   .demo-topbar {
     display: flex !important;
     align-items: center;
@@ -892,7 +885,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     z-index: 1000;
   }
 
-  /* Panels area fills remaining height */
   .demo-panels {
     flex: 1;
     display: flex !important;
@@ -905,17 +897,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     display: flex !important;
     flex-direction: row !important;
     align-items: stretch !important;
-    justify-content: flex-start !important;
+    justify-content: center !important;
     padding: 0 !important;
     background: #060d14 !important;
     width: 100%;
     overflow: hidden !important;
+    gap: 0;
   }
 
-  /* Left hero — 1/3 fijo */
+  /* Left hero — fixed 380px max */
   .desktop-hero {
-    flex: 0 0 33.333% !important;
-    width: 33.333% !important;
+    flex: 0 0 380px !important;
+    width: 380px !important;
+    max-width: 40% !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
@@ -924,37 +918,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     background: transparent;
   }
 
-  /* Right phone frame — 2/3 fijo */
+  /* Right phone frame — fills remaining, centers a 480px column */
   .phone-frame {
-    flex: 0 0 66.666% !important;
-    width: 66.666% !important;
-    min-width: 0 !important;
-    max-width: none !important;
+    flex: 1 !important;
+    width: auto !important;
     height: 100% !important;
     border-radius: 0 !important;
     box-shadow: -4px 0 40px rgba(0,0,0,.6) !important;
     position: relative !important;
     overflow: hidden !important;
     background: #0a0f1e;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
+  /* Patient viewport — 480px centered, scales down on small screens */
   .patient-viewport {
-    width: 100% !important;
+    width: min(480px, 100%) !important;
     height: 100% !important;
     position: relative !important;
+    margin: 0 auto !important;
+    box-shadow: 0 0 80px rgba(0,0,0,.6) !important;
   }
   .patient-viewport .screen {
     width: 100% !important;
+    position: absolute !important;
   }
 
   .phone-notch { display: none !important; }
   .patient-label { display: none !important; }
 
-  /* Admin panel */
-  .admin-panel {
-    width: 100%;
-    overflow-y: auto;
+  /* Dashboard overlay — covers phone frame area */
+  #s-dashboard {
+    position: fixed !important;
+    top: 0 !important; bottom: 0 !important;
+    right: 0 !important;
+    left: calc(min(380px, 40%) + 40px) !important;
+    width: auto !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
   }
+
+  .admin-panel { width: 100%; overflow-y: auto; }
 }
 
 
@@ -3549,6 +3555,9 @@ function navTo(screenId, navId) {
  } catch(e) {}
 }
 function startNewClaim() {
+ sessionStorage.removeItem('paid');
+ var dash = document.getElementById('s-dashboard');
+ if(dash) dash.style.display = 'none';
  document.querySelectorAll('.patient-viewport .screen').forEach(function(s) {
  s.classList.remove('active');
  s.style.display = 'none';
@@ -3598,6 +3607,11 @@ function startNewClaim() {
 function doLogout() {
  currentUser = null;
  navHistory = ['s-landing'];
+ sessionStorage.removeItem('paid');
+ sessionStorage.removeItem('_cUser');
+ sessionStorage.removeItem('_claimData');
+ var dash = document.getElementById('s-dashboard');
+ if(dash) dash.style.display = 'none';
  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
  document.getElementById('s-landing').classList.add('active');
  document.getElementById('bottom-nav').classList.remove('show');
@@ -5105,7 +5119,7 @@ function paymentSuccess(){
   if(sucEl) sucEl.classList.add('show');
   try{launchConfetti();}catch(e){}
   // Go to dashboard after 2 seconds
-  setTimeout(function(){ window.showDashboard(); }, 2000);
+  setTimeout(function(){ window.showDashboard(); }, 500);
   // Update plan labels
   var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   var planLbl = document.getElementById('s5-plan-label');
@@ -9082,7 +9096,7 @@ setTimeout(function(){if(window.goTo)window.goTo('s-plan');},2500);
       setTimeout(function() {
         btn.style.background = '#0D9488';
         btn.textContent = 'Enter Dashboard ->';
-      }, 1500);
+      }, 0);
       var inp = document.getElementById('admin-pwd-input');
       if (inp) { inp.value = ''; inp.focus(); }
     }
@@ -10334,6 +10348,7 @@ window.showProcShare = function() {
       <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Estimated refund</div>
       <div id="dash-potential" style="font-size:32px;font-weight:800;color:#93c5fd;font-family:'Playfair Display',Georgia,serif;margin-bottom:4px">--</div>
       <div id="dash-insurer-sub" style="font-size:12px;color:rgba(255,255,255,.5)">Submit your claim to see your estimate</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;font-style:italic">*Final amount depends on your insurance provider</div>
     </div>
   </div>
 
@@ -10394,11 +10409,11 @@ window.showProcShare = function() {
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       <span style="font-size:10px;font-weight:600">Home</span>
     </div>
-    <div onclick="window.goTo&&window.goTo('s-support')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+    <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';window.goTo&&window.goTo('s-support')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
       <span style="font-size:10px">Support</span>
     </div>
-    <div onclick="window.goTo&&window.goTo('s-profile')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+    <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';window.goTo&&window.goTo('s-profile')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
       <span style="font-size:10px">Profile</span>
     </div>
