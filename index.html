@@ -3095,82 +3095,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  SCREEN: DASHBOARD
  -->
 
-<div class="screen" id="s-dashboard" style="background:white;position:absolute;top:0;left:0;width:100%;height:100%;overflow-y:auto;display:none;">
-<div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:16px 16px 28px;position:relative;">
-  <!-- Logo + Avatar row -->
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <div style="display:flex;align-items:center;gap:8px">
-      <svg width="36" height="36" viewBox="0 0 72 72"><circle cx="36" cy="36" r="35" fill="white" opacity="0.95"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#9ca3af" stroke-width="2.5"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg>
-      <span style="font-size:13px;font-weight:800;color:white;letter-spacing:1px">CREDI<span style="color:#5eead4">MED</span></span>
-    </div>
-    <div id="dash-avatar" style="width:36px;height:36px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white">J</div>
-  </div>
-  <!-- Greeting -->
-  <div id="dash-time" style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:2px">Good morning </div>
-  <div id="dash-name-display" style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:600;color:white;margin-bottom:14px">Welcome!</div>
-  <!-- Refund card -->
-  <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Estimated refund</div>
-      <div id="dash-potential" style="font-size:28px;font-weight:800;color:#93c5fd;font-family:'Playfair Display',Georgia,serif">--</div>
-      <div id="dash-insurer-sub" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Submit your claim to see your estimate</div>
-    </div>
-    <div style="text-align:right">
-      <div style="font-size:22px;font-weight:800;color:rgba(255,255,255,.6)">75%</div>
-      <div style="font-size:10px;color:rgba(255,255,255,.35)">avg coverage</div>
-    </div>
-  </div>
-</div>
-
-<!-- Body -->
-
-<div style="background:#f8fafc;border-radius:20px 20px 0 0;margin-top:-12px;padding:16px 16px 100px;min-height:60vh;">
-  <button onclick="window.startNewClaim&&window.startNewClaim()" style="width:100%;padding:14px;background:#0B1F3A;color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:16px">📄 Upload a new receipt →</button>
-
-  <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Active Claim</div>
-  <div style="background:white;border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-      <div id="dash-claim-title" style="font-size:15px;font-weight:700;color:#0f172a;flex:1">Ready to recover your money?</div>
-      <span style="background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;margin-left:8px;white-space:nowrap">Active</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div>
-        <div id="dash-procedure" style="font-size:13px;color:#64748b;font-style:italic">Upload your receipt to get started</div>
-        <div id="dash-dentist" style="font-size:13px;color:#0D9488;font-weight:600;margin-top:2px"></div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:10px;color:#94a3b8">Paid</div>
-        <div id="dash-amount" style="font-size:16px;font-weight:700;color:#0f172a">--</div>
-      </div>
-    </div>
-    <!-- Tracker -->
-    <div style="display:flex;align-items:center;margin:12px 0 8px">
-      <div style="width:12px;height:12px;background:#0D9488;border-radius:50%"></div>
-      <div style="flex:1;height:2px;background:#0D9488"></div>
-      <div style="width:12px;height:12px;background:#0D9488;border-radius:50%"></div>
-      <div style="flex:1;height:2px;background:#0D9488"></div>
-      <div style="width:12px;height:12px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;font-weight:700">→</div>
-      <div style="flex:1;height:2px;background:#e2e8f0"></div>
-      <div style="width:12px;height:12px;border:2px solid #e2e8f0;border-radius:50%"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;margin-bottom:12px">
-      <span style="color:#0D9488;font-weight:600">Submitted</span>
-      <span style="color:#0D9488;font-weight:600">Verified</span>
-      <span style="color:#0D9488;font-weight:600">With Insurer</span>
-      <span>Reimbursed</span>
-    </div>
-    <div style="background:#fffbeb;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:6px;margin-bottom:10px">
-      <span>⏳</span><span><strong>We are working on your claim</strong> · Est. 2–6 weeks</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <span id="dash-ins-name" style="font-size:12px;color:#64748b"></span>
-      <span style="font-size:12px;color:#0D9488;font-weight:600;cursor:pointer">View details →</span>
-    </div>
-  </div>
-</div>
-
-</div>
-
 <!-- BOTTOM NAV -->
 
 <div class="bottom-nav" id="bottom-nav">
@@ -5409,42 +5333,25 @@ function initDashboard(){
 // SHOW DASHBOARD — single entry point, called after payment
 //
 window.showDashboard = function() {
-  // 1. Restore data from sessionStorage if lost
-  if(!window.currentUser){
-    try { var s=sessionStorage.getItem('_cUser'); if(s) window.currentUser=JSON.parse(s); } catch(e){}
-  }
-  if(!window.claimData){
-    try { var cd=sessionStorage.getItem('_claimData'); if(cd) window.claimData=JSON.parse(cd); } catch(e){}
-  }
-  // 2. Fill dashboard elements directly
+  // Restore data
+  if(!window.currentUser){ try{ var s=sessionStorage.getItem('_cUser'); if(s) window.currentUser=JSON.parse(s); }catch(e){} }
+  if(!window.claimData){ try{ var cd=sessionStorage.getItem('_claimData'); if(cd) window.claimData=JSON.parse(cd); }catch(e){} }
+  // Fill elements
   var u = window.currentUser || {};
   if(!u.amount && window.claimData) u.amount = window.claimData.amountPaid;
-  var set = function(id, val){ var el=document.getElementById(id); if(el&&val!=null) el.textContent=val; };
+  var set = function(id,val){ var el=document.getElementById(id); if(el&&val!=null) el.textContent=val; };
   var hr = new Date().getHours();
   set('dash-time', hr<12?'Good morning ':hr<18?'Good afternoon ':'Good evening ');
   set('dash-name-display', u.first ? 'Welcome, '+u.first+'!' : 'Welcome!');
   set('dash-avatar', (u.first||'U')[0].toUpperCase());
-  if(u.insurer) set('dash-insurer-sub', 'Estimated from your '+u.insurer+' plan');
-  if(u.insurer) set('dash-ins-name', u.insurer);
-  if(u.amount){
-    set('dash-amount', '$'+parseFloat(u.amount).toFixed(2));
-    set('dash-potential', '$'+(parseFloat(u.amount)*0.75).toFixed(0));
-  }
-  if(u.procedure) set('dash-procedure', u.procedure);
-  // 3. Show the dashboard screen directly — no goTo, no classes, just force it
-  document.querySelectorAll('.screen').forEach(function(s){
-    s.style.display = 'none';
-    s.classList.remove('active');
-  });
+  if(u.insurer){ set('dash-insurer-sub','Estimated from your '+u.insurer+' plan'); set('dash-ins-name',u.insurer); }
+  if(u.amount){ set('dash-amount','$'+parseFloat(u.amount).toFixed(2)); set('dash-potential','$'+(parseFloat(u.amount)*0.75).toFixed(0)); }
+  if(u.procedure){ set('dash-procedure',u.procedure); set('dash-claim-title',u.procedure); }
+  // Show dashboard — it's fixed/independent, just toggle display
   var dash = document.getElementById('s-dashboard');
-  if(dash){
-    dash.style.cssText = 'display:block;position:absolute;top:0;left:0;width:100%;height:100%;overflow-y:auto;background:white;z-index:10;';
-    dash.classList.add('active');
-  }
-  console.log('[showDashboard] done. dash offsetHeight:', dash ? dash.offsetHeight : 'not found');
-};
-
-// 
+  if(dash) dash.style.display = 'block';
+  console.log('[showDashboard] visible:', dash ? dash.offsetHeight : 'not found');
+};// 
 // SUPPORT CHATBOT
 // 
 let chatHistory = [];
@@ -10406,6 +10313,97 @@ window.showProcShare = function() {
   }, 1500);
 })();
 </script>
+
+<!-- DASHBOARD — independent of patient-viewport -->
+
+<div id="s-dashboard" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:white;overflow-y:auto;z-index:5000;">
+
+  <!-- Header -->
+
+  <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:16px 20px 32px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <svg width="36" height="36" viewBox="0 0 72 72"><circle cx="36" cy="36" r="35" fill="white" opacity="0.95"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#9ca3af" stroke-width="2.5"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg>
+        <span style="font-size:13px;font-weight:800;color:white;letter-spacing:1px">CREDI<span style="color:#5eead4">MED</span></span>
+      </div>
+      <div id="dash-avatar" style="width:38px;height:38px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:white">J</div>
+    </div>
+    <div id="dash-time" style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:2px">Good morning</div>
+    <div id="dash-name-display" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;margin-bottom:16px">Welcome!</div>
+    <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:16px;">
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Estimated refund</div>
+      <div id="dash-potential" style="font-size:32px;font-weight:800;color:#93c5fd;font-family:'Playfair Display',Georgia,serif;margin-bottom:4px">--</div>
+      <div id="dash-insurer-sub" style="font-size:12px;color:rgba(255,255,255,.5)">Submit your claim to see your estimate</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+
+  <div style="background:#f8fafc;padding:20px 16px 100px;min-height:50vh;">
+    <button onclick="window.startNewClaim&&window.startNewClaim()" style="width:100%;padding:14px;background:#0B1F3A;color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:20px;">
+      📄 Upload a new receipt →
+    </button>
+
+```
+<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Active Claim</div>
+<div style="background:white;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+    <div id="dash-claim-title" style="font-size:15px;font-weight:700;color:#0f172a;flex:1">Ready to recover your money?</div>
+    <span style="background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;white-space:nowrap">Active</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid #f1f5f9;">
+    <div>
+      <div id="dash-procedure" style="font-size:13px;color:#64748b;">--</div>
+      <div id="dash-ins-name" style="font-size:12px;color:#0D9488;font-weight:600;margin-top:2px"></div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:10px;color:#94a3b8;margin-bottom:2px">You paid</div>
+      <div id="dash-amount" style="font-size:18px;font-weight:800;color:#0f172a">--</div>
+    </div>
+  </div>
+  <!-- Progress tracker -->
+  <div style="padding-top:12px;border-top:1px solid #f1f5f9;">
+    <div style="display:flex;align-items:center;margin-bottom:6px">
+      <div style="width:10px;height:10px;background:#0D9488;border-radius:50%"></div>
+      <div style="flex:1;height:2px;background:#0D9488"></div>
+      <div style="width:10px;height:10px;background:#0D9488;border-radius:50%"></div>
+      <div style="flex:1;height:2px;background:#0D9488"></div>
+      <div style="width:10px;height:10px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;color:white;font-weight:700">→</div>
+      <div style="flex:1;height:2px;background:#e2e8f0"></div>
+      <div style="width:10px;height:10px;border:2px solid #e2e8f0;border-radius:50%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#94a3b8;">
+      <span style="color:#0D9488;font-weight:600">Submitted</span>
+      <span style="color:#0D9488;font-weight:600">Verified</span>
+      <span style="color:#0D9488;font-weight:600">With Insurer</span>
+      <span>Reimbursed</span>
+    </div>
+  </div>
+  <div style="background:#fffbeb;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:6px;margin-top:12px;">
+    ⏳ <strong>We are working on your claim</strong> · Est. 2-6 weeks · We'll text you updates
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- Bottom nav -->
+
+  <div style="position:fixed;bottom:0;left:0;right:0;height:60px;background:white;border-top:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-around;z-index:5001;">
+    <div onclick="window.showDashboard&&window.showDashboard()" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#0D9488;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span style="font-size:10px;font-weight:600">Home</span>
+    </div>
+    <div onclick="window.goTo&&window.goTo('s-support')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+      <span style="font-size:10px">Support</span>
+    </div>
+    <div onclick="window.goTo&&window.goTo('s-profile')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      <span style="font-size:10px">Profile</span>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
