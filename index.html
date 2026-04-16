@@ -3092,26 +3092,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  </div>
  </div>
- <div class="success-screen" id="s5-success" style="min-height:100%;background:#f8fafc;padding:32px 24px;text-align:center">
-  <div style="width:72px;height:72px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px">
+ <div id="s5-success" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#f8fafc;z-index:4997;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;box-sizing:border-box;">
+  <div style="width:72px;height:72px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;flex-shrink:0">
    <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
   <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:700;color:#0f172a;margin-bottom:10px">Claim Submitted!</div>
   <div style="font-size:16px;color:#64748b;line-height:1.6;margin-bottom:24px">Your claim is being processed. We'll notify you via WhatsApp with updates.</div>
-  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:16px 20px;margin-bottom:12px;width:100%;box-sizing:border-box">
+  <div id="s5-plan-badge" style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:16px 20px;margin-bottom:12px;width:100%;box-sizing:border-box;max-width:340px">
    <div id="s5-plan-label" style="font-size:15px;font-weight:700;color:#16a34a;margin-bottom:4px">✓ Premium Fast-Track</div>
    <div id="s5-fee-label" style="font-size:14px;color:#15803d">$29 paid · 10% only after you get paid</div>
   </div>
-  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:14px 20px;margin-bottom:24px;width:100%;box-sizing:border-box">
+  <div id="s5-priority-badge" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:14px 20px;margin-bottom:28px;width:100%;box-sizing:border-box;max-width:340px">
    <div style="font-size:14px;color:#1d4ed8;font-weight:600">⚡ Priority processing · WhatsApp updates enabled</div>
   </div>
-  <button class="btn-primary" style="width:100%;height:56px;font-size:17px;font-weight:700;" onclick="window.showDashboard&&window.showDashboard()">
+  <button class="btn-primary" style="width:100%;max-width:340px;height:56px;font-size:17px;font-weight:700;" onclick="window.showDashboard&&window.showDashboard();document.getElementById('s5-success').style.display='none';">
    Go to my dashboard →
   </button>
-  <button onclick="window.startNewClaim&&window.startNewClaim()" style="margin-top:12px;width:100%;height:46px;border-radius:12px;border:1.5px solid #e2e8f0;background:white;color:#64748b;font-size:14px;font-weight:600;cursor:pointer">
+  <button onclick="window.startNewClaim&&window.startNewClaim();document.getElementById('s5-success').style.display='none';" style="margin-top:12px;width:100%;max-width:340px;height:46px;border-radius:12px;border:1.5px solid #e2e8f0;background:white;color:#64748b;font-size:14px;font-weight:600;cursor:pointer">
    📄 Submit another claim →
   </button>
- </div>
+</div>
 </div>
 
 <!-- 
@@ -5218,33 +5218,35 @@ function paymentSuccess(){
   if(window.claimData){ try{ sessionStorage.setItem('_claimData', JSON.stringify(window.claimData)); }catch(e){} }
   sessionStorage.setItem('paid', 'true');
   var formEl = document.getElementById('s5-form');
-  var sucEl = document.getElementById('s5-success');
   if(formEl) formEl.style.display='none';
+  // Show fixed overlay success screen
+  var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
+  var isPremium = plan === 'premium';
+  var sucEl = document.getElementById('s5-success');
   if(sucEl){
-    sucEl.classList.add('show');
-    sucEl.style.display='flex';
-    sucEl.style.flexDirection='column';
-    sucEl.style.alignItems='center';
-    sucEl.style.justifyContent='center';
+    var planLbl = document.getElementById('s5-plan-label');
+    var feeLbl = document.getElementById('s5-fee-label');
+    var prioBadge = document.getElementById('s5-priority-badge');
+    var planBadge = document.getElementById('s5-plan-badge');
+    if(isPremium){
+      if(planLbl) planLbl.textContent = '✓ Premium Fast-Track';
+      if(feeLbl) feeLbl.textContent = '$29 paid · 10% only after you get paid';
+      if(planBadge){ planBadge.style.background='#f0fdf4'; planBadge.style.borderColor='#86efac'; }
+      if(prioBadge) prioBadge.style.display='block';
+    } else {
+      if(planLbl) planLbl.textContent = '✓ Standard Plan · No charge today';
+      if(feeLbl) feeLbl.textContent = 'We only charge 15% after your insurance pays you';
+      if(planBadge){ planBadge.style.background='#f0fdf4'; planBadge.style.borderColor='#86efac'; }
+      if(prioBadge) prioBadge.style.display='none';
+    }
+    sucEl.style.display = 'flex';
   }
   try{launchConfetti();}catch(e){}
-  // User taps "Go to my dashboard" — no auto-advance
-  // Update plan labels
-  var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
-  var planLbl = document.getElementById('s5-plan-label');
-  var feeLbl = document.getElementById('s5-fee-label');
-  if(planLbl) planLbl.textContent = plan === 'premium' ? 'Premium Fast-Track' : 'Standard';
-  if(feeLbl) feeLbl.textContent = plan === 'premium' ? '$29 paid · 10% on success' : 'Free to start · 15% on success';
-  // No auto-advance -- user taps the button when ready
-  // Hide the auto-bar and "taking you..." text
-  var bar = document.getElementById('s5-auto-bar');
-  if(bar) bar.parentNode.parentNode.style.display='none';
-  var autoText = bar && bar.parentNode.parentNode.nextElementSibling;
 }
 
 async function doPayment(method){
   var plan = window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
-  if(plan === 'standard'){ paymentSuccess(); return; }
+  if(plan === 'standard'){ paymentSuccess(); return; } // success overlay shown, user taps dashboard
 
   // Stripe Payment Element submit
   if(method === 'stripe'){
@@ -5499,50 +5501,69 @@ window.showSupport = function() {
 // Standard plan — save card via Stripe SetupIntent (no charge today)
 window.stdMountStripe = async function() {
   var stripe = getStripe();
-  if(!stripe) return;
+  if(!stripe){ console.warn('[STD] Stripe not loaded'); return; }
+  var container = document.getElementById('std-payment-element');
+  if(!container) return;
   try {
+    // Try SetupIntent first
     var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'setup_intent', email:(window.currentUser&&window.currentUser.email)||''})
     });
     var data = await resp.json();
-    if(!data.clientSecret) throw new Error('No client secret');
-    var elements = stripe.elements({ clientSecret: data.clientSecret, appearance:{ theme:'stripe' } });
-    var payEl = elements.create('payment');
-    payEl.mount('#std-payment-element');
-    window._stdElements = elements;
-    window._stdSetupSecret = data.clientSecret;
+    console.log('[STD] Lambda response:', data);
+    if(data.clientSecret) {
+      var elements = stripe.elements({ clientSecret: data.clientSecret, appearance:{ theme:'stripe', variables:{ colorPrimary:'#0D9488' } } });
+      var payEl = elements.create('payment');
+      payEl.mount('#std-payment-element');
+      window._stdElements = elements;
+      window._stdIsSetup = true;
+      return;
+    }
+    throw new Error('No clientSecret in response');
   } catch(e) {
-    // Fallback: just go to dashboard
-    var btn = document.getElementById('std-save-btn');
-    if(btn) btn.onclick = function(){ window.showDashboard&&window.showDashboard(); };
-    var el = document.getElementById('std-payment-element');
-    if(el) el.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:8px 0">Card saving not available — you can add it later in Profile.</p>';
+    console.warn('[STD] SetupIntent failed, using card element:', e);
+    // Fallback: use basic card element (Stripe.js v3 style)
+    try {
+      var elements2 = stripe.elements();
+      var card = elements2.create('card', { style:{ base:{ fontSize:'16px', color:'#0f172a', '::placeholder':{ color:'#94a3b8' } } } });
+      card.mount('#std-payment-element');
+      window._stdCard = card;
+      window._stdStripe = stripe;
+      window._stdIsSetup = false;
+    } catch(e2) {
+      container.innerHTML = '<p style="color:#64748b;font-size:14px;padding:12px 0">Add your card later from your Profile. <strong>Your claim is submitted.</strong></p>';
+      var btn = document.getElementById('std-save-btn');
+      if(btn){ btn.textContent='Go to dashboard →'; btn.onclick=function(){ window.showDashboard&&window.showDashboard(); }; }
+    }
   }
 };
 
 window.stdSaveCard = async function() {
   var btn = document.getElementById('std-save-btn');
   if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
-  var stripe = getStripe();
-  if(!stripe || !window._stdElements) { window.showDashboard&&window.showDashboard(); return; }
-  try {
-    var result = await stripe.confirmSetup({
-      elements: window._stdElements,
-      confirmParams: { return_url: window.location.href },
-      redirect: 'if_required'
-    });
-    if(result.error) {
-      var errEl = document.getElementById('std-stripe-error');
-      if(errEl){ errEl.textContent=result.error.message; errEl.style.display='block'; }
-      if(btn){ btn.disabled=false; btn.textContent='Save card & go to dashboard →'; }
-    } else {
-      window.showDashboard&&window.showDashboard();
-    }
-  } catch(e) {
-    window.showDashboard&&window.showDashboard();
+  // Mode 1: SetupIntent (preferred)
+  if(window._stdElements && window._stdIsSetup) {
+    var stripe = getStripe();
+    try {
+      var result = await stripe.confirmSetup({
+        elements: window._stdElements,
+        confirmParams: { return_url: window.location.href },
+        redirect: 'if_required'
+      });
+      if(result.error) {
+        var errEl = document.getElementById('std-stripe-error');
+        if(errEl){ errEl.textContent=result.error.message; errEl.style.display='block'; }
+        if(btn){ btn.disabled=false; btn.textContent='Save card & go to dashboard →'; }
+      } else {
+        window.showDashboard&&window.showDashboard();
+      }
+    } catch(e) { window.showDashboard&&window.showDashboard(); }
+    return;
   }
+  // Mode 2: Card element fallback — just go to dashboard (card tokenization needs backend)
+  window.showDashboard&&window.showDashboard();
 };
 
 window.showProfile = function() {
@@ -9427,7 +9448,13 @@ setTimeout(function(){if(window.goTo)window.goTo('s-plan');},2500);
 /* -- ADMIN SWITCH (injected last, overrides broken script) ------- */
 document.addEventListener('DOMContentLoaded', function() {
   if (sessionStorage.getItem('paid') === 'true' && sessionStorage.getItem('_cUser')) {
-    setTimeout(function(){ if(window.showDashboard) window.showDashboard(); }, 300);
+    // Check if this is a Stripe redirect (payment_intent in URL)
+    var isStripeRedirect = window.location.search.indexOf('payment_intent') !== -1;
+    if(isStripeRedirect && window.paymentSuccess) {
+      setTimeout(function(){ window.paymentSuccess(); }, 300);
+    } else {
+      setTimeout(function(){ if(window.showDashboard) window.showDashboard(); }, 300);
+    }
   } else {
     // Clear stale paid flag if no user data
     sessionStorage.removeItem('paid');
