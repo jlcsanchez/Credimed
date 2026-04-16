@@ -28,7 +28,7 @@
 html,body{height:100%;overflow:hidden;position:fixed;width:100%;background:#fff;top:0;left:0;right:0;bottom:0}
 /* Prevent iOS Safari auto-zoom on focus -- must be 16px+ */
 input,select,textarea{font-size:16px !important;-webkit-text-size-adjust:100%}
-.patient-viewport{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--slate)}
+.patient-viewport{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--slate);font-size:17px}
 
 /* SCREENS */
 .patient-viewport .screen{display:none;position:absolute;width:100%;top:0;left:0;height:100%;z-index:0}
@@ -73,23 +73,23 @@ input,select,textarea{font-size:16px !important;-webkit-text-size-adjust:100%}
 .field:last-child{margin-bottom:0}
 .field label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate);margin-bottom:8px}
 .field label .req{color:var(--red);margin-left:2px}
-.field input,.field select{width:100%;height:52px;padding:0 16px;border:1.5px solid #e2e8f0;border-radius:12px;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;color:var(--slate);background:white;outline:none;transition:all .2s cubic-bezier(.16,1,.3,1);-webkit-appearance:none;box-shadow:0 1px 3px rgba(0,0,0,.04) inset}
+.field input,.field select{width:100%;height:52px;padding:0 16px;border:1.5px solid #e2e8f0;border-radius:12px;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;color:var(--slate);background:white;outline:none;transition:all .2s cubic-bezier(.16,1,.3,1);-webkit-appearance:none;box-shadow:0 1px 3px rgba(0,0,0,.04) inset}
 .field input:focus,.field select:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(13,148,136,.12),0 1px 3px rgba(0,0,0,.04) inset}
 .field input.prefilled{background:var(--teal-xlight);border-color:var(--teal-light);color:var(--teal-dark);font-weight:600}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .field-row .field{margin-bottom:0}
-.field .hint{font-size:11px;color:var(--slate-light);margin-top:4px}
+.field .hint{font-size:13px;color:var(--slate-light);margin-top:4px}
 
-.btn-primary{width:100%;height:60px;background:var(--navy);color:white;border:none;border-radius:14px;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:17px;font-weight:700;cursor:pointer;transition:all .2s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(27,58,107,.35),0 1px 0 rgba(255,255,255,.1) inset;-webkit-tap-highlight-color:transparent;user-select:none}.btn-primary:active{transform:scale(.97);box-shadow:0 2px 8px rgba(27,58,107,.25)}
+.btn-primary{width:100%;height:60px;background:var(--navy);color:white;border:none;border-radius:14px;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:19px;font-weight:700;cursor:pointer;transition:all .2s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(27,58,107,.35),0 1px 0 rgba(255,255,255,.1) inset;-webkit-tap-highlight-color:transparent;user-select:none}.btn-primary:active{transform:scale(.97);box-shadow:0 2px 8px rgba(27,58,107,.25)}
 .btn-primary:hover{background:var(--teal-dark);transform:translateY(-1px)}
 .btn-primary:active{transform:scale(.98)}
 .btn-primary:disabled{background:#94a3b8;cursor:not-allowed;box-shadow:none;transform:none}
-.btn-outline{width:100%;height:46px;background:transparent;color:var(--teal);border:1.5px solid var(--teal);border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-outline{width:100%;height:46px;background:transparent;color:var(--teal);border:1.5px solid var(--teal);border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-outline:hover{background:var(--teal-xlight)}
-.btn-ghost{width:100%;height:46px;background:white;color:var(--slate);border:1.5px solid var(--border);border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-ghost{width:100%;height:46px;background:white;color:var(--slate);border:1.5px solid var(--border);border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:500;cursor:pointer;transition:all .15s}
 .btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
 
-.err-banner{background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:12px 16px;font-size:13px;color:#991b1b;display:none;align-items:center;gap:8px;margin-bottom:14px;box-shadow:0 2px 8px rgba(239,68,68,.1)}
+.err-banner{background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:12px 16px;font-size:15px;color:#991b1b;display:none;align-items:center;gap:8px;margin-bottom:14px;box-shadow:0 2px 8px rgba(239,68,68,.1)}
 .err-banner.show{display:flex}
 
 /* 
@@ -116,7 +116,7 @@ SCREEN: LANDING
 .hero-eyebrow{display:inline-flex;align-items:center;gap:6px;background:rgba(147,197,253,.12);border:1px solid rgba(94,234,212,.25);color:#93c5fd;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:6px 14px;border-radius:20px;margin-bottom:20px;backdrop-filter:blur(8px)}
 .hero-h1{font-family:'Playfair Display',Georgia,serif;font-size:40px;font-weight:900;color:#93c5fd;line-height:1.05;letter-spacing:-2px;margin-bottom:16px}
 .hero-h1 span{color:#93c5fd}
-.hero-body{font-size:16px;color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:24px;max-width:320px}
+.hero-body{font-size:18px;color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:24px;max-width:320px}
 .hero-stat{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:40px;padding:12px 22px;margin-bottom:28px;backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.08)}
 .hero-stat-icon{font-size:18px}
 .hero-stat-val{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;display:inline;line-height:1}
@@ -372,7 +372,7 @@ SCREEN: DASHBOARD
 .stat-card-pct{font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:600;color:#93c5fd}
 .stat-card-pct-lbl{font-size:10px;color:rgba(255,255,255,.5);text-align:right;margin-top:2px}
 .dash-body{background:var(--bg);margin-top:-16px;border-radius:20px 20px 0 0;padding:12px 12px 80px;flex:1;overflow-y:auto;position:relative;z-index:2;min-height:100%}
-.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-light);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.sec-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-light);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
 .sec-label a{color:var(--teal);font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer}
 .btn-new-claim{width:100%;height:52px;background:var(--navy);color:white;border:none;border-radius:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;box-shadow:0 4px 16px rgba(13,148,136,.25);transition:all .15s}
 .btn-new-claim:hover{background:var(--teal-dark)}
@@ -430,7 +430,7 @@ SCREEN: DASHBOARD
 .nav-item .ni{width:26px;height:26px;display:flex;align-items:center;justify-content:center}
 .nav-item .ni svg{width:26px;height:26px;fill:var(--slate-light);transition:fill .15s}
 .nav-item.active .ni svg{fill:var(--teal)}
-.nav-item .nl{font-size:10px;font-weight:600;color:var(--slate-light);letter-spacing:.2px}
+.nav-item .nl{font-size:12px;font-weight:600;color:var(--slate-light);letter-spacing:.2px}
 .nav-item.active .nl{color:var(--teal);font-weight:700}
 
 /* SUCCESS SCREEN */
@@ -461,7 +461,7 @@ input[type=file]{display:none}
 .patient-viewport .bottom-nav,
 .patient-viewport #chat-input-bar,
 #chat-input-bar {position:sticky !important; bottom:0;}
-#s-support:not(.active) #chat-input-bar { display:none !important; }
+/* chat-input-bar always visible when s-support is shown */
 /* Only convert fixed->absolute for elements INSIDE patient-viewport screens
  (not for top-level overlays appended to <html> or <body>) */
 .patient-viewport .screen [style*="position:fixed"] {position:absolute !important;}
@@ -3017,11 +3017,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="screen" id="s-step5" style="background:var(--bg)">
  <div id="s5-form" style="display:flex;flex-direction:column;min-height:100vh">
- <div class="pay-hero">
- <div style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:2px" id="s5-plan-label">Premium Fast-Track</div>
- <div class="pay-amount" id="s5-amount">$29</div>
- <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;letter-spacing:.5px">IN US DOLLARS (USD)</div>
- <div class="pay-label">Secured by Stripe · Encrypted</div>
+ <div class="pay-hero" style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:28px 24px 40px;">
+ <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px">
+  <div style="width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center">⭐</div>
+  <div id="s5-plan-label" style="font-size:13px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1.5px">Premium Fast-Track</div>
+ </div>
+ <div class="pay-amount" id="s5-amount" style="font-size:56px;font-weight:800;margin-bottom:4px">$29</div>
+ <div style="font-size:12px;color:rgba(255,255,255,.5);letter-spacing:.5px;margin-bottom:8px">USD · one-time fee</div>
+ <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 14px">
+  <span style="font-size:11px">🔒</span>
+  <span style="font-size:11px;color:rgba(255,255,255,.7);font-weight:600">Secured by Stripe · Encrypted</span>
+ </div>
  <div class="pay-body">
  <div class="pay-summary" id="s5-summary">
  <div class="pay-row"><span id="s5-row-label">Fast-Track fee</span><span id="s5-row-amount">$29.00</span></div>
@@ -5496,7 +5502,7 @@ window.showSupport = function() {
   var prof = document.getElementById('s-profile');
   if(prof) prof.style.display = 'none';
   var sup = document.getElementById('s-support');
-  if(sup) sup.style.display = 'flex';
+  if(sup){ sup.style.display = 'flex'; sup.classList.add('active'); }
 };
 
 window.showProfile = function() {
@@ -5520,6 +5526,7 @@ window.showProfile = function() {
   if(!cd.insurer && sessionStorage.getItem('_claimData')){
     try{ cd=JSON.parse(sessionStorage.getItem('_claimData')); }catch(e){}
   }
+  console.log('[Profile insurance] u.insurer:', u.insurer, 'u.memberId:', u.memberId, 'cd.insurer:', cd.insurer, 'cd.memberId:', cd.memberId);
   set('pf-insurer', u.insurer||cd.insurer||'--');
   set('pf-member', u.memberId||cd.memberId||'--');
   set('pf-group', u.groupId||cd.groupId||'--');
