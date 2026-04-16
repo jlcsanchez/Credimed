@@ -3233,7 +3233,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
  <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:24px 20px 48px;position:relative;overflow:hidden;flex-shrink:0">
   <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(13,148,136,.25) 0%,transparent 70%)"></div>
-  <div onclick="var p=document.getElementById('s-profile');if(p)p.style.display='none';var d=document.getElementById('s-dashboard');if(d)d.style.display='block';" style="width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:16px;color:white;font-size:16px;position:relative;z-index:1">←</div>
+  <div onclick="window.showDashboard&&window.showDashboard()" style="width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:16px;color:white;font-size:16px;position:relative;z-index:1">←</div>
   <div style="display:flex;flex-direction:column;align-items:center;position:relative;z-index:1">
    <div id="profile-avatar-big" style="width:76px;height:76px;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:white;margin-bottom:10px">J</div>
    <div id="profile-name-big" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;margin-bottom:3px">--</div>
@@ -3623,13 +3623,7 @@ function navTo(screenId, navId) {
  next.classList.add('active');
  next.style.display = 'block';
  next.scrollTop = 0;
- if (screenId === 's-profile') {
-   // Profile is a fixed overlay — show it directly
-   var prof = document.getElementById('s-profile');
-   if(prof) prof.style.display = 'block';
-   initProfile();
-   return;
- }
+ if (screenId === 's-profile') { initProfile(); }
  if (screenId === 's-dashboard') initDashboard();
  var _navBn=document.getElementById('bottom-nav');
  if(_navBn){_navBn.classList.add('show');_navBn.style.display='flex';}
@@ -5478,6 +5472,40 @@ window.doAdminLogin = function() {
   } else {
     if(err){ err.textContent='Invalid email or password'; err.style.display='block'; }
   }
+};
+
+window.showProfile = function() {
+  // Restore data
+  var u = window.currentUser || {};
+  if(!u.first){ try{ var s=sessionStorage.getItem('_cUser'); if(s) u=JSON.parse(s); }catch(e){} }
+  var name = ((u.first||'') + ' ' + (u.last||'')).trim() || 'User';
+  var plan = window._confirmedPlan || u.plan || 'standard';
+  var isPremium = plan === 'premium';
+  var set = function(id,val){ var el=document.getElementById(id); if(el&&val!=null) el.textContent=val; };
+  // Fill fields
+  set('profile-avatar-big', (u.first||'U')[0].toUpperCase());
+  set('profile-name-big', name);
+  set('profile-email-big', u.email||'--');
+  set('profile-plan-badge', isPremium ? 'Premium Plan' : 'Standard Plan');
+  set('pf-name', name);
+  set('pf-email', u.email||'--');
+  set('pf-phone', u.phone||u.whatsapp||'--');
+  set('pf-insurer', u.insurer||'--');
+  set('pf-member', u.memberId||'--');
+  set('pf-group', u.groupId||'--');
+  var planName = document.getElementById('pf-plan-name');
+  var planDesc = document.getElementById('pf-plan-desc');
+  var planEl = document.getElementById('pf-plan-detail');
+  if(isPremium){
+    if(planEl){ planEl.style.background='#eff6ff'; planEl.style.borderColor='#bfdbfe'; }
+    if(planName){ planName.textContent='Premium Fast-Track'; planName.style.color='#1d4ed8'; }
+    if(planDesc){ planDesc.textContent='$29 paid · 10% only after you get paid'; planDesc.style.color='#2563eb'; }
+  }
+  // Hide dashboard, show profile
+  var dash = document.getElementById('s-dashboard');
+  if(dash) dash.style.display = 'none';
+  var prof = document.getElementById('s-profile');
+  if(prof) prof.style.display = 'block';
 };
 
 window.showDashboard = function() {
@@ -10609,11 +10637,11 @@ window.showProcShare = function() {
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       <span style="font-size:10px;font-weight:600">Home</span>
     </div>
-    <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';var pp=document.getElementById('panel-patient');if(pp)pp.style.display='flex';window.navTo&&window.navTo('s-support','nav-support')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+    <div onclick="window.navHistory=['s-dashboard'];var d=document.getElementById('s-dashboard');if(d)d.style.display='none';window.navTo&&window.navTo('s-support','nav-support')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
       <span style="font-size:10px">Support</span>
     </div>
-    <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';var pp=document.getElementById('panel-patient');if(pp)pp.style.display='flex';window.navTo&&window.navTo('s-profile','nav-profile')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+    <div onclick="window.showProfile&&window.showProfile()" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
       <span style="font-size:10px">Profile</span>
     </div>
