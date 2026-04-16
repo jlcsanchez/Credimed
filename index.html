@@ -3182,11 +3182,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  SCREEN: SUPPORT CHATBOT
  -->
 
-<div class="screen" id="s-support" style="background:var(--bg)">
+<div id="s-support" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);overflow-y:auto;z-index:4998;flex-direction:column;">
  <!-- Header -->
  <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 100%);padding:16px 20px 20px;flex-shrink:0">
  <div style="display:flex;align-items:center;gap:12px">
- <div id="support-back-btn" onclick="window.goBack()" style="display:flex;width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;color:white">←</div>
+ <div id="support-back-btn" onclick="var s=document.getElementById('s-support');if(s)s.style.display='none';window.showDashboard&&window.showDashboard()" style="display:flex;width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;color:white">←</div>
  <div style="flex-shrink:0"><svg width="36" height="36" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
  <div>
  <div style="font-family:'Playfair Display',Georgia,serif;font-size:16px;font-weight:600;color:white">Credimed Support</div>
@@ -3301,7 +3301,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div style="background:white;border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;padding:16px 16px 8px">⚙️ Account</div>
-   <div onclick="var p=document.getElementById('s-profile');if(p)p.style.display='none';var pp=document.getElementById('panel-patient');if(pp)pp.style.display='flex';window.navTo&&window.navTo('s-support','nav-support')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
+   <div onclick="window.showSupport&&window.showSupport()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
     <span style="font-size:18px">💬</span>
     <span style="font-size:14px;color:#0f172a;flex:1">Contact Support</span>
     <span style="color:#94a3b8;font-size:18px">›</span>
@@ -3694,6 +3694,8 @@ function doLogout() {
  if(dash) dash.style.display = 'none';
  var prof = document.getElementById('s-profile');
  if(prof) prof.style.display = 'none';
+ var sup = document.getElementById('s-support');
+ if(sup) sup.style.display = 'none';
  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
  document.getElementById('s-landing').classList.add('active');
  document.getElementById('bottom-nav').classList.remove('show');
@@ -5486,6 +5488,15 @@ window.doAdminLogin = function() {
   } else {
     if(err){ err.textContent='Invalid email or password'; err.style.display='block'; }
   }
+};
+
+window.showSupport = function() {
+  var dash = document.getElementById('s-dashboard');
+  if(dash) dash.style.display = 'none';
+  var prof = document.getElementById('s-profile');
+  if(prof) prof.style.display = 'none';
+  var sup = document.getElementById('s-support');
+  if(sup) sup.style.display = 'flex';
 };
 
 window.showProfile = function() {
@@ -10712,7 +10723,7 @@ window.showProcShare = function() {
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       <span style="font-size:10px;font-weight:600">Home</span>
     </div>
-    <div onclick="window.navHistory=['s-dashboard'];var d=document.getElementById('s-dashboard');if(d)d.style.display='none';window.navTo&&window.navTo('s-support','nav-support')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+    <div onclick="window.showSupport&&window.showSupport()" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
       <span style="font-size:10px">Support</span>
     </div>
