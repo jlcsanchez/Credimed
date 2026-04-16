@@ -2974,19 +2974,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- STANDARD: PAYMENT METHOD FOR 15% FEE -->
 
 <div class="screen" id="s-std-payment" style="background:var(--bg)">
- <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;text-align:center">
-  <div style="width:72px;height:72px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px">
-   <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+ <div class="top-bar">
+  <div class="top-row"><div class="back-btn" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Standard Plan</div></div>
+ </div>
+ <div style="padding:20px 16px">
+  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:14px 16px;margin-bottom:20px;text-align:center">
+   <div style="font-size:15px;font-weight:700;color:#16a34a;margin-bottom:4px">✓ Claim submitted · Standard Plan</div>
+   <div style="font-size:13px;color:#15803d">We only charge 15% after your insurance pays you. Nothing today.</div>
   </div>
-  <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:700;color:#0f172a;margin-bottom:10px">Claim Submitted!</div>
-  <div style="font-size:16px;color:#64748b;line-height:1.6;margin-bottom:8px">Your claim is now being processed. We'll notify you via WhatsApp with updates.</div>
-  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:16px 20px;margin:24px 0;width:100%;box-sizing:border-box">
-   <div style="font-size:15px;font-weight:700;color:#16a34a;margin-bottom:4px">✓ Standard Plan · No charge today</div>
-   <div style="font-size:14px;color:#15803d">We only charge 15% after your insurance pays you.</div>
+  <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:700;color:#0f172a;margin-bottom:6px">Save a card for future payment</div>
+  <p style="font-size:14px;color:#64748b;margin-bottom:20px;line-height:1.5">We'll charge 15% automatically once your insurance pays. Your card is saved securely — no charge today.</p>
+  <div id="std-stripe-element" style="background:white;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:16px;min-height:44px">
+   <div id="std-payment-element"></div>
   </div>
-  <button class="btn-primary" style="width:100%;height:56px;font-size:17px;font-weight:700;" onclick="window.showDashboard&&window.showDashboard()">
-   Go to my dashboard →
+  <div id="std-stripe-error" style="color:#ef4444;font-size:13px;margin-bottom:12px;display:none"></div>
+  <button id="std-save-btn" class="btn-primary" style="width:100%;height:56px;font-size:17px;font-weight:700;" onclick="window.stdSaveCard&&window.stdSaveCard()">
+   Save card &amp; go to dashboard →
   </button>
+  <div style="text-align:center;margin-top:12px">
+   <span onclick="window.showDashboard&&window.showDashboard()" style="font-size:13px;color:#94a3b8;cursor:pointer;text-decoration:underline">Skip for now</span>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px">
+   <span style="font-size:12px">🔒</span>
+   <span style="font-size:12px;color:#94a3b8">Secured by Stripe · No charge today</span>
+  </div>
  </div>
 </div>
 
@@ -3081,25 +3092,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  </div>
  </div>
- <div class="success-screen" id="s5-success" style="min-height:100%;background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%)">
- <div class="success-circle"><svg width="80" height="80" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
- <div class="success-title">Payment Received!</div>
- <div class="success-sub" style="margin-bottom:20px">Your claim is being submitted now</div>
- <div style="width:100%;max-width:280px;background:rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:left">
- <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Plan</span><span id="s5-plan-label" style="color:#4ade80">Premium</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim filed</span><span id="s5-fee-label" style="color:#4ade80">Free to start</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px"><span>Claim status</span><span style="color:#93c5fd">Submitting...</span></div>
- <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7)"><span>WhatsApp updates</span><span style="color:#93c5fd">Enabled </span></div>
- </div>
-
- <!-- Prominent teal button -->
-
- <button class="btn-primary" style="background:var(--navy);color:white;margin-top:12px;width:100%;max-width:280px;box-shadow:0 8px 24px rgba(27,58,107,.4)" onclick="if(window.goTo)window.goTo('s-dashboard');try{initDashboard();}catch(e){}">
-  Go to my dashboard →
- </button>
- <button onclick="window.startNewClaim&&window.startNewClaim()" style="margin-top:10px;width:100%;max-width:280px;height:44px;border-radius:12px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-size:13px;font-weight:600;cursor:pointer;display:block">
-  📄 Check another bill →
- </button>
+ <div class="success-screen" id="s5-success" style="min-height:100%;background:#f8fafc;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+  <div style="width:72px;height:72px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px">
+   <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:700;color:#0f172a;margin-bottom:10px">Claim Submitted!</div>
+  <div style="font-size:16px;color:#64748b;line-height:1.6;margin-bottom:24px">Your claim is being processed. We'll notify you via WhatsApp with updates.</div>
+  <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:14px;padding:16px 20px;margin-bottom:12px;width:100%;box-sizing:border-box">
+   <div id="s5-plan-label" style="font-size:15px;font-weight:700;color:#16a34a;margin-bottom:4px">✓ Premium Fast-Track</div>
+   <div id="s5-fee-label" style="font-size:14px;color:#15803d">$29 paid · 10% only after you get paid</div>
+  </div>
+  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:14px 20px;margin-bottom:24px;width:100%;box-sizing:border-box">
+   <div style="font-size:14px;color:#1d4ed8;font-weight:600">⚡ Priority processing · WhatsApp updates enabled</div>
+  </div>
+  <button class="btn-primary" style="width:100%;height:56px;font-size:17px;font-weight:700;" onclick="window.showDashboard&&window.showDashboard()">
+   Go to my dashboard →
+  </button>
+  <button onclick="window.startNewClaim&&window.startNewClaim()" style="margin-top:12px;width:100%;height:46px;border-radius:12px;border:1.5px solid #e2e8f0;background:white;color:#64748b;font-size:14px;font-weight:600;cursor:pointer">
+   📄 Submit another claim →
+  </button>
  </div>
 </div>
 
@@ -3533,7 +3544,7 @@ function goTo(id, param) {
    if(payBtn) payBtn.textContent = 'Continue ->';
  }
  }
- if (id === 's-std-payment') {
+ if (id === 's-std-payment') { setTimeout(function(){ if(window.stdMountStripe) window.stdMountStripe(); }, 300);
    // Persist currentUser so dashboard has data after navigation
    if(currentUser) { try { sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); } catch(e){} }
    if(window.claimData) { try { sessionStorage.setItem('_claimData', JSON.stringify(window.claimData)); } catch(e){} }
@@ -5478,6 +5489,55 @@ window.showSupport = function() {
   if(prof) prof.style.display = 'none';
   var sup = document.getElementById('s-support');
   if(sup){ sup.style.display = 'flex'; sup.classList.add('active'); }
+};
+
+// Standard plan — save card via Stripe SetupIntent (no charge today)
+window.stdMountStripe = async function() {
+  var stripe = getStripe();
+  if(!stripe) return;
+  try {
+    var resp = await fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'setup_intent', email:(window.currentUser&&window.currentUser.email)||''})
+    });
+    var data = await resp.json();
+    if(!data.clientSecret) throw new Error('No client secret');
+    var elements = stripe.elements({ clientSecret: data.clientSecret, appearance:{ theme:'stripe' } });
+    var payEl = elements.create('payment');
+    payEl.mount('#std-payment-element');
+    window._stdElements = elements;
+    window._stdSetupSecret = data.clientSecret;
+  } catch(e) {
+    // Fallback: just go to dashboard
+    var btn = document.getElementById('std-save-btn');
+    if(btn) btn.onclick = function(){ window.showDashboard&&window.showDashboard(); };
+    var el = document.getElementById('std-payment-element');
+    if(el) el.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:8px 0">Card saving not available — you can add it later in Profile.</p>';
+  }
+};
+
+window.stdSaveCard = async function() {
+  var btn = document.getElementById('std-save-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
+  var stripe = getStripe();
+  if(!stripe || !window._stdElements) { window.showDashboard&&window.showDashboard(); return; }
+  try {
+    var result = await stripe.confirmSetup({
+      elements: window._stdElements,
+      confirmParams: { return_url: window.location.href },
+      redirect: 'if_required'
+    });
+    if(result.error) {
+      var errEl = document.getElementById('std-stripe-error');
+      if(errEl){ errEl.textContent=result.error.message; errEl.style.display='block'; }
+      if(btn){ btn.disabled=false; btn.textContent='Save card & go to dashboard →'; }
+    } else {
+      window.showDashboard&&window.showDashboard();
+    }
+  } catch(e) {
+    window.showDashboard&&window.showDashboard();
+  }
 };
 
 window.showProfile = function() {
