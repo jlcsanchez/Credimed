@@ -5470,6 +5470,8 @@ window.showSupport = function() {
   if(dash) dash.style.display = 'none';
   var prof = document.getElementById('s-profile');
   if(prof) prof.style.display = 'none';
+  var suc = document.getElementById('s5-success');
+  if(suc) suc.style.display = 'none';
   var sup = document.getElementById('s-support');
   if(sup){ sup.style.display = 'flex'; sup.classList.add('active'); }
 };
@@ -5533,13 +5535,22 @@ window.stdSaveCard = async function() {
         if(errEl){ errEl.textContent=result.error.message; errEl.style.display='block'; }
         if(btn){ btn.disabled=false; btn.textContent='Save card & go to dashboard →'; }
       } else {
-        window.showDashboard&&window.showDashboard();
+        // Show "Claim Submitted" success screen
+        window._confirmedPlan = 'standard';
+        if(window.paymentSuccess) window.paymentSuccess();
+        else window.showDashboard&&window.showDashboard();
       }
-    } catch(e) { window.showDashboard&&window.showDashboard(); }
+    } catch(e) {
+      window._confirmedPlan = 'standard';
+      if(window.paymentSuccess) window.paymentSuccess();
+      else window.showDashboard&&window.showDashboard();
+    }
     return;
   }
-  // Mode 2: Card element fallback — just go to dashboard (card tokenization needs backend)
-  window.showDashboard&&window.showDashboard();
+  // Mode 2: Card element fallback — show success screen then dashboard
+  window._confirmedPlan = 'standard';
+  if(window.paymentSuccess) window.paymentSuccess();
+  else window.showDashboard&&window.showDashboard();
 };
 
 window.showProfile = function() {
@@ -5575,9 +5586,11 @@ window.showProfile = function() {
     if(planName){ planName.textContent='Premium Fast-Track'; planName.style.color='#1d4ed8'; }
     if(planDesc){ planDesc.textContent='$29 paid · 10% only after you get paid'; planDesc.style.color='#2563eb'; }
   }
-  // Hide dashboard, show profile
+  // Hide dashboard, success, show profile
   var dash = document.getElementById('s-dashboard');
   if(dash) dash.style.display = 'none';
+  var suc = document.getElementById('s5-success');
+  if(suc) suc.style.display = 'none';
   var prof = document.getElementById('s-profile');
   if(prof) prof.style.display = 'block';
 };
@@ -5600,6 +5613,12 @@ window.showDashboard = function() {
   // Show dashboard — it's fixed/independent, just toggle display
   var dash = document.getElementById('s-dashboard');
   if(dash) dash.style.display = 'block';
+  var suc = document.getElementById('s5-success');
+  if(suc) suc.style.display = 'none';
+  var prof = document.getElementById('s-profile');
+  if(prof) prof.style.display = 'none';
+  var sup = document.getElementById('s-support');
+  if(sup) sup.style.display = 'none';
   // Reset nav history NOW (after showing dashboard)
   window.navHistory = ['s-dashboard'];
   // Clear paid flag so refresh returns to landing, not dashboard
