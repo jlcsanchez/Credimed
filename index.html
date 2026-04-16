@@ -2991,9 +2991,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button id="std-save-btn" class="btn-primary" style="width:100%;height:56px;font-size:17px;font-weight:700;" onclick="window.stdSaveCard&&window.stdSaveCard()">
    Save card &amp; go to dashboard →
   </button>
-  <div style="text-align:center;margin-top:12px">
-   <span onclick="window.showDashboard&&window.showDashboard()" style="font-size:13px;color:#94a3b8;cursor:pointer;text-decoration:underline">Skip for now</span>
-  </div>
   <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px">
    <span style="font-size:12px">🔒</span>
    <span style="font-size:12px;color:#94a3b8">Secured by Stripe · No charge today</span>
@@ -9447,16 +9444,24 @@ setTimeout(function(){if(window.goTo)window.goTo('s-plan');},2500);
 <script>
 /* -- ADMIN SWITCH (injected last, overrides broken script) ------- */
 document.addEventListener('DOMContentLoaded', function() {
-  if (sessionStorage.getItem('paid') === 'true' && sessionStorage.getItem('_cUser')) {
-    // Check if this is a Stripe redirect (payment_intent in URL)
-    var isStripeRedirect = window.location.search.indexOf('payment_intent') !== -1;
-    if(isStripeRedirect && window.paymentSuccess) {
-      setTimeout(function(){ window.paymentSuccess(); }, 300);
-    } else {
-      setTimeout(function(){ if(window.showDashboard) window.showDashboard(); }, 300);
-    }
+  // FIRST: check if returning from Stripe redirect (payment succeeded)
+  var isStripeRedirect = window.location.search.indexOf('payment_intent') !== -1;
+  var hasUser = sessionStorage.getItem('_cUser');
+
+  if(isStripeRedirect && hasUser) {
+    // Payment just completed via Stripe redirect → show success screen
+    setTimeout(function(){
+      if(window.paymentSuccess) window.paymentSuccess();
+      // Clean URL so refresh doesn't repeat
+      try{ history.replaceState({}, '', window.location.pathname); }catch(e){}
+    }, 300);
+    return;
+  }
+
+  // Otherwise: returning user with paid flag → go to dashboard
+  if (sessionStorage.getItem('paid') === 'true' && hasUser) {
+    setTimeout(function(){ if(window.showDashboard) window.showDashboard(); }, 300);
   } else {
-    // Clear stale paid flag if no user data
     sessionStorage.removeItem('paid');
   }
 });
