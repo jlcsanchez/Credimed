@@ -5234,7 +5234,7 @@ function paymentSuccess(){
   if(sucEl) sucEl.classList.add('show');
   try{launchConfetti();}catch(e){}
   // Go to dashboard after 2 seconds
-  setTimeout(function(){ window.showDashboard(); }, 1500);
+  setTimeout(function(){ window.showDashboard(); }, 800);
   // Update plan labels
   var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   var planLbl = document.getElementById('s5-plan-label');
@@ -10622,11 +10622,11 @@ window.showProcShare = function() {
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       <span style="font-size:10px;font-weight:600">Home</span>
     </div>
-    <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';window.goTo&&window.goTo('s-support')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+    <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';var pp=document.getElementById('panel-patient');if(pp)pp.style.display='flex';window.navTo&&window.navTo('s-support','nav-support')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
       <span style="font-size:10px">Support</span>
     </div>
-    <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';window.goTo&&window.goTo('s-profile')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
+    <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';var pp=document.getElementById('panel-patient');if(pp)pp.style.display='flex';window.navTo&&window.navTo('s-profile','nav-profile')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#94a3b8;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
       <span style="font-size:10px">Profile</span>
     </div>
