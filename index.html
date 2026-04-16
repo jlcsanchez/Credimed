@@ -968,15 +968,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <input type="radio" name="panel-switch" id="radio-admin" style="display:none;position:absolute">
  <div class="demo-topbar">
  <div class="demo-logo">
- <svg width="40" height="40" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.95"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#9ca3af" stroke-width="2.5"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg>
+ <svg width="40" height="40" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" id="demo-logo-svg" style="cursor:default" onclick="window._adminClicks=(window._adminClicks||0)+1;clearTimeout(window._adminClickTimer);window._adminClickTimer=setTimeout(function(){window._adminClicks=0;},800);if(window._adminClicks>=3){window._adminClicks=0;window.openAdminModal();}"><circle cx="36" cy="36" r="35" fill="white" opacity="0.95"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#9ca3af" stroke-width="2.5"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg>
  <div>
  <div class="demo-logo-name">CREDI<span>MED</span></div>
  <div class="demo-logo-sub">Platform Demo</div>
  </div>
  </div>
  <div class="demo-toggle">
- <label class="demo-tab active" id="tab-patient" for="radio-patient" data-oc="switchPanel('patient')" onclick="window.switchPanel&&window.switchPanel('patient')">Patient App</label>
- <label class="demo-tab" id="tab-admin" for="radio-admin" data-oc="switchPanel('admin')" onclick="window.switchPanel&&window.switchPanel('admin')"> Admin Dashboard</label>
+ <label class="demo-tab active" id="tab-patient" for="radio-patient" onclick="window.switchPanel&&window.switchPanel('patient')">Patient App</label>
+ <label class="demo-tab" id="tab-admin" style="display:none" for="radio-admin"></label>
+ </div>
+ <!-- Hidden admin trigger: triple-click on logo -->
+ <div id="admin-login-modal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:32px 28px;width:320px;max-width:90vw;box-shadow:0 24px 60px rgba(0,0,0,.3)">
+   <div style="text-align:center;margin-bottom:24px">
+    <div style="font-size:24px;margin-bottom:8px">🔐</div>
+    <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:700;color:#0f172a">Admin Access</div>
+    <div style="font-size:13px;color:#64748b;margin-top:4px">Enter your credentials to continue</div>
+   </div>
+   <div style="margin-bottom:14px">
+    <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Email</label>
+    <input id="admin-email-input" type="email" placeholder="admin@credimed.us" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#0f172a;outline:none;font-family:-apple-system,sans-serif">
+   </div>
+   <div style="margin-bottom:20px">
+    <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Password</label>
+    <input id="admin-pass-input" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#0f172a;outline:none;font-family:-apple-system,sans-serif" onkeydown="if(event.key==='Enter')window.doAdminLogin()">
+   </div>
+   <div id="admin-login-error" style="display:none;color:#ef4444;font-size:12px;text-align:center;margin-bottom:12px"></div>
+   <button onclick="window.doAdminLogin()" style="width:100%;padding:13px;background:#0B1F3A;color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px">Enter Admin Dashboard</button>
+   <button onclick="window.closeAdminModal()" style="width:100%;padding:10px;background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer">Cancel</button>
+  </div>
  </div>
 
  </div>
@@ -3206,51 +3227,113 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  SCREEN: PROFILE
  -->
 
-<div class="screen" id="s-profile" style="background:var(--bg)">
- <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:28px 20px 52px;flex-shrink:0;position:relative;overflow:hidden">
- <div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(13,148,136,.2) 0%,transparent 70%)"></div>
- <div style="display:flex;flex-direction:column;align-items:center;position:relative;z-index:1">
- <div id="profile-avatar-big" style="width:72px;height:72px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:white;border:3px solid rgba(255,255,255,.3);margin-bottom:12px">J</div>
- <div id="profile-name-big" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:600;color:white;margin-bottom:4px">Welcome</div>
- <div id="profile-email-big" style="font-size:13px;color:rgba(255,255,255,.6)">--</div>
- <div style="margin-top:10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1px">Active Member</div>
+<div class="screen" id="s-profile" style="background:var(--bg);overflow-y:auto;">
+
+ <!-- Header -->
+
+ <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:24px 20px 52px;position:relative;overflow:hidden;flex-shrink:0">
+  <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(13,148,136,.25) 0%,transparent 70%)"></div>
+  <!-- Back button -->
+  <div onclick="var d=document.getElementById('s-dashboard');if(d&&d.style.display!=='none'){return;}window.goBack&&window.goBack()" style="width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:16px;color:white;font-size:16px">←</div>
+  <div style="display:flex;flex-direction:column;align-items:center;position:relative;z-index:1">
+   <div id="profile-avatar-big" style="width:80px;height:80px;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:white;margin-bottom:12px">J</div>
+   <div id="profile-name-big" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;margin-bottom:3px">--</div>
+   <div id="profile-email-big" style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:10px">--</div>
+   <div id="profile-plan-badge" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1px">Standard Plan</div>
+  </div>
  </div>
- </div>
- <div style="background:var(--bg);margin-top:-20px;border-radius:22px 22px 0 0;padding:20px 16px 80px;flex:1;overflow-y:auto;position:relative;z-index:2">
- <!-- Info card -->
- <div class="card">
- <div class="card-head"><h3> Personal Info</h3></div>
- <div class="card-body">
- <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:12px;color:var(--slate-light);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Name</span><span style="font-size:14px;font-weight:600;color:var(--slate)" id="pf-name">--</span></div>
- <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:12px;color:var(--slate-light);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Email</span><span style="font-size:13px;color:var(--slate)" id="pf-email">--</span></div>
- <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="font-size:12px;color:var(--slate-light);font-weight:600;text-transform:uppercase;letter-spacing:.5px">WhatsApp</span><span style="font-size:13px;color:var(--slate)" id="pf-phone">--</span></div>
- </div>
- </div>
- <!-- Insurance card -->
- <div class="card">
- <div class="card-head"><h3> Insurance</h3></div>
- <div class="card-body">
- <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:12px;color:var(--slate-light);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Provider</span><span style="font-size:14px;font-weight:600;color:var(--slate)" id="pf-insurer">--</span></div>
- <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="font-size:12px;color:var(--slate-light);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Member ID</span><span style="font-size:13px;color:var(--slate)" id="pf-member">--</span></div>
- </div>
- </div>
- <!-- Stats card -->
- <div class="card">
- <div class="card-head"><h3> My Stats</h3></div>
- <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
- <div style="background:var(--teal-xlight);border:1px solid var(--teal-light);border-radius:10px;padding:12px;text-align:center"><div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:600;color:var(--teal)">3</div><div style="font-size:11px;color:var(--slate-mid);margin-top:2px">Total Claims</div></div>
- <div style="background:var(--teal-xlight);border:1px solid var(--teal-light);border-radius:10px;padding:12px;text-align:center"><div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:600;color:var(--teal)">+$480</div><div style="font-size:11px;color:var(--slate-mid);margin-top:2px">Recovered</div></div>
- </div>
- </div>
- <!-- Actions -->
- <div class="card">
- <div class="card-head"><h3> Account</h3></div>
- <div class="card-body" style="padding:0">
- <div data-oc="navTo('s-support','nav-support')" onclick="window.navTo&&window.navTo('s-support','nav-support')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer"><span style="font-size:18px"></span><span style="font-size:14px;color:var(--slate);flex:1">Contact Support</span><span style="color:var(--slate-light)">&rsaquo;</span></div>
- <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer"><span style="font-size:18px"></span><span style="font-size:14px;color:var(--slate);flex:1">Notifications</span><span style="color:var(--slate-light)">&rsaquo;</span></div>
- <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" data-oc="doLogout()" onclick="window.doLogout&&window.doLogout()"><span style="font-size:18px"></span><span style="font-size:14px;color:var(--red);flex:1">Sign Out</span><span style="color:var(--slate-light)">&rsaquo;</span></div>
- </div>
- </div>
+
+ <!-- Body -->
+
+ <div style="background:var(--bg);margin-top:-22px;border-radius:22px 22px 0 0;padding:20px 16px 100px;position:relative;z-index:2">
+
+  <!-- Stats row -->
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+   <div style="background:white;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <div id="pf-stat-claims" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:#0D9488">1</div>
+    <div style="font-size:10px;color:#94a3b8;margin-top:2px;font-weight:600">Claims</div>
+   </div>
+   <div style="background:white;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <div id="pf-stat-refund" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:#0D9488">--</div>
+    <div style="font-size:10px;color:#94a3b8;margin-top:2px;font-weight:600">Est. Refund</div>
+   </div>
+   <div style="background:white;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <div id="pf-stat-status" style="font-size:18px">⏳</div>
+    <div style="font-size:10px;color:#94a3b8;margin-top:2px;font-weight:600">In Progress</div>
+   </div>
+  </div>
+
+  <!-- Personal Info -->
+
+  <div style="background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+   <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">👤 Personal Info</div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Full Name</span><span id="pf-name" style="font-size:14px;font-weight:600;color:#0f172a">--</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Email</span><span id="pf-email" style="font-size:13px;color:#0f172a;word-break:break-all;text-align:right;max-width:60%">--</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><span style="font-size:12px;color:#94a3b8;font-weight:600">WhatsApp</span><span id="pf-phone" style="font-size:13px;color:#0f172a">--</span></div>
+  </div>
+
+  <!-- Insurance -->
+
+  <div style="background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+   <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">🦷 Insurance</div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Provider</span><span id="pf-insurer" style="font-size:13px;font-weight:600;color:#0D9488">--</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Member ID</span><span id="pf-member" style="font-size:13px;color:#0f172a">--</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><span style="font-size:12px;color:#94a3b8;font-weight:600">Group #</span><span id="pf-group" style="font-size:13px;color:#0f172a">--</span></div>
+  </div>
+
+  <!-- Active Claim -->
+
+  <div style="background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+   <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">📋 Active Claim</div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Procedure</span><span id="pf-procedure" style="font-size:13px;color:#0f172a;text-align:right;max-width:60%">--</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px;color:#94a3b8;font-weight:600">Amount Paid</span><span id="pf-amount" style="font-size:13px;font-weight:700;color:#0f172a">--</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><span style="font-size:12px;color:#94a3b8;font-weight:600">Est. Refund</span><span id="pf-refund" style="font-size:13px;font-weight:700;color:#0D9488">--</span></div>
+  </div>
+
+  <!-- My Plan -->
+
+  <div style="background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+   <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">⭐ My Plan</div>
+   <div id="pf-plan-detail" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:14px">
+    <div id="pf-plan-name" style="font-size:15px;font-weight:700;color:#166534;margin-bottom:4px">Standard Plan</div>
+    <div id="pf-plan-desc" style="font-size:12px;color:#16a34a">Free to start · 15% only after you get paid</div>
+   </div>
+  </div>
+
+  <!-- Account Actions -->
+
+  <div style="background:white;border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+   <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;padding:16px 16px 8px">⚙️ Account</div>
+   <div onclick="var d=document.getElementById('s-dashboard');if(d)d.style.display='none';window.goTo&&window.goTo('s-support')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
+    <span style="font-size:18px">💬</span>
+    <span style="font-size:14px;color:#0f172a;flex:1">Contact Support</span>
+    <span style="color:#94a3b8;font-size:18px">›</span>
+   </div>
+   <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
+    <span style="font-size:18px">🔔</span>
+    <span style="font-size:14px;color:#0f172a;flex:1">Notifications</span>
+    <div style="width:44px;height:24px;background:#0D9488;border-radius:12px;position:relative;cursor:pointer"><div style="position:absolute;right:3px;top:3px;width:18px;height:18px;background:white;border-radius:50%"></div></div>
+   </div>
+   <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
+    <span style="font-size:18px">🔒</span>
+    <span style="font-size:14px;color:#0f172a;flex:1">Privacy & Security</span>
+    <span style="color:#94a3b8;font-size:18px">›</span>
+   </div>
+   <div onclick="window.doLogout&&window.doLogout()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid #f1f5f9;cursor:pointer">
+    <span style="font-size:18px">🚪</span>
+    <span style="font-size:14px;color:#ef4444;flex:1;font-weight:600">Sign Out</span>
+    <span style="color:#94a3b8;font-size:18px">›</span>
+   </div>
+  </div>
+
+  <!-- App info -->
+
+  <div style="text-align:center;padding:8px 0 16px">
+   <div style="font-size:12px;color:#94a3b8">Credimed · Version 1.0</div>
+   <div style="font-size:11px;color:#cbd5e1;margin-top:2px">HIPAA Compliant · 256-bit Encrypted</div>
+  </div>
+
  </div>
 </div>
 
@@ -3619,11 +3702,42 @@ function doLogout() {
 }
 function initProfile() {
  if (!currentUser) return;
- const u = currentUser;
- const name = (u.first||'') + ' ' + (u.last||'');
- document.getElementById('profile-avatar-big').textContent = (u.first||'U')[0].toUpperCase();
- document.getElementById('profile-name-big').textContent = name.trim() || 'User';
- document.getElementById('profile-email-big').textContent = u.email || '--';
+ var u = currentUser;
+ var name = ((u.first||'') + ' ' + (u.last||'')).trim() || 'User';
+ var plan = window._confirmedPlan || u.plan || 'standard';
+ var isPremium = plan === 'premium';
+ var set = function(id,val){ var el=document.getElementById(id); if(el&&val!=null) el.textContent=val; };
+ // Header
+ set('profile-avatar-big', (u.first||'U')[0].toUpperCase());
+ set('profile-name-big', name);
+ set('profile-email-big', u.email || '--');
+ set('profile-plan-badge', isPremium ? 'Premium Plan' : 'Standard Plan');
+ // Personal
+ set('pf-name', name);
+ set('pf-email', u.email || '--');
+ set('pf-phone', u.phone || u.whatsapp || '--');
+ // Insurance
+ set('pf-insurer', u.insurer || '--');
+ set('pf-member', u.memberId || '--');
+ set('pf-group', u.groupId || '--');
+ // Claim
+ set('pf-procedure', u.procedure || '--');
+ if(u.amount){ set('pf-amount', '$' + parseFloat(u.amount).toFixed(2)); set('pf-stat-refund', '$' + (parseFloat(u.amount)*0.75).toFixed(0)); set('pf-refund', '$' + (parseFloat(u.amount)*0.75).toFixed(0)); }
+ // Plan detail
+ var planEl = document.getElementById('pf-plan-detail');
+ var planName = document.getElementById('pf-plan-name');
+ var planDesc = document.getElementById('pf-plan-desc');
+ var badge = document.getElementById('profile-plan-badge');
+ if(isPremium){
+   if(planEl){ planEl.style.background='#eff6ff'; planEl.style.borderColor='#bfdbfe'; }
+   if(planName){ planName.textContent='Premium Fast-Track'; planName.style.color='#1d4ed8'; }
+   if(planDesc) planDesc.textContent='$29 paid upfront · 10% only after you get paid';
+   if(planDesc) planDesc.style.color='#2563eb';
+   if(badge) badge.textContent='Premium Plan';
+ } else {
+   if(planName) planName.textContent='Standard Plan';
+   if(planDesc) planDesc.textContent='Free to start · 15% only after you get paid';
+ }
  document.getElementById('pf-name').textContent = name.trim() || '--';
  document.getElementById('pf-email').textContent = u.email || '--';
  document.getElementById('pf-phone').textContent = u.phone || '--';
@@ -5120,7 +5234,7 @@ function paymentSuccess(){
   if(sucEl) sucEl.classList.add('show');
   try{launchConfetti();}catch(e){}
   // Go to dashboard after 2 seconds
-  setTimeout(function(){ window.showDashboard(); }, 500);
+  setTimeout(function(){ window.showDashboard(); }, 1500);
   // Update plan labels
   var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   var planLbl = document.getElementById('s5-plan-label');
@@ -5347,6 +5461,38 @@ function initDashboard(){
 // 
 // SHOW DASHBOARD — single entry point, called after payment
 //
+window.openAdminModal = function() {
+  var m = document.getElementById('admin-login-modal');
+  if(m){ m.style.display='flex'; }
+  setTimeout(function(){ var e=document.getElementById('admin-email-input'); if(e)e.focus(); }, 100);
+};
+window.closeAdminModal = function() {
+  var m = document.getElementById('admin-login-modal');
+  if(m) m.style.display='none';
+  var err = document.getElementById('admin-login-error');
+  if(err) err.style.display='none';
+  var ei=document.getElementById('admin-email-input'); if(ei) ei.value='';
+  var pi=document.getElementById('admin-pass-input'); if(pi) pi.value='';
+};
+window.doAdminLogin = function() {
+  var email = (document.getElementById('admin-email-input')||{}).value||'';
+  var pass  = (document.getElementById('admin-pass-input')||{}).value||'';
+  var err   = document.getElementById('admin-login-error');
+  // Check against users object
+  var u = (window.users||{})[email.toLowerCase()];
+  if(u && u.pass === pass && u.role === 'admin') {
+    window.closeAdminModal();
+    // Activate admin radio and switch panel
+    var adminRadio = document.getElementById('radio-admin');
+    if(adminRadio) adminRadio.checked = true;
+    if(window.switchPanel) window.switchPanel('admin');
+    // Set currentUser to admin
+    window.currentUser = u;
+  } else {
+    if(err){ err.textContent='Invalid email or password'; err.style.display='block'; }
+  }
+};
+
 window.showDashboard = function() {
   // Restore data
   if(!window.currentUser){ try{ var s=sessionStorage.getItem('_cUser'); if(s) window.currentUser=JSON.parse(s); }catch(e){} }
@@ -10158,6 +10304,14 @@ window.rqRenderFiles = function(key) {
       + '<button onclick="window.rqRemoveFile(\'' + key + '\',' + idx + ')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;padding:0;line-height:1;flex-shrink:0">×</button>';
     container.appendChild(chip);
   });
+  // "Add more X-rays" button after file list
+  if(key === 'xray') {
+    var addMore = document.createElement('button');
+    addMore.style.cssText = 'background:none;border:1px dashed rgba(255,255,255,.2);border-radius:6px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,.5);cursor:pointer;width:100%;margin-top:2px;text-align:left;';
+    addMore.textContent = '+ Add more X-rays';
+    addMore.onclick = function(e){ e.stopPropagation(); window.rqAddXrays(); };
+    container.appendChild(addMore);
+  }
 };
 
 window.rqRemoveFile = function(key, idx) {
