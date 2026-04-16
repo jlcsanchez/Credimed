@@ -5466,12 +5466,12 @@ window.doAdminLogin = function() {
 };
 
 window.showSupport = function() {
-  var dash = document.getElementById('s-dashboard');
-  if(dash) dash.style.display = 'none';
-  var prof = document.getElementById('s-profile');
-  if(prof) prof.style.display = 'none';
-  var suc = document.getElementById('s5-success');
-  if(suc) suc.style.display = 'none';
+  // Force-hide ALL other screens/overlays first
+  var hideIds = ['s-dashboard','s-profile','s5-success','s-std-payment','s-step5','s-landing','s-login','s-signup'];
+  hideIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+  document.querySelectorAll('.patient-viewport .screen').forEach(function(s){
+    if(s.id !== 's-support') s.style.display='none';
+  });
   var sup = document.getElementById('s-support');
   if(sup){ sup.style.display = 'flex'; sup.classList.add('active'); }
 };
@@ -5554,6 +5554,13 @@ window.stdSaveCard = async function() {
 };
 
 window.showProfile = function() {
+  // Force-hide ALL other screens/overlays first
+  var hideIds = ['s-dashboard','s-support','s5-success','s-std-payment','s-step5','s-landing','s-login','s-signup'];
+  hideIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+  // Hide all patient-viewport screens
+  document.querySelectorAll('.patient-viewport .screen').forEach(function(s){
+    if(s.id !== 's-profile') s.style.display='none';
+  });
   // Restore data
   var u = window.currentUser || {};
   if(!u.first){ try{ var s=sessionStorage.getItem('_cUser'); if(s) u=JSON.parse(s); }catch(e){} }
@@ -5611,14 +5618,12 @@ window.showDashboard = function() {
   if(u.amount){ set('dash-amount','$'+parseFloat(u.amount).toFixed(2)); set('dash-potential','$'+(parseFloat(u.amount)*0.75).toFixed(0)); }
   if(u.procedure){ set('dash-procedure',u.procedure); set('dash-claim-title',u.procedure); }
   // Show dashboard — it's fixed/independent, just toggle display
+  // Force-hide ALL other screens/overlays
+  var hideIds = ['s-profile','s-support','s5-success','s-std-payment','s-step5','s-landing','s-login','s-signup'];
+  hideIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+  document.querySelectorAll('.patient-viewport .screen').forEach(function(s){ s.style.display='none'; });
   var dash = document.getElementById('s-dashboard');
   if(dash) dash.style.display = 'block';
-  var suc = document.getElementById('s5-success');
-  if(suc) suc.style.display = 'none';
-  var prof = document.getElementById('s-profile');
-  if(prof) prof.style.display = 'none';
-  var sup = document.getElementById('s-support');
-  if(sup) sup.style.display = 'none';
   // Reset nav history NOW (after showing dashboard)
   window.navHistory = ['s-dashboard'];
   // Clear paid flag so refresh returns to landing, not dashboard
