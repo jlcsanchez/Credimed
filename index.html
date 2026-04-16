@@ -3092,7 +3092,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  </div>
  </div>
- <div class="success-screen" id="s5-success" style="min-height:100%;background:#f8fafc;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+ <div class="success-screen" id="s5-success" style="min-height:100%;background:#f8fafc;padding:32px 24px;text-align:center">
   <div style="width:72px;height:72px;background:linear-gradient(135deg,#0D9488,#065f46);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px">
    <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
@@ -5220,10 +5220,15 @@ function paymentSuccess(){
   var formEl = document.getElementById('s5-form');
   var sucEl = document.getElementById('s5-success');
   if(formEl) formEl.style.display='none';
-  if(sucEl) sucEl.classList.add('show');
+  if(sucEl){
+    sucEl.classList.add('show');
+    sucEl.style.display='flex';
+    sucEl.style.flexDirection='column';
+    sucEl.style.alignItems='center';
+    sucEl.style.justifyContent='center';
+  }
   try{launchConfetti();}catch(e){}
-  // Go to dashboard after 2 seconds
-  setTimeout(function(){ window.showDashboard(); }, 200);
+  // User taps "Go to my dashboard" — no auto-advance
   // Update plan labels
   var plan = window._confirmedPlan || window._selectedPlan || (window.currentUser && window.currentUser.plan) || 'standard';
   var planLbl = document.getElementById('s5-plan-label');
@@ -5581,8 +5586,6 @@ window.showProfile = function() {
 };
 
 window.showDashboard = function() {
-  // Reset nav history so profile/support don't loop back
-  window.navHistory = ['s-dashboard'];
   // Restore data
   if(!window.currentUser){ try{ var s=sessionStorage.getItem('_cUser'); if(s) window.currentUser=JSON.parse(s); }catch(e){} }
   if(!window.claimData){ try{ var cd=sessionStorage.getItem('_claimData'); if(cd) window.claimData=JSON.parse(cd); }catch(e){} }
@@ -5600,6 +5603,8 @@ window.showDashboard = function() {
   // Show dashboard — it's fixed/independent, just toggle display
   var dash = document.getElementById('s-dashboard');
   if(dash) dash.style.display = 'block';
+  // Reset nav history NOW (after showing dashboard)
+  window.navHistory = ['s-dashboard'];
   // Clear paid flag so refresh returns to landing, not dashboard
   sessionStorage.removeItem('paid');
   console.log('[showDashboard] visible:', dash ? dash.offsetHeight : 'not found');
@@ -10664,25 +10669,31 @@ window.showProcShare = function() {
 (function() {
   if(!window._stripeRedirect) return;
   window._stripeRedirect = false;
-  // Show success overlay
-  var ov = document.createElement('div');
-  ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0B1F3A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:-apple-system,sans-serif';
-  ov.innerHTML = '<div style="width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="text-align:center"><div style="font-size:20px;font-weight:700;color:white;margin-bottom:8px">Payment successful</div><div style="font-size:14px;color:rgba(255,255,255,.6)">Loading your dashboard...</div></div>';
-  document.body.appendChild(ov);
   sessionStorage.setItem('paid', 'true');
-  // Show dashboard after 1.5s
-  setTimeout(function() {
-    if(window.showDashboard) {
-      window.showDashboard();
-      ov.style.display = 'none';
-    } else {
-      // showDashboard not loaded yet, try again
-      setTimeout(function(){
-        if(window.showDashboard) window.showDashboard();
-        ov.style.display = 'none';
-      }, 300);
+
+  function showSuccess() {
+    // Navigate to s-step5 and trigger paymentSuccess
+    var step5 = document.getElementById('s-step5');
+    if(step5) {
+      // Hide all screens first
+      document.querySelectorAll('.patient-viewport .screen').forEach(function(s){ s.classList.remove('active'); s.style.display='none'; });
+      step5.classList.add('active');
+      step5.style.display = 'flex';
+      step5.style.flexDirection = 'column';
     }
-  }, 300);
+    if(window.paymentSuccess) {
+      window.paymentSuccess();
+    } else {
+      window.showDashboard && window.showDashboard();
+    }
+  }
+
+  // Wait for JS to fully load then show success
+  if(document.readyState === 'complete') {
+    showSuccess();
+  } else {
+    window.addEventListener('load', showSuccess);
+  }
 })();
 </script>
 
