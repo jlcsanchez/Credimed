@@ -2861,7 +2861,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    </div>
    <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#0f172a;font-weight:600">
     <span style="color:#0D9488;font-weight:700;font-size:15px;flex-shrink:0">✓</span>
-    <span>Up to 2 resubmissions if rejected</span>
+    <span>We fix and resubmit your claim if it's rejected — no extra work for you</span>
    </div>
    <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#334155">
     <span style="color:#0D9488;font-weight:700;font-size:15px;flex-shrink:0">✓</span>
@@ -2906,6 +2906,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#334155">
     <span style="color:#0D9488;font-weight:700;font-size:15px;flex-shrink:0">✓</span>
     <span>Basic submission instructions</span>
+   </div>
+   <div style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:#64748b;padding-top:2px;border-top:1px solid #f1f5f9;margin-top:4px;padding-top:8px">
+    <span style="color:#94a3b8;font-size:13px;flex-shrink:0">ⓘ</span>
+    <span>If your claim is rejected, you'll need to pay again to fix and resubmit</span>
    </div>
   </div>
 
@@ -3039,7 +3043,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <p style="font-size:12px;color:var(--slate-mid);margin-bottom:10px">Scroll to the bottom to enable the checkboxes.</p>
  <div class="contract-scroll" id="c-scroll">
  <h4>CREDIMED · Service Agreement<br><span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:400;color:var(--slate-light)">Simple terms, plain language</span></h4>
- <div class="clause"><strong>1. What we do</strong>Credimed is a software platform that helps you prepare your dental insurance reimbursement claim. We organize your documents into a format your insurance will accept. <strong>You review and submit your claim</strong> to your insurance provider.</div>
+ <div class="clause"><strong>1. What we do</strong>Credimed is a software platform that helps you prepare your dental insurance reimbursement claim. We organize your documents into a format your insurance will accept. <strong>You review and submit your claim to your insurance — we prepare everything for you.</strong></div>
  <div class="clause"><strong>2. What it costs</strong>Claim preparation is a one-time fee of <span class="hl">$39</span>. You pay Credimed for preparing your claim package. Your insurance pays you directly.</div>
  <div class="clause"><strong>3. When you pay</strong>You pay $39 once your claim is ready for submission. Payment is processed securely through Stripe.</div>
  <div class="clause"><strong>4. Your role</strong>You are responsible for reviewing your claim and submitting it to your insurance. Credimed provides tools to help you do this correctly, but does not act as your insurance company, healthcare provider, or clearinghouse.</div>
@@ -3060,7 +3064,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div class="card-head"><h3> Confirmations</h3></div>
  <div class="card-body">
  <div class="cb-list">
- <label class="cb-item" id="cb-w1"><input type="checkbox" id="cb1" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I understand Credimed is a software platform that helps me prepare my claim. I will review and submit it to my insurance provider.</div><div class="cb-ref">Section 4</div></div></label>
+ <label class="cb-item" id="cb-w1"><input type="checkbox" id="cb1" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I understand Credimed prepares everything for me. I will review and submit my claim to my insurance.</div><div class="cb-ref">Section 4</div></div></label>
  <label class="cb-item" id="cb-w2"><input type="checkbox" id="cb2" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I agree to the $39 claim preparation fee, paid when my claim is ready.</div><div class="cb-ref">Section 2</div></div></label>
  <label class="cb-item" id="cb-w3"><input type="checkbox" id="cb3" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I confirm that I am submitting my own insurance claim. I am responsible for reviewing and submitting my claim and for the accuracy of the information provided.</div><div class="cb-ref">Patient Authorization</div></div></label>
  <label class="cb-item" id="cb-w4"><input type="checkbox" id="cb4" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I understand there is no guarantee of approval — insurance decisions are made by my insurer.</div><div class="cb-ref">Section 6</div></div></label>
@@ -3138,6 +3142,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <div class="pay-amount" id="s5-amount" style="font-size:56px;font-weight:800;margin-bottom:4px">$39</div>
  <div style="font-size:12px;color:rgba(255,255,255,.5);letter-spacing:.5px;margin-bottom:8px">USD · one-time fee</div>
+ <div style="font-size:11px;color:rgba(255,255,255,.7);margin-bottom:10px;font-weight:500">One-time payment · No hidden fees · You keep 100% of your refund</div>
  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 14px">
   <span style="font-size:11px">🔒</span>
   <span style="font-size:11px;color:rgba(255,255,255,.7);font-weight:600">Secured by Stripe · Encrypted</span>
@@ -5353,15 +5358,27 @@ function paymentSuccess(){
   var formEl = document.getElementById('s5-form');
   if(formEl) formEl.style.display='none';
 
-  // Populate estimated refund on success screen
+  // Populate estimated refund on success screen (currency-aware: always show USD context)
   var cu = window.currentUser || {};
   var amt = parseFloat(cu.amount) || (window.claimData && window.claimData.amountPaid) || 0;
+  var currency = (cu.currency || window._amountCurrency || 'USD').toUpperCase();
+  var rate = window._MXN_RATE || 17.5;
   var estRefund = Math.round(amt * 0.75);
+  var usdAmt = (currency === 'MXN') ? Math.round(amt / rate) : amt;
+  var usdRefund = Math.round(usdAmt * 0.75);
   var refundEl = document.getElementById('s5-est-refund');
   if(refundEl && amt > 0){
-    refundEl.textContent = '$' + estRefund.toLocaleString();
+    if(currency === 'MXN'){
+      refundEl.textContent = 'MXN $' + estRefund.toLocaleString() + ' (~$' + usdRefund.toLocaleString() + ' USD)';
+    } else {
+      refundEl.textContent = '$' + estRefund.toLocaleString() + ' USD';
+    }
   } else if(refundEl){
     refundEl.textContent = 'Pending';
+  }
+  var refundNoteEl = document.getElementById('s5-est-refund-usd-note');
+  if(refundNoteEl && amt > 0){
+    refundNoteEl.textContent = 'Estimated refund: $' + usdRefund.toLocaleString() + ' USD';
   }
 
   // Populate submit instructions with insurer name if available
@@ -6752,9 +6769,17 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  const insEl = document.getElementById('refund-insurance');
  const netEl = document.getElementById('refund-net');
  const cdtEl = document.getElementById('refund-cdt');
- if(paidEl) paidEl.textContent = (currency==='MXN'?'MXN $':'USD $') + amt.toLocaleString();
- if(insEl) insEl.textContent = (currency==='MXN'?'MXN $':'USD $') + refund.toLocaleString();
- if(netEl) netEl.textContent = (currency==='MXN'?'MXN $':'USD $') + net.toLocaleString();
+ var _rate = window._MXN_RATE || 17.5;
+ function _fmtAmt(val){
+   if(currency === 'MXN'){
+     var usd = Math.round(val / _rate);
+     return 'MXN $' + val.toLocaleString() + ' (~$' + usd.toLocaleString() + ' USD)';
+   }
+   return '$' + val.toLocaleString() + ' USD';
+ }
+ if(paidEl) paidEl.textContent = _fmtAmt(amt);
+ if(insEl) insEl.textContent = _fmtAmt(refund);
+ if(netEl) netEl.textContent = _fmtAmt(net);
  if(cdtEl) cdtEl.textContent = cdt;
 
  // Show agent analysis notes if available
@@ -6769,7 +6794,7 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  notesEl.innerHTML = '<span style="font-size:10px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px"> Agent Analysis</span>' + agentNotes;
  }
 
- // Animate the big number counting up
+ // Animate the big number counting up (show USD headline always for clarity)
  const bigNum = document.getElementById('refund-big-number');
  if(bigNum) {
     bigNum.style.fontSize = '56px';
@@ -6777,17 +6802,19 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
     let current = 0;
  const duration = 1800;
  const steps = 60;
- const increment = refund / steps;
+ var _rateBN = window._MXN_RATE || 17.5;
+ var displayRefund = (currency === 'MXN') ? Math.round(refund / _rateBN) : refund;
+ const increment = displayRefund / steps;
  const interval = duration / steps;
  const counter = setInterval(() => {
  current += increment;
- if(current >= refund) {
- current = refund;
+ if(current >= displayRefund) {
+ current = displayRefund;
  clearInterval(counter);
  bigNum.style.transform = 'scale(1.08)';
  setTimeout(() => bigNum.style.transform = 'scale(1)', 200);
  }
- bigNum.textContent = (currency==='MXN'?'MXN $':'USD $') + Math.round(current).toLocaleString();
+ bigNum.textContent = '$' + Math.round(current).toLocaleString() + ' USD';
  }, interval);
  bigNum.style.transition = 'transform .2s ease';
  }
@@ -10047,7 +10074,7 @@ var amt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(rawAmt / window.
 currentUser.amount = amt;
 var refund = amt > 0 ? Math.round(amt * 0.75) : 0;
 if(currentUser) currentUser.estimatedRefund = refund;
-var bn=document.getElementById('proc-big-number');if(bn)bn.textContent= refund > 0 ? currLabel+refund.toLocaleString() : '--';
+var bn=document.getElementById('proc-big-number');if(bn)bn.textContent= refund > 0 ? ('$'+refund.toLocaleString()+' USD') : '--';
 ['pb1','pb2','pb3','pb4','proc-cdt-row'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.opacity='1';});
 var btn=document.getElementById('proc-cta-btn');
 if(btn){btn.style.display='block';btn.style.opacity='1';}
@@ -11251,8 +11278,13 @@ window.rqUpdateStrengthBar = function() {
   total = Math.min(total, 100);
   var fill = document.getElementById('rq-strength-fill');
   var lbl = document.getElementById('rq-strength-label');
-  if(fill) fill.style.width = total + '%';
-  if(lbl) lbl.textContent = total + '% strong claim';
+  // Tier color + dynamic message
+  var color, bgGrad, msg;
+  if(total < 40) { color = '#94a3b8'; bgGrad = '#94a3b8'; msg = 'Your claim could be stronger'; }
+  else if(total < 70) { color = '#f59e0b'; bgGrad = 'linear-gradient(90deg,#f59e0b,#fbbf24)'; msg = 'Good claim, but can improve'; }
+  else { color = '#34d399'; bgGrad = 'linear-gradient(90deg,#0D9488,#34d399)'; msg = 'Strong claim — high success probability'; }
+  if(fill) { fill.style.width = total + '%'; fill.style.background = bgGrad; }
+  if(lbl) { lbl.textContent = msg; lbl.style.color = color; }
 };
 
 window.rqMarkCheck = function(key) {
@@ -11578,6 +11610,8 @@ window.showProcShare = function() {
   <div style="padding:12px;background:#f8fafc;border-radius:10px;margin-bottom:14px">
     <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Estimated refund</div>
     <div id="s5-est-refund" style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:800;color:#0f172a">--</div>
+    <div id="s5-est-refund-usd-note" style="font-size:11px;color:#64748b;margin-top:4px;font-weight:500"></div>
+    <div style="font-size:11px;color:#15803d;margin-top:8px;font-weight:600;display:flex;align-items:flex-start;gap:5px"><span>✓</span><span>Most patients who choose Plus avoid delays and get paid faster</span></div>
   </div>
   <!-- Fallback dropdown — shown only when insurer not detected -->
   <div id="s5-insurer-dropdown" style="display:none;margin-bottom:10px">
