@@ -5621,6 +5621,10 @@ window.showProfile = function() {
   if(suc) suc.style.display = 'none';
   var prof = document.getElementById('s-profile');
   if(prof){
+    // Move profile to body to escape any parent container issues
+    if(prof.parentElement !== document.body){
+      document.body.appendChild(prof);
+    }
     prof.style.display = 'block';
     prof.style.zIndex = '99999';
     prof.style.position = 'fixed';
@@ -5628,7 +5632,6 @@ window.showProfile = function() {
     prof.style.left = '0';
     prof.style.width = '100%';
     prof.style.height = '100%';
-    // Scroll to top
     prof.scrollTop = 0;
   }
 };
