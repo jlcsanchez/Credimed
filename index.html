@@ -5547,10 +5547,31 @@ window.stdSaveCard = async function() {
     }
     return;
   }
-  // Mode 2: Card element fallback — show success screen then dashboard
-  window._confirmedPlan = 'standard';
-  if(window.paymentSuccess) window.paymentSuccess();
-  else window.showDashboard&&window.showDashboard();
+  // Mode 2: Card element fallback — tokenize the card via Stripe
+  if(window._stdCard && window._stdStripe){
+    try {
+      var tokenResult = await window._stdStripe.createToken(window._stdCard);
+      if(tokenResult.error){
+        var errEl2 = document.getElementById('std-stripe-error');
+        if(errEl2){ errEl2.textContent = tokenResult.error.message; errEl2.style.display='block'; }
+        if(btn){ btn.disabled=false; btn.textContent='Save card & go to dashboard →'; }
+        return;
+      }
+      // Card tokenized successfully
+      window._confirmedPlan = 'standard';
+      if(window.paymentSuccess) window.paymentSuccess();
+      else window.showDashboard&&window.showDashboard();
+    } catch(e){
+      var errEl3 = document.getElementById('std-stripe-error');
+      if(errEl3){ errEl3.textContent = 'Please enter valid card details'; errEl3.style.display='block'; }
+      if(btn){ btn.disabled=false; btn.textContent='Save card & go to dashboard →'; }
+    }
+    return;
+  }
+  // No Stripe at all — block
+  var errEl4 = document.getElementById('std-stripe-error');
+  if(errEl4){ errEl4.textContent = 'Card form not loaded. Please refresh the page.'; errEl4.style.display='block'; }
+  if(btn){ btn.disabled=false; btn.textContent='Save card & go to dashboard →'; }
 };
 
 window.showProfile = function() {
@@ -5599,7 +5620,17 @@ window.showProfile = function() {
   var suc = document.getElementById('s5-success');
   if(suc) suc.style.display = 'none';
   var prof = document.getElementById('s-profile');
-  if(prof) prof.style.display = 'block';
+  if(prof){
+    prof.style.display = 'block';
+    prof.style.zIndex = '99999';
+    prof.style.position = 'fixed';
+    prof.style.top = '0';
+    prof.style.left = '0';
+    prof.style.width = '100%';
+    prof.style.height = '100%';
+    // Scroll to top
+    prof.scrollTop = 0;
+  }
 };
 
 window.showDashboard = function() {
