@@ -5836,9 +5836,61 @@ window.showDashboard = function() {
   set('dash-time', hr<12?'Good morning ':hr<18?'Good afternoon ':'Good evening ');
   set('dash-name-display', u.first ? 'Welcome, '+u.first+'!' : 'Welcome!');
   set('dash-avatar', (u.first||'U')[0].toUpperCase());
-  if(u.insurer){ set('dash-insurer-sub','Estimated from your '+u.insurer+' plan'); set('dash-ins-name',u.insurer); }
-  if(u.amount){ set('dash-amount','$'+parseFloat(u.amount).toFixed(2)); set('dash-potential','$'+(parseFloat(u.amount)*0.75).toFixed(0)); }
-  if(u.procedure){ set('dash-procedure',u.procedure); set('dash-claim-title',u.procedure); }
+
+  // Insurance
+  if(u.insurer){
+    set('dash-insurer-sub','Based on your '+u.insurer+' plan · final amount depends on your provider');
+    set('dash-ins-name',u.insurer);
+    set('doc-insurance-sub', u.insurer + (u.memberId ? ' · ' + String(u.memberId).slice(-4).padStart(String(u.memberId).length,'•') : ''));
+  } else {
+    set('doc-insurance-sub', 'Pending');
+  }
+
+  // Amounts
+  if(u.amount){
+    var amt = parseFloat(u.amount);
+    set('dash-amount','$'+amt.toFixed(2));
+    set('dash-potential','$'+Math.round(amt*0.75).toLocaleString());
+  } else {
+    set('dash-potential','$--');
+  }
+
+  // Procedure
+  if(u.procedure){
+    set('dash-procedure',u.procedure);
+    set('doc-procedures-sub', u.procedure);
+  } else {
+    set('doc-procedures-sub', 'Dental treatment');
+  }
+
+  // Progress based on claim status
+  var claimStatus = u.claimStatus || sessionStorage.getItem('_claimStatus');
+  var isPaid = sessionStorage.getItem('paid') === 'true' || (u.claimPaidDate);
+  var pill = document.getElementById('dash-claim-status-pill');
+  var progressStep = document.getElementById('dash-progress-step');
+  var progressTitle = document.getElementById('dash-progress-title');
+  var actionCard = document.getElementById('dash-action-card');
+
+  if(claimStatus === 'completed' || claimStatus === 'paid_amount_needed'){
+    if(pill){ pill.textContent = 'Paid'; pill.style.background='#dcfce7'; pill.style.color='#166534'; }
+    if(progressStep) progressStep.textContent = 'Completed';
+    if(progressTitle) progressTitle.textContent = 'Claim completed';
+    // Hide action card — claim is done
+    if(actionCard) actionCard.style.display = 'none';
+  } else if(claimStatus === 'submitted'){
+    if(pill){ pill.textContent = 'Submitted'; pill.style.background='#dbeafe'; pill.style.color='#1e40af'; }
+    if(progressStep) progressStep.textContent = 'Step 4 of 4';
+    if(progressTitle) progressTitle.textContent = 'Waiting for your insurance';
+    // Hide action card — already submitted
+    if(actionCard) actionCard.style.display = 'none';
+  } else if(isPaid){
+    if(pill){ pill.textContent = 'Ready to submit'; pill.style.background='#dbeafe'; pill.style.color='#1e40af'; }
+    if(progressStep) progressStep.textContent = 'Step 3 of 4';
+    if(progressTitle) progressTitle.textContent = 'Ready to submit';
+    if(actionCard) actionCard.style.display = 'block';
+  } else {
+    if(pill){ pill.textContent = 'Active'; pill.style.background='#dcfce7'; pill.style.color='#166534'; }
+  }
   // Show dashboard — it's fixed/independent, just toggle display
   // Force-hide ALL other screens/overlays
   var hideIds = ['s-profile','s-support','s5-success','s-std-payment','s-step5','s-landing','s-login','s-signup'];
@@ -11181,107 +11233,169 @@ window.showProcShare = function() {
 
 <!-- DASHBOARD — independent of patient-viewport -->
 
-<div id="s-dashboard" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:white;overflow-y:auto;z-index:5000;">
+<div id="s-dashboard" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#f8fafc;overflow-y:auto;z-index:5000;">
 
-  <!-- Header -->
+  <!-- HEADER FIJO -->
 
-  <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:16px 20px 32px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+  <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:16px 20px 20px;position:sticky;top:0;z-index:10">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:8px">
-        <svg width="36" height="36" viewBox="0 0 72 72"><circle cx="36" cy="36" r="35" fill="white" opacity="0.95"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#9ca3af" stroke-width="2.5"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg>
-        <span style="font-size:13px;font-weight:800;color:white;letter-spacing:1px">CREDI<span style="color:#5eead4">MED</span></span>
+        <svg width="32" height="32" viewBox="0 0 72 72"><circle cx="36" cy="36" r="35" fill="white" opacity="0.95"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#9ca3af" stroke-width="2.5"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg>
+        <span style="font-size:14px;font-weight:800;color:white;letter-spacing:1px">CREDI<span style="color:#5eead4">MED</span></span>
       </div>
-      <div id="dash-avatar" style="width:38px;height:38px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:white">J</div>
+      <div id="dash-avatar" style="width:38px;height:38px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:white;cursor:pointer" onclick="window.showProfile&&window.showProfile()">J</div>
     </div>
-    <div id="dash-time" style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:2px">Good morning</div>
-    <div id="dash-name-display" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:white;margin-bottom:16px">Welcome!</div>
-    <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:16px;">
-      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Estimated refund</div>
-      <div id="dash-potential" style="font-size:32px;font-weight:800;color:#93c5fd;font-family:'Playfair Display',Georgia,serif;margin-bottom:4px">--</div>
-      <div id="dash-insurer-sub" style="font-size:12px;color:rgba(255,255,255,.5)">Submit your claim to see your estimate</div>
-      <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;font-style:italic">*Final amount depends on your insurance provider</div>
-    </div>
-  </div>
-
-  <!-- Body -->
-
-  <div style="background:#f8fafc;padding:20px 16px 100px;min-height:50vh;">
-    <button onclick="window.startNewClaim&&window.startNewClaim()" style="width:100%;padding:14px;background:#0B1F3A;color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:20px;">
-      📄 Upload a new receipt →
-    </button>
 
 ```
-<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Active Claim</div>
-<div style="background:white;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-    <div id="dash-claim-title" style="font-size:15px;font-weight:700;color:#0f172a;flex:1">Ready to recover your money?</div>
-    <span style="background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;white-space:nowrap">Active</span>
+<div id="dash-time" style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:2px">Good morning</div>
+<div id="dash-name-display" style="font-family:\'Playfair Display\',Georgia,serif;font-size:20px;font-weight:700;color:white;margin-bottom:14px">Welcome!</div>
+
+<!-- HERO REFUND — Visible siempre, grande, tipo TurboTax -->
+<div style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);border-radius:18px;padding:18px;backdrop-filter:blur(10px)">
+  <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Your estimated refund</div>
+  <div id="dash-potential" style="font-size:42px;font-weight:800;color:#93c5fd;font-family:\'Playfair Display\',Georgia,serif;line-height:1;margin-bottom:6px">--</div>
+  <div id="dash-insurer-sub" style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.4">Submit your claim to see your estimate</div>
+</div>
+```
+
   </div>
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid #f1f5f9;">
+
+  <!-- BODY -->
+
+  <div style="padding:20px 16px 100px">
+
+```
+<!-- PROGRESS TRACKER -->
+<div id="dash-progress-block" style="background:white;border-radius:16px;padding:18px 16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(15,23,42,.06)">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="font-size:12px;font-weight:700;color:#0f172a;text-transform:uppercase;letter-spacing:.5px" id="dash-progress-title">Your claim progress</div>
+    <div style="font-size:11px;color:#64748b" id="dash-progress-step">Step 2 of 4</div>
+  </div>
+
+  <!-- 4-step bar -->
+  <div style="display:flex;align-items:center;margin-bottom:10px">
+    <div id="prog-step-1" style="width:26px;height:26px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">✓</div>
+    <div id="prog-line-1" style="flex:1;height:3px;background:#0D9488;margin:0 4px"></div>
+    <div id="prog-step-2" style="width:26px;height:26px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">✓</div>
+    <div id="prog-line-2" style="flex:1;height:3px;background:#0D9488;margin:0 4px"></div>
+    <div id="prog-step-3" style="width:26px;height:26px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">3</div>
+    <div id="prog-line-3" style="flex:1;height:3px;background:#e2e8f0;margin:0 4px"></div>
+    <div id="prog-step-4" style="width:26px;height:26px;background:#e2e8f0;color:#94a3b8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">4</div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;padding:0 4px">
+    <span style="font-size:10px;font-weight:600;color:#0D9488;width:26px;text-align:center">Upload</span>
+    <span style="font-size:10px;font-weight:600;color:#0D9488;width:50px;text-align:center">Processing</span>
+    <span style="font-size:10px;font-weight:600;color:#0D9488;width:50px;text-align:center">Review</span>
+    <span style="font-size:10px;font-weight:600;color:#94a3b8;width:26px;text-align:center">Submit</span>
+  </div>
+</div>
+
+<!-- DOCUMENT SUMMARY -->
+<div style="background:white;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(15,23,42,.06)">
+  <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">📄 Documents</div>
+
+  <div id="doc-receipt-row" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9">
+    <div style="width:28px;height:28px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#16a34a;font-weight:700">✓</div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600;color:#0f172a">Receipt uploaded</div>
+      <div style="font-size:11px;color:#64748b" id="doc-receipt-sub">Dental visit in Mexico</div>
+    </div>
+  </div>
+
+  <div id="doc-insurance-row" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9">
+    <div style="width:28px;height:28px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#16a34a;font-weight:700">✓</div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600;color:#0f172a">Insurance identified</div>
+      <div style="font-size:11px;color:#64748b" id="doc-insurance-sub">-</div>
+    </div>
+  </div>
+
+  <div id="doc-procedures-row" style="display:flex;align-items:center;gap:10px;padding:8px 0">
+    <div style="width:28px;height:28px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#16a34a;font-weight:700">✓</div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600;color:#0f172a">Procedures extracted</div>
+      <div style="font-size:11px;color:#64748b" id="doc-procedures-sub">-</div>
+    </div>
+  </div>
+</div>
+
+<!-- CLAIM SUMMARY -->
+<div style="background:white;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(15,23,42,.06)">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Claim summary</div>
+    <span id="dash-claim-status-pill" style="background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:4px 10px;border-radius:12px">Active</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
     <div>
-      <div id="dash-procedure" style="font-size:13px;color:#64748b;">--</div>
-      <div id="dash-ins-name" style="font-size:12px;color:#0D9488;font-weight:600;margin-top:2px"></div>
+      <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">You paid</div>
+      <div id="dash-amount" style="font-size:18px;font-weight:700;color:#0f172a">--</div>
     </div>
-    <div style="text-align:right">
-      <div style="font-size:10px;color:#94a3b8;margin-bottom:2px">You paid</div>
-      <div id="dash-amount" style="font-size:18px;font-weight:800;color:#0f172a">--</div>
-    </div>
-  </div>
-  <!-- Progress tracker -->
-  <div style="padding-top:12px;border-top:1px solid #f1f5f9;">
-    <div style="display:flex;align-items:center;margin-bottom:6px">
-      <div style="width:10px;height:10px;background:#0D9488;border-radius:50%"></div>
-      <div style="flex:1;height:2px;background:#0D9488"></div>
-      <div style="width:10px;height:10px;background:#0D9488;border-radius:50%"></div>
-      <div style="flex:1;height:2px;background:#0D9488"></div>
-      <div style="width:10px;height:10px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;color:white;font-weight:700">→</div>
-      <div style="flex:1;height:2px;background:#e2e8f0"></div>
-      <div style="width:10px;height:10px;border:2px solid #e2e8f0;border-radius:50%"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:9px;color:#94a3b8;">
-      <span style="color:#0D9488;font-weight:600">Submitted</span>
-      <span style="color:#0D9488;font-weight:600">Verified</span>
-      <span style="color:#0D9488;font-weight:600">With Insurer</span>
-      <span>Reimbursed</span>
+    <div>
+      <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Insurance</div>
+      <div id="dash-ins-name" style="font-size:14px;font-weight:700;color:#0D9488;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">--</div>
     </div>
   </div>
-  <div style="background:#fffbeb;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:6px;margin-top:12px;">
-    ⏳ <strong>Awaiting your insurance response</strong> · Typical wait: 2-6 weeks
+
+  <div style="padding-top:12px;border-top:1px solid #f1f5f9">
+    <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Procedure</div>
+    <div id="dash-procedure" style="font-size:13px;color:#0f172a;font-weight:600">--</div>
+  </div>
+
+  <div id="dash-claim-title" style="display:none">Active Claim</div>
+</div>
+
+<!-- ACTION CARD (dinámico) -->
+<div id="dash-action-card" style="background:linear-gradient(135deg,#0f172a,#134e4a);color:white;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 6px 20px rgba(13,148,136,.25)">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">📋</div>
+    <div style="font-size:15px;font-weight:700">Next: Submit your claim</div>
+  </div>
+  <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.5;margin-bottom:14px">Download your claim package and submit it to your insurance. Takes about 2 minutes.</div>
+
+  <button onclick="window.downloadClaim&&window.downloadClaim()" style="width:100%;padding:12px;background:white;color:#0f172a;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">⬇️ Download claim package</button>
+  <button onclick="window.openInsurancePortal&&window.openInsurancePortal()" style="width:100%;padding:12px;background:rgba(255,255,255,.15);color:white;border:1.5px solid rgba(255,255,255,.3);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">🌐 Open my insurance portal</button>
+</div>
+
+<!-- TIME EXPECTATION -->
+<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+  <div style="font-size:18px">⏳</div>
+  <div style="flex:1">
+    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:2px">Expected processing time</div>
+    <div style="font-size:12px;color:#b45309;line-height:1.4">Most claims are processed in 2-6 weeks after you submit</div>
   </div>
 </div>
 
 <!-- FOLLOW-UP CARD (Day 14/30/45 check-ins) -->
-<div id="followup-card" style="display:none;background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:1px solid #bfdbfe;border-radius:16px;padding:18px;margin-top:16px;">
+<div id="followup-card" style="display:none;background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:1px solid #bfdbfe;border-radius:16px;padding:18px;margin-bottom:16px;">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
     <div style="width:32px;height:32px;background:#1d4ed8;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px">📬</div>
     <div style="font-size:15px;font-weight:700;color:#1e3a8a" id="followup-title">Any update from your insurance?</div>
   </div>
-  <div id="followup-subtitle" style="font-size:13px;color:#1e40af;line-height:1.5;margin-bottom:14px">Let us know how your claim is going. This helps us improve and give you better support.</div>
+  <div id="followup-subtitle" style="font-size:13px;color:#1e40af;line-height:1.5;margin-bottom:14px">Let us know how your claim is going.</div>
 
-  <!-- Step 1: Submit status -->
   <div id="followup-step-submit" style="display:none">
-    <button onclick="window.reportClaimStatus&&window.reportClaimStatus('submitted')" style="width:100%;background:white;border:1.5px solid #3b82f6;color:#1d4ed8;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+    <button onclick="window.reportClaimStatus&&window.reportClaimStatus(\'submitted\')" style="width:100%;background:white;border:1.5px solid #3b82f6;color:#1d4ed8;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;justify-content:space-between;align-items:center">
       <span>✓ Yes, I submitted my claim</span><span>→</span>
     </button>
-    <button onclick="window.reportClaimStatus&&window.reportClaimStatus('not_submitted')" style="width:100%;background:white;border:1.5px solid #e2e8f0;color:#64748b;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center">
+    <button onclick="window.reportClaimStatus&&window.reportClaimStatus(\'not_submitted\')" style="width:100%;background:white;border:1.5px solid #e2e8f0;color:#64748b;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center">
       <span>Not yet — need help</span><span>→</span>
     </button>
   </div>
 
-  <!-- Step 2: Payment status (appears after submitted=true) -->
   <div id="followup-step-payment" style="display:none">
-    <button onclick="window.reportClaimStatus&&window.reportClaimStatus('paid')" style="width:100%;background:#f0fdf4;border:1.5px solid #22c55e;color:#15803d;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+    <button onclick="window.reportClaimStatus&&window.reportClaimStatus(\'paid\')" style="width:100%;background:#f0fdf4;border:1.5px solid #22c55e;color:#15803d;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;justify-content:space-between;align-items:center">
       <span>🎉 Yes! I got paid</span><span>→</span>
     </button>
-    <button onclick="window.reportClaimStatus&&window.reportClaimStatus('denied')" style="width:100%;background:white;border:1.5px solid #fca5a5;color:#b91c1c;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+    <button onclick="window.reportClaimStatus&&window.reportClaimStatus(\'denied\')" style="width:100%;background:white;border:1.5px solid #fca5a5;color:#b91c1c;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;justify-content:space-between;align-items:center">
       <span>Claim was denied</span><span>→</span>
     </button>
-    <button onclick="window.reportClaimStatus&&window.reportClaimStatus('pending')" style="width:100%;background:white;border:1.5px solid #e2e8f0;color:#64748b;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center">
+    <button onclick="window.reportClaimStatus&&window.reportClaimStatus(\'pending\')" style="width:100%;background:white;border:1.5px solid #e2e8f0;color:#64748b;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center">
       <span>Still waiting</span><span>→</span>
     </button>
   </div>
 
-  <!-- Step 3: Amount capture (appears after paid=true) -->
   <div id="followup-step-amount" style="display:none">
     <div style="font-size:13px;color:#1e40af;margin-bottom:10px;font-weight:600">🎉 Great news! How much did you receive?</div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
@@ -11289,15 +11403,37 @@ window.showProcShare = function() {
       <input type="number" id="followup-amount" inputmode="decimal" placeholder="0.00" style="flex:1;height:46px;padding:0 14px;border:1.5px solid #cbd5e1;border-radius:10px;font-size:16px;font-weight:700;outline:none">
     </div>
     <button onclick="window.submitPaymentAmount&&window.submitPaymentAmount()" style="width:100%;background:#1d4ed8;color:white;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Save my result →</button>
-    <div style="font-size:11px;color:#64748b;margin-top:8px;text-align:center">Optional: <span onclick="window.uploadEOB&&window.uploadEOB()" style="color:#1d4ed8;cursor:pointer;text-decoration:underline">Upload your EOB</span> for faster processing next time</div>
   </div>
 
-  <!-- Completed message -->
   <div id="followup-completed" style="display:none;text-align:center;padding:10px 0">
     <div style="font-size:24px;margin-bottom:6px">✅</div>
     <div style="font-size:14px;font-weight:700;color:#15803d;margin-bottom:4px" id="followup-completed-title">Thanks for the update!</div>
     <div style="font-size:12px;color:#16a34a" id="followup-completed-sub">Your feedback helps us improve.</div>
   </div>
+</div>
+
+<!-- TRUST / SECURITY -->
+<div style="background:white;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(15,23,42,.04)">
+  <div style="font-size:18px">🔒</div>
+  <div style="flex:1">
+    <div style="font-size:12px;font-weight:700;color:#0f172a">Your data is encrypted</div>
+    <div style="font-size:11px;color:#64748b">🇺🇸 US-based company · Secure storage</div>
+  </div>
+</div>
+
+<!-- NEW CLAIM -->
+<button onclick="window.startNewClaim&&window.startNewClaim()" style="width:100%;padding:14px;background:white;color:#0f172a;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:12px">
+  📄 Prepare another claim
+</button>
+
+<!-- NEED HELP -->
+<div onclick="window.showSupport&&window.showSupport()" style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer">
+  <div style="width:36px;height:36px;background:#f0fdfa;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">💬</div>
+  <div style="flex:1">
+    <div style="font-size:13px;font-weight:700;color:#0f172a">Need help?</div>
+    <div style="font-size:11px;color:#64748b">Chat with our support team</div>
+  </div>
+  <div style="color:#94a3b8">→</div>
 </div>
 ```
 
