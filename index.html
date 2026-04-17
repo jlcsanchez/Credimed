@@ -5473,7 +5473,20 @@ window.showSupport = function() {
     if(s.id !== 's-support') s.style.display='none';
   });
   var sup = document.getElementById('s-support');
-  if(sup){ sup.style.display = 'flex'; sup.classList.add('active'); }
+  if(sup){
+    // Move to body to escape any parent container issues
+    if(sup.parentElement !== document.body){
+      document.body.appendChild(sup);
+    }
+    sup.style.display = 'flex';
+    sup.style.zIndex = '99999';
+    sup.style.position = 'fixed';
+    sup.style.top = '0';
+    sup.style.left = '0';
+    sup.style.width = '100%';
+    sup.style.height = '100%';
+    sup.classList.add('active');
+  }
 };
 
 // Standard plan — save card via Stripe SetupIntent (no charge today)
