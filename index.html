@@ -2117,10 +2117,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <!-- Estimated refund section (appears when OCR detects amount) -->
 
    <div id="rq-estimated-refund" style="display:none;background:linear-gradient(135deg,rgba(13,148,136,.15),rgba(52,211,153,.1));border:1px solid rgba(52,211,153,.3);border-radius:14px;padding:14px 16px;margin-bottom:12px">
-    <div style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">💰 Estimated refund</div>
-    <div id="rq-refund-range" style="font-family:\'Playfair Display\',Georgia,serif;font-size:26px;font-weight:800;color:white;line-height:1.1;margin-bottom:4px">$-- – $--</div>
-    <div style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:8px">Adding recommended documents may increase your refund</div>
-    <div style="font-size:11px;color:#fcd34d;font-weight:600">⚡ Most patients miss money by not completing this step</div>
+    <div style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">💰 Estimated refund</div>
+    <!-- Primary display: "Up to $X back from your insurance" -->
+    <div id="rq-refund-primary" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:800;color:white;line-height:1.2;margin-bottom:8px">Up to $-- back from your insurance</div>
+    <!-- Secondary line: range -->
+    <div id="rq-refund-range-line" style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.5;margin-bottom:6px">Most patients recover between $-- – $-- depending on their PPO plan</div>
+    <!-- Context line -->
+    <div style="font-size:11px;color:rgba(255,255,255,.45);line-height:1.5;margin-bottom:10px">Based on typical PPO out-of-network coverage</div>
+    <!-- Comparison frame -->
+    <div style="background:rgba(0,0,0,.15);border-radius:8px;padding:8px 10px;margin-bottom:8px">
+     <div style="font-size:11px;color:#fcd34d;font-weight:600;line-height:1.4">⚠️ Without submitting a claim, most patients receive $0</div>
+    </div>
+    <!-- Optional existing line -->
+    <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.5">Adding recommended documents may increase your refund</div>
    </div>
 
    <!-- Hidden file inputs for strengthen docs -->
@@ -2824,14 +2833,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  </div>
  <div style="padding:24px 16px">
  <div style="text-align:center;margin-bottom:22px">
- <h2 style="font-family:\'Playfair Display\',Georgia,serif;font-size:26px;font-weight:700;color:#1e293b;margin-bottom:8px">Unlock your claim</h2>
+ <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:700;color:#1e293b;margin-bottom:8px">Unlock your claim</h2>
  <div id="plan-value-anchor" style="font-size:15px;color:#0D9488;font-weight:700;margin-bottom:6px">You could recover $400–$1,000</div>
  <p style="font-size:13px;color:#64748b;line-height:1.5">Choose your plan below. One-time payment.</p>
  </div>
 
  <!-- PLUS PLAN (Recommended - anchors pricing, shown first) -->
 
- <div onclick="window.selectPlan&&window.selectPlan(\'plus\')" style="border:2.5px solid #0D9488;border-radius:20px;padding:20px 18px 18px;margin-bottom:14px;cursor:pointer;background:white;position:relative;box-shadow:0 6px 28px rgba(13,148,136,.18);margin-top:14px">
+ <div onclick="window.selectPlan&&window.selectPlan('plus')" style="border:2.5px solid #0D9488;border-radius:20px;padding:20px 18px 18px;margin-bottom:14px;cursor:pointer;background:white;position:relative;box-shadow:0 6px 28px rgba(13,148,136,.18);margin-top:14px">
   <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#0D9488,#0891b2);color:white;font-size:11px;font-weight:800;letter-spacing:1.5px;padding:5px 14px;border-radius:20px;text-transform:uppercase;box-shadow:0 4px 12px rgba(13,148,136,.3);white-space:nowrap">⭐ Recommended</div>
 
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-top:6px">
@@ -2840,7 +2849,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="font-size:13px;color:#64748b">Avoid having to fix and resubmit later</div>
    </div>
    <div style="text-align:right">
-    <div style="font-family:\'Playfair Display\',Georgia,serif;font-size:40px;font-weight:800;color:#1e293b;line-height:1">$39</div>
+    <div style="font-family:'Playfair Display',Georgia,serif;font-size:40px;font-weight:800;color:#1e293b;line-height:1">$39</div>
     <div style="font-size:11px;color:#94a3b8;margin-top:2px">one-time</div>
    </div>
   </div>
@@ -2873,14 +2882,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
  <!-- BASIC PLAN -->
 
- <div onclick="window.selectPlan&&window.selectPlan(\'basic\')" style="border:1.5px solid #e2e8f0;border-radius:18px;padding:18px;margin-bottom:16px;cursor:pointer;background:white">
+ <div onclick="window.selectPlan&&window.selectPlan('basic')" style="border:1.5px solid #e2e8f0;border-radius:18px;padding:18px;margin-bottom:16px;cursor:pointer;background:white">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
    <div>
     <div style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Basic</div>
     <div style="font-size:13px;color:#64748b">Ideal if everything goes smoothly</div>
    </div>
    <div style="text-align:right">
-    <div style="font-family:\'Playfair Display\',Georgia,serif;font-size:34px;font-weight:700;color:#1e293b;line-height:1">$29</div>
+    <div style="font-family:'Playfair Display',Georgia,serif;font-size:34px;font-weight:700;color:#1e293b;line-height:1">$29</div>
     <div style="font-size:11px;color:#94a3b8;margin-top:2px">one-time</div>
    </div>
   </div>
@@ -11086,16 +11095,20 @@ window.rqRunOCR = function(base64, mediaType) {
       var _usdAmt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(_rawOcr / window._MXN_RATE) : _rawOcr;
       window.claimData = { amountPaid: _usdAmt };
 
-      // Populate estimated refund range (40%-80% heuristic) in USD
+      // Populate estimated refund (40%-80% heuristic) in USD
       try {
         var refundLow = Math.round(_usdAmt * 0.40 / 10) * 10;  // round to nearest $10
         var refundHigh = Math.round(_usdAmt * 0.80 / 10) * 10;
-        var refundEl = document.getElementById('rq-refund-range');
+        var refundPrimary = document.getElementById('rq-refund-primary');
+        var refundRangeLine = document.getElementById('rq-refund-range-line');
         var refundBox = document.getElementById('rq-estimated-refund');
-        if(refundEl && _usdAmt > 0){
-          refundEl.textContent = '$' + refundLow.toLocaleString() + ' – $' + refundHigh.toLocaleString();
-          if(refundBox) refundBox.style.display = 'block';
+        if(refundPrimary && _usdAmt > 0){
+          refundPrimary.textContent = 'Up to $' + refundHigh.toLocaleString() + ' back from your insurance';
         }
+        if(refundRangeLine && _usdAmt > 0){
+          refundRangeLine.textContent = 'Most patients recover between $' + refundLow.toLocaleString() + '–$' + refundHigh.toLocaleString() + ' depending on their PPO plan';
+        }
+        if(refundBox && _usdAmt > 0) refundBox.style.display = 'block';
       } catch(e){ console.warn('refund calc:', e); }
       try { sessionStorage.setItem('_claimData', JSON.stringify(window.claimData)); } catch(e){}
       if(window.currentUser){ window.currentUser.amount = _usdAmt; try { sessionStorage.setItem('_cUser', JSON.stringify(window.currentUser)); } catch(e){} }
@@ -11678,12 +11691,12 @@ window.showProcShare = function() {
 
 ```
 <div id="dash-time" style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:2px">Good morning</div>
-<div id="dash-name-display" style="font-family:\'Playfair Display\',Georgia,serif;font-size:20px;font-weight:700;color:white;margin-bottom:14px">Welcome!</div>
+<div id="dash-name-display" style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:700;color:white;margin-bottom:14px">Welcome!</div>
 
 <!-- HERO REFUND — Visible siempre, grande, tipo TurboTax -->
 <div style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);border-radius:18px;padding:18px;backdrop-filter:blur(10px)">
   <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Your estimated refund</div>
-  <div id="dash-potential" style="font-size:42px;font-weight:800;color:#93c5fd;font-family:\'Playfair Display\',Georgia,serif;line-height:1;margin-bottom:6px">--</div>
+  <div id="dash-potential" style="font-size:42px;font-weight:800;color:#93c5fd;font-family:'Playfair Display',Georgia,serif;line-height:1;margin-bottom:6px">--</div>
   <div id="dash-insurer-sub" style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.4">Submit your claim to see your estimate</div>
 </div>
 ```
