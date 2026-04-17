@@ -5275,8 +5275,31 @@ function paymentSuccess(){
   // Populate submit instructions with insurer name if available
   var instrEl = document.getElementById('s5-submit-instructions');
   if(instrEl && cu.insurer){
-    instrEl.textContent = 'Upload the PDF to your ' + cu.insurer + ' portal or mail it. Most insurers process claims within 5-15 business days.';
+    instrEl.textContent = 'We will guide you through submitting to ' + cu.insurer + '. Takes about 2 minutes on their portal.';
   }
+
+  // Dynamic UI updates based on detected insurer (header, button, dropdown)
+  try {
+    var detection = window.getDetectedInsurer && window.getDetectedInsurer();
+    var headerEl = document.getElementById('s5-header-title');
+    var submitBtn = document.getElementById('s5-submit-btn');
+    var dashBtn = document.getElementById('dash-submit-btn');
+    var dropdown = document.getElementById('s5-insurer-dropdown');
+
+    if(detection && detection.detected){
+      // Detected → personalized UI
+      if(headerEl) headerEl.textContent = 'Submit your claim to ' + detection.data.name;
+      if(submitBtn) submitBtn.textContent = 'Continue to ' + detection.data.name + ' →';
+      if(dashBtn) dashBtn.textContent = 'Continue to ' + detection.data.name + ' →';
+      if(dropdown) dropdown.style.display = 'none';
+    } else {
+      // Not detected → show dropdown fallback
+      if(headerEl) headerEl.textContent = 'Submit your claim in 2 minutes';
+      if(submitBtn) submitBtn.textContent = 'Submit my claim →';
+      if(dashBtn) dashBtn.textContent = 'Submit my claim →';
+      if(dropdown) dropdown.style.display = 'block';
+    }
+  } catch(e){}
 
   // Show the overlay — append to body to escape parent container issues
   var sucEl = document.getElementById('s5-success');
@@ -5359,35 +5382,197 @@ window.downloadClaim = function(){
   URL.revokeObjectURL(url);
 };
 
-// Open insurance portal based on insurer name
-window.openInsurancePortal = function(){
+// Show insurer-specific submission instructions in a modal
+// User clicks the portal link themselves — they are the one submitting, not us
+// Expanded insurer database — 25+ major US dental insurers
+window._INSURER_DB = {
+  'delta_dental': { name:'Delta Dental', url:'https://www.deltadentalins.com/', steps:['Log in to your Delta Dental member account','Go to "Claims" → "Submit a Claim"','Select "Out-of-Network Claim"','Upload your downloaded PDF and receipt','Submit and save your confirmation number'] },
+  'aetna': { name:'Aetna', url:'https://www.aetna.com/about-us/login.html', steps:['Log in to your Aetna member portal','Navigate to "Dental" → "Submit a Claim"','Choose "Out-of-Network Dental Claim"','Upload your Credimed claim package','Complete submission and save confirmation'] },
+  'cigna': { name:'Cigna', url:'https://my.cigna.com/', steps:['Log in to myCigna.com','Go to "Claims" → "Submit a Dental Claim"','Select "Out-of-Network"','Upload your Credimed claim PDF','Review and submit'] },
+  'metlife': { name:'MetLife', url:'https://online.metlife.com/', steps:['Log in to your MetLife account','Navigate to "Dental Claims"','Select "File a New Claim"','Upload your claim package','Submit and note your reference number'] },
+  'guardian': { name:'Guardian', url:'https://www.guardianlife.com/login', steps:['Log in to Guardian Anytime','Go to "Claims" → "File a Claim"','Choose "Dental Claim"','Upload all documents from Credimed','Submit and save confirmation'] },
+  'humana': { name:'Humana', url:'https://www.humana.com/member', steps:['Log in to your Humana account','Go to "Claims" → "File a New Claim"','Select "Dental — Out of Network"','Upload your claim PDF','Review and submit'] },
+  'bcbs': { name:'Blue Cross Blue Shield', url:'https://www.bcbs.com/member-services', steps:['Log in to your BCBS member portal','Navigate to "Claims" section','Select "Submit a new claim"','Upload your Credimed claim package','Submit and save confirmation'] },
+  'united': { name:'UnitedHealthcare', url:'https://www.uhc.com/', steps:['Log in to myuhc.com','Navigate to "Claims & Accounts"','Select "Submit a Claim"','Upload your claim package','Complete submission'] },
+  'anthem': { name:'Anthem', url:'https://www.anthem.com/login', steps:['Log in to Anthem.com','Navigate to "Claims"','Select "Submit a Claim"','Upload your Credimed claim package','Review and submit'] },
+  'principal': { name:'Principal', url:'https://www.principal.com/login', steps:['Log in to your Principal account','Navigate to "Dental Benefits"','Select "File a Claim"','Upload your documents','Submit and save confirmation'] },
+  'ameritas': { name:'Ameritas', url:'https://www.ameritas.com/login', steps:['Log in to your Ameritas account','Go to "Claims" → "Submit a Claim"','Select "Dental — Out of Network"','Upload your Credimed claim PDF','Submit'] },
+  'sunlife': { name:'Sun Life', url:'https://www.sunlife.com/us/login', steps:['Log in to Sun Life member portal','Navigate to "Claims"','Select "File a Dental Claim"','Upload your claim package','Submit'] },
+  'lincoln': { name:'Lincoln Financial', url:'https://www.lincolnfinancial.com/public/individuals/login', steps:['Log in to your Lincoln account','Navigate to "Claims"','Choose "Dental — Submit a Claim"','Upload your documents','Submit'] },
+  'mutual_of_omaha': { name:'Mutual of Omaha', url:'https://www.mutualofomaha.com/login', steps:['Log in to Mutual of Omaha','Navigate to "Dental Claims"','Select "File a Claim"','Upload your PDF','Submit'] },
+  'unum': { name:'Unum', url:'https://www.unum.com/login', steps:['Log in to Unum.com','Go to "Dental Claims"','Select "Submit New Claim"','Upload documents','Review and submit'] },
+  'standard': { name:'The Standard', url:'https://www.standard.com/login', steps:['Log in to your Standard account','Navigate to "Dental Benefits"','Choose "File a Claim"','Upload your claim package','Submit'] },
+  'reliance_standard': { name:'Reliance Standard', url:'https://www.reliancestandard.com/login', steps:['Log in to Reliance Standard','Go to "Claims"','Select "Dental"','Upload your documents','Submit'] },
+  'empire_bcbs': { name:'Empire BlueCross', url:'https://www.empireblue.com/login', steps:['Log in to Empire BlueCross','Navigate to "Claims"','Select "Submit a Claim"','Upload your documents','Submit'] },
+  'careington': { name:'Careington', url:'https://www.careington.com/login', steps:['Log in to Careington member portal','Navigate to "Claims"','Select "File a New Claim"','Upload your Credimed claim','Submit'] },
+  'dentemax': { name:'DenteMax', url:'https://www.dentemax.com/', steps:['Log in to DenteMax member portal','Navigate to "Claims"','Select "Submit a Claim"','Upload your documents','Submit'] },
+  'dearborn': { name:'Dearborn', url:'https://www.dearbornnational.com/login', steps:['Log in to Dearborn','Go to "Dental Claims"','Select "File New Claim"','Upload your package','Submit'] },
+  'kaiser': { name:'Kaiser Permanente', url:'https://healthy.kaiserpermanente.org/sign-on', steps:['Log in to kp.org','Navigate to "Coverage & Costs"','Select "Submit a Claim"','Upload your PDF','Submit'] },
+  'tricare': { name:'TRICARE Dental', url:'https://www.tricare.mil/', steps:['Log in to TRICARE.mil','Navigate to "Dental"','Select "Submit a Claim"','Upload your documents','Submit'] },
+  'medicare': { name:'Medicare', url:'https://www.medicare.gov/', steps:['Log in to MyMedicare.gov','Navigate to "Claims"','Select "Submit a Claim"','Upload your documents','Submit'] },
+  'assurant': { name:'Assurant Dental', url:'https://www.assurantemployeebenefits.com/', steps:['Log in to Assurant','Go to "Dental Claims"','Select "File a Claim"','Upload your package','Submit'] }
+};
+
+// Normalizer — maps OCR variations to canonical insurer keys
+// Handles: typos, abbreviations, state suffixes ("of CA"), casing, etc.
+window.normalizeInsurer = function(rawInsurer){
+  if(!rawInsurer) return null;
+  var s = String(rawInsurer).toLowerCase().trim();
+  // Remove common suffixes that OCR picks up
+  s = s.replace(/\bof\b.*$/g, '').trim();  // "Delta Dental of California" → "delta dental"
+  s = s.replace(/\b(ppo|hmo|dmo|epo|indemnity|insurance|ins|dental|dntl|plan|group)\b/g, ' ').trim();
+  s = s.replace(/\s+/g, ' ').trim();
+  // Keyword-based matching with priority order (most specific first)
+  var rules = [
+    { keys: ['delta'], id: 'delta_dental' },
+    { keys: ['aetna'], id: 'aetna' },
+    { keys: ['cigna'], id: 'cigna' },
+    { keys: ['metlife', 'met life'], id: 'metlife' },
+    { keys: ['guardian'], id: 'guardian' },
+    { keys: ['humana'], id: 'humana' },
+    { keys: ['empire'], id: 'empire_bcbs' },
+    { keys: ['blue cross', 'bluecross', 'bcbs', 'blue shield'], id: 'bcbs' },
+    { keys: ['unitedhealth', 'united health', 'uhc', 'united hc'], id: 'united' },
+    { keys: ['anthem'], id: 'anthem' },
+    { keys: ['principal'], id: 'principal' },
+    { keys: ['ameritas'], id: 'ameritas' },
+    { keys: ['sun life', 'sunlife'], id: 'sunlife' },
+    { keys: ['lincoln'], id: 'lincoln' },
+    { keys: ['mutual of omaha', 'mutual omaha'], id: 'mutual_of_omaha' },
+    { keys: ['unum'], id: 'unum' },
+    { keys: ['reliance'], id: 'reliance_standard' },
+    { keys: ['the standard', 'standard insurance'], id: 'standard' },
+    { keys: ['careington'], id: 'careington' },
+    { keys: ['dentemax', 'dente max'], id: 'dentemax' },
+    { keys: ['dearborn'], id: 'dearborn' },
+    { keys: ['kaiser'], id: 'kaiser' },
+    { keys: ['tricare'], id: 'tricare' },
+    { keys: ['medicare'], id: 'medicare' },
+    { keys: ['assurant'], id: 'assurant' }
+  ];
+  for(var i = 0; i < rules.length; i++){
+    for(var j = 0; j < rules[i].keys.length; j++){
+      if(s.indexOf(rules[i].keys[j]) !== -1){
+        return rules[i].id;
+      }
+    }
+  }
+  return null;
+};
+
+// Get insurer data (canonical record) for currentUser — with detection
+window.getDetectedInsurer = function(){
   var cu = window.currentUser || {};
-  var insurer = (cu.insurer || '').toLowerCase();
-  var portals = {
-    'delta': 'https://www.deltadentalins.com/',
-    'aetna': 'https://www.aetna.com/about-us/login.html',
-    'cigna': 'https://my.cigna.com/',
-    'metlife': 'https://online.metlife.com/edge/web/public/benefits',
-    'guardian': 'https://www.guardianlife.com/login',
-    'humana': 'https://www.humana.com/member-registration',
-    'blue cross': 'https://www.bcbs.com/member-services',
-    'bcbs': 'https://www.bcbs.com/member-services',
-    'united': 'https://www.uhc.com/',
-    'principal': 'https://www.principal.com/',
-    'ameritas': 'https://www.ameritas.com/',
-    'sunlife': 'https://www.sunlife.com/us/',
-    'anthem': 'https://www.anthem.com/'
+  var id = window.normalizeInsurer(cu.insurer);
+  if(id && window._INSURER_DB[id]){
+    return { id: id, data: window._INSURER_DB[id], detected: true };
+  }
+  return {
+    id: null,
+    data: {
+      name: cu.insurer || 'your insurance',
+      url: null,
+      steps: [
+        'Log in to your insurance member portal',
+        'Find the "Claims" or "Submit a Claim" section',
+        'Select "Out-of-Network" or "Paper Claim"',
+        'Upload your Credimed claim PDF',
+        'Review all information and submit',
+        'Save your confirmation number'
+      ]
+    },
+    detected: false
   };
-  var url = null;
-  for(var key in portals){
-    if(insurer.indexOf(key) !== -1){ url = portals[key]; break; }
+};
+
+window.showSubmitInstructions = function(){
+  var detection = window.getDetectedInsurer();
+  var data = detection.data;
+  var isDetected = detection.detected;
+
+  // Build modal
+  var existingModal = document.getElementById('submit-instructions-modal');
+  if(existingModal) existingModal.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'submit-instructions-modal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+
+  var stepsHtml = data.steps.map(function(s, i){
+    return '<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9">' +
+      '<div style="width:26px;height:26px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">' + (i+1) + '</div>' +
+      '<div style="flex:1;font-size:14px;color:#0f172a;line-height:1.5;padding-top:3px">' + s + '</div>' +
+    '</div>';
+  }).join('');
+
+  var portalLinkHtml = '';
+  if(data.url){
+    portalLinkHtml = '<a href="' + data.url + '" target="_blank" rel="noopener" style="display:block;width:100%;padding:14px;background:#0B1F3A;color:white;border-radius:12px;font-size:16px;font-weight:700;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box;box-shadow:0 4px 12px rgba(15,23,42,.15)">Continue to ' + data.name + ' →</a>';
+  } else {
+    portalLinkHtml = '<a href="https://www.google.com/search?q=' + encodeURIComponent(data.name + ' member login claim submission') + '" target="_blank" rel="noopener" style="display:block;width:100%;padding:14px;background:#0B1F3A;color:white;border-radius:12px;font-size:16px;font-weight:700;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box">Find my insurance portal →</a>';
   }
-  if(!url){
-    // Generic search
-    var searchQuery = encodeURIComponent((cu.insurer || 'dental insurance') + ' member login claim submission');
-    url = 'https://www.google.com/search?q=' + searchQuery;
-  }
-  window.open(url, '_blank');
+
+  // Trust badges
+  var trustBadgesHtml = isDetected
+    ? '<div style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 12px;margin-bottom:14px"><span style="font-size:16px">✓</span><div style="font-size:12px;color:#15803d;font-weight:600">Online submission available · Claims accepted through portal</div></div>'
+    : '';
+
+  var modalTitle = isDetected ? "You're going to " + data.name : "How to submit your claim";
+  var prelude = isDetected
+    ? '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;margin-bottom:16px">' +
+        '<div style="font-size:13px;color:#1e40af;line-height:1.6"><strong>✓</strong> Your claim is ready<br><strong>✓</strong> Just upload and confirm submission<br><strong>✓</strong> Takes less than 2 minutes</div>' +
+      '</div>'
+    : '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-bottom:16px">' +
+        '<div style="font-size:13px;color:#92400e;line-height:1.5"><strong>Before you start:</strong> Download your claim package from the previous screen.</div>' +
+      '</div>';
+
+  var disclaimer = isDetected
+    ? 'You will submit this claim directly to ' + data.name + '. Credimed does not submit claims on your behalf.'
+    : 'You are submitting this claim directly to your insurance provider. Credimed provides preparation tools only.';
+
+  modal.innerHTML =
+    '<div style="background:white;border-radius:20px;padding:24px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;box-sizing:border-box">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+        '<div style="font-size:11px;font-weight:700;color:#0D9488;text-transform:uppercase;letter-spacing:1px">Submit your claim</div>' +
+        '<button onclick="document.getElementById(\'submit-instructions-modal\').remove()" style="background:none;border:none;font-size:22px;color:#94a3b8;cursor:pointer;padding:0;line-height:1">×</button>' +
+      '</div>' +
+      '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:22px;font-weight:700;color:#0f172a;margin-bottom:14px">' + modalTitle + '</div>' +
+      trustBadgesHtml +
+      prelude +
+      stepsHtml +
+      '<div style="height:16px"></div>' +
+      portalLinkHtml +
+      '<div style="font-size:11px;color:#94a3b8;text-align:center;line-height:1.5;margin-top:10px">' + disclaimer + '</div>' +
+      '<button onclick="document.getElementById(\'submit-instructions-modal\').remove()" style="width:100%;padding:12px;background:white;color:#64748b;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px">Close</button>' +
+    '</div>';
+
+  document.body.appendChild(modal);
+};
+
+// Legacy alias so any old code calls still work — points to the new user-actuated flow
+window.openInsurancePortal = function(){
+  window.showSubmitInstructions && window.showSubmitInstructions();
+};
+
+// Handle manual insurer selection from dropdown fallback
+window.handleManualInsurerSelect = function(insurerId){
+  if(!insurerId || !window._INSURER_DB || !window._INSURER_DB[insurerId]) return;
+  // Persist to currentUser so getDetectedInsurer picks it up
+  if(!window.currentUser) window.currentUser = {};
+  window.currentUser.insurer = window._INSURER_DB[insurerId].name;
+  try { sessionStorage.setItem('_cUser', JSON.stringify(window.currentUser)); } catch(e){}
+
+  // Update UI dynamically
+  var detectionData = window._INSURER_DB[insurerId];
+  var headerEl = document.getElementById('s5-header-title');
+  var submitBtn = document.getElementById('s5-submit-btn');
+  var dashBtn = document.getElementById('dash-submit-btn');
+  var dropdown = document.getElementById('s5-insurer-dropdown');
+  if(headerEl) headerEl.textContent = 'Submit your claim to ' + detectionData.name;
+  if(submitBtn) submitBtn.textContent = 'Continue to ' + detectionData.name + ' →';
+  if(dashBtn) dashBtn.textContent = 'Continue to ' + detectionData.name + ' →';
+  // Hide dropdown — we have the insurer now
+  if(dropdown) dropdown.style.display = 'none';
 };
 
 async function doPayment(method){
@@ -5888,6 +6073,14 @@ window.showDashboard = function() {
     if(progressStep) progressStep.textContent = 'Step 3 of 4';
     if(progressTitle) progressTitle.textContent = 'Ready to submit';
     if(actionCard) actionCard.style.display = 'block';
+    // Dynamic dashboard submit button
+    try {
+      var detection2 = window.getDetectedInsurer && window.getDetectedInsurer();
+      if(detection2 && detection2.detected){
+        var dashBtn2 = document.getElementById('dash-submit-btn');
+        if(dashBtn2) dashBtn2.textContent = 'Continue to ' + detection2.data.name + ' →';
+      }
+    } catch(e){}
   } else {
     if(pill){ pill.textContent = 'Active'; pill.style.background='#dcfce7'; pill.style.color='#166534'; }
   }
@@ -11156,75 +11349,136 @@ window.showProcShare = function() {
 </script>
 
 <div id="s5-success" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#f8fafc;z-index:4997;flex-direction:column;align-items:stretch;padding:0;box-sizing:border-box;overflow-y:auto;">
-  <!-- Header with success -->
-  <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:28px 20px 32px;text-align:center;color:white">
-    <div style="width:64px;height:64px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <!-- HEADER -->
+  <div style="background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);padding:28px 20px 24px;text-align:center;color:white">
+    <div style="width:60px;height:60px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
-    <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:700;margin-bottom:6px">Your claim is ready to submit</div>
-    <div style="font-size:14px;color:rgba(255,255,255,.75);line-height:1.5;max-width:320px;margin:0 auto">Follow the steps below to send it to your insurance. Submitting takes about 2 minutes.</div>
+    <div id="s5-header-title" style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:700;margin-bottom:6px">Submit your claim in 2 minutes</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.75);line-height:1.5;max-width:340px;margin:0 auto">Your claim is fully prepared. We'll guide you step-by-step to submit it to your insurance.</div>
   </div>
-
-  <!-- Body -->
-
+  <!-- BODY -->
   <div style="padding:20px 16px 28px;max-width:560px;margin:0 auto;width:100%;box-sizing:border-box">
 
 ```
-<!-- Claim Ready Card -->
-<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:18px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
+<!-- VISUAL PROGRESS -->
+<div style="background:white;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(15,23,42,.05)">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <div style="width:22px;height:22px;background:#16a34a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">✓</div>
+    <div style="font-size:13px;font-weight:600;color:#16a34a;flex:1">Claim created</div>
+  </div>
+  <div style="width:2px;height:16px;background:#0D9488;margin-left:10px"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <div style="width:22px;height:22px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">→</div>
+    <div style="font-size:13px;font-weight:700;color:#0f172a;flex:1">Submit to insurance</div>
+  </div>
+  <div style="width:2px;height:16px;background:#e2e8f0;margin-left:10px"></div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:22px;height:22px;background:#e2e8f0;color:#94a3b8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700"></div>
+    <div style="font-size:13px;color:#94a3b8;flex:1">Get paid</div>
+  </div>
+</div>
+
+<!-- MAIN CARD -->
+<div style="background:white;border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(15,23,42,.05)">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <div style="font-size:12px;font-weight:700;color:#0D9488;text-transform:uppercase;letter-spacing:1px">✓ Ready</div>
+    <div style="font-size:12px;font-weight:700;color:#0D9488;text-transform:uppercase;letter-spacing:1px">✓ Your claim is ready</div>
     <div style="font-size:11px;color:#94a3b8">$49 paid</div>
   </div>
-  <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">ESTIMATED REFUND</div>
-  <div id="s5-est-refund" style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:800;color:#0f172a;margin-bottom:10px">--</div>
-  <div style="font-size:12px;color:#64748b;padding-top:10px;border-top:1px solid #f1f5f9;line-height:1.5">Your insurance sends payment directly to you. Final amount depends on your provider.</div>
+  <div style="font-size:13px;color:#475569;line-height:1.5;margin-bottom:14px">We've organized your documents and formatted everything to match your insurance requirements.</div>
+  <div style="padding:12px;background:#f8fafc;border-radius:10px;margin-bottom:14px">
+    <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Estimated refund</div>
+    <div id="s5-est-refund" style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:800;color:#0f172a">--</div>
+  </div>
+  <!-- Fallback dropdown — shown only when insurer not detected -->
+  <div id="s5-insurer-dropdown" style="display:none;margin-bottom:10px">
+    <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px">Select your insurance provider</label>
+    <select id="s5-insurer-select" onchange="window.handleManualInsurerSelect&&window.handleManualInsurerSelect(this.value)" style="width:100%;height:46px;padding:0 12px;border:1.5px solid #cbd5e1;border-radius:10px;background:white;font-size:14px;font-weight:600;color:#0f172a;outline:none;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;padding-right:32px">
+      <option value="">— Choose your insurance —</option>
+      <option value="delta_dental">Delta Dental</option>
+      <option value="aetna">Aetna</option>
+      <option value="cigna">Cigna</option>
+      <option value="metlife">MetLife</option>
+      <option value="guardian">Guardian</option>
+      <option value="humana">Humana</option>
+      <option value="bcbs">Blue Cross Blue Shield</option>
+      <option value="united">UnitedHealthcare</option>
+      <option value="anthem">Anthem</option>
+      <option value="principal">Principal</option>
+      <option value="ameritas">Ameritas</option>
+      <option value="sunlife">Sun Life</option>
+      <option value="lincoln">Lincoln Financial</option>
+      <option value="mutual_of_omaha">Mutual of Omaha</option>
+      <option value="unum">Unum</option>
+      <option value="kaiser">Kaiser Permanente</option>
+      <option value="tricare">TRICARE Dental</option>
+      <option value="careington">Careington</option>
+      <option value="assurant">Assurant Dental</option>
+    </select>
+  </div>
+  <button id="s5-submit-btn" onclick="window.showSubmitInstructions&&window.showSubmitInstructions()" style="width:100%;padding:16px;background:#0B1F3A;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:6px">Submit my claim →</button>
+  <div style="font-size:12px;color:#94a3b8;text-align:center">Takes ~2 minutes · No paperwork needed</div>
 </div>
 
-<!-- HOW TO SUBMIT -->
-<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-left:4px">How to submit your claim</div>
+<!-- MOTIVATION -->
+<div style="background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1px solid #fde68a;border-radius:12px;padding:14px 16px;margin-bottom:16px">
+  <div style="font-size:13px;color:#92400e;line-height:1.5"><strong>Most patients never submit their claim</strong> — that's why they lose money. You're 1 step away from getting paid.</div>
+</div>
 
-<!-- Step 1: Download -->
-<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px">
-  <div style="width:32px;height:32px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:14px">1</div>
+<!-- WHAT YOU NEED TO DO -->
+<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-left:4px">What you need to do</div>
+<div style="background:white;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;box-shadow:0 2px 8px rgba(15,23,42,.04)">
+  <div style="width:28px;height:28px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:13px">1</div>
   <div style="flex:1">
-    <div style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:4px">Download your claim package</div>
-    <div style="font-size:13px;color:#64748b;line-height:1.5;margin-bottom:10px">Your claim is formatted correctly for your insurance.</div>
-    <button onclick="window.downloadClaim&&window.downloadClaim()" style="background:#0f172a;color:white;border:none;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">⬇️ Download PDF</button>
+    <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:3px">Download your claim PDF</div>
+    <button onclick="window.downloadClaim&&window.downloadClaim()" style="background:none;border:none;color:#0D9488;font-size:13px;font-weight:600;cursor:pointer;padding:4px 0;text-align:left">⬇️ Download now →</button>
+  </div>
+</div>
+<div style="background:white;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;box-shadow:0 2px 8px rgba(15,23,42,.04)">
+  <div style="width:28px;height:28px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:13px">2</div>
+  <div style="flex:1">
+    <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:3px">Upload it to your insurance portal</div>
+    <div style="font-size:12px;color:#64748b">We show you exactly how, step by step</div>
+  </div>
+</div>
+<div style="background:white;border-radius:14px;padding:14px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;box-shadow:0 2px 8px rgba(15,23,42,.04)">
+  <div style="width:28px;height:28px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:13px">3</div>
+  <div style="flex:1">
+    <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:3px">Confirm submission</div>
+    <div style="font-size:12px;color:#64748b">Your insurance processes it in 2-6 weeks</div>
   </div>
 </div>
 
-<!-- Step 2: Submit -->
-<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px">
-  <div style="width:32px;height:32px;background:#0D9488;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:14px">2</div>
-  <div style="flex:1">
-    <div style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:4px">Submit to your insurance</div>
-    <div style="font-size:13px;color:#64748b;line-height:1.5;margin-bottom:10px" id="s5-submit-instructions">Upload the PDF to your insurance portal or mail it. Most insurers process claims within 5-15 business days.</div>
-    <button onclick="window.openInsurancePortal&&window.openInsurancePortal()" style="background:white;color:#0D9488;border:1.5px solid #0D9488;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">🌐 Open my insurance portal →</button>
+<!-- SMART ADD -->
+<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:12px 14px;margin-bottom:16px">
+  <div style="font-size:13px;font-weight:700;color:#0f766e;margin-bottom:3px">💡 We recommend submitting today</div>
+  <div style="font-size:12px;color:#115e59;line-height:1.5">Submitting sooner increases your chances of faster reimbursement.</div>
+</div>
+
+<!-- TRUST BLOCK -->
+<div style="background:white;border-radius:12px;padding:14px;margin-bottom:16px;box-shadow:0 2px 8px rgba(15,23,42,.04)">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    <div style="font-size:15px">🔒</div>
+    <div style="font-size:12px;color:#334155;font-weight:600">Secure & encrypted</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    <div style="font-size:15px">📄</div>
+    <div style="font-size:12px;color:#334155;font-weight:600">Formatted for US insurance claims</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="font-size:15px">🧾</div>
+    <div style="font-size:12px;color:#334155;font-weight:600">Compatible with major PPO plans</div>
   </div>
 </div>
 
-<!-- Step 3: Get Paid -->
-<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:14px">
-  <div style="width:32px;height:32px;background:#f1f5f9;color:#64748b;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:14px">3</div>
-  <div style="flex:1">
-    <div style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:4px">Get paid</div>
-    <div style="font-size:13px;color:#64748b;line-height:1.5">Your insurance sends your reimbursement check or direct deposit. We'll check in with you to help track it.</div>
-  </div>
-</div>
-
-<!-- Legal Authorization -->
+<!-- LEGAL -->
 <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 16px;margin-bottom:20px">
   <div style="font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Important</div>
-  <div style="font-size:12px;color:#1e3a8a;line-height:1.6">Please review your claim carefully before submission. By submitting, you confirm that all information is accurate to the best of your knowledge. Credimed provides tools to assist with claim preparation but does not guarantee reimbursement or outcomes. You are submitting this claim directly to your insurance provider.</div>
+  <div style="font-size:12px;color:#1e3a8a;line-height:1.6">Credimed prepares your claim for submission. You are responsible for submitting the claim to your insurance provider. Credimed is not an insurance company and does not submit claims on your behalf or guarantee reimbursement.</div>
 </div>
 
-<!-- Actions -->
 <button class="btn-primary" style="width:100%;height:52px;font-size:16px;font-weight:700;margin-bottom:10px" onclick="window.showDashboard&&window.showDashboard();document.getElementById('s5-success').style.display='none';">
   Go to my dashboard →
-</button>
-<button onclick="window.startNewClaim&&window.startNewClaim();document.getElementById('s5-success').style.display='none';" style="width:100%;height:46px;border-radius:12px;border:1.5px solid #e2e8f0;background:white;color:#64748b;font-size:14px;font-weight:600;cursor:pointer">
-  📄 Prepare another claim
 </button>
 ```
 
@@ -11352,10 +11606,10 @@ window.showProcShare = function() {
     <div style="width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">📋</div>
     <div style="font-size:15px;font-weight:700">Next: Submit your claim</div>
   </div>
-  <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.5;margin-bottom:14px">Download your claim package and submit it to your insurance. Takes about 2 minutes.</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.5;margin-bottom:14px">Your claim is ready. Download the package, then submit it yourself in 2 minutes using our step-by-step instructions.</div>
 
   <button onclick="window.downloadClaim&&window.downloadClaim()" style="width:100%;padding:12px;background:white;color:#0f172a;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">⬇️ Download claim package</button>
-  <button onclick="window.openInsurancePortal&&window.openInsurancePortal()" style="width:100%;padding:12px;background:rgba(255,255,255,.15);color:white;border:1.5px solid rgba(255,255,255,.3);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">🌐 Open my insurance portal</button>
+  <button id="dash-submit-btn" onclick="window.showSubmitInstructions&&window.showSubmitInstructions()" style="width:100%;padding:12px;background:rgba(255,255,255,.15);color:white;border:1.5px solid rgba(255,255,255,.3);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Submit my claim →</button>
 </div>
 
 <!-- TIME EXPECTATION -->
