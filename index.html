@@ -5554,6 +5554,10 @@ window.stdSaveCard = async function() {
 };
 
 window.showProfile = function() {
+  console.log('[showProfile] called');
+  var profEl = document.getElementById('s-profile');
+  console.log('[showProfile] s-profile element:', profEl ? 'exists' : 'MISSING');
+  if(profEl) console.log('[showProfile] current display:', profEl.style.display, 'z-index:', profEl.style.zIndex);
   // Force-hide ALL other screens/overlays first
   var hideIds = ['s-dashboard','s-support','s5-success','s-std-payment','s-step5','s-landing','s-login','s-signup'];
   hideIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
@@ -5599,7 +5603,12 @@ window.showProfile = function() {
   var suc = document.getElementById('s5-success');
   if(suc) suc.style.display = 'none';
   var prof = document.getElementById('s-profile');
-  if(prof) prof.style.display = 'block';
+  if(prof){
+    prof.style.display = 'block';
+    console.log('[showProfile] set display=block, offsetHeight:', prof.offsetHeight, 'offsetWidth:', prof.offsetWidth);
+  } else {
+    console.error('[showProfile] s-profile element NOT FOUND');
+  }
 };
 
 window.showDashboard = function() {
