@@ -2067,13 +2067,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
    <div id="rq-strengthen" style="display:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;margin-bottom:16px">
     <div style="font-size:13px;font-weight:700;color:white;margin-bottom:2px">💰 Strengthen your claim</div>
-    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px">Add documents to increase your refund</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px">Adding documents can increase your chances of a higher refund</div>
     <!-- Progress bar -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
      <div style="flex:1;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden">
       <div id="rq-strength-fill" style="height:100%;width:65%;background:linear-gradient(90deg,#0D9488,#34d399);border-radius:3px;transition:width .4s"></div>
      </div>
-     <div id="rq-strength-label" style="font-size:11px;font-weight:700;color:#34d399;white-space:nowrap">65% strong claim</div>
+     <div id="rq-strength-label" style="font-size:11px;font-weight:700;color:#34d399;white-space:nowrap">Your claim could be stronger</div>
     </div>
     <!-- Checklist items -->
     <div style="display:flex;flex-direction:column;gap:8px">
@@ -2082,7 +2082,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
        <div id="rq-check-xray" style="width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>
        <div style="flex:1">
         <div style="font-size:13px;font-weight:600;color:white">Add X-rays <span style="background:#0D9488;color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;margin-left:4px">⭐ Recommended</span></div>
-        <div id="rq-xray-sub" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Most important for getting your full refund</div>
+        <div id="rq-xray-sub" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px">Most important for increasing your refund</div>
        </div>
        <div style="font-size:11px;font-weight:700;color:#34d399;background:rgba(52,211,153,.12);padding:3px 8px;border-radius:8px">High impact</div>
       </div>
@@ -2114,6 +2114,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:10px">Adding these documents can increase your chances of a higher reimbursement</div>
    </div>
 
+   <!-- Estimated refund section (appears when OCR detects amount) -->
+
+   <div id="rq-estimated-refund" style="display:none;background:linear-gradient(135deg,rgba(13,148,136,.15),rgba(52,211,153,.1));border:1px solid rgba(52,211,153,.3);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+    <div style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">💰 Estimated refund</div>
+    <div id="rq-refund-range" style="font-family:\'Playfair Display\',Georgia,serif;font-size:26px;font-weight:800;color:white;line-height:1.1;margin-bottom:4px">$-- – $--</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:8px">Adding recommended documents may increase your refund</div>
+    <div style="font-size:11px;color:#fcd34d;font-weight:600">⚡ Most patients miss money by not completing this step</div>
+   </div>
+
    <!-- Hidden file inputs for strengthen docs -->
 
    <input type="file" id="rq-xray-input" accept="image/*,application/pdf" multiple style="display:none" onchange="window.rqHandleStrengthen&&window.rqHandleStrengthen(this,'xray')">
@@ -2123,7 +2132,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    <!-- CTA -->
 
    <button id="rq-continue-btn" onclick="window.rqContinue&&window.rqContinue()" disabled style="width:100%;height:54px;border-radius:16px;border:none;background:#94a3b8;color:white;font-size:16px;font-weight:700;cursor:not-allowed;margin-bottom:12px">
-    Show me my money →
+    See how much I can recover →
    </button>
    <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.35)">No credit card required · Cancel anytime</div>
   </div>
@@ -11076,6 +11085,18 @@ window.rqRunOCR = function(base64, mediaType) {
       window._amountCurrency = currency;
       var _usdAmt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(_rawOcr / window._MXN_RATE) : _rawOcr;
       window.claimData = { amountPaid: _usdAmt };
+
+      // Populate estimated refund range (40%-80% heuristic) in USD
+      try {
+        var refundLow = Math.round(_usdAmt * 0.40 / 10) * 10;  // round to nearest $10
+        var refundHigh = Math.round(_usdAmt * 0.80 / 10) * 10;
+        var refundEl = document.getElementById('rq-refund-range');
+        var refundBox = document.getElementById('rq-estimated-refund');
+        if(refundEl && _usdAmt > 0){
+          refundEl.textContent = '$' + refundLow.toLocaleString() + ' – $' + refundHigh.toLocaleString();
+          if(refundBox) refundBox.style.display = 'block';
+        }
+      } catch(e){ console.warn('refund calc:', e); }
       try { sessionStorage.setItem('_claimData', JSON.stringify(window.claimData)); } catch(e){}
       if(window.currentUser){ window.currentUser.amount = _usdAmt; try { sessionStorage.setItem('_cUser', JSON.stringify(window.currentUser)); } catch(e){} }
       // Also populate the full flow fields
@@ -11282,7 +11303,7 @@ window.rqRemoveFile = function(key, idx) {
     if(box) { box.style.background = ''; box.style.borderColor = 'rgba(255,255,255,.3)'; box.innerHTML = ''; }
     if(key === 'xray') {
       var sub = document.getElementById('rq-xray-sub');
-      if(sub) sub.textContent = 'Most important for getting your full refund';
+      if(sub) sub.textContent = 'Most important for increasing your refund';
     }
     window.rqUpdateStrengthBar();
     // Reset input
