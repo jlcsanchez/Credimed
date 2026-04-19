@@ -4059,8 +4059,8 @@ function startNewClaim() {
  var s2conf = document.getElementById('s2-confirm-banner'); if(s2conf) s2conf.style.display='none';
  var bn = document.getElementById('bottom-nav');
  if(bn) { bn.classList.remove('show'); bn.style.display='none'; }
- try { goTo('s-receipt-quick'); } catch(e) {
- const target = 's-receipt-quick';
+ try { goTo('s-checklist'); } catch(e) {
+ const target = 's-checklist';
  navHistory = [target];
  const screen = document.getElementById(target);
  if(screen) { screen.classList.add('active'); screen.style.display='block'; screen.scrollTop=0; }
@@ -4377,7 +4377,7 @@ function loginUser(u){
    return;
  }
  const isNew = !u.hasCompletedOnce;
- if(isNew) { u.hasCompletedOnce = true; goTo('s-receipt-quick'); }
+ if(isNew) { u.hasCompletedOnce = true; goTo('s-checklist'); }
  else goTo('s-dashboard');
 }
 
