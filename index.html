@@ -32,6 +32,9 @@ input,select,textarea{font-size:16px !important;-webkit-text-size-adjust:100%}
 
 /* SCREENS */
 .patient-viewport .screen{display:none;position:absolute;width:100%;top:0;left:0;height:100%;z-index:0}
+/* Defensive: hide ANY .screen without .active, regardless of DOM position.
+   Prevents screens placed outside .patient-viewport from leaking onto desktop. */
+.screen:not(.active){display:none !important}
 .screen.active{display:block;overflow-y:scroll !important;overflow-x:hidden;-webkit-overflow-scrolling:touch !important;touch-action:pan-y !important;position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;animation:slideIn .25s cubic-bezier(.16,1,.3,1);overscroll-behavior:contain}
 .screen.back{animation:slideBack .25s cubic-bezier(.16,1,.3,1)}
 @keyframes slideIn{from{transform:translateX(24px);opacity:0}to{transform:translateX(0);opacity:1}}
@@ -963,6 +966,157 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- Stripe loaded on demand -->
 
+<!-- ═══════════════════════════════════════
+     AWS COGNITO SDK (Phase 1 — Auth integration)
+     ═══════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script>
+/* Credimed Cognito configuration (us-west-2_8GgqReC58) */
+window.CREDIMED_COGNITO = {
+  UserPoolId:   'us-west-2_8GgqReC58',
+  ClientId:     '24u3395do8jtqo4joj6jlh62if',
+  Region:       'us-west-2'
+};
+window.CREDIMED_API = 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com';
+
+/* ───── authFetch: JWT-aware wrapper around fetch ─────
+   Use INSTEAD OF fetch() for every call to CREDIMED_API.
+   Auto-attaches Authorization: Bearer <idToken>.
+   Auto-refreshes session if token expired. 401 → redirect to login. */
+window.authFetch = async function(url, opts){
+  opts = opts || {};
+  opts.headers = opts.headers || {};
+
+  var token = null;
+  try { token = await window.cognitoGetIdToken(); } catch(e) { /* not logged in */ }
+
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (opts.body && typeof opts.body !== 'string' && !(opts.body instanceof FormData)) {
+    opts.body = JSON.stringify(opts.body);
+    opts.headers['Content-Type'] = opts.headers['Content-Type'] || 'application/json';
+  }
+
+  var resp = await fetch(url, opts);
+
+  if (resp.status === 401) {
+    console.warn('[authFetch] 401 — session expired, redirecting to login');
+    try { window.cognitoSignOut(); } catch(e){}
+    try { window.goTo && window.goTo('s-auth','login'); } catch(e){}
+    throw new Error('Session expired. Please sign in again.');
+  }
+  return resp;
+};
+
+/* ───── Cognito helpers ───── */
+(function(){
+  var AmazonCognitoIdentity = window.AmazonCognitoIdentity;
+  if (!AmazonCognitoIdentity) { console.error('[Cognito] SDK not loaded'); return; }
+
+  var pool = new AmazonCognitoIdentity.CognitoUserPool({
+    UserPoolId: window.CREDIMED_COGNITO.UserPoolId,
+    ClientId:   window.CREDIMED_COGNITO.ClientId
+  });
+  window._cognitoPool = pool;
+
+  /* Sign up a new user. Returns Promise<{userSub, needsConfirmation:true}> */
+  window.cognitoSignUp = function(email, password, firstName, lastName, phone){
+    return new Promise(function(resolve, reject){
+      var attrs = [
+        new AmazonCognitoIdentity.CognitoUserAttribute({Name:'email', Value: email}),
+        new AmazonCognitoIdentity.CognitoUserAttribute({Name:'given_name', Value: firstName}),
+        new AmazonCognitoIdentity.CognitoUserAttribute({Name:'family_name', Value: lastName})
+      ];
+      pool.signUp(email, password, attrs, null, function(err, result){
+        if (err) return reject(err);
+        resolve({ userSub: result.userSub, needsConfirmation: !result.userConfirmed });
+      });
+    });
+  };
+
+  /* Confirm signup with 6-digit code emailed to user */
+  window.cognitoConfirmSignUp = function(email, code){
+    return new Promise(function(resolve, reject){
+      var user = new AmazonCognitoIdentity.CognitoUser({ Username: email, Pool: pool });
+      user.confirmRegistration(code, true, function(err, result){
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+  };
+
+  /* Resend confirmation code */
+  window.cognitoResendCode = function(email){
+    return new Promise(function(resolve, reject){
+      var user = new AmazonCognitoIdentity.CognitoUser({ Username: email, Pool: pool });
+      user.resendConfirmationCode(function(err, result){
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+  };
+
+  /* Sign in. Returns Promise<{idToken, accessToken, refreshToken, user}> */
+  window.cognitoSignIn = function(email, password){
+    return new Promise(function(resolve, reject){
+      var user = new AmazonCognitoIdentity.CognitoUser({ Username: email, Pool: pool });
+      var authDetails = new AmazonCognitoIdentity.AuthenticationDetails({
+        Username: email, Password: password
+      });
+      user.authenticateUser(authDetails, {
+        onSuccess: function(session){
+          resolve({
+            idToken:      session.getIdToken().getJwtToken(),
+            accessToken:  session.getAccessToken().getJwtToken(),
+            refreshToken: session.getRefreshToken().getToken(),
+            user: user
+          });
+        },
+        onFailure: function(err){ reject(err); },
+        newPasswordRequired: function(){
+          reject(new Error('NEW_PASSWORD_REQUIRED: Contact support.'));
+        }
+      });
+    });
+  };
+
+  /* Get current ID token. Auto-refreshes if expired. */
+  window.cognitoGetIdToken = function(){
+    return new Promise(function(resolve, reject){
+      var user = pool.getCurrentUser();
+      if (!user) return reject(new Error('No active session'));
+      user.getSession(function(err, session){
+        if (err) return reject(err);
+        if (!session.isValid()) return reject(new Error('Session invalid'));
+        resolve(session.getIdToken().getJwtToken());
+      });
+    });
+  };
+
+  /* Get current Cognito user object (for attribute access) */
+  window.cognitoGetCurrentUser = function(){
+    var user = pool.getCurrentUser();
+    if (!user) return null;
+    return new Promise(function(resolve, reject){
+      user.getSession(function(err, session){
+        if (err) return reject(err);
+        user.getUserAttributes(function(err2, attrs){
+          if (err2) return reject(err2);
+          var a = {};
+          attrs.forEach(function(x){ a[x.getName()] = x.getValue(); });
+          resolve({ username: user.getUsername(), attributes: a, sub: a.sub });
+        });
+      });
+    });
+  };
+
+  /* Sign out */
+  window.cognitoSignOut = function(){
+    var user = pool.getCurrentUser();
+    if (user) user.signOut();
+  };
+})();
+</script>
+
 </head>
 <body>
 <div class="demo-wrapper">
@@ -1840,8 +1994,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <div style="text-align:center;font-size:12px;color:var(--slate-light);cursor:pointer;padding-bottom:8px" data-oc="goBack()" onclick="window.goBack&&window.goBack()">← Back to home</div>
  </div>
  </div>
+<!-- ═══════════════════════════════════════
+     SCREEN: CONFIRM SIGNUP (6-digit code from email)
+     Must be INSIDE patient-viewport so .screen CSS hides it by default
+     ═══════════════════════════════════════ -->
+<div class="screen" id="s-confirm" style="background:white">
+ <div class="auth-hero">
+  <div style="position:absolute;top:14px;left:16px;z-index:2">
+   <div class="back-btn" onclick="window.goTo&&window.goTo('s-auth','register')" style="background:rgba(255,255,255,.08)">←</div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;margin-bottom:10px;position:relative;z-index:1">
+   <div class="nav-logo-badge"><svg width="40" height="40" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.95"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#9ca3af" stroke-width="2.5"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg><div><div class="nav-logo-name">CREDI<span>MED</span></div><span class="nav-logo-sub">Verify your email</span></div></div>
+  </div>
+  <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:600;color:white;letter-spacing:-.5px;margin-bottom:4px;position:relative;z-index:1">Check your email</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.65);position:relative;z-index:1">We sent a 6-digit code to <span id="confirm-email-display" style="color:#5eead4;font-weight:600"></span></div>
+ </div>
+ <div style="background:white;flex:1;overflow-y:auto;width:100%;padding:24px 20px">
+  <div class="field">
+   <label>Verification code <span class="req">*</span></label>
+   <input type="text" id="c-code" placeholder="123456" maxlength="6" inputmode="numeric" pattern="[0-9]*" style="text-align:center;letter-spacing:8px;font-size:20px;font-weight:700">
+  </div>
+  <div class="err-banner" id="confirm-err"><span></span><span id="confirm-err-txt"></span></div>
+  <button class="btn-primary" onclick="window.doConfirm&&window.doConfirm()" style="margin-top:4px">Verify my account →</button>
+  <div style="text-align:center;font-size:13px;color:var(--slate-mid);margin-top:18px">
+   Didn't get the code? <a onclick="window.doResendCode&&window.doResendCode()" style="color:var(--teal);font-weight:600;cursor:pointer">Resend</a>
+  </div>
+  <div style="text-align:center;font-size:12px;color:var(--slate-light);margin-top:10px;cursor:pointer" onclick="window.goTo&&window.goTo('s-auth','register')">← Back to sign up</div>
+ </div>
 </div>
 
+</div><!-- /.patient-viewport -->
 <!-- 
  SCREEN: STEP 1 - INSURANCE CARD
  -->
@@ -2838,6 +3020,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
  <p style="font-size:13px;color:#64748b;line-height:1.5">Choose your plan below. One-time payment.</p>
  </div>
 
+ <!-- FAMILY PLAN (Premium tier - highest value for families traveling together) -->
+
+ <div onclick="window.selectPlan&&window.selectPlan('family')" style="border:2.5px solid #0f172a;border-radius:20px;padding:22px 18px 18px;margin-bottom:14px;cursor:pointer;background:linear-gradient(135deg,#0f172a 0%,#134e4a 100%);position:relative;box-shadow:0 10px 32px rgba(15,23,42,.25);margin-top:24px">
+  <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#fbbf24,#f59e0b);color:#422006;font-size:11px;font-weight:800;letter-spacing:1.5px;padding:5px 14px;border-radius:20px;text-transform:uppercase;box-shadow:0 4px 12px rgba(245,158,11,.4);white-space:nowrap">★ Best for families</div>
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-top:6px">
+   <div>
+    <div style="font-size:12px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Family</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.75)">Up to 6 family members · Unlimited claims</div>
+   </div>
+   <div style="text-align:right">
+    <div style="font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:800;color:white;line-height:1">$99</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">per year</div>
+   </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px">
+   <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:rgba(255,255,255,.95);font-weight:600">
+    <span style="color:#fbbf24;font-weight:700;font-size:15px;flex-shrink:0">✓</span>
+    <span>Unlimited claims for you and up to 5 family members</span>
+   </div>
+   <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:rgba(255,255,255,.9)">
+    <span style="color:#fbbf24;font-weight:700;font-size:15px;flex-shrink:0">✓</span>
+    <span>Cross-coding between dental &amp; medical insurance to maximize refunds</span>
+   </div>
+   <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:rgba(255,255,255,.9)">
+    <span style="color:#fbbf24;font-weight:700;font-size:15px;flex-shrink:0">✓</span>
+    <span>Dedicated case manager — real human support</span>
+   </div>
+   <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:rgba(255,255,255,.9)">
+    <span style="color:#fbbf24;font-weight:700;font-size:15px;flex-shrink:0">✓</span>
+    <span>Free resubmissions and appeals for rejected claims</span>
+   </div>
+   <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:rgba(255,255,255,.9)">
+    <span style="color:#fbbf24;font-weight:700;font-size:15px;flex-shrink:0">✓</span>
+    <span>Priority processing — your claims go first</span>
+   </div>
+  </div>
+
+  <div style="background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);border-radius:10px;padding:10px 12px;margin-bottom:14px">
+   <div style="font-size:12px;color:#fbbf24;font-weight:700;margin-bottom:2px">💡 Typical family saves $1,200+/year</div>
+   <div style="font-size:11px;color:rgba(255,255,255,.75);line-height:1.4">Pays for itself with just 3 claims. Break-even at 2.5 Plus claims.</div>
+  </div>
+
+  <div id="plan-family-btn" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(90deg,#fbbf24,#f59e0b);color:#422006;font-size:15px;font-weight:800;text-align:center;letter-spacing:.3px">Get Family Plan — $99/year →</div>
+ </div>
+
  <!-- PLUS PLAN (Recommended - anchors pricing, shown first) -->
 
  <div onclick="window.selectPlan&&window.selectPlan('plus')" style="border:2.5px solid #0D9488;border-radius:20px;padding:20px 18px 18px;margin-bottom:14px;cursor:pointer;background:white;position:relative;box-shadow:0 6px 28px rgba(13,148,136,.18);margin-top:14px">
@@ -3476,6 +3705,35 @@ window._toUSD = function(n, currency) {
   } catch(e){}
 })();
 
+/* ═══════════════════════════════════════
+   COGNITO SESSION REHYDRATION
+   If Cognito has a valid session in localStorage, restore currentUser
+   from the ID token claims so the user stays logged in across refreshes.
+   ═══════════════════════════════════════ */
+(async function(){
+  try {
+    if (!window.cognitoGetCurrentUser) return;
+    const info = await window.cognitoGetCurrentUser();
+    if (info && info.attributes) {
+      const a = info.attributes;
+      /* Don't clobber an admin session restored from sessionStorage */
+      if (window.currentUser && window.currentUser.role === 'admin') return;
+      window.currentUser = Object.assign(window.currentUser || {}, {
+        email: a.email,
+        first: a.given_name || '',
+        last:  a.family_name || '',
+        sub:   a.sub || '',
+        hasCompletedOnce: true
+      });
+      try { sessionStorage.setItem('_cUser', JSON.stringify(window.currentUser)); } catch(e){}
+      currentUser = window.currentUser;
+      console.log('[Cognito] Session restored for', a.email);
+    }
+  } catch(e) {
+    /* No valid session — user is simply not logged in, that's fine */
+  }
+})();
+
 function goTo(id, param) {
  try {
  const cur = navHistory[navHistory.length-1];
@@ -3544,14 +3802,15 @@ function goTo(id, param) {
  if (id === 's-refund') setTimeout(function(){ try{ runRefundEstimate(); }catch(e){ console.warn('refund error',e); } }, 300);;
  if (id === 's-plan-confirm') setTimeout(function(){
    var currency = window._amountCurrency || window._currency || 'USD';
-   var sym = currency === 'MXN' ? 'MXN $' : 'USD $';
    var amt = window._lastOcrAmount || 0;
    var el = function(id){ return document.getElementById(id); };
    if(!amt || amt <= 0){ if(el('pc-big-num')) el('pc-big-num').textContent='--'; return; }
-   // Get selected tier (basic $29 or plus $39)
+   // Get selected tier (basic $29, plus $39, or family $99/year)
    var tier = window._selectedTier || (window.currentUser && window.currentUser.tier) || 'plus';
-   var tierPrice = (tier === 'basic') ? 29 : 39;
-   var tierLabel = (tier === 'basic') ? 'Basic' : 'Plus';
+   var _priceMap = { basic: 29, plus: 39, family: 99 };
+   var _labelMap = { basic: 'Basic', plus: 'Plus', family: 'Family' };
+   var tierPrice = _priceMap[tier] || 39;
+   var tierLabel = _labelMap[tier] || 'Plus';
    // Refund estimate (75%)
    var refund = Math.round(amt * 0.75);
    // Flat fee model: $29 or $39 — fee is in USD always
@@ -3560,8 +3819,18 @@ function goTo(id, param) {
    var usdToCur = (currency === 'MXN' && window._MXN_RATE) ? window._MXN_RATE : 1;
    var feeInCurrency = Math.round(fee * usdToCur);
    var net = refund - feeInCurrency;
-   var fmt = function(n){ return sym + n.toLocaleString(); };
-   if(el('pc-big-num')) el('pc-big-num').textContent = fmt(refund);
+   var rate = window._MXN_RATE || 17.5;
+   // fmt: shows MXN $X (~$Y USD) for MXN, or $X USD for USD
+   var fmt = function(n){
+     if(currency === 'MXN'){
+       var usd = Math.round(n / rate);
+       return 'MXN $' + n.toLocaleString() + ' (~$' + usd.toLocaleString() + ' USD)';
+     }
+     return '$' + n.toLocaleString() + ' USD';
+   };
+   // Big number: always USD for clarity
+   var refundUSD = (currency === 'MXN') ? Math.round(refund / rate) : refund;
+   if(el('pc-big-num')) el('pc-big-num').textContent = '$' + refundUSD.toLocaleString() + ' USD';
    if(el('pc-paid')) el('pc-paid').textContent = fmt(amt);
    if(el('pc-refund')) el('pc-refund').textContent = fmt(refund);
    if(el('pc-fee-label')) el('pc-fee-label').textContent = 'Credimed ' + tierLabel + ' fee';
@@ -3570,13 +3839,13 @@ function goTo(id, param) {
    // Update unlock button text
    var unlockLabel = el('pc-unlock-label');
    if(unlockLabel) unlockLabel.textContent = 'Unlock my claim — $' + tierPrice;
-   // Animate big number
-   if(el('pc-big-num') && refund > 0){
-     var current=0, steps=40, inc=refund/steps;
+   // Animate big number (USD)
+   if(el('pc-big-num') && refundUSD > 0){
+     var current=0, steps=40, inc=refundUSD/steps;
      var iv = setInterval(function(){
-       current = Math.min(current+inc, refund);
-       el('pc-big-num').textContent = fmt(Math.round(current));
-       if(current >= refund) clearInterval(iv);
+       current = Math.min(current+inc, refundUSD);
+       el('pc-big-num').textContent = '$' + Math.round(current).toLocaleString() + ' USD';
+       if(current >= refundUSD) clearInterval(iv);
      }, 30);
    }
  }, 200);
@@ -3592,36 +3861,41 @@ function goTo(id, param) {
  }
  if (id === 's-plan') setTimeout(function(){
    var currency2 = window._amountCurrency || window._currency || 'USD';
-   var sym = currency2 === 'MXN' ? 'MXN $' : '$';
    var amt = window._lastOcrAmount || 0;
-   var refund = Math.round(amt * 0.75);
+   var rate2 = window._MXN_RATE || 17.5;
+   // Convert amt to USD if original was MXN so refund estimate is always in USD
+   var amtUSD = (currency2 === 'MXN') ? Math.round(amt / rate2) : amt;
+   var refund = Math.round(amtUSD * 0.75);
    // Dynamic value anchor — show real refund range if we have OCR data
    var anchorEl = document.getElementById('plan-value-anchor');
    if(anchorEl){
      if(refund > 0){
-       // Show range: 60% to 80% of what they paid
-       var low = Math.round(amt * 0.60);
-       var high = Math.round(amt * 0.80);
-       anchorEl.textContent = 'You could recover $' + low.toLocaleString() + '–$' + high.toLocaleString();
+       // Show range: 60% to 80% of what they paid (USD)
+       var low = Math.round(amtUSD * 0.60);
+       var high = Math.round(amtUSD * 0.80);
+       anchorEl.textContent = 'You could recover $' + low.toLocaleString() + '–$' + high.toLocaleString() + ' USD';
      } else {
        // Default range if no OCR yet
-       anchorEl.textContent = 'You could recover $400–$1,000';
+       anchorEl.textContent = 'You could recover $400–$1,000 USD';
      }
    }
    var stdFee = Math.round(refund * 0.15);
    var premFee = Math.round(refund * 0.10) + 29;
    var stdNet = refund - stdFee;
    var premNet = refund - Math.round(refund * 0.10);
-   var sym = '$';
    var bd = document.getElementById('plan-breakdown');
    if(bd && amt > 0){
      bd.style.display = 'block';
-     document.getElementById('plan-bd-paid').textContent = sym + amt.toLocaleString();
-     document.getElementById('plan-bd-refund').textContent = sym + refund.toLocaleString();
-     document.getElementById('plan-bd-std-fee').textContent = '-' + sym + stdFee.toLocaleString();
-     document.getElementById('plan-bd-prem-fee').textContent = '-' + sym + premFee.toLocaleString();
-     document.getElementById('plan-bd-std-net').textContent = sym + stdNet.toLocaleString();
-     document.getElementById('plan-bd-prem-net').textContent = sym + premNet.toLocaleString();
+     // Paid line: show dual currency if MXN
+     var paidTxt = (currency2 === 'MXN')
+       ? 'MXN $' + amt.toLocaleString() + ' (~$' + amtUSD.toLocaleString() + ' USD)'
+       : '$' + amtUSD.toLocaleString() + ' USD';
+     document.getElementById('plan-bd-paid').textContent = paidTxt;
+     document.getElementById('plan-bd-refund').textContent = '$' + refund.toLocaleString() + ' USD';
+     document.getElementById('plan-bd-std-fee').textContent = '-$' + stdFee.toLocaleString() + ' USD';
+     document.getElementById('plan-bd-prem-fee').textContent = '-$' + premFee.toLocaleString() + ' USD';
+     document.getElementById('plan-bd-std-net').textContent = '$' + stdNet.toLocaleString() + ' USD';
+     document.getElementById('plan-bd-prem-net').textContent = '$' + premNet.toLocaleString() + ' USD';
    }
  }, 200);
  if (id === 's-ready') setTimeout(function(){ try{ runReadyScreen(); }catch(e){} }, 100);
@@ -3647,15 +3921,18 @@ function goTo(id, param) {
  var rowTotal = document.getElementById('s5-row-total');
  var payBtn = document.querySelector('#s5-form .btn-primary');
  if(plan === 'premium'){
-   // Two tiers: 'basic' ($29) or 'plus' ($39)
+   // Three tiers: 'basic' ($29), 'plus' ($39), or 'family' ($99/year)
    var tier = window._selectedTier || (window.currentUser && window.currentUser.tier) || 'plus';
-   var tierPrice = (tier === 'basic') ? 29 : 39;
-   var tierLabel = (tier === 'basic') ? 'Basic' : 'Plus';
+   var _priceMap2 = { basic: 29, plus: 39, family: 99 };
+   var _labelMap2 = { basic: 'Basic', plus: 'Plus', family: 'Family' };
+   var tierPrice = _priceMap2[tier] || 39;
+   var tierLabel = _labelMap2[tier] || 'Plus';
+   var _isFamily = (tier === 'family');
    if(amtEl) amtEl.textContent = '$' + tierPrice;
    if(labelEl) labelEl.textContent = 'Credimed ' + tierLabel;
-   if(rowLabel) rowLabel.textContent = 'Claim preparation (' + tierLabel + ')';
+   if(rowLabel) rowLabel.textContent = _isFamily ? 'Family plan (up to 6 members)' : 'Claim preparation (' + tierLabel + ')';
    if(rowAmt) rowAmt.textContent = '$' + tierPrice + '.00';
-   if(rowPct) rowPct.textContent = 'one-time fee';
+   if(rowPct) rowPct.textContent = _isFamily ? 'per year · auto-renews' : 'one-time fee';
    if(rowTotal) rowTotal.textContent = '$' + tierPrice + '.00';
    if(payBtn) payBtn.textContent = 'Pay $' + tierPrice + '.00 ->';
    // If Stripe already pre-loaded, just show the element
@@ -3813,6 +4090,7 @@ function startNewClaim() {
   if(window.currentUser){ window.currentUser.amount = 0; window.currentUser.amountCurrency = 'USD'; }
 }
 function doLogout() {
+ try { window.cognitoSignOut && window.cognitoSignOut(); } catch(e){}
  currentUser = null;
  navHistory = ['s-landing'];
  sessionStorage.removeItem('paid');
@@ -3917,34 +4195,164 @@ window.checkStrAndMatch = checkStrAndMatch;
 function checkStr(){const pw=document.getElementById('r-pass').value;const segs=[document.getElementById('ps1'),document.getElementById('ps2'),document.getElementById('ps3'),document.getElementById('ps4')];const lbl=document.getElementById('ps-lbl');segs.forEach(s=>{s.className='pw-seg'});if(!pw){lbl.textContent='';return}let sc=0;if(pw.length>=8)sc++;if(/[A-Z]/.test(pw))sc++;if(/[0-9]/.test(pw))sc++;if(/[^A-Za-z0-9]/.test(pw))sc++;const cls=sc<=1?'weak':sc<=2?'fair':'good';const txt=sc<=1?'Weak':sc<=2?'Fair':sc===3?'Good':'Strong';const fill=sc<=1?1:sc<=2?2:sc===3?3:4;for(let i=0;i<fill;i++)segs[i].classList.add(cls);lbl.className='pw-str-lbl '+cls;lbl.textContent=txt}
 function checkMatch(){const p1=document.getElementById('r-pass').value;const p2=document.getElementById('r-pass2').value;const m=document.getElementById('pw-match');if(!p2){m.textContent='';m.className='pw-match';return false}const ok=p1===p2;m.className='pw-match '+(ok?'ok':'no');m.textContent=ok?' Passwords match':' Passwords do not match';return ok}
 function tPw(id,btn){const inp=document.getElementById(id);const show=inp.type==='password';inp.type=show?'text':'password';}
-function doRegister(){
+/* ═══════════════════════════════════════
+   COGNITO AUTH (Phase 1)
+   Reemplaza el mock auth con llamadas reales a Cognito User Pool.
+   Mantiene loginUser() original para que la transición de pantallas
+   y el flag admin sigan funcionando sin tocar el resto del código.
+   ═══════════════════════════════════════ */
+async function doRegister(){
  const first=document.getElementById('r-first').value.trim();
  const last=document.getElementById('r-last').value.trim();
- const email=document.getElementById('r-email').value.trim();
+ const email=document.getElementById('r-email').value.trim().toLowerCase();
  const phone=document.getElementById('r-phone').value;
  const pass=document.getElementById('r-pass').value;
  const pass2=document.getElementById('r-pass2').value;
  const err=document.getElementById('reg-err');
  const errTxt=document.getElementById('reg-err-txt');
+ const btn=event && event.target && event.target.tagName==='BUTTON' ? event.target : null;
  err.classList.remove('show');
  if(!first||!last){errTxt.textContent='Please enter your full name.';err.classList.add('show');return}
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){errTxt.textContent='Please enter a valid email address.';err.classList.add('show');return}
  if(phone.replace(/\D/g,'').length<getLada().d){errTxt.textContent='Please enter a valid WhatsApp number.';err.classList.add('show');return}
- if(pass.length<6){errTxt.textContent='Password must be at least 6 characters.';err.classList.add('show');return}
+ /* Cognito password policy: min 8 chars, upper, lower, number, symbol */
+ if(pass.length<8){errTxt.textContent='Password must be at least 8 characters.';err.classList.add('show');return}
+ if(!/[A-Z]/.test(pass)||!/[a-z]/.test(pass)||!/[0-9]/.test(pass)){errTxt.textContent='Password needs uppercase, lowercase, and a number.';err.classList.add('show');return}
  if(pass!==pass2){errTxt.textContent='Passwords do not match.';err.classList.add('show');return}
- if(users[email]){errTxt.textContent='An account with this email already exists.';err.classList.add('show');return}
- users[email]={first,last,email,phone,pass};
- loginUser(users[email]);
+ /* Admin backdoor for local dev — KEEP FOR NOW, REMOVE BEFORE PRODUCTION */
+ if(users[email] && users[email].role==='admin'){errTxt.textContent='An account with this email already exists.';err.classList.add('show');return}
+
+ if(btn){btn.disabled=true; btn.textContent='Creating account…';}
+ try {
+   const result = await window.cognitoSignUp(email, pass, first, last, phone);
+   /* Stash pending user info so we can log them in after confirm */
+   window._pendingSignup = { email, first, last, phone };
+   /* Show confirmation screen */
+   document.getElementById('confirm-email-display').textContent = email;
+   goTo('s-confirm');
+ } catch(e) {
+   const code = e && e.code ? e.code : '';
+   const msg = e && e.message ? e.message : 'Sign up failed.';
+   if (code === 'UsernameExistsException') {
+     errTxt.textContent = 'An account with this email already exists. Try signing in.';
+   } else if (code === 'InvalidPasswordException') {
+     errTxt.textContent = 'Password does not meet requirements. Use 8+ chars with upper, lower, and a number.';
+   } else {
+     errTxt.textContent = msg;
+   }
+   err.classList.add('show');
+ } finally {
+   if(btn){btn.disabled=false; btn.textContent='Create my account →';}
+ }
 }
-function doLogin(){
+
+async function doConfirm(){
+ const code = document.getElementById('c-code').value.trim();
+ const err = document.getElementById('confirm-err');
+ const errTxt = document.getElementById('confirm-err-txt');
+ const btn = event && event.target && event.target.tagName==='BUTTON' ? event.target : null;
+ err.classList.remove('show');
+ if(!/^\d{6}$/.test(code)){errTxt.textContent='Enter the 6-digit code from your email.';err.classList.add('show');return}
+ const pending = window._pendingSignup;
+ if(!pending){errTxt.textContent='Session expired. Please sign up again.';err.classList.add('show');return}
+ if(btn){btn.disabled=true; btn.textContent='Verifying…';}
+ try {
+   await window.cognitoConfirmSignUp(pending.email, code);
+   /* Confirmation successful. Auto-login with the stored password?
+      We don't have the password anymore (security). Redirect to login. */
+   window._pendingSignup = null;
+   /* Show login screen with email prefilled and a success banner */
+   goTo('s-auth','login');
+   setTimeout(function(){
+     var lEmail = document.getElementById('l-email');
+     if(lEmail) lEmail.value = pending.email;
+     var loginErr = document.getElementById('login-err');
+     var loginErrTxt = document.getElementById('login-err-txt');
+     if(loginErr && loginErrTxt){
+       loginErr.style.background = '#ecfdf5';
+       loginErr.style.borderColor = '#6ee7b7';
+       loginErr.style.color = '#065f46';
+       loginErrTxt.textContent = '✓ Email verified. Please sign in to continue.';
+       loginErr.classList.add('show');
+     }
+   }, 100);
+ } catch(e) {
+   const code2 = e && e.code ? e.code : '';
+   if (code2 === 'CodeMismatchException') errTxt.textContent = 'Incorrect code. Check your email and try again.';
+   else if (code2 === 'ExpiredCodeException') errTxt.textContent = 'Code expired. Tap "Resend" below.';
+   else errTxt.textContent = (e && e.message) || 'Verification failed.';
+   err.classList.add('show');
+ } finally {
+   if(btn){btn.disabled=false; btn.textContent='Verify my account →';}
+ }
+}
+
+async function doResendCode(){
+ const pending = window._pendingSignup;
+ if(!pending) return;
+ try {
+   await window.cognitoResendCode(pending.email);
+   const err = document.getElementById('confirm-err');
+   const errTxt = document.getElementById('confirm-err-txt');
+   err.style.background = '#ecfdf5';
+   err.style.borderColor = '#6ee7b7';
+   err.style.color = '#065f46';
+   errTxt.textContent = '✓ A new code has been sent.';
+   err.classList.add('show');
+ } catch(e) {
+   alert((e && e.message) || 'Could not resend code.');
+ }
+}
+
+async function doLogin(){
  const email=document.getElementById('l-email').value.trim().toLowerCase();
  const pass=document.getElementById('l-pass').value;
  const err=document.getElementById('login-err');
+ const errTxt=document.getElementById('login-err-txt');
+ const btn=event && event.target && event.target.tagName==='BUTTON' ? event.target : null;
  err.classList.remove('show');
- const u=users[email];
- if(!u||u.pass!==pass){err.classList.add('show');return}
- loginUser(u);
+
+ /* Admin backdoor — KEEP FOR NOW, REMOVE BEFORE PRODUCTION */
+ if(users[email] && users[email].pass===pass && users[email].role==='admin'){
+   loginUser(users[email]);
+   return;
+ }
+
+ if(btn){btn.disabled=true; btn.textContent='Signing in…';}
+ try {
+   const result = await window.cognitoSignIn(email, pass);
+   /* Fetch attributes so we have first/last name for the UI */
+   let attrs = {};
+   try { const u = await window.cognitoGetCurrentUser(); attrs = (u && u.attributes) || {}; } catch(e){}
+   const u = {
+     email: email,
+     first: attrs.given_name || '',
+     last:  attrs.family_name || '',
+     phone: '',
+     sub:   attrs.sub || ''
+   };
+   /* Hand off to existing loginUser() so all downstream code keeps working */
+   loginUser(u);
+ } catch(e) {
+   const code = e && e.code ? e.code : '';
+   if (code === 'UserNotConfirmedException') {
+     /* They registered but never confirmed — route to confirm screen */
+     window._pendingSignup = { email, first:'', last:'', phone:'' };
+     document.getElementById('confirm-email-display').textContent = email;
+     try { await window.cognitoResendCode(email); } catch(_){}
+     goTo('s-confirm');
+     return;
+   }
+   if (code === 'NotAuthorizedException') errTxt.textContent = 'Incorrect email or password.';
+   else if (code === 'UserNotFoundException') errTxt.textContent = 'No account found with that email.';
+   else errTxt.textContent = (e && e.message) || 'Sign in failed.';
+   err.style.background = ''; err.style.borderColor = ''; err.style.color = '';
+   err.classList.add('show');
+ } finally {
+   if(btn){btn.disabled=false; btn.textContent='Sign in to my account →';}
+ }
 }
+
 function loginUser(u){
  currentUser=u;
  try { sessionStorage.setItem('_cUser', JSON.stringify(u)); } catch(e){}
@@ -4016,7 +4424,7 @@ function s1StartScan(imageBase64, mediaType){
    else { document.getElementById('s1-ocr-title').textContent='Identifying insurer...'; document.getElementById('s1-ocr-sub').textContent='Cross-referencing'; }
  },300);
  // Call OCR Lambda -- returns isValid + extracted fields
- fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+ authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
    method:'POST',
    headers:{'Content-Type':'application/json'},
    body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType,type:'insurance'})
@@ -4868,7 +5276,7 @@ function s2RunOCR(imageBase64, mediaType){
 
  // Call OCR Lambda for receipt
  if(imageBase64){
-   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
+   authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
      method:'POST',
      headers:{'Content-Type':'application/json'},
      body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
@@ -6770,12 +7178,14 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
  const netEl = document.getElementById('refund-net');
  const cdtEl = document.getElementById('refund-cdt');
  var _rate = window._MXN_RATE || 17.5;
- function _fmtAmt(val){
+ // Note: amt/refund/net are already in USD at this point (rawAmt was converted on line ~6662).
+ // For MXN originals, we reconstruct the MXN value and show both currencies.
+ function _fmtAmt(usdVal){
    if(currency === 'MXN'){
-     var usd = Math.round(val / _rate);
-     return 'MXN $' + val.toLocaleString() + ' (~$' + usd.toLocaleString() + ' USD)';
+     var mxn = Math.round(usdVal * _rate);
+     return 'MXN $' + mxn.toLocaleString() + ' (~$' + usdVal.toLocaleString() + ' USD)';
    }
-   return '$' + val.toLocaleString() + ' USD';
+   return '$' + usdVal.toLocaleString() + ' USD';
  }
  if(paidEl) paidEl.textContent = _fmtAmt(amt);
  if(insEl) insEl.textContent = _fmtAmt(refund);
@@ -6802,8 +7212,8 @@ Use real CDT codes, realistic coverage percentages for the specific insurer and 
     let current = 0;
  const duration = 1800;
  const steps = 60;
- var _rateBN = window._MXN_RATE || 17.5;
- var displayRefund = (currency === 'MXN') ? Math.round(refund / _rateBN) : refund;
+ // refund is already in USD here (rawAmt was converted on line ~6671)
+ var displayRefund = refund;
  const increment = displayRefund / steps;
  const interval = duration / steps;
  const counter = setInterval(() => {
@@ -6891,7 +7301,7 @@ function runProcessing() {
 
  // ── Update proc-big-number with OCR-based refund ──
  var bnEl=document.getElementById('proc-big-number');
- if(bnEl){ bnEl.textContent='$'+refund.toLocaleString(); }
+ if(bnEl){ bnEl.textContent='$'+refund.toLocaleString()+' USD'; }
 
  // -- Save claim to AWS backend ---------------------------------
  // Singleton: only ONE API call per session, but UI always updates
@@ -6920,7 +7330,7 @@ function runProcessing() {
      city:      (currentUser && currentUser.city)      || '',
      dentist:   (currentUser && currentUser.dentist)   || '',
    };
-   fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/claims', {
+   authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/claims', {
      method: 'POST',
      headers: { 'Content-Type': 'application/json' },
      body: JSON.stringify(payload)
@@ -7018,17 +7428,28 @@ function showRefundResultNow() {
  if(a) a.style.display = 'none';
  if(r) { r.style.display = 'flex'; }
  // populate with defaults
- const amt = (window.claimData && window.claimData.amountPaid) || parseFloat(document.getElementById('s2-amount')?.value) || parseFloat(window._lastOcrAmount) || 0;
+ const rawAmt2 = (window.claimData && window.claimData.amountPaid) || parseFloat(document.getElementById('s2-amount')?.value) || parseFloat(window._lastOcrAmount) || 0;
+ const currency2 = window._amountCurrency || window._currency || 'USD';
+ const rate2 = window._MXN_RATE || 17.5;
+ // amt in USD for calculations
+ const amt = (currency2 === 'MXN') ? Math.round(rawAmt2 / rate2) : rawAmt2;
  const refund = Math.round(amt * 0.75);
  const net = Math.round(amt - refund);
  const paidEl = document.getElementById('refund-paid');
  const insEl = document.getElementById('refund-insurance');
  const netEl = document.getElementById('refund-net');
  const bigNum = document.getElementById('refund-big-number');
- if(paidEl) paidEl.textContent = '$' + amt.toLocaleString();
- if(insEl) insEl.textContent = '$' + refund.toLocaleString();
- if(netEl) netEl.textContent = '$' + net.toLocaleString();
- if(bigNum) bigNum.textContent = '$' + refund.toLocaleString();
+ function _fmt2(usdVal){
+   if(currency2 === 'MXN'){
+     var mxn = Math.round(usdVal * rate2);
+     return 'MXN $' + mxn.toLocaleString() + ' (~$' + usdVal.toLocaleString() + ' USD)';
+   }
+   return '$' + usdVal.toLocaleString() + ' USD';
+ }
+ if(paidEl) paidEl.textContent = _fmt2(amt);
+ if(insEl) insEl.textContent = _fmt2(refund);
+ if(netEl) netEl.textContent = _fmt2(net);
+ if(bigNum) bigNum.textContent = '$' + refund.toLocaleString() + ' USD';
 }
 
 
@@ -7140,6 +7561,8 @@ if(typeof checkMatch==='function') window.checkMatch = checkMatch;
 if(typeof tPw==='function') window.tPw = tPw;
 if(typeof doRegister==='function') window.doRegister = doRegister;
 if(typeof doLogin==='function') window.doLogin = doLogin;
+if(typeof doConfirm==='function') window.doConfirm = doConfirm;
+if(typeof doResendCode==='function') window.doResendCode = doResendCode;
 if(typeof s1Continue==='function') window.s1Continue = s1Continue;
 if(typeof s1Submit==='function') window.s1Submit = s1Submit;
 if(typeof s1Reset==='function') window.s1Reset = s1Reset;
@@ -10376,7 +10799,7 @@ window.loadRealClaims = async function() {
   tbody.innerHTML = '<div class="tbl-head"><div class="th">Patient</div><div class="th">Insurer</div><div class="th">Proc.</div><div class="th">Amount</div><div class="th">Status</div><div class="th"></div></div>' + loadingRow;
 
   try {
-    var res = await fetch(CREDIMED_API + '/claims');
+    var res = await authFetch(CREDIMED_API + '/claims');
     var data = await res.json();
     var claims = data.claims || [];
 
@@ -10500,7 +10923,7 @@ window.handleIdUpload = function(input) {
     document.getElementById('id-ocr-name').textContent = 'Reading...';
     document.getElementById('id-ocr-address').textContent = 'Reading...';
 
-    fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
+    authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ imageBase64: base64, mediaType: mediaType, type: 'id' })
@@ -10549,16 +10972,18 @@ window.idSkip = function() {
 window._selectedPlan = 'standard';
 
 window.selectPlan = function(plan) {
-  // Two tiers now: 'basic' ($29) or 'plus' ($39)
+  // Three tiers: 'basic' ($29), 'plus' ($39), 'family' ($99/year)
   // Legacy 'standard'/'premium' mapped to 'plus' for backward compat
   var tier = plan;
   if(plan === 'standard' || plan === 'premium') tier = 'plus';
-  if(tier !== 'basic' && tier !== 'plus') tier = 'plus'; // default
+  if(tier !== 'basic' && tier !== 'plus' && tier !== 'family') tier = 'plus'; // default
 
   // Store the selected tier for pricing/display
   window._selectedTier = tier;
-  window._selectedPlanPrice = (tier === 'basic') ? 29 : 39;
-  window._selectedPlanAmount = (tier === 'basic') ? 2900 : 3900; // cents
+  var priceMap = { basic: 29, plus: 39, family: 99 };
+  var amountMap = { basic: 2900, plus: 3900, family: 9900 }; // cents
+  window._selectedPlanPrice = priceMap[tier];
+  window._selectedPlanAmount = amountMap[tier];
 
   // Keep 'premium' as internal plan key for Stripe flow
   window._selectedPlan = 'premium';
@@ -10798,7 +11223,7 @@ window.runInsuranceOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct + 3, 85); if(fill) fill.style.width = pct + '%'; }, 80);
   var b64 = base64.split(',')[1] || base64;
-  fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
+  authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64: b64, mediaType: mediaType || 'image/jpeg', type:'insurance'})
@@ -10825,7 +11250,7 @@ window.runReceiptOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct + 2, 85); if(fill) fill.style.width = pct + '%'; }, 100);
   var b64 = base64.split(',')[1] || base64;
-  fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
+  authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64: b64, mediaType: mediaType || 'image/jpeg', type:'receipt'})
@@ -11069,7 +11494,7 @@ window.rqRunOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct+2, 85); if(fill) fill.style.width=pct+'%'; }, 100);
   var b64 = base64.split(',')[1] || base64;
-  fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
+  authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64:b64, mediaType:mediaType||'image/jpeg', type:'receipt'})
@@ -11114,12 +11539,18 @@ window.rqRunOCR = function(base64, mediaType) {
     var currency = d.currency || 'USD';
     if(d.amount) {
       var el = document.getElementById('rq-r-amount');
-      if(el) el.textContent = currency + ' ' + d.amount;
       var _rawOcr = parseFloat(String(d.amount).replace(/,/g,''))||0;
       window._lastOcrAmount = _rawOcr;
       window._currency = currency;
       window._amountCurrency = currency;
       var _usdAmt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(_rawOcr / window._MXN_RATE) : _rawOcr;
+      if(el){
+        if(currency === 'MXN'){
+          el.textContent = 'MXN $' + _rawOcr.toLocaleString() + ' (~$' + _usdAmt.toLocaleString() + ' USD)';
+        } else {
+          el.textContent = '$' + _rawOcr.toLocaleString() + ' USD';
+        }
+      }
       window.claimData = { amountPaid: _usdAmt };
 
       // Populate estimated refund (40%-80% heuristic) in USD
@@ -11411,7 +11842,7 @@ window.iqRunOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct+3, 85); if(fill) fill.style.width=pct+'%'; }, 80);
   var b64 = base64.split(',')[1] || base64;
-  fetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
+  authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64:b64, mediaType:mediaType||'image/jpeg', type:'insurance'})
