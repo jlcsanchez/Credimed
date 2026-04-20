@@ -2345,121 +2345,6 @@ window.authFetch = async function(url, opts){
  SCREEN: STEP 1 - INSURANCE CARD
  -->
 
-<!-- 
- SCREEN: WHAT YOU'LL NEED (s-checklist)
- -->
-
-<div class="screen" id="s-checklist" style="background:linear-gradient(160deg,#0f172a 0%,#1e293b 100%);padding-top:0;margin-top:0;flex-direction:column;align-items:stretch;">
-
-<div style="padding:16px 20px 0;display:flex;align-items:center">
- <div class="back-btn" onclick="window.goBack&&window.goBack()" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:white">←</div>
-</div>
-
-<div style="padding:24px 24px 20px;text-align:center">
- <div style="font-size:28px;font-weight:800;color:white;margin-bottom:6px;line-height:1.2;font-family:Georgia,serif">Before we start<br><span style="color:#93c5fd">have these ready</span></div>
- <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:8px">3 minutes · No paperwork · We do the rest</div>
-</div>
-
-<!-- Document list -->
-
-<div style="padding:0 16px;display:flex;flex-direction:column;gap:10px;flex:1">
-
- <!-- Required -->
-
- <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:2px">Required</div>
-
- <!-- Insurance Card -->
-
- <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px">
-  <div style="width:40px;height:40px;background:rgba(13,148,136,.25);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="#0D9488" opacity=".3" stroke="#5eead4" stroke-width="1.5"/><rect x="2" y="9" width="20" height="3" fill="#5eead4" opacity=".4"/><rect x="5" y="15" width="5" height="1.5" rx=".75" fill="#5eead4"/></svg>
-  </div>
-  <div style="flex:1">
-   <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px">Insurance Card</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.4)">Front &amp; back · Member ID &amp; Group #</div>
-  </div>
-  <div style="width:22px;height:22px;border-radius:50%;border:2px solid #0D9488;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <div style="width:8px;height:8px;border-radius:50%;background:#0D9488"></div>
-  </div>
- </div>
-
- <!-- Dental Receipt -->
-
- <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px">
-  <div style="width:40px;height:40px;background:rgba(13,148,136,.25);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" fill="#0D9488" opacity=".3" stroke="#5eead4" stroke-width="1.5"/><path d="M14 2v6h6M8 13h8M8 17h5" stroke="#5eead4" stroke-width="1.5" stroke-linecap="round"/></svg>
-  </div>
-  <div style="flex:1">
-   <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px">Dental Receipt</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.4)">From your dentist · Any country · PDF or photo</div>
-  </div>
-  <div style="width:22px;height:22px;border-radius:50%;border:2px solid #5eead4;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <div style="width:8px;height:8px;border-radius:50%;background:#5eead4"></div>
-  </div>
- </div>
-
- <!-- X-Rays -->
-
- <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px">
-  <div style="width:40px;height:40px;background:rgba(13,148,136,.25);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="2" width="18" height="20" rx="2" fill="#0D9488" opacity=".3" stroke="#5eead4" stroke-width="1.5"/><path d="M8 9h8M8 12h8M8 15h5" stroke="#5eead4" stroke-width="1.5" stroke-linecap="round" opacity=".7"/><circle cx="12" cy="6" r="2" fill="#5eead4" opacity=".5"/></svg>
-  </div>
-  <div style="flex:1">
-   <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px">X-Rays / Radiografías</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.4)">Required for crowns, implants, root canals</div>
-  </div>
-  <div style="width:22px;height:22px;border-radius:50%;border:2px solid #f59e0b;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b"></div>
-  </div>
- </div>
-
- <!-- Gov ID -->
-
- <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px">
-  <div style="width:40px;height:40px;background:rgba(13,148,136,.25);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="#0D9488" opacity=".3" stroke="#5eead4" stroke-width="1.5"/><circle cx="8" cy="12" r="2.5" fill="#5eead4" opacity=".5"/><path d="M13 10h5M13 13h3" stroke="#5eead4" stroke-width="1.5" stroke-linecap="round"/></svg>
-  </div>
-  <div style="flex:1">
-   <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px">Government ID</div>
-   <div style="font-size:11px;color:rgba(255,255,255,.4)">Front &amp; back · Driver's license or passport</div>
-  </div>
-  <div style="width:22px;height:22px;border-radius:50%;border:2px solid #818cf8;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <div style="width:8px;height:8px;border-radius:50%;background:#818cf8"></div>
-  </div>
- </div>
-
- <!-- Optional -->
-
- <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:4px;margin-bottom:2px">Optional</div>
-
- <!-- Treatment Plan -->
-
- <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:14px;padding:14px 16px">
-  <div style="width:40px;height:40px;background:rgba(245,158,11,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="#f59e0b" stroke-width="1.5"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="#f59e0b" stroke-width="1.5"/><path d="M9 12h6M9 16h4" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/></svg>
-  </div>
-  <div style="flex:1">
-   <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
-    <span style="font-size:14px;font-weight:700;color:rgba(255,255,255,.6)">Treatment Plan</span>
-    <span style="font-size:9px;font-weight:700;background:rgba(245,158,11,.2);color:#f59e0b;border-radius:8px;padding:2px 8px">OPTIONAL</span>
-   </div>
-   <div style="font-size:11px;color:rgba(255,255,255,.3)">Increases approval rate · We can request it if needed</div>
-  </div>
- </div>
-
-</div>
-
-<!-- CTA -->
-
-<div style="padding:20px 16px 36px">
- <button class="btn-primary" onclick="window.goTo&&window.goTo('s-step1')" style="width:100%;font-size:16px;font-weight:700;height:54px;background:var(--navy);box-shadow:0 8px 24px rgba(13,148,136,.4)">
-  I have these ready →
- </button>
- <div style="text-align:center;margin-top:10px;font-size:11px;color:rgba(255,255,255,.3)">You can upload photos or PDFs of each document</div>
-</div>
-
-</div>
-
 <!-- LIGHTBOX -->
 
 <!-- ═══ SCREEN: QUICK RECEIPT UPLOAD (s-receipt-quick) ═══ -->
@@ -2648,390 +2533,6 @@ window.authFetch = async function(url, opts){
   <input type="file" id="rq-file-input" accept="*/*" style="display:none" onchange="window.rqHandleFile&&window.rqHandleFile(this)">
  </div>
 </div>
-
-<!-- SCREEN: DOCUMENTS (s-step1) -->
-
-<div class="screen" id="s-step1" style="background:var(--bg)">
- <div class="top-bar">
-  <div class="top-row"><div class="back-btn" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Your Documents</div><div class="step-counter">Step 1 of 3</div></div>
-  <div class="prog-row"><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
- </div>
-
- <!-- Hidden file inputs -->
-
- <input type="file" id="doc-file-input" accept="*/*" style="display:none" onchange="window.docHandleFile&&window.docHandleFile(this)">
- <input type="file" id="s1-upload" accept="image/*" style="display:none" onchange="window.s1HandleFile&&window.s1HandleFile(this)">
- <input type="file" id="s2-camera" accept="image/*" style="display:none" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
- <input type="file" id="s2-upload" accept="*/*" style="display:none" onchange="window.s2HandleFile&&window.s2HandleFile(this)">
-
- <div style="padding:0 0 120px">
-
-  <!-- TAB BAR -->
-
-  <div id="doc-tabs" style="display:flex;overflow-x:auto;gap:0;border-bottom:2px solid #e2e8f0;background:white;position:sticky;top:0;z-index:10;scrollbar-width:none">
-   <div class="doc-tab active" id="tab-insurance" onclick="window.switchDocTab&&window.switchDocTab('insurance')" style="flex-shrink:0;padding:12px 14px;font-size:12px;font-weight:700;color:#0D9488;border-bottom:2px solid #0D9488;cursor:pointer;white-space:nowrap;margin-bottom:-2px;display:flex;align-items:center;gap:6px">
-    <span>🪪</span> Insurance Card
-    <span id="tab-badge-insurance" style="display:none;background:#0D9488;color:white;border-radius:10px;font-size:9px;padding:1px 6px">✓</span>
-   </div>
-   <div class="doc-tab" id="tab-receipt" onclick="window.switchDocTab&&window.switchDocTab('receipt')" style="flex-shrink:0;padding:12px 14px;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px">
-    <span>🧾</span> Dental Receipt
-    <span id="tab-badge-receipt" style="display:none;background:#0D9488;color:white;border-radius:10px;font-size:9px;padding:1px 6px">✓</span>
-   </div>
-   <div class="doc-tab" id="tab-xrays" onclick="window.switchDocTab&&window.switchDocTab('xrays')" style="flex-shrink:0;padding:12px 14px;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px">
-    <span>🦷</span> X-Rays
-    <span id="tab-badge-xrays" style="display:none;background:#0D9488;color:white;border-radius:10px;font-size:9px;padding:1px 6px">✓</span>
-   </div>
-   <div class="doc-tab" id="tab-govid" onclick="window.switchDocTab&&window.switchDocTab('govid')" style="flex-shrink:0;padding:12px 14px;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px">
-    <span>🪪</span> Gov ID
-    <span id="tab-badge-govid" style="display:none;background:#0D9488;color:white;border-radius:10px;font-size:9px;padding:1px 6px">✓</span>
-   </div>
-   <div class="doc-tab" id="tab-payment" onclick="window.switchDocTab&&window.switchDocTab('payment')" style="flex-shrink:0;padding:12px 14px;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px">
-    <span>📎</span> Other
-    <span id="tab-badge-payment" style="display:none;background:#0D9488;color:white;border-radius:10px;font-size:9px;padding:1px 6px">✓</span>
-   </div>
-   <div class="doc-tab" id="tab-treatment" onclick="window.switchDocTab&&window.switchDocTab('treatment')" style="flex-shrink:0;padding:12px 14px;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px">
-    <span>📋</span> Treatment Plan
-    <span style="background:#f59e0b;color:white;border-radius:10px;font-size:9px;padding:1px 6px;margin-left:2px">Optional</span>
-    <span id="tab-badge-treatment" style="display:none;background:#0D9488;color:white;border-radius:10px;font-size:9px;padding:1px 6px">✓</span>
-   </div>
-  </div>
-
-  <!-- ═══ TAB: INSURANCE CARD ═══ -->
-
-  <div id="docpanel-insurance" class="doc-panel" style="padding:16px">
-   <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#0f766e">
-    📸 Scan your card — we auto-fill your Member ID, Group # and plan name
-   </div>
-   <!-- Upload zone -->
-   <div id="ins-upload-zone" onclick="window.triggerDocUpload&&window.triggerDocUpload('insurance')" style="border:2px dashed #0D9488;border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:14px">
-    <div style="font-size:36px;margin-bottom:8px">📷</div>
-    <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px">Tap to upload Insurance Card</div>
-    <div style="font-size:12px;color:#94a3b8">Photo · PDF · Any file</div>
-   </div>
-   <!-- Preview -->
-   <div id="ins-preview" style="display:none;position:relative;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="ins-preview-img" style="width:100%;max-height:160px;object-fit:cover;display:block">
-    <div id="ins-preview-file" style="display:none;padding:16px;background:#f0fdfa;text-align:center;font-size:13px;font-weight:600;color:#0f766e"></div>
-    <div style="position:absolute;top:8px;right:8px"><button onclick="window.docRemove&&window.docRemove('insurance')" style="background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:4px 10px;color:white;font-size:11px;cursor:pointer">Remove</button></div>
-   </div>
-   <!-- OCR spinner -->
-   <div class="ocr-card" id="ins-ocr" style="display:none;margin-bottom:14px"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title">Reading card...</div><div class="ocr-sub-txt">Extracting member details</div><div class="ocr-progress"><div class="ocr-fill" id="ins-ocr-fill"></div></div></div></div>
-   <!-- Manual fields -->
-   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:10px">Or enter manually</div>
-   <div class="field"><label>Member Name <span class="req">*</span></label><input type="text" id="s1-ins-name" placeholder="Name on card"></div>
-   <div class="field"><label>Insurance Provider <span class="req">*</span></label><input type="text" id="s1-ins-provider" placeholder="e.g. Delta Dental, Aetna, Cigna..." oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
-   <div class="field-row">
-    <div class="field"><label>Member ID <span class="req">*</span></label><input type="text" id="s1-ins-member" placeholder="Member ID" oninput="window.s1CheckManual&&window.s1CheckManual()"></div>
-    <div class="field"><label>Group #</label><input type="text" id="s1-ins-group" placeholder="Group #"></div>
-   </div>
-   <!-- Hidden compat fields -->
-   <div style="display:none"><input id="s1-m-name"><input id="s1-m-provider"><input id="s1-m-member"><input id="s1-m-group"></div>
-
-   <!-- Confirm button -->
-
-   <div id="ins-confirm-bar" style="display:none;margin-top:20px">
-    <button onclick="window.switchDocTab&&window.switchDocTab('receipt')" style="width:100%;height:50px;border-radius:14px;border:none;background:#0D9488;color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(13,148,136,.35)">
-     Insurance confirmed · Next: Dental Receipt →
-    </button>
-   </div>
-  </div>
-
-  <!-- ═══ TAB: DENTAL RECEIPT ═══ -->
-
-  <div id="docpanel-receipt" class="doc-panel" style="display:none;padding:16px">
-   <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#0f766e">
-    🤖 AI reads your receipt and extracts procedures, amounts and dentist info automatically
-   </div>
-   <div id="rec-upload-zone" onclick="window.triggerDocUpload&&window.triggerDocUpload('receipt')" style="border:2px dashed #0D9488;border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:14px">
-    <div style="font-size:36px;margin-bottom:8px">🧾</div>
-    <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px">Tap to upload Dental Receipt</div>
-    <div style="font-size:12px;color:#94a3b8">Photo · PDF · Any file</div>
-   </div>
-   <div id="rec-preview" style="display:none;position:relative;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="rec-preview-img" style="width:100%;max-height:160px;object-fit:cover;display:block">
-    <div id="rec-preview-file" style="display:none;padding:16px;background:#f0fdfa;text-align:center;font-size:13px;font-weight:600;color:#0f766e"></div>
-    <div style="position:absolute;top:8px;right:8px"><button onclick="window.docRemove&&window.docRemove('receipt')" style="background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:4px 10px;color:white;font-size:11px;cursor:pointer">Remove</button></div>
-   </div>
-   <div class="ocr-card" id="rec-ocr" style="display:none;margin-bottom:14px"><div class="ocr-spin"></div><div style="flex:1"><div class="ocr-title">Reading receipt...</div><div class="ocr-sub-txt">Extracting procedures and amount</div><div class="ocr-progress"><div class="ocr-fill" id="rec-ocr-fill"></div></div></div></div>
-   <!-- OCR results card -->
-   <div id="rec-results" style="display:none;background:linear-gradient(135deg,#0f172a,#0d1f40);border-radius:12px;padding:14px 16px;margin-bottom:14px">
-    <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Extracted from receipt</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-     <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:3px">Dentist</div><div style="font-size:12px;font-weight:600;color:white" id="rec-r-dentist">--</div></div>
-     <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:3px">Date</div><div style="font-size:12px;font-weight:600;color:white" id="rec-r-date">--</div></div>
-     <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:3px">Amount</div><div style="font-size:13px;font-weight:700;color:#93c5fd" id="rec-r-amount">--</div></div>
-     <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:3px">Currency</div><div style="font-size:12px;font-weight:600;color:#93c5fd" id="rec-r-currency">--</div></div>
-    </div>
-    <div><div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:6px">Procedures detected</div><div id="rec-r-procs" style="display:flex;flex-wrap:wrap;gap:6px"></div></div>
-   </div>
-   <!-- Manual fallback fields (hidden by default) -->
-   <div id="rec-manual" style="display:none">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:10px">Enter manually</div>
-    <div class="field"><label>Dentist / Clinic <span class="req">*</span></label><input type="text" id="s2-dentist" placeholder="Dr. Name or Clinic"></div>
-    <div class="field"><label>Amount Paid <span class="req">*</span> <span id="amt-currency-label" style="font-weight:400;color:#0D9488;font-size:11px"></span></label><input type="number" id="s2-amount" placeholder="0.00"></div>
-    <div class="field"><label>Date of Service</label><input type="date" id="s2-date"></div>
-    <div class="field"><label>City / Location</label><input type="text" id="s2-city" placeholder="e.g. Los Cabos, Tijuana"></div>
-   </div>
-   <div style="text-align:center;margin-top:8px"><button onclick="var m=document.getElementById('rec-manual');if(m)m.style.display=m.style.display==='none'?'block':'none'" style="background:none;border:none;color:#0D9488;font-size:12px;font-weight:600;cursor:pointer">+ Enter manually instead</button></div>
-
-   <!-- Confirm button -->
-
-   <div id="rec-confirm-bar" style="display:none;margin-top:20px">
-    <button onclick="window.switchDocTab&&window.switchDocTab('xrays')" style="width:100%;height:50px;border-radius:14px;border:none;background:#0D9488;color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(13,148,136,.35)">
-     Receipt confirmed · Next: X-Rays →
-    </button>
-   </div>
-  </div>
-
-  <!-- ═══ TAB: X-RAYS ═══ -->
-
-  <div id="docpanel-xrays" class="doc-panel" style="display:none;padding:16px">
-   <div style="background:#fef9c3;border:1px solid #fde047;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#854d0e">
-    ⚠️ Required for crowns, implants, root canals and bridges. The final X-ray is enough — before/after is a plus.
-   </div>
-
-   <!-- BEFORE (optional) -->
-
-   <div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:8px">
-    <div style="background:#64748b;color:white;border-radius:6px;padding:2px 10px;font-size:10px">BEFORE</div>
-    Initial X-Ray
-    <span style="font-size:10px;font-weight:600;background:#f1f5f9;color:#94a3b8;border-radius:8px;padding:2px 8px">Optional</span>
-   </div>
-   <div id="xray-before-zone" onclick="window.triggerXray&&window.triggerXray('before')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:18px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:10px">
-    <div style="font-size:26px;margin-bottom:6px">🦷</div>
-    <div style="font-size:13px;font-weight:600;color:#64748b;margin-bottom:2px">Tap to upload initial X-ray</div>
-    <div style="font-size:11px;color:#94a3b8">Photo · PDF · Any file</div>
-   </div>
-   <div id="xray-before-preview" style="display:none;position:relative;border:2px solid #94a3b8;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="xray-before-img" style="width:100%;max-height:130px;object-fit:cover;display:block">
-    <div id="xray-before-file" style="display:none;padding:12px;background:#f8fafc;text-align:center;font-size:12px;font-weight:600;color:#475569"></div>
-    <div style="position:absolute;top:6px;left:8px;background:#64748b;color:white;border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700">BEFORE</div>
-    <button onclick="window.xrayRemove&&window.xrayRemove('before')" style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:3px 8px;color:white;font-size:11px;cursor:pointer">Remove</button>
-   </div>
-
-   <!-- FINAL (required) -->
-
-   <div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:8px">
-    <div style="background:#0D9488;color:white;border-radius:6px;padding:2px 10px;font-size:10px">FINAL</div>
-    Final X-Ray
-    <span style="font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border-radius:8px;padding:2px 8px">Required</span>
-   </div>
-   <div id="xray-final-zone" onclick="window.triggerXray&&window.triggerXray('final')" style="border:2px dashed #0D9488;border-radius:14px;padding:18px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:10px">
-    <div style="font-size:26px;margin-bottom:6px">🦷</div>
-    <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:2px">Tap to upload final X-ray</div>
-    <div style="font-size:11px;color:#94a3b8">Photo · PDF · Any file</div>
-   </div>
-   <div id="xray-final-preview" style="display:none;position:relative;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="xray-final-img" style="width:100%;max-height:130px;object-fit:cover;display:block">
-    <div id="xray-final-file" style="display:none;padding:12px;background:#f0fdfa;text-align:center;font-size:12px;font-weight:600;color:#0f766e"></div>
-    <div style="position:absolute;top:6px;left:8px;background:#0D9488;color:white;border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700">FINAL</div>
-    <button onclick="window.xrayRemove&&window.xrayRemove('final')" style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:3px 8px;color:white;font-size:11px;cursor:pointer">Remove</button>
-   </div>
-
-   <!-- Extra X-Rays -->
-
-   <div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:8px">
-    <div style="background:#e2e8f0;color:#64748b;border-radius:6px;padding:2px 10px;font-size:10px">+</div>
-    Additional X-Rays
-    <span style="font-size:10px;font-weight:600;background:#f1f5f9;color:#94a3b8;border-radius:8px;padding:2px 8px">Optional</span>
-   </div>
-   <div onclick="window.triggerXray&&window.triggerXray('extra')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:14px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:10px">
-    <div style="font-size:12px;font-weight:600;color:#94a3b8">+ Add more X-rays</div>
-   </div>
-   <div id="xray-extra-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
-
-   <!-- Intraoral photos -->
-
-   <div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:8px">
-    <div style="background:#7c3aed;color:white;border-radius:6px;padding:2px 10px;font-size:10px">📷</div>
-    Intraoral Photos
-    <span style="font-size:10px;font-weight:600;background:#f1f5f9;color:#94a3b8;border-radius:8px;padding:2px 8px">Optional</span>
-   </div>
-   <div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:11px;color:#6b21a8">
-    Clinical photos of the tooth before and after treatment help strengthen your claim.
-   </div>
-   <div onclick="window.triggerXray&&window.triggerXray('intraoral')" style="border:2px dashed #e9d5ff;border-radius:14px;padding:14px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:10px">
-    <div style="font-size:12px;font-weight:600;color:#94a3b8">+ Add intraoral photos</div>
-   </div>
-   <div id="xray-intraoral-list" style="display:flex;flex-direction:column;gap:8px"></div>
-   <input type="file" id="xray-intraoral-input" accept="image/*" style="display:none" onchange="window.xrayHandleFile&&window.xrayHandleFile(this,'intraoral')">
-
-   <!-- Confirm button -->
-
-   <div id="xray-confirm-bar" style="display:none;margin-top:20px">
-    <button onclick="window.switchDocTab&&window.switchDocTab('govid')" style="width:100%;height:50px;border-radius:14px;border:none;background:#0D9488;color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(13,148,136,.35)">
-     X-Rays saved · Next: Gov ID →
-    </button>
-   </div>
-
-   <!-- hidden inputs -->
-
-   <input type="file" id="xray-before-input" accept="*/*" style="display:none" onchange="window.xrayHandleFile&&window.xrayHandleFile(this,'before')">
-   <input type="file" id="xray-final-input" accept="*/*" style="display:none" onchange="window.xrayHandleFile&&window.xrayHandleFile(this,'final')">
-   <input type="file" id="xray-extra-input" accept="*/*" style="display:none" onchange="window.xrayHandleFile&&window.xrayHandleFile(this,'extra')">
-  </div>
-
-  <!-- ═══ TAB: GOVERNMENT ID ═══ -->
-
-  <div id="docpanel-govid" class="doc-panel" style="display:none;padding:16px">
-   <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#0f766e">
-    Required by your insurer. Upload both sides of your ID (driver's license, passport, or state ID).
-   </div>
-
-   <!-- FRONT -->
-
-   <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:6px">
-    <div style="background:#0D9488;color:white;border-radius:6px;padding:2px 8px;font-size:10px">FRONT</div> Front of ID
-   </div>
-   <div id="govid-front-zone" onclick="window.triggerGovId&&window.triggerGovId('front')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:20px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:10px">
-    <div style="font-size:28px;margin-bottom:6px">🪪</div>
-    <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:2px">Tap to upload front</div>
-    <div style="font-size:11px;color:#94a3b8">Photo · Any file</div>
-   </div>
-   <div id="govid-front-preview" style="display:none;position:relative;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="govid-front-img" style="width:100%;max-height:130px;object-fit:cover;display:block">
-    <div id="govid-front-file" style="display:none;padding:12px;background:#f0fdfa;text-align:center;font-size:12px;font-weight:600;color:#0f766e"></div>
-    <div style="position:absolute;top:6px;left:8px;background:#0D9488;color:white;border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700">FRONT</div>
-    <button onclick="window.govIdRemove&&window.govIdRemove('front')" style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:3px 8px;color:white;font-size:11px;cursor:pointer">Remove</button>
-   </div>
-
-   <!-- BACK -->
-
-   <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:6px">
-    <div style="background:#64748b;color:white;border-radius:6px;padding:2px 8px;font-size:10px">BACK</div> Back of ID
-   </div>
-   <div id="govid-back-zone" onclick="window.triggerGovId&&window.triggerGovId('back')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:20px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:10px">
-    <div style="font-size:28px;margin-bottom:6px">🪪</div>
-    <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:2px">Tap to upload back</div>
-    <div style="font-size:11px;color:#94a3b8">Photo · Any file</div>
-   </div>
-   <div id="govid-back-preview" style="display:none;position:relative;border:2px solid #64748b;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="govid-back-img" style="width:100%;max-height:130px;object-fit:cover;display:block">
-    <div id="govid-back-file" style="display:none;padding:12px;background:#f8fafc;text-align:center;font-size:12px;font-weight:600;color:#475569"></div>
-    <div style="position:absolute;top:6px;left:8px;background:#64748b;color:white;border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700">BACK</div>
-    <button onclick="window.govIdRemove&&window.govIdRemove('back')" style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:3px 8px;color:white;font-size:11px;cursor:pointer">Remove</button>
-   </div>
-
-   <!-- hidden inputs -->
-
-   <input type="file" id="govid-front-input" accept="*/*" style="display:none" onchange="window.govIdHandleFile&&window.govIdHandleFile(this,'front')">
-   <input type="file" id="govid-back-input" accept="*/*" style="display:none" onchange="window.govIdHandleFile&&window.govIdHandleFile(this,'back')">
-  </div>
-
-  <!-- ═══ TAB: OTHER ═══ -->
-
-  <div id="docpanel-payment" class="doc-panel" style="display:none;padding:16px">
-   <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#64748b">
-    Any additional documents you want to include — bank statements, referrals, clinical notes, photos, etc.
-   </div>
-   <div id="proof-upload-zone" onclick="window.triggerDocUpload&&window.triggerDocUpload('payment')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:14px">
-    <div style="font-size:36px;margin-bottom:8px">📎</div>
-    <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px">Tap to upload additional documents</div>
-    <div style="font-size:12px;color:#94a3b8">Photo · PDF · Any file</div>
-   </div>
-   <div id="proof-preview" style="display:none;position:relative;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="proof-preview-img" style="width:100%;max-height:160px;object-fit:cover;display:block">
-    <div id="proof-preview-file" style="display:none;padding:16px;background:#f0fdfa;text-align:center;font-size:13px;font-weight:600;color:#0f766e"></div>
-    <div style="position:absolute;top:8px;right:8px"><button onclick="window.docRemove&&window.docRemove('payment')" style="background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:4px 10px;color:white;font-size:11px;cursor:pointer">Remove</button></div>
-   </div>
-  </div>
-
-  <!-- ═══ TAB: TREATMENT PLAN ═══ -->
-
-  <div id="docpanel-treatment" class="doc-panel" style="display:none;padding:16px">
-   <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#92400e">
-    <strong>Optional</strong> — If your dentist gave you a treatment plan or pre-authorization letter, upload it here. If not, we can request it later.
-   </div>
-   <div id="tx-upload-zone" onclick="window.triggerDocUpload&&window.triggerDocUpload('treatment')" style="border:2px dashed #e2e8f0;border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;background:white;margin-bottom:14px">
-    <div style="font-size:36px;margin-bottom:8px">📋</div>
-    <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px">Tap to upload Treatment Plan</div>
-    <div style="font-size:12px;color:#94a3b8">Photo · PDF · Any file · Optional</div>
-   </div>
-   <div id="tx-preview" style="display:none;position:relative;border:2px solid #0D9488;border-radius:12px;overflow:hidden;margin-bottom:14px">
-    <img id="tx-preview-img" style="width:100%;max-height:160px;object-fit:cover;display:block">
-    <div id="tx-preview-file" style="display:none;padding:16px;background:#f0fdfa;text-align:center;font-size:13px;font-weight:600;color:#0f766e"></div>
-    <div style="position:absolute;top:8px;right:8px"><button onclick="window.docRemove&&window.docRemove('treatment')" style="background:rgba(0,0,0,.5);border:none;border-radius:6px;padding:4px 10px;color:white;font-size:11px;cursor:pointer">Remove</button></div>
-   </div>
-  </div>
-
-  <!-- DOCUMENT SUMMARY + CONTINUE -->
-
-  <div style="position:sticky;bottom:0;left:0;right:0;background:white;border-top:1px solid #e2e8f0;padding:12px 16px;z-index:20">
-   <div id="doc-summary-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
-    <span id="dsb-insurance" style="display:none;font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border:1px solid #86efac;border-radius:20px;padding:3px 10px">🪪 Insurance ✓</span>
-    <span id="dsb-receipt" style="display:none;font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border:1px solid #86efac;border-radius:20px;padding:3px 10px">🧾 Receipt ✓</span>
-    <span id="dsb-xrays" style="display:none;font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border:1px solid #86efac;border-radius:20px;padding:3px 10px">🦷 X-Rays ✓</span>
-    <span id="dsb-govid" style="display:none;font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border:1px solid #86efac;border-radius:20px;padding:3px 10px">🪪 Gov ID ✓</span>
-    <span id="dsb-payment" style="display:none;font-size:10px;font-weight:700;background:#f0fdf4;color:#059669;border:1px solid #86efac;border-radius:20px;padding:3px 10px">📎 Other ✓</span>
-    <span id="dsb-treatment" style="display:none;font-size:10px;font-weight:700;background:#fef9c3;color:#92400e;border:1px solid #fde047;border-radius:20px;padding:3px 10px">📋 Tx Plan ✓</span>
-   </div>
-   <button id="doc-continue-btn" onclick="window.docContinue&&window.docContinue()" style="width:100%;height:52px;border-radius:14px;border:none;background:#94a3b8;color:white;font-size:15px;font-weight:700;cursor:not-allowed" disabled>
-    Continue → <span id="doc-continue-label">Add Insurance Card &amp; Receipt to continue</span>
-   </button>
-  </div>
-
- </div>
-</div>
-
-<!-- 
- SCREEN: PROCESSING SIMULATION (s-processing)
- -->
-
-<!-- SCREEN: ID UPLOAD -->
-
-<div class="screen" id="s-step-id" style="background:var(--bg)">
- <div class="top-bar">
-  <div class="top-row"><div class="back-btn" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Government ID</div><div class="step-counter">3 of 5</div></div>
-  <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div><div class="prog-seg"></div></div>
- </div>
- <div style="padding:20px 16px">
-  <div style="text-align:center;margin-bottom:20px">
-   <div style="font-size:40px;margin-bottom:8px">🪪</div>
-   <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin-bottom:6px">Upload your Government ID</h2>
-   <p style="font-size:13px;color:#94a3b8">Required by your insurer to process the claim. Must show a US address.</p>
-  </div>
-
-  <!-- Upload area -->
-
-  <div id="id-upload-area" style="border:2px dashed #cbd5e1;border-radius:16px;padding:32px 20px;text-align:center;margin-bottom:16px;cursor:pointer;transition:all .2s" onclick="document.getElementById('id-file-input').click()">
-   <div style="font-size:36px;margin-bottom:8px">📄</div>
-   <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px">Driver's License or Passport</div>
-   <div style="font-size:12px;color:#94a3b8">Tap to upload · JPG, PNG or PDF</div>
-   <input type="file" id="id-file-input" accept="image/*,.pdf" style="display:none" onchange="window.handleIdUpload&&window.handleIdUpload(this)">
-  </div>
-
-  <!-- Preview -->
-
-  <div id="id-preview-box" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px 16px;margin-bottom:16px">
-   <div style="display:flex;align-items:center;gap:10px">
-    <div style="font-size:24px">✅</div>
-    <div>
-     <div style="font-size:13px;font-weight:700;color:#16a34a">ID uploaded</div>
-     <div style="font-size:11px;color:#15803d" id="id-filename">--</div>
-    </div>
-   </div>
-   <div style="margin-top:10px;padding:10px;background:white;border-radius:8px">
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#64748b">Name</span><span style="font-size:11px;font-weight:600;color:#1e293b" id="id-ocr-name">--</span></div>
-    <div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:#64748b">Address</span><span style="font-size:11px;font-weight:600;color:#1e293b;text-align:right;max-width:60%" id="id-ocr-address">--</span></div>
-   </div>
-  </div>
-
-  <!-- Trust note -->
-
-  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:24px;display:flex;align-items:flex-start;gap:10px">
-   <div style="font-size:18px">🔒</div>
-   <div style="font-size:11px;color:#64748b;line-height:1.5">Your ID is encrypted and stored securely. It is only shared with your insurance company as part of your claim. <strong style="color:#0D9488">HIPAA compliant.</strong></div>
-  </div>
-
-  <button id="id-continue-btn" class="btn-primary" style="width:100%;height:54px;font-size:16px;font-weight:700;background:#94a3b8;box-shadow:none;cursor:default" disabled onclick="window.idContinue&&window.idContinue()">
-   Continue →
-  </button>
-  <div style="text-align:center;margin-top:12px;font-size:12px;color:#94a3b8;cursor:pointer" onclick="window.idSkip&&window.idSkip()">
-   Skip for now
-  </div>
- </div>
-</div>
-
 <div class="screen" id="s-processing" style="background:linear-gradient(160deg,#0f172a 0%,#0d1f40 60%,#0f172a 100%);display:flex;flex-direction:column">
 
 <!-- Phase 1: Finding your refund -->
@@ -3139,135 +2640,6 @@ window.authFetch = async function(url, opts){
   </div>
  </div>
 </div>
-</div>
-
-<!-- 
- SCREEN: REFUND ESTIMATE (s-refund)
- -->
-
-<!-- 
- SCREEN: READY CONFIRMATION (s-ready)
- -->
-
-<div class="screen" id="s-ready" style="background:var(--bg)">
- <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#0f172a 0%,#134e4a 100%);padding:32px 24px;text-align:center">
-
-<!-- Animated checkmark -->
-
-<div id="ready-icon" style="margin-bottom:20px;filter:drop-shadow(0 4px 16px rgba(13,148,136,.35))"><svg width="80" height="80" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><circle cx="36" cy="36" r="35" fill="white" opacity="0.97"/><path d="M36 13 L51 20 L51 37 Q51 50 36 58 Q21 50 21 37 L21 20Z" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round"/><path d="M36 15.5 L49 22 L49 37 Q49 48.5 36 55.5 Q23 48.5 23 37 L23 22Z" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="33" y="24" width="6" height="19" rx="1.5" fill="#0D9488"/><rect x="27.5" y="29.5" width="17" height="6" rx="1.5" fill="#0D9488"/></svg></div>
-
-<div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:600;color:white;margin-bottom:8px">Your information is complete</div>
-<div style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:28px;line-height:1.6">We have everything we need.<br>Calculating what we can recover now...</div>
-
-<!-- Summary of captured data -->
-
-<div style="width:100%;max-width:320px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;margin-bottom:24px">
- <div style="padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center">
- <span style="font-size:12px;color:rgba(255,255,255,.4)"> Insurance</span>
- <span style="font-size:12px;font-weight:600;color:white" id="ready-insurer">--</span>
- </div>
- <div style="padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center">
- <span style="font-size:12px;color:rgba(255,255,255,.4)"> Procedure</span>
- <span style="font-size:12px;font-weight:600;color:white" id="ready-proc">--</span>
- </div>
- <div style="padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center">
- <span style="font-size:12px;color:rgba(255,255,255,.4)"> Location</span>
- <span style="font-size:12px;font-weight:600;color:white" id="ready-city">--</span>
- </div>
- <div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">
- <span style="font-size:12px;color:rgba(255,255,255,.4)">$ Amount paid</span>
- <span style="font-family:'Playfair Display',Georgia,serif;font-size:15px;font-weight:600;color:#93c5fd" id="ready-amount">--</span>
- </div>
-</div>
-
-<!-- Auto-advance progress bar -->
-
-<div style="width:100%;max-width:320px;background:rgba(255,255,255,.1);border-radius:20px;height:4px;overflow:hidden;margin-bottom:8px">
- <div id="ready-bar" style="height:100%;background:var(--navy);border-radius:20px;width:0%;transition:width 2.5s linear"></div>
-</div>
-<div style="font-size:11px;color:rgba(255,255,255,.3)">Taking you to plan selection...</div>
-<button data-oc="goTo('s-plan')" onclick="window.goTo&&window.goTo('s-plan')" class="btn-primary" style="width:100%;max-width:320px;margin-top:16px;background:var(--navy);display:none">Choose your plan -></button>
-
- </div>
-</div>
-
-<div class="screen" id="s-refund" style="background:linear-gradient(160deg,#0f172a 0%,#0d1f40 50%,#0f172a 100%)">
- <div style="flex:1;display:flex;flex-direction:column;background:linear-gradient(160deg,#0f172a 0%,#0d1f40 50%,#0f172a 100%);min-height:100%">
-
-<!-- Top bar minimal -->
-
-<div style="padding:14px 16px;display:flex;align-items:center;gap:10px">
- <div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:white">←</div>
- <div style="font-size:13px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Your Refund Estimate</div>
-</div>
-
-<!-- Analyzing state -->
-
-<div id="refund-analyzing" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
- <div style="width:72px;height:72px;border:3px solid rgba(13,148,136,.3);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px"></div>
- <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:600;color:white;margin-bottom:8px" id="refund-analyzing-title">Analyzing your coverage...</div>
- <div style="font-size:13px;color:rgba(255,255,255,.5)" id="refund-analyzing-sub">Checking your Delta Dental PPO benefits</div>
- <button data-oc="try{showRefundResultNow();}catch(e){}" style="margin-top:40px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:10px 20px;border-radius:10px;font-size:12px;cursor:pointer">Skip to result -></button>
- <div style="display:flex;flex-direction:column;gap:8px;margin-top:28px;width:100%;max-width:300px" id="refund-check-list">
- <div class="refund-check" id="rc1" style="display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .4s"><span style="font-size:14px">⏳</span><span style="font-size:12px;color:rgba(255,255,255,.5)">Verifying insurance benefits</span></div>
- <div class="refund-check" id="rc2" style="display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .4s"><span style="font-size:14px">⏳</span><span style="font-size:12px;color:rgba(255,255,255,.5)">Calculating out-of-network coverage</span></div>
- <div class="refund-check" id="rc3" style="display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .4s"><span style="font-size:14px">⏳</span><span style="font-size:12px;color:rgba(255,255,255,.5)">Applying CDT procedure code</span></div>
- <div class="refund-check" id="rc4" style="display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .4s"><span style="font-size:14px">⏳</span><span style="font-size:12px;color:rgba(255,255,255,.5)">Estimating refund amount</span></div>
- </div>
-</div>
-
-<!-- Result state (hidden until animation completes) -->
-
-<div id="refund-result" style="display:none;flex:1;flex-direction:column;align-items:center;padding:20px 24px 32px;background:transparent">
-
- <!-- Big number -->
-
- <div style="text-align:center;padding:28px 0 20px;border-bottom:1px solid rgba(255,255,255,.1);width:100%;margin-bottom:20px">
- <div style="font-size:13px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">We estimate you'll get back</div>
- <div style="font-family:'Playfair Display',Georgia,serif;font-size:56px;font-weight:600;color:#93c5fd;line-height:1;margin-bottom:6px" id="refund-big-number">...</div>
- <div style="font-size:13px;color:rgba(255,255,255,.4)">from your insurance plan</div>
- </div>
-
- <!-- Breakdown -->
-
- <div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
- <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,.05);border-radius:10px">
- <div>
- <div style="font-size:12px;color:rgba(255,255,255,.5)">You paid in Mexico</div>
- </div>
- <div style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:600;color:white" id="refund-paid">—</div>
- </div>
- <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(13,148,136,.15);border:1px solid rgba(13,148,136,.3);border-radius:10px">
- <div>
- <div style="font-size:12px;color:#93c5fd">Insurance reimburses (~75%)</div>
- </div>
- <div style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:600;color:#93c5fd" id="refund-insurance">—</div>
- </div>
- <div style="font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-top:4px">Credimed fee applied after you choose your plan</div>
-
- <!-- CDT badge -->
-
- <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 16px;width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
- <div style="font-size:11px;color:rgba(255,255,255,.4)">CDT Code assigned by Credimed</div>
- <div style="font-size:12px;font-weight:700;color:#93c5fd;background:rgba(13,148,136,.2);padding:3px 10px;border-radius:6px" id="refund-cdt">D2750</div>
- </div>
-
- <!-- Trust note -->
-
- <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px 14px;width:100%;text-align:center;margin-bottom:20px">
- <div style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.6">Estimate based on your PPO plan's typical out-of-network benefits. Actual amount depends on your annual deductible and remaining maximum. <strong style="color:rgba(255,255,255,.5)">No win, no fee.</strong></div>
- </div>
-
- <!-- CTA -->
-
- <button class="btn-primary" style="width:100%;background:var(--navy)" onclick="window.goTo&&window.goTo(window._docUploads&&window._docUploads['insurance']?'s-plan':'s-insurance-quick')">
- Recover my money →
- </button>
- <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.3);text-align:center">Free to start · We only get paid when you do</div>
-</div>
-
- </div>
- </div>
 </div>
 
 <!-- 
@@ -3524,130 +2896,6 @@ window.authFetch = async function(url, opts){
   <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.3);text-align:center;max-width:320px;line-height:1.4">🔒 Secure payment · Your insurance pays you directly</div>
  </div>
 </div>
-
-<div class="screen" id="s-step3" style="background:var(--bg)">
- <div class="top-bar">
- <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">New Claim</div><div class="step-counter">3 of 4</div></div>
- <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg active"></div><div class="prog-seg"></div></div>
- </div>
- <div class="guide-hero"><h2>Before you sign </h2><p>Here's exactly how Credimed works · no surprises</p></div>
- <div class="guide-body">
- <!-- Plan badge -->
- <div id="s3-plan-badge" style="display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;padding:10px 14px;margin-bottom:4px">
-  <span id="s3-plan-icon" style="font-size:20px"></span>
-  <div>
-   <div id="s3-plan-title" style="font-size:13px;font-weight:700;color:#065f46"></div>
-   <div id="s3-plan-sub" style="font-size:11px;color:#6b7280"></div>
-  </div>
- </div>
- <div class="guide-item"><div class="guide-num">1</div><div><div class="guide-item-title" id="s3-item1-title">We prepare your claim</div><div class="guide-item-text" id="s3-item1-text">Upload your documents and Credimed builds a properly formatted claim package for $39.</div></div></div>
- <div class="guide-item"><div class="guide-num">2</div><div><div class="guide-item-title">You submit to your insurance</div><div class="guide-item-text">Review your claim package and submit it to your insurance directly through their portal or mail.</div></div></div>
- <div class="guide-item"><div class="guide-num">3</div><div><div class="guide-item-title">Your insurance pays you directly</div><div class="guide-item-text" id="s3-fee-text">Reimbursement goes from your insurance straight to your bank account or as a check.</div><div class="guide-amount" id="s3-fee-amount">$39</div></div></div>
- <div class="guide-item"><div class="guide-num">4</div><div><div class="guide-item-title">Support when you need it</div><div class="guide-item-text">Questions about submitting? We help you every step — from preparing to getting paid.</div></div></div>
- <button class="btn-primary" data-oc="goTo('s-step4')" onclick="window.goTo&&window.goTo('s-step4')" style="margin-top:8px">I understand · Continue →</button>
- <br><br>
- </div>
-</div>
-
-<!-- 
- SCREEN: STEP 4 - CONTRACT
- -->
-
-<div class="screen" id="s-step4" style="background:#0f172a;min-height:100%">
- <div class="top-bar">
- <div class="top-row"><div class="back-btn" data-oc="goBack()" onclick="window.goBack&&window.goBack()">←</div><div class="top-title">Service Agreement</div><div class="step-counter">4 of 4</div></div>
- <div class="prog-row"><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg done"></div><div class="prog-seg active"></div></div>
- </div>
- <div class="body-card" style="margin-top:0;border-radius:0;padding-top:20px">
- <div class="card">
- <div class="card-head"><h3> Your Information</h3></div>
- <div class="card-body">
- <div class="prefilled-banner"> Pre-filled from your profile. Review and complete missing fields.</div>
- <div class="field-row">
- <div class="field"><label>First Name</label><input type="text" id="c-first" class="prefilled"></div>
- <div class="field"><label>Last Name</label><input type="text" id="c-last" class="prefilled"></div>
- </div>
- <div class="field-row">
- <div class="field"><label>Insurance</label><input type="text" id="c-insurer" class="prefilled"></div>
- <div class="field"><label>Member ID</label><input type="text" id="c-member" class="prefilled"></div>
- </div>
- <div class="divider-line"></div>
- <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-mid);margin-bottom:12px">Bank Account for Reimbursement</p>
- <div class="field-row">
- <div class="field"><label>Routing # <span class="req">*</span></label><input type="tel" inputmode="numeric" id="routing" class="numpad-field" placeholder="9 digits" maxlength="9" data-oi="sanitizeAndCheck(this)" oninput="window.sanitizeAndCheck&&window.sanitizeAndCheck(this)"></div>
- <div class="field"><label>Account # <span class="req">*</span></label><input type="tel" inputmode="numeric" id="account" class="numpad-field" placeholder="Up to 17 digits" maxlength="17" data-oi="sanitizeAndCheck(this)" oninput="window.sanitizeAndCheck&&window.sanitizeAndCheck(this)"></div>
- </div>
- <div class="field-row">
- <div class="field"><label>Account Holder</label><input type="text" id="c-holder" class="prefilled"></div>
- <div class="field"><label>Date</label><input type="text" id="c-date" readonly style="background:#f1f5f9;color:var(--slate-mid);font-style:italic;border-color:var(--border)"></div>
- </div>
- </div>
- </div>
- <div class="card">
- <div class="card-head"><h3> Terms & Conditions <span style="font-size:11px;font-weight:400;color:var(--slate-light)">v4.3</span></h3></div>
- <div class="card-body">
- <p style="font-size:12px;color:var(--slate-mid);margin-bottom:10px">Scroll to the bottom to enable the checkboxes.</p>
- <div class="contract-scroll" id="c-scroll">
- <h4>CREDIMED · Service Agreement<br><span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:400;color:var(--slate-light)">Simple terms, plain language</span></h4>
- <div class="clause"><strong>1. What we do</strong>Credimed is a software platform that helps you prepare your dental insurance reimbursement claim. We organize your documents into a format your insurance will accept. <strong>You review and submit your claim to your insurance — we prepare everything for you.</strong></div>
- <div class="clause"><strong>2. What it costs</strong>Claim preparation is a one-time fee of <span class="hl">$39</span>. You pay Credimed for preparing your claim package. Your insurance pays you directly.</div>
- <div class="clause"><strong>3. When you pay</strong>You pay $39 once your claim is ready for submission. Payment is processed securely through Stripe.</div>
- <div class="clause"><strong>4. Your role</strong>You are responsible for reviewing your claim and submitting it to your insurance. Credimed provides tools to help you do this correctly, but does not act as your insurance company, healthcare provider, or clearinghouse.</div>
- <div class="clause"><strong>5. Patient Authorization</strong>By using Credimed, you confirm that you are submitting your own insurance claim. You authorize Credimed to assist in organizing and preparing your documentation. Credimed does not submit claims on your behalf and does not act as your insurance provider or healthcare provider.</div>
- <div class="clause"><strong>6. No guarantee</strong>Insurance decisions depend on your plan and provider. We help maximize your chances by preparing your claim properly, but we cannot guarantee reimbursement.</div>
- <div class="clause"><strong>7. Disputes</strong>If you have any concerns about our service or a charge, contact us at support@credimed.us, call us at (617) 803-3831, or reach us on WhatsApp. We'll make it right.</div>
- <div class="clause"><strong>8. Governing law</strong>This agreement is governed by US law and applies to patients who received dental care in Mexico and hold US insurance coverage.</div>
- </div>
- <div class="scroll-prog-wrap">
- <span>Read:</span>
- <div class="scroll-bar"><div class="scroll-bar-fill" id="c-scroll-fill"></div></div>
- <span id="c-scroll-pct">0%</span>
- <span class="scroll-read" id="c-scroll-done"> Read</span>
- </div>
- </div>
- </div>
- <div class="card" id="c-cb-card" style="opacity:.5;pointer-events:none;transition:opacity .3s">
- <div class="card-head"><h3> Confirmations</h3></div>
- <div class="card-body">
- <div class="cb-list">
- <label class="cb-item" id="cb-w1"><input type="checkbox" id="cb1" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I understand Credimed prepares everything for me. I will review and submit my claim to my insurance.</div><div class="cb-ref">Section 4</div></div></label>
- <label class="cb-item" id="cb-w2"><input type="checkbox" id="cb2" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I agree to the $39 claim preparation fee, paid when my claim is ready.</div><div class="cb-ref">Section 2</div></div></label>
- <label class="cb-item" id="cb-w3"><input type="checkbox" id="cb3" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I confirm that I am submitting my own insurance claim. I am responsible for reviewing and submitting my claim and for the accuracy of the information provided.</div><div class="cb-ref">Patient Authorization</div></div></label>
- <label class="cb-item" id="cb-w4"><input type="checkbox" id="cb4" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I understand there is no guarantee of approval — insurance decisions are made by my insurer.</div><div class="cb-ref">Section 6</div></div></label>
- <label class="cb-item" id="cb-w5"><input type="checkbox" id="cb5" data-och="onCb()" onclick="window.onCb&&window.onCb()"><div><div class="cb-text">I have read and agree to these terms and I am signing electronically.</div><div class="cb-ref">All sections</div></div></label>
- </div>
- </div>
- </div>
- <div class="card" id="c-sig-card" style="transition:opacity .3s;margin-bottom:0">
- <div class="card-head"><h3> Electronic Signature</h3></div>
- <div class="card-body">
- <div class="sig-row">
- <div>
- <div class="sig-label">Type your name <span style="color:var(--red)">*</span></div>
- <input type="text" class="sig-name-inp" id="sig-name" placeholder="Sign by typing your name" data-oi="onSigInput()" oninput="window.onSigInput&&window.onSigInput()">
- <div style="font-size:10px;color:var(--slate-light);margin-top:4px">Legally binding electronic signature</div>
- </div>
- <div>
- <div class="sig-label" style="font-size:11px">Draw signature <span style="font-weight:400;color:var(--slate-light)">(optional)</span></div>
- <div class="canvas-wrap" id="sig-canvas-wrap">
- <canvas id="sig-canvas" height="100"></canvas>
- <div class="canvas-ph" id="canvas-ph"> Draw here with your finger or mouse</div>
- <span class="canvas-clr" id="canvas-clr" data-oc="clearCanvas()" onclick="window.clearCanvas&&window.clearCanvas()">Clear</span>
- </div>
- </div>
- </div>
- <div class="ts-block"> <span>Timestamp: <strong id="c-ts"></strong></span></div>
- <button class="sig-confirm-btn" id="sig-confirm-btn" data-oc="confirmSig()" onclick="window.confirmSig&&window.confirmSig()"> Confirm Signature</button>
- <div class="sig-confirmed-badge" id="sig-confirmed-badge"><span></span><span>Signature confirmed · <strong id="sig-confirmed-name"></strong></span></div>
- </div>
- </div>
- <div class="err-banner" id="c-err"><span></span><span id="c-err-txt"></span></div>
- </div>
- <div id="c-submit-bar" style="padding:12px 16px 16px;background:white">
- <button class="btn-primary" id="c-submit-btn" data-oc="cSubmit()" onclick="window.cSubmit&&window.cSubmit()" disabled>Sign & Submit My Claim -></button>
- </div>
-</div>
-
 <!-- 
  SCREEN: STEP 5 - PAYMENT
  -->
@@ -4078,7 +3326,7 @@ function goTo(id, param) {
  // Update theme-color to match screen background
  var tc = document.querySelector('meta[name=theme-color]');
  if(tc){
- var darkScreens = ['s-landing','s-auth','s-processing','s-receipt-quick','s-checklist','s-step1','s-step1b','s-step2','s-step-id','s-step3','s-step4','s-ready'];
+ var darkScreens = ['s-landing','s-auth','s-processing','s-receipt-quick'];
  tc.setAttribute('content', darkScreens.includes(id) ? '#0a0f1e' : '#ffffff');
  }
  if (id === 's-step3') {
@@ -4116,7 +3364,6 @@ function goTo(id, param) {
  if (id === 's-dashboard') { /* showDashboard() handles this */ }
  try { updateHelpBtn(id); } catch(e){}
  if (id === 's-processing' && !window._skipProcessingAnim) setTimeout(function(){ try{ runProcessing(); }catch(e){} }, 300);
- if (id === 's-refund') setTimeout(function(){ try{ runRefundEstimate(); }catch(e){ console.warn('refund error',e); } }, 300);;
  if (id === 's-plan-confirm') setTimeout(function(){
    var currency = window._amountCurrency || window._currency || 'USD';
    var amt = window._lastOcrAmount || 0;
@@ -4215,7 +3462,6 @@ function goTo(id, param) {
      document.getElementById('plan-bd-prem-net').textContent = '$' + premNet.toLocaleString() + ' USD';
    }
  }, 200);
- if (id === 's-ready') setTimeout(function(){ try{ runReadyScreen(); }catch(e){} }, 100);
  if (id === 's-step5') {
  // Reset payment screen - hide success, show form
  var sf = document.getElementById('s5-form'); if(sf) sf.style.display='flex';
@@ -4283,24 +3529,6 @@ function goTo(id, param) {
  // Auth guard -- must be logged in
  if(!currentUser) { goTo('s-auth','register'); return; }
  setTimeout(function(){ try{ showTapHint(); }catch(e){} }, 1200);
- }
- if (id === 's-step1') {
- if(!currentUser) { goTo('s-auth','register'); return; }
- // Only do a full reset if no fields are filled (fresh entry)
- var _existingDentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
- var _existingProvider = (document.getElementById('s1-ins-provider') && document.getElementById('s1-ins-provider').value.trim()) || '';
- if(!_existingDentist && !_existingProvider) {
- // Fresh start -- reset flags and upload UI
- window._s1CardOk = false; window._s2ReceiptOk = false;
- var s1ph = document.getElementById('s1-ph'); if(s1ph) s1ph.style.display='flex';
- var s1prev = document.getElementById('s1-preview'); if(s1prev) s1prev.style.display='none';
- var s2emp = document.getElementById('s2-empty'); if(s2emp) s2emp.style.display='flex';
- var s2fs = document.getElementById('s2-file-state'); if(s2fs) s2fs.style.display='none';
- var s2flds = document.getElementById('s2-fields'); if(s2flds) s2flds.style.display='none';
- var s1flds = document.getElementById('s1-fields'); if(s1flds) s1flds.style.display='none';
- }
- // Always re-evaluate button state based on actual field values
- setTimeout(function(){ try{ s1TryEnableContinue(); }catch(e){} }, 50);
  }
  const navScreens = ['s-dashboard','s-claims','s-support','s-profile'];
  var bn = document.getElementById('bottom-nav');
@@ -4701,1243 +3929,6 @@ function loginUser(u){
 }
 
 // 
-// STEP 1 - INSURANCE CARD
-// 
-const s1Insurers=[];
-let s1Scanned=false;
-
-function s1HandleFile(inp){
- if(!inp.files||!inp.files[0])return;
- var file=inp.files[0];
- var isImg=file.type.startsWith('image/');
- var reader=new FileReader();
- reader.onload=function(e){
-   var dataUrl=e.target.result;
-   if(isImg){
-     var img=document.getElementById('s1-img');
-     if(img) img.src=dataUrl;
-   }
-   // Extract base64 and mediaType
-   var parts=dataUrl.split(',');
-   var meta=parts[0]; // e.g. "data:image/jpeg;base64"
-   var base64=parts[1];
-   var mediaType=meta.replace('data:','').replace(';base64','');
-   s1StartScan(base64, mediaType);
- };
- reader.readAsDataURL(file);
-}
-function s1StartScan(imageBase64, mediaType){
- var ph=document.getElementById('s1-ph'); if(ph) ph.style.display='none';
- var prev=document.getElementById('s1-preview'); if(prev) prev.style.display='block';
- var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='flex';
- var tog=document.getElementById('s1-manual-toggle'); if(tog) tog.style.display='none';
- document.getElementById('s1-ocr').classList.add('show');
- var fill=document.getElementById('s1-ocr-fill');
- // Animate progress while waiting for API
- var prog=0;
- var iv=setInterval(function(){
-   prog=Math.min(prog+5,90);
-   if(fill) fill.style.width=prog+'%';
-   if(prog<30){ document.getElementById('s1-ocr-title').textContent='Detecting card...'; document.getElementById('s1-ocr-sub').textContent='Analyzing image'; }
-   else if(prog<60){ document.getElementById('s1-ocr-title').textContent='Reading text...'; document.getElementById('s1-ocr-sub').textContent='Extracting details'; }
-   else { document.getElementById('s1-ocr-title').textContent='Identifying insurer...'; document.getElementById('s1-ocr-sub').textContent='Cross-referencing'; }
- },300);
- // Call OCR Lambda -- returns isValid + extracted fields
- authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
-   method:'POST',
-   headers:{'Content-Type':'application/json'},
-   body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType,type:'insurance'})
- })
- .then(function(r){return r.json();})
- .then(function(data){
-   clearInterval(iv);
-   if(fill) fill.style.width='100%';
-   console.log('[Credimed OCR insurance response]', JSON.stringify(data));
-   // Check isValid flag from Lambda -- if false, image is not an insurance card
-   if(data && data.isValid === false){
-     document.getElementById('s1-ocr-title').textContent='Not recognized';
-     document.getElementById('s1-ocr-sub').textContent='Wrong document';
-     setTimeout(function(){ s1ShowExtracted({}); },400);
-   } else {
-     document.getElementById('s1-ocr-title').textContent='Done!';
-     document.getElementById('s1-ocr-sub').textContent='Details extracted';
-     setTimeout(function(){ s1ShowExtracted(data); },400);
-   }
- })
- .catch(function(err){
-   clearInterval(iv);
-   console.warn('OCR failed:', err);
-   setTimeout(function(){ s1ShowExtracted(null); },400);
- });
-}
-function s1ShowExtracted(ocrData){
- // Normalize fields -- Lambda may return different key names
- if(ocrData && !ocrData.insurer){
-   ocrData.insurer = ocrData.provider || ocrData.carrier || ocrData.insurance || ocrData.insuranceName || ocrData.company || '';
- }
- if(ocrData && !ocrData.memberId){
-   ocrData.memberId = ocrData.member || ocrData.memberNumber || ocrData.id || '';
- }
- if(ocrData && !ocrData.groupId){
-   ocrData.groupId = ocrData.group || ocrData.groupNumber || '';
- }
- // If OCR failed, show error
- var hasRealData = ocrData && ocrData.insurer && ocrData.insurer.length > 1;
- if(!hasRealData && ocrData !== undefined){
-   // ocrData was returned but has no insurer = wrong document
-   var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
-   document.getElementById('s1-ocr').classList.remove('show');
-   var errBanner = document.getElementById('s1-ocr-err');
-   if(!errBanner){
-     errBanner = document.createElement('div');
-     errBanner.id = 's1-ocr-err';
-     errBanner.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;font-size:13px;color:#991b1b;margin:12px 0;text-align:center;';
-     errBanner.innerHTML = "<strong>This does not appear to be a dental insurance card.</strong><br>Please upload a clear photo of the <strong>front</strong> of your US insurance card. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('insurance')\">See example</span>";
-     var s1ph = document.getElementById('s1-ph');
-     if(s1ph && s1ph.parentNode) s1ph.parentNode.insertBefore(errBanner, s1ph.nextSibling);
-   }
-   errBanner.style.display = 'block';
-   // Reset so user can try again
-   var ph=document.getElementById('s1-ph'); if(ph) ph.style.display='flex';
-   var prev=document.getElementById('s1-preview'); if(prev) prev.style.display='none';
-   return;
- }
- var errBanner = document.getElementById('s1-ocr-err'); if(errBanner) errBanner.style.display='none';
- // Use real OCR data if available, fallback to demo
- var d;
- if(ocrData && ocrData.insurer){
-   d={provider:ocrData.insurer,member:ocrData.memberId||'',group:ocrData.groupId||'',plan:'PPO'};
- } else {
-   // No demo fallback - if OCR failed show error (handled above)
-   return;
- }
- // Hide scan overlay
- var ovl=document.getElementById('s1-scan-overlay'); if(ovl) ovl.style.display='none';
- // Hide OCR progress bar
- document.getElementById('s1-ocr').classList.remove('show');
- // Fill visible manual-entry fields
- var provEl=document.getElementById('s1-ins-provider');
- var memEl=document.getElementById('s1-ins-member');
- var grpEl=document.getElementById('s1-ins-group');
- var nameEl=document.getElementById('s1-ins-name');
- if(nameEl&&ocrData&&ocrData.memberName){nameEl.value=ocrData.memberName;nameEl.classList.add('prefilled');}
- if(provEl){provEl.value=d.provider;provEl.classList.add('prefilled');}
- if(memEl){memEl.value=d.member;memEl.classList.add('prefilled');}
- if(grpEl){grpEl.value=d.group;grpEl.classList.add('prefilled');}
- // Show Auto-filled badge in scan panel header
- var autoBadge=document.getElementById('s1-auto');
- if(autoBadge) autoBadge.style.display='inline';
- // Auto-confirm after scan -- mark card OK and show success state
- if(currentUser){
- var pv=document.getElementById('s1-ins-provider');
- var mv=document.getElementById('s1-ins-member');
- if(pv&&mv){
-   currentUser.insurer=pv.value;
-   currentUser.memberId=mv.value;
-   if(document.getElementById('s1-m-group')) currentUser.groupId=document.getElementById('s1-m-group').value||'';
-   try{ sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); }catch(e){}
- }
- }
- window._s1CardOk=true;
- // Lock fields to prevent accidental edits
- ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
- var el=document.getElementById(id);
- if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.85';}
- });
- // Show confirm banner so user can still edit if needed
- var banner=document.getElementById('s1-confirm-banner');
- if(banner){
- banner.style.display='flex';
- setTimeout(function(){banner.scrollIntoView({behavior:'smooth',block:'nearest'});},200);
- }
- // Enable the Continue button
- s1EnableContinue();
- s1Scanned=true;
- // Scroll user to receipt section
- setTimeout(function(){
- var s2empty = document.getElementById('s2-empty');
- if(s2empty) s2empty.scrollIntoView({behavior:'smooth',block:'center'});
- }, 600);
-}
-function s1Reset(){
- s1Scanned=false;
- window._s1CardOk=false;
- // Restore scan panel upload button
- var ph=document.getElementById('s1-ph'); if(ph) ph.style.display='flex';
- var prev=document.getElementById('s1-preview'); if(prev) prev.style.display='none';
- var img=document.getElementById('s1-img'); if(img) img.src='';
- // Hide OCR bar and confirm banner and badge
- var ocr=document.getElementById('s1-ocr'); if(ocr) ocr.classList.remove('show');
- var banner=document.getElementById('s1-confirm-banner'); if(banner) banner.style.display='none';
- var badge=document.getElementById('s1-badge'); if(badge) badge.style.display='none';
- // Clear and unlock the visible manual-entry fields
- ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
- var el=document.getElementById(id);
- if(el){el.value='';el.readOnly=false;el.style.pointerEvents='';el.style.opacity='';el.classList.remove('prefilled');}
- });
- // Hide auto-filled badge
- var autoBadge=document.getElementById('s1-auto'); if(autoBadge) autoBadge.style.display='none';
- // Clear file inputs
- var cam=document.getElementById('s1-camera'); if(cam) cam.value='';
- var upl=document.getElementById('s1-upload'); if(upl) upl.value='';
- s1TryEnableContinue();
-}
-function s1UseCard(){
- var provider=document.getElementById('s1-ins-provider')?.value.trim()||'';
- var member=document.getElementById('s1-ins-member')?.value.trim()||'';
- if(!provider||!member){return;}
- if(currentUser){
-   currentUser.insurer=provider;
-   currentUser.memberId=member;
-   try{ sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); }catch(e){}
- }
- // Lock the visible manual-entry fields
- ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
- var el=document.getElementById(id);
- if(el){el.readOnly=true;el.style.pointerEvents='none';el.style.opacity='0.8';}
- });
- // Hide confirm banner, mark done
- var banner=document.getElementById('s1-confirm-banner');
- if(banner) banner.style.display='none';
- var badge=document.getElementById('s1-badge');
- if(badge) badge.style.display='block';
- // Enable Continue button
- window._s1CardOk=true;
- s1EnableContinue();
- // Scroll user down to receipt section
- setTimeout(function(){
- var s2sec = document.getElementById('s2-section-badge');
- if(s2sec) s2sec.closest && s2sec.closest('[style]') && s2sec.scrollIntoView({behavior:'smooth',block:'start'});
- var s2empty = document.getElementById('s2-empty');
- if(s2empty) s2empty.scrollIntoView({behavior:'smooth',block:'center'});
- }, 300);
-}
-function s1EditFields(){
- // Unlock the visible manual-entry fields
- ['s1-ins-provider','s1-ins-member','s1-ins-group'].forEach(function(id){
- var el=document.getElementById(id);
- if(el){el.readOnly=false;el.style.pointerEvents='';el.style.opacity='';}
- });
- var badge=document.getElementById('s1-badge');
- if(badge) badge.style.display='none';
- var banner=document.getElementById('s1-confirm-banner');
- if(banner) banner.style.display='flex';
- window._s1CardOk=false;
- s1TryEnableContinue();
-}
-function s2Confirm(){
- var dentist=document.getElementById('s2-dentist')?.value.trim()||'';
- var proc=document.getElementById('s2-proc')?.value||
-          (window._selectedProcedures&&window._selectedProcedures.length>0?'ok':'');
- var amount=parseFloat(document.getElementById('s2-amount')?.value)||0;
- if(!proc){
-   var e=document.getElementById('s2-proc');
-   var hint=document.getElementById('proc-hint');
-   if(!hint){hint=document.createElement('div');hint.id='proc-hint';hint.style.cssText='font-size:12px;color:#991b1b;margin-top:4px;font-weight:600;padding:6px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5';if(e&&e.parentNode)e.parentNode.insertBefore(hint,e.nextSibling);}
-   hint.textContent='⚠️ Please select the procedure performed';
-   hint.style.display='block';
-   return;
- }
- // Hide hint if proc is ok
- var hint=document.getElementById('proc-hint');
- if(hint) hint.style.display='none';
- if(!dentist || amount<=0){ return; }
- // Lock fields
- ['s2-dentist','s2-date','s2-amount','s2-city'].forEach(function(id){
- var el=document.getElementById(id);
- if(el){ el.readOnly=true; el.style.opacity='0.85'; el.style.pointerEvents='none'; }
- });
- var procEl=document.getElementById('s2-proc');
- if(procEl){ procEl.disabled=true; procEl.style.opacity='0.85'; }
- // Hide confirm banner, show done badge
- var banner=document.getElementById('s2-confirm-banner');
- if(banner) banner.style.display='none';
- var badge=document.getElementById('s2-badge');
- if(badge) badge.style.display='block';
- s2ConfirmForStep1();
- // Update section badge
- var b2 = document.getElementById('s2-section-badge');
- if(b2) b2.style.display = 'block';
- // Scroll to Continue button
- setTimeout(function(){
- var btn=document.getElementById('s1-continue-btn');
- if(btn) btn.scrollIntoView({behavior:'smooth', block:'nearest'});
- }, 300);
-}
-function s2EditFields(){
- // Unlock receipt fields
- var s2body=document.getElementById('s2-card-body');
- if(s2body){ s2body.style.pointerEvents=''; s2body.style.opacity=''; }
- // Hide done badge
- var badge=document.getElementById('s2-badge');
- if(badge) badge.style.display='none';
- // Show confirm banner for re-confirmation
- var banner=document.getElementById('s2-confirm-banner');
- if(banner) banner.style.display='flex';
- window._s2ReceiptOk=false;
- s1TryEnableContinue();
-}
-function s2ConfirmForStep1(){
- window._s2ReceiptOk=true;
- s1TryEnableContinue();
-}
-function s1EnableContinue(){
- window._s1CardOk=true;
- s1TryEnableContinue();
- // Highlight s2 upload as next step
- var s2area=document.getElementById('s2-empty');
- if(s2area){ s2area.style.borderColor='var(--teal)'; s2area.style.boxShadow='0 0 0 3px rgba(13,148,136,.15)'; }
-}
-function s1TryEnableContinue(){
- var btn = document.getElementById('s1-continue-btn');
-
- // Receipt is "ready" if explicitly confirmed OR if fields are filled (allow submit without banner click)
- var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
- var proc = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
- var amount = window._lastOcrAmount || 0; // only OCR amount
- window._lastOcrAmount = amount; // keep in sync
- var receiptFieldsOk = !!(dentist && proc && amount > 0);
-
- // Insurance ready: explicitly confirmed OR fields filled
- var provider = (document.getElementById('s1-ins-provider') && document.getElementById('s1-ins-provider').value.trim()) ||
- (document.getElementById('s1-m-provider') && document.getElementById('s1-m-provider').value.trim()) || '';
- var member = (document.getElementById('s1-ins-member') && document.getElementById('s1-ins-member').value.trim()) ||
- (document.getElementById('s1-m-member') && document.getElementById('s1-m-member').value.trim()) || '';
- var cardFieldsOk = !!(provider); // member optional for button unlock -- validated at submit
-
- var cardOk   = window._s1CardOk || cardFieldsOk;
- // Receipt only OK after user explicitly hits Confirm AND procedure is selected
- var procVal = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || 
-               (window._selectedProcedures && window._selectedProcedures.length > 0 ? 'ok' : '');
- var receiptOk = !!window._s2ReceiptOk && !!procVal;
- var both = cardOk && receiptOk;
-
- if(btn) {
-   btn.disabled = !both;
-   btn.textContent = both ? 'Submit my claim ->' : (receiptFieldsOk && !receiptOk ? 'Confirm your receipt above ->' : (cardOk ? 'Next: confirm your receipt ->' : 'Step 1: confirm your insurance card'));
-   if(both) {
-     btn.style.background = 'var(--teal)';
-     btn.style.boxShadow = '0 4px 20px rgba(13,148,136,.35)';
-     btn.style.cursor = 'pointer';
-     btn.style.opacity = '1';
-   } else {
-     btn.style.background = '#94a3b8';
-     btn.style.boxShadow = 'none';
-     btn.style.cursor = 'not-allowed';
-     btn.style.opacity = '0.7';
-   }
- }
- // Show section badges
- var b1 = document.getElementById('s1-section-badge');
- var b2 = document.getElementById('s2-section-badge');
- if(b1) b1.style.display = cardOk ? 'block' : 'none';
- if(b2) b2.style.display = receiptOk ? 'block' : 'none';
-}
-// Expose all to window
-window.s1UseCard=s1UseCard;
-window.s1EditFields=s1EditFields;
-window.s2Confirm=s2Confirm;
-window.s2EditFields=s2EditFields;
-window.s2ConfirmForStep1=s2ConfirmForStep1;
-window.s1EnableContinue=s1EnableContinue;
-window.s1TryEnableContinue=s1TryEnableContinue;
-function s1CheckManual(){
- var p = document.getElementById('s1-ins-provider')?.value.trim();
- var m = document.getElementById('s1-ins-member')?.value.trim();
- var banner = document.getElementById('s1-confirm-banner');
- var badge = document.getElementById('s1-badge');
- if(p && m){
- // Only show the confirm banner if the card hasn't already been confirmed
- if(!window._s1CardOk){
- if(banner) {
- banner.style.display = 'flex';
- setTimeout(function(){ banner.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 150);
- }
- }
- } else {
- // Fields cleared -- reset confirmed state and hide banner/badge
- window._s1CardOk = false;
- if(banner) banner.style.display = 'none';
- if(badge) badge.style.display = 'none';
- }
- // Always re-evaluate the submit button (fields may satisfy requirements)
- s1TryEnableContinue();
-}
-function s1ToggleManual(){const m=document.getElementById('s1-manual');const open=m.style.display==='block';m.style.display=open?'none':'block';document.getElementById('s1-manual-toggle').textContent=open?' Enter manually':'x Hide manual entry';if(!open)m.scrollIntoView({behavior:'smooth',block:'start'})}
-function s1Continue(){
- // Collect receipt data
- var dentist = (document.getElementById('s2-dentist') && document.getElementById('s2-dentist').value.trim()) || '';
- var proc = (document.getElementById('s2-proc') && document.getElementById('s2-proc').value) || '';
- var amount = parseFloat(document.getElementById('s2-amount') && document.getElementById('s2-amount').value) || 0;
- var date = (document.getElementById('s2-date') && document.getElementById('s2-date').value) || '';
- var city = (document.getElementById('s2-city') && document.getElementById('s2-city').value.trim()) || '';
-
- if (!dentist) {
- var inp = document.getElementById('s2-dentist');
- if (inp) { inp.style.borderColor='var(--red)'; inp.focus(); }
- return;
- }
- if (!proc) {
- var sel = document.getElementById('s2-proc');
- if (sel) { sel.style.borderColor='var(--red)'; sel.focus(); }
- return;
- }
- if (!amount) {
- var amtInp = document.getElementById('s2-amount');
- if (amtInp) { amtInp.style.borderColor='var(--red)'; amtInp.focus(); }
- return;
- }
-
- // Collect insurance data
- var provider = (document.getElementById('s1-ins-provider') && document.getElementById('s1-ins-provider').value.trim()) ||
- (document.getElementById('s1-m-provider') && document.getElementById('s1-m-provider').value.trim()) || '';
- var member = (document.getElementById('s1-ins-member') && document.getElementById('s1-ins-member').value.trim()) ||
- (document.getElementById('s1-m-member') && document.getElementById('s1-m-member').value.trim()) || '';
-
- var memberName = (document.getElementById('s1-ins-name')&&document.getElementById('s1-ins-name').value.trim()) || '';
- var patientName = (document.getElementById('s2-patient-name')&&document.getElementById('s2-patient-name').value.trim()) || '';
- if (currentUser) {
- currentUser.memberName = memberName;
- currentUser.patientName = patientName;
- currentUser.insurer = provider;
- currentUser.memberId = member;
- currentUser.procedure = proc;
- currentUser.dentist = dentist;
- currentUser.amount = amount;
- currentUser.date = date;
- currentUser.city = city;
- }
- window._s1CardOk = true;
- window._s2ReceiptOk = true;
-
- // Navigation to s-processing handled by s1Submit
-}
-
-
-// 
-// STEP 2 - RECEIPT
-// 
-const s2Demos=[];
-function s2HandleFile(inp){
- if(!inp.files||!inp.files[0])return;
- var file=inp.files[0];
- var isImg=file.type.startsWith('image/');
- // Hide upload area, show file state
- var empty=document.getElementById('s2-empty'); if(empty) empty.style.display='none';
- var fileState=document.getElementById('s2-file-state'); if(fileState) fileState.style.display='block';
- var s2ovl=document.getElementById('s2-scan-overlay'); if(s2ovl) s2ovl.style.display='flex';
- // Read file and call OCR with base64 inside onload
- var reader=new FileReader();
- reader.onload=function(e){
-   var dataUrl=e.target.result;
-   if(isImg){
-     var img=document.getElementById('s2-img');
-     if(img){ img.src=dataUrl; img.style.display='block'; }
-     var rc=document.getElementById('s2-receipt-card'); if(rc) rc.style.display='none';
-   } else {
-     var img=document.getElementById('s2-img'); if(img) img.style.display='none';
-     var rc=document.getElementById('s2-receipt-card'); if(rc) rc.style.display='block';
-   }
-   var parts=dataUrl.split(',');
-   var base64=parts[1];
-   var mediaType=parts[0].replace('data:','').replace(';base64','');
-   if(!isImg) mediaType='application/pdf';
-   s2RunOCR(base64, mediaType);
- };
- reader.readAsDataURL(file);
-}
-
-function s2RunOCR(imageBase64, mediaType){
- // Save image for multi-procedure extraction
- window._receiptImageBase64 = imageBase64;
- window._receiptMediaType = mediaType;
- var demoDat = s2Demos[Math.floor(Math.random()*s2Demos.length)];
- var ocr = document.getElementById('s2-ocr');
- var fill = document.getElementById('s2-ocr-fill');
-
- ['s2-dentist','s2-date','s2-proc','s2-amount','s2-city'].forEach(function(id){
-   var el=document.getElementById(id);
-   if(el){el.value='';el.classList.remove('prefilled','ocr-typing');}
- });
- var autoEl=document.getElementById('s2-auto'); if(autoEl) autoEl.classList.remove('show');
- var _sf=document.getElementById('s2-fields'); if(_sf) _sf.style.display='none';
- ocr.classList.add('show');
-
- var prog=0;
- var iv=setInterval(function(){
-   prog=Math.min(prog+5,90);
-   if(fill) fill.style.width=prog+'%';
-   if(prog<30){ document.getElementById('s2-ocr-title').textContent='Reading document...'; document.getElementById('s2-ocr-sub').textContent='Detecting receipt format'; }
-   else if(prog<60){ document.getElementById('s2-ocr-title').textContent='Extracting data...'; document.getElementById('s2-ocr-sub').textContent='Running OCR'; }
-   else { document.getElementById('s2-ocr-title').textContent='Matching procedure...'; document.getElementById('s2-ocr-sub').textContent='CDT codes'; }
- },300);
-
- // Build procedure list from OCR results
- function mapProcToCDT(text){
-   if(!text) return null;
-   var t = text.toLowerCase();
-   var map = [
-     {keys:['limpieza','profilaxis','prophylaxis','prophy','higiene dental','teeth cleaning'],cdt:'D1110',label:'Cleaning / Prophylaxis (D1110)'},
-     {keys:['consulta','evaluacion','evaluación','revision','checkup','exam','valoracion','dental general'],cdt:'D0120',label:'Exam / Evaluation (D0120)'},
-     {keys:['radiografia','radiografía','xray','x-ray','bitewing','panoram','periapical','rx '],cdt:'D0210',label:'X-Ray / Radiograph (D0210)'},
-     {keys:['resina','composite','obturacion','amalgama','empaste','filling','restauracion','superficie'],cdt:'D2391',label:'Filling / Composite (D2391)'},
-     {keys:['corona','crown','porcelana','zirconia','ceramica'],cdt:'D2740',label:'Crown (D2740)'},
-     {keys:['implante','implant','oseointegrado'],cdt:'D6010',label:'Implant (D6010)'},
-     {keys:['endodoncia','conducto','root canal','pulpectomia','nervio'],cdt:'D3330',label:'Root Canal (D3330)'},
-     {keys:['extraccion','exodoncia','extraction','muela'],cdt:'D7140',label:'Extraction (D7140)'},
-     {keys:['puente','bridge'],cdt:'D6240',label:'Bridge (D6240)'},
-     {keys:['blanqueamiento','whitening','bleaching'],cdt:'D9975',label:'Whitening (D9975)'},
-     {keys:['carilla','veneer','faceta'],cdt:'D2960',label:'Veneer (D2960)'},
-     {keys:['protesis','denture','dentadura'],cdt:'D5213',label:'Partial Denture (D5213)'},
-     {keys:['anestesia','anesthesia','sedacion'],cdt:'D9930',label:'Anesthesia (D9930)'},
-     {keys:['medicacion','medicamento','postoperator','antibiotic'],cdt:'D9999',label:'Medication / Post-op care'},
-     {keys:['reconstruccion','reconstruction','buildup','build-up'],cdt:'D2391',label:'Filling / Composite (D2391)'},
-   ];
-   for(var i=0;i<map.length;i++){
-     for(var j=0;j<map[i].keys.length;j++){
-       if(t.includes(map[i].keys[j])) return map[i];
-     }
-   }
-   // Keep original text with D9999 but make label show the real name
-   return {cdt:'D9999',label:text.trim()};
- }
-
- function buildProcedureList(procedures){
-   var list = document.getElementById('proc-list');
-   var select = document.getElementById('s2-proc');
-   if(!list || !procedures || !procedures.length) return;
-
-   list.innerHTML = '';
-   var mapped = procedures.map(function(p){ return mapProcToCDT(p); }).filter(Boolean);
-   var seen = {};
-   mapped = mapped.filter(function(m){
-     var key = m.cdt === 'D9999' ? m.label : m.cdt;
-     if(seen[key]) return false; seen[key]=true; return true;
-   });
-   if(mapped.length === 0) return;
-
-   // list stays hidden -- only stores checkboxes for state tracking
-   list.style.display = 'none';
-   if(select) select.style.display = 'none';
-
-   mapped.forEach(function(m){
-     var cb = document.createElement('input');
-     cb.type = 'checkbox';
-     cb.setAttribute('data-cdt', m.cdt);
-     cb.setAttribute('data-label', m.label);
-     cb.checked = true;
-     cb.style.display = 'none';
-     cb.onchange = function(){ window.onProcCheck && window.onProcCheck(); };
-     list.appendChild(cb);
-   });
-
-   window.onProcCheck = function(){
-     var checked = list.querySelectorAll('input[type=checkbox]:checked');
-     if(checked.length > 0){
-       var firstCdt = checked[0].getAttribute('data-cdt');
-       if(select){
-         for(var o=0;o<select.options.length;o++){
-           if(select.options[o].value === firstCdt){ select.selectedIndex=o; break; }
-         }
-       }
-       var allProcs = [];
-       checked.forEach(function(cb){ allProcs.push({cdt:cb.getAttribute('data-cdt'),label:cb.getAttribute('data-label')}); });
-       window._selectedProcedures = allProcs;
-     } else {
-       if(select) select.selectedIndex=0;
-       window._selectedProcedures = [];
-     }
-     window._updateProcSummary && window._updateProcSummary();
-     try{ s1TryEnableContinue(); }catch(e){}
-   };
-
-   window._showAddProc = function(){
-     // Build inline add-proc UI below the summary box
-     var sb = document.getElementById('proc-refund-summary');
-     if(!sb) return;
-     var existing = document.getElementById('add-proc-inline');
-     if(existing){ existing.remove(); return; }
-     var div = document.createElement('div');
-     div.id = 'add-proc-inline';
-     div.style.cssText = 'display:flex;gap:8px;margin-top:6px;align-items:center';
-     div.innerHTML =
-       '<select id="add-proc-sel" style="flex:1;height:40px;border:1.5px solid #0D9488;border-radius:10px;padding:0 10px;font-size:13px;color:#1e293b;background:white">' +
-         '<option value="">Select procedure...</option>' +
-         '<option value="D0120">Exam / Evaluation (D0120)</option>' +
-         '<option value="D0210">X-Ray / Radiograph (D0210)</option>' +
-         '<option value="D1110">Cleaning / Prophylaxis (D1110)</option>' +
-         '<option value="D2140">Filling - 1 surface (D2140)</option>' +
-         '<option value="D2391">Filling / Composite / Resin (D2391)</option>' +
-         '<option value="D2740">Crown (D2740)</option>' +
-         '<option value="D2960">Veneer (D2960)</option>' +
-         '<option value="D3330">Root Canal (D3330)</option>' +
-         '<option value="D5213">Partial Denture (D5213)</option>' +
-         '<option value="D6010">Implant (D6010)</option>' +
-         '<option value="D6240">Bridge (D6240)</option>' +
-         '<option value="D7140">Extraction (D7140)</option>' +
-         '<option value="D9975">Whitening (D9975)</option>' +
-         '<option value="D9999">Other (D9999)</option>' +
-       '</select>' +
-       '<button id="add-proc-confirm" style="height:40px;padding:0 16px;background:#0D9488;color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Add</button>';
-     sb.parentNode.insertBefore(div, sb.nextSibling);
-     document.getElementById('add-proc-sel').focus();
-     document.getElementById('add-proc-confirm').onclick = function(){
-       var sel = document.getElementById('add-proc-sel');
-       if(!sel || !sel.value) return;
-       var cdt = sel.value;
-       var label = sel.options[sel.selectedIndex].text;
-       var pl = document.getElementById('proc-list');
-       // Check if already exists
-       var exists = pl && pl.querySelector('input[data-cdt="'+cdt+'"]');
-       if(!exists && pl){
-         var cb = document.createElement('input');
-         cb.type = 'checkbox';
-         cb.setAttribute('data-cdt', cdt);
-         cb.setAttribute('data-label', label);
-         cb.checked = true;
-         cb.style.display = 'none';
-         cb.onchange = function(){ window.onProcCheck && window.onProcCheck(); };
-         pl.appendChild(cb);
-       } else if(exists){
-         exists.checked = true;
-       }
-       // Update main select
-       var ms = document.getElementById('s2-proc');
-       if(ms){ for(var o=0;o<ms.options.length;o++){ if(ms.options[o].value===cdt){ms.selectedIndex=o;break;} } }
-       window.onProcCheck && window.onProcCheck();
-       div.remove();
-     };
-   };
-
-   window._updateProcSummary = function(){
-     var sb = document.getElementById('proc-refund-summary');
-     var pl = document.getElementById('proc-list');
-     if(!sb || !pl) return;
-     var checked = pl.querySelectorAll('input[type=checkbox]:checked');
-     if(checked.length === 0){ sb.style.display='none'; return; }
-     var procRows = '';
-     checked.forEach(function(cb){
-       var cdt = cb.getAttribute('data-cdt');
-       var label = cb.getAttribute('data-label').split('(')[0].trim();
-       procRows +=
-         '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06)">' +
-           '<span style="font-size:13px;color:rgba(255,255,255,.85);font-weight:500">'+label+'</span>' +
-           '<span style="font-size:11px;font-weight:700;color:#93c5fd;background:rgba(13,148,136,.25);padding:2px 8px;border-radius:6px">'+cdt+'</span>' +
-         '</div>';
-     });
-     sb.style.cssText = 'background:linear-gradient(135deg,#0f172a,#0d1f40);border:1px solid rgba(13,148,136,.35);border-radius:14px;overflow:hidden;margin-top:8px;margin-bottom:4px';
-     sb.innerHTML =
-       '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1)">' +
-         '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Procedures detected · ADA codes</span>' +
-         '<span style="font-size:10px;color:rgba(255,255,255,.3)">'+checked.length+' item'+(checked.length>1?'s':'')+'</span>' +
-       '</div>' +
-       procRows +
-       '<div onclick="window._showAddProc&&window._showAddProc()" style="padding:10px 14px;font-size:12px;color:#93c5fd;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;border-top:1px solid rgba(255,255,255,.06)">' +
-         '<span style="font-size:16px;line-height:1">+</span> Add procedure' +
-       '</div>';
-     sb.style.display = 'block';
-   };
-
-   var amtEl = document.getElementById('s2-amount');
-   if(amtEl) amtEl.addEventListener('input', function(){ window._updateProcSummary && window._updateProcSummary(); });
-
-   window.onProcCheck();
-   setTimeout(window._updateProcSummary, 400);
- }
-
-
- function applyFields(ocrData){
-   clearInterval(iv);
-   if(fill) fill.style.width='100%';
-   document.getElementById('s2-ocr-title').textContent='Done!';
-   document.getElementById('s2-ocr-sub').textContent='All fields extracted';
-
-   // Normalize fields -- Lambda may return different key names
-   if(ocrData){
-     if(!ocrData.dentist) ocrData.dentist = ocrData.clinic || ocrData.provider || ocrData.doctor || ocrData.name || '';
-     if(!ocrData.procedure) ocrData.procedure = ocrData.treatment || ocrData.service || ocrData.proc || '';
-     if(!ocrData.amount) ocrData.amount = ocrData.total || ocrData.cost || ocrData.price || '';
-     if(ocrData.amount){
-       var rawAmt = String(ocrData.amount).replace(/,/g,'');
-       var isMXN = ocrData.currency === 'MXN' || rawAmt.includes('MXN') || rawAmt.includes('pesos') || parseFloat(rawAmt.replace(/[^0-9.]/g,'')) > 500;
-       ocrData.amount = rawAmt.replace(/[^0-9.]/g,'');
-       ocrData.isMXN = isMXN;
-     }
-     // If procedures not array yet, try to build from procedure string or other fields
-     if(!ocrData.procedures || !Array.isArray(ocrData.procedures)){
-       var procStr = ocrData.procedure || '';
-       // Try splitting by common separators
-       var parts = [];
-       if(procStr.includes(',')) parts = procStr.split(',').map(function(s){return s.trim();}).filter(Boolean);
-       else if(procStr.includes(';')) parts = procStr.split(';').map(function(s){return s.trim();}).filter(Boolean);
-       else if(procStr.includes('\n')) parts = procStr.split('\n').map(function(s){return s.trim();}).filter(Boolean);
-       else if(procStr) parts = [procStr];
-       if(parts.length > 0) ocrData.procedures = parts;
-     }
-   }
-
-   // If OCR failed or returned no useful data, show error
-   var hasRealData = ocrData && (ocrData.dentist || ocrData.amount || ocrData.procedure || (ocrData.procedures && ocrData.procedures.length));
-   // Only show error if ocrData is explicitly {} (isValid:false), not null (network/parse failure)
-   if(!hasRealData && ocrData !== null && imageBase64){
-     // Show error message and open receipt example
-     ocr.classList.remove('show');
-     var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
-     var errBanner = document.getElementById('s2-ocr-err');
-     if(!errBanner){
-       errBanner = document.createElement('div');
-       errBanner.id = 's2-ocr-err';
-       errBanner.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;font-size:13px;color:#991b1b;margin:12px 0;text-align:center;';
-       errBanner.innerHTML = "<strong>This does not appear to be a dental receipt.</strong><br>Please upload a clear photo of your dentist's receipt or invoice. <span style=\"color:#0D9488;cursor:pointer;font-weight:600;text-decoration:underline\" onclick=\"window.openLightbox&&window.openLightbox('receipt')\">See example</span>";
-       var s2empty = document.getElementById('s2-empty');
-       if(s2empty && s2empty.parentNode) s2empty.parentNode.insertBefore(errBanner, s2empty.nextSibling);
-     }
-     errBanner.style.display = 'block';
-     // Reset upload so user can try again
-     var s2fileState = document.getElementById('s2-file-state'); if(s2fileState) s2fileState.style.display='none';
-     var s2empty2 = document.getElementById('s2-empty'); if(s2empty2) s2empty2.style.display='flex';
-     return;
-   }
-   // Hide error if was showing
-   var errBanner = document.getElementById('s2-ocr-err'); if(errBanner) errBanner.style.display='none';
-
-   // Use real OCR data
-   var d = {
-     dentist:     (ocrData&&ocrData.dentist) || '',
-     proc:        (ocrData&&ocrData.procedure) || '',
-     cdtCode:     (ocrData&&ocrData.cdtCode) || '',
-     amount:      (ocrData&&ocrData.amount) || '',
-     city:        (ocrData&&ocrData.city) || '',
-     date:        (ocrData&&ocrData.date) || '',
-     patientName: (ocrData&&ocrData.patientName) || ''
-   };
-   // Save CDT code to currentUser for claim submission
-   if(d.cdtCode && window.currentUser) window.currentUser.cdtCode = d.cdtCode;
-
-   setTimeout(function(){
-     ocr.classList.remove('show');
-     var s2ovl2=document.getElementById('s2-scan-overlay'); if(s2ovl2) s2ovl2.style.display='none';
-
-     // Fill patient name from OCR if available
-     var patientNameEl=document.getElementById('s2-patient-name');
-     if(patientNameEl && ocrData && ocrData.patientName){
-       patientNameEl.value=ocrData.patientName;
-       patientNameEl.classList.add('prefilled');
-     }
-
-     var dentistEl=document.getElementById('s2-dentist');
-     if(dentistEl){ dentistEl.value=d.dentist; dentistEl.classList.add('prefilled'); }
-
-     // Build procedure list from ocrData.procedures (array from Claude API)
-     var proceduresArray = ocrData && ocrData.procedures;
-     if(proceduresArray && Array.isArray(proceduresArray) && proceduresArray.length > 0){
-       buildProcedureList(proceduresArray);
-     } else if(d.proc){
-       buildProcedureList([d.proc]);
-     }
-
-     var procEl=document.getElementById('s2-proc');
-     if(procEl && d.proc){
-       // Map CDT codes directly first
-       var cdtMap = {
-         'D0120':'Exam / Evaluation (D0120)','D0150':'Exam / Evaluation (D0120)',
-         'D0210':'X-Ray / Radiograph (D0210)','D0220':'X-Ray / Radiograph (D0210)','D0330':'X-Ray / Radiograph (D0210)',
-         'D1110':'Cleaning / Prophylaxis (D1110)','D1120':'Cleaning / Prophylaxis (D1110)',
-         'D2140':'Filling - 1 surface (D2140)','D2150':'Filling - 1 surface (D2140)','D2160':'Filling - 1 surface (D2140)',
-         'D2391':'Filling / Composite / Resin (D2391)','D2392':'Filling / Composite / Resin (D2391)',
-         'D2393':'Filling / Composite / Resin (D2391)','D2394':'Filling / Composite / Resin (D2391)',
-         'D2740':'Crown (D2740)','D2750':'Crown (D2740)','D2751':'Crown (D2740)','D2752':'Crown (D2740)',
-         'D2780':'Crown (D2740)','D2790':'Crown (D2740)',
-         'D2960':'Veneer (D2960)','D2961':'Veneer (D2960)','D2962':'Veneer (D2960)',
-         'D3310':'Root Canal (D3330)','D3320':'Root Canal (D3330)','D3330':'Root Canal (D3330)',
-         'D5210':'Partial Denture (D5213)','D5211':'Partial Denture (D5213)','D5212':'Partial Denture (D5213)','D5213':'Partial Denture (D5213)',
-         'D6010':'Implant (D6010)','D6040':'Implant (D6010)','D6056':'Implant (D6010)','D6057':'Implant (D6010)',
-         'D6240':'Bridge (D6240)','D6241':'Bridge (D6240)','D6242':'Bridge (D6240)',
-         'D7140':'Extraction (D7140)','D7210':'Extraction (D7140)','D7240':'Extraction (D7140)',
-         'D9975':'Whitening (D9975)','D9972':'Whitening (D9975)'
-       };
-       // Keyword map -- Spanish + English + common variants
-       var kwMap = [
-         {keys:['limpieza','profilaxis','cleaning','prophylaxis','prophy','higiene','higiene dental','dental cleaning','teeth cleaning','polish'],val:'Cleaning / Prophylaxis (D1110)'},
-         {keys:['resina','composite','compuesto','relleno','obturacion','obturación','amalgama','amalgam','empaste','filling','restauracion','restauración'],val:'Filling / Composite / Resin (D2391)'},
-         {keys:['corona','crown','porcelana','porcelain','zirconia','zirconio','ceramica','cerámica'],val:'Crown (D2740)'},
-         {keys:['implante','implant','oseointegrado'],val:'Implant (D6010)'},
-         {keys:['endodoncia','conducto','root canal','pulpectomia','pulpectomía','nervio','nerve'],val:'Root Canal (D3330)'},
-         {keys:['extraccion','extracción','exodoncia','exodoncia','extraction','muela','tooth removal'],val:'Extraction (D7140)'},
-         {keys:['puente','bridge','fixed partial'],val:'Bridge (D6240)'},
-         {keys:['blanqueamiento','whitening','bleaching','aclaramiento'],val:'Whitening (D9975)'},
-         {keys:['carilla','veneer','lamina','lámina','faceta'],val:'Veneer (D2960)'},
-         {keys:['parcial','partial denture','dentadura parcial','protesis parcial','prótesis parcial'],val:'Partial Denture (D5213)'},
-         {keys:['radiografia','radiografía','xray','x-ray','rx','panoramica','panorámica','bitewing','periapical'],val:'X-Ray / Radiograph (D0210)'},
-         {keys:['consulta','evaluacion','evaluación','examen','exam','revision','revisión','checkup','check-up','valoracion','valoración'],val:'Exam / Evaluation (D0120)'}
-       ];
-       var procLower = d.proc.toLowerCase().trim();
-       var cdtLower = (d.cdtCode||'').toUpperCase().trim();
-       var mappedProc = null;
-       // 1. Try CDT code from OCR data directly
-       if(cdtLower && cdtMap[cdtLower]) mappedProc = cdtMap[cdtLower];
-       // 2. Try CDT code embedded in proc string (e.g. "D2140" or "(D2140)")
-       if(!mappedProc){
-         var cdtMatch = d.proc.match(/D\d{4}/i);
-         if(cdtMatch && cdtMap[cdtMatch[0].toUpperCase()]) mappedProc = cdtMap[cdtMatch[0].toUpperCase()];
-       }
-       // 3. Try keyword map
-       if(!mappedProc){
-         for(var ki=0;ki<kwMap.length;ki++){
-           var found=false;
-           for(var kj=0;kj<kwMap[ki].keys.length;kj++){
-             if(procLower.includes(kwMap[ki].keys[kj])){ mappedProc=kwMap[ki].val; found=true; break; }
-           }
-           if(found) break;
-         }
-       }
-       // 4. Match against select options
-       var matched = false;
-       // If we have a mappedProc, extract the CDT code from it e.g. "Cleaning / Prophylaxis (D1110)" -> "D1110"
-       var mappedCdt = mappedProc ? (mappedProc.match(/D\d{4}/i)||[])[0] : null;
-       if(mappedCdt) mappedCdt = mappedCdt.toUpperCase();
-       for(var o=0;o<procEl.options.length;o++){
-         var optVal = procEl.options[o].value;
-         var optText = procEl.options[o].text.toLowerCase();
-         // Match by CDT code first (most reliable)
-         if(mappedCdt && optVal === mappedCdt){ procEl.selectedIndex=o; matched=true; break; }
-         if(cdtLower && optVal.toLowerCase() === cdtLower){ procEl.selectedIndex=o; matched=true; break; }
-         // Match by text contains
-         var sp = (mappedProc||d.proc).toLowerCase();
-         if(sp && optText.includes(sp.split('(')[0].trim()) && optText.length > 3){ procEl.selectedIndex=o; matched=true; break; }
-       }
-       // 5. Fallback: reset to Select... and unlock so user picks manually
-       if(!matched){
-         procEl.selectedIndex=0;
-         procEl.classList.remove('prefilled');
-         procEl.style.borderColor='#f59e0b';
-         procEl.style.background='#fffbeb';
-         // Show hint
-         var hint = document.getElementById('proc-hint');
-         if(!hint){
-           hint = document.createElement('div');
-           hint.id = 'proc-hint';
-           hint.style.cssText = 'font-size:11px;color:#92400e;margin-top:4px;font-weight:600';
-           hint.textContent = '⚠️ Please select the procedure manually';
-           procEl.parentNode.insertBefore(hint, procEl.nextSibling);
-         }
-         hint.style.display = 'block';
-         // Block confirm until user selects manually
-         window._s2ReceiptOk = false;
-         try{ s1TryEnableContinue(); }catch(e){}
-       } else {
-         var hint = document.getElementById('proc-hint');
-         if(hint) hint.style.display = 'none';
-         procEl.style.borderColor = '';
-         procEl.style.background = '';
-         procEl.classList.add('prefilled');
-       }
-     }
-
-     var amtEl=document.getElementById('s2-amount');
-     if(amtEl){
-       amtEl.value = d.amount;
-       amtEl.classList.add('prefilled');
-       // Show currency label based on amount size
-       var lbl = document.getElementById('amt-currency-label');
-       var currency = ocrData && ocrData.currency ? ocrData.currency : (parseFloat(d.amount) > 500 ? 'MXN' : 'USD');
-       if(lbl) lbl.textContent = '(' + currency + ')';
-       window._currency = currency;
-       window._amountCurrency = currency;
-       window._lastOcrAmount = parseFloat(d.amount)||0;
-       window._amountCurrency = d.currency || window._amountCurrency || 'USD';
-       var _usdAmt2 = (window._amountCurrency === 'MXN' && window._MXN_RATE) ? Math.round(window._lastOcrAmount / window._MXN_RATE) : window._lastOcrAmount;
-       if(currentUser){ currentUser.amount = _usdAmt2; currentUser.amountCurrency = 'USD'; if(ocrData && ocrData.procedure) currentUser.procedure = ocrData.procedure; if(ocrData && ocrData.insurer) currentUser.insurer = ocrData.insurer; try { sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); } catch(e){} }
-       window.claimData = { amountPaid: _usdAmt2 };
-       try { sessionStorage.setItem('_claimData', JSON.stringify(window.claimData)); } catch(e){}
-     }
-
-     var cityEl=document.getElementById('s2-city');
-     if(cityEl){ cityEl.value=d.city; cityEl.classList.add('prefilled'); }
-
-     var dateEl=document.getElementById('s2-date');
-     if(dateEl){ dateEl.value=d.date; dateEl.classList.add('prefilled'); }
-
-     var s2fields=document.getElementById('s2-fields');
-     if(s2fields) s2fields.style.display='block';
-     var autoE=document.getElementById('s2-auto'); if(autoE) autoE.classList.add('show');
-
-     var rcD=document.getElementById('s2-rc-dentist'); if(rcD) rcD.textContent=d.dentist.split('--')[0].trim();
-     var rcP=document.getElementById('s2-rc-proc'); if(rcP) rcP.textContent=d.proc;
-     var rcA=document.getElementById('s2-rc-amount'); if(rcA) rcA.textContent='$'+d.amount;
-     var rcDt=document.getElementById('s2-rc-date'); if(rcDt) rcDt.textContent=d.date?new Date(d.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'--';
-
-     var imgEl=document.getElementById('s2-img');
-     var rcCard=document.getElementById('s2-receipt-card');
-     if(imgEl&&!imgEl.src){ if(rcCard) rcCard.style.display='block'; }
-
-     s2Summary();
-     // Show procedure summary box
-     if(window._updateProcSummary) window._updateProcSummary();
-
-     var s2bodyOCR=document.getElementById('s2-card-body');
-     if(s2bodyOCR){ s2bodyOCR.style.pointerEvents='none'; s2bodyOCR.style.opacity='0.75'; }
-
-     try{ s1TryEnableContinue(); }catch(e){}
-
-     var s2btn=document.getElementById('s2-continue-btn');
-     if(s2btn) s2btn.disabled=true;
-
-     var s2banner=document.getElementById('s2-confirm-banner');
-     if(s2banner){
-       s2banner.style.display='flex';
-       setTimeout(function(){ s2banner.scrollIntoView({behavior:'smooth',block:'nearest'}); },150);
-     }
-
-     try{ s1TryEnableContinue(); }catch(e){}
-   }, 400);
- }
-
- // Call OCR Lambda for receipt
- if(imageBase64){
-   authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',{
-     method:'POST',
-     headers:{'Content-Type':'application/json'},
-     body:JSON.stringify({imageBase64:imageBase64,mediaType:mediaType||'image/jpeg',type:'receipt'})
-   })
-   .then(function(r){return r.json();})
-   .then(function(data){
-     if(data && data.isValid === false){ applyFields({}); }
-     else{ applyFields(data); }
-   })
-   .catch(function(){ applyFields(null); });
- } else {
-   setTimeout(function(){ applyFields(null); }, 1800);
- }
-}
-
-function s2TypeField(id, text, delay, cb){
- setTimeout(()=>{
- const el=document.getElementById(id);
- if(!el){if(cb)cb();return;}
- el.classList.add('prefilled');
- el.style.borderColor='var(--teal)';
- el.style.background='var(--teal-xlight)';
- // If it\'s a real input, type character by character
- if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){
- el.value='';
- let i=0;
- const chars=text.split('');
- const tv=setInterval(()=>{
- if(i<chars.length){
- el.value+=chars[i++];
- s2Summary();
- } else {
- clearInterval(tv);
- setTimeout(()=>{
- el.style.borderColor='';
- el.style.background='';
- if(cb)cb();
- },200);
- }
- }, Math.min(40, 800/chars.length));
- } else {
- el.textContent=text;
- setTimeout(()=>{el.style.borderColor='';el.style.background='';if(cb)cb();},400);
- }
- },delay);
-}
-function s2Reset(){
- // Reset all s2 state
- window._s2ReceiptOk = false;
- window._selectedProcedures = [];
- var pl=document.getElementById('proc-list'); if(pl){pl.innerHTML='';pl.style.display='none';}
- var ps=document.getElementById('s2-proc'); if(ps){ps.style.display='block';ps.selectedIndex=0;}
- // Hide fields and banner
- var fields = document.getElementById('s2-fields');
- if(fields) fields.style.display = 'none';
- var banner = document.getElementById('s2-confirm-banner');
- if(banner) banner.style.display = 'none';
- var badge = document.getElementById('s2-badge');
- if(badge) badge.style.display = 'none';
- // Reset file display
- var empty = document.getElementById('s2-empty');
- if(empty) empty.style.display = 'flex';
- var fileState = document.getElementById('s2-file-state');
- if(fileState) fileState.style.display = 'none';
- var img = document.getElementById('s2-img');
- if(img){ img.src=''; img.style.display='none'; }
- // Clear field values
- ['s2-dentist','s2-date','s2-proc','s2-amount','s2-city'].forEach(function(id){
- var el = document.getElementById(id);
- if(el){ el.value=''; el.classList.remove('prefilled'); el.readOnly=false; el.style.pointerEvents=''; el.style.opacity=''; }
- });
- var proc = document.getElementById('s2-proc');
- if(proc){ proc.disabled=false; proc.style.opacity=''; }
- var cam = document.getElementById('s2-camera'); if(cam) cam.value='';
- var upl = document.getElementById('s2-upload'); if(upl) upl.value='';
- s1TryEnableContinue();
-}
-function s2Summary(){
- // Fields are displayed directly in s2-fields card -- no separate summary needed
- var fields = document.getElementById('s2-fields');
- if(fields && fields.style.display === 'none'){
- var dentist = document.getElementById('s2-dentist')?.value.trim();
- var proc = document.getElementById('s2-proc')?.value;
- var amt = parseFloat(document.getElementById('s2-amount')?.value)||0;
- if(dentist || proc || amt > 0) fields.style.display = 'block';
- }
-}
-
-window.s2CheckFields = function s2CheckFields(){
- const dentist = document.getElementById('s2-dentist')?.value.trim();
- const proc = document.getElementById('s2-proc')?.value;
- const amount = parseFloat(document.getElementById('s2-amount')?.value) || 0;
- const btn = document.getElementById('s2-continue-btn');
- if(btn) btn.disabled = !(dentist && proc && amount > 0);
- // Update live refund pill
- window.updateRefundPill && window.updateRefundPill(amount);
- // Also re-evaluate the main submit button (fields may now satisfy requirements)
- try { window.s1TryEnableContinue && window.s1TryEnableContinue(); } catch(e) {}
-}
-function s2Continue(){
- const dentist=document.getElementById('s2-dentist').value.trim();
- const date=document.getElementById('s2-date').value;
- const proc=document.getElementById('s2-proc').value;
- const amount=document.getElementById('s2-amount').value;
- const err=document.getElementById('s2-err');
- const errTxt=document.getElementById('s2-err-txt');
- err.classList.remove('show');
- if(!dentist){errTxt.textContent='Please enter the dentist name.';err.classList.add('show');return}
- if(!proc){errTxt.textContent='Please select the procedure.';err.classList.add('show');return}
- if(!amount||parseFloat(amount)<=0){errTxt.textContent='Please enter the amount paid.';err.classList.add('show');return}
- // Date is optional -- OCR may fill it in a format iOS doesn\'t validate
- if(currentUser){currentUser.procedure=proc;currentUser.dentist=dentist;currentUser.amount=amount;currentUser.date=date;}
- goTo('s-ready');
-}
-function fmtSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
-
-// 
-// STEP 4 - CONTRACT
-// 
-let cScrollDone=false, cAllChecked=false, cSigTyped=false, cSigDrawn=false, cSigConfirmed=false;
-
-function initContract(){
- cScrollDone=false; cAllChecked=false; cSigTyped=false; cSigDrawn=false; cSigConfirmed=false;
- // Reset signature UI
- var scb = document.getElementById('sig-confirm-btn');
- if(scb){ scb.style.display=''; scb.disabled=true; scb.classList.remove('confirmed'); scb.innerHTML=' Confirm Signature'; }
- var sbadge = document.getElementById('sig-confirmed-badge');
- if(sbadge) sbadge.classList.remove('show');
- var sname = document.getElementById('sig-name');
- if(sname){ sname.value=''; sname.readOnly=false; sname.style.background=''; sname.style.borderColor=''; sname.style.color=''; }
- var submitBtn = document.getElementById('c-submit-btn');
- if(submitBtn) submitBtn.disabled=true;
- // Reset checkboxes
- ['cb1','cb2','cb3','cb4','cb5'].forEach(function(id){ var cb=document.getElementById(id); if(cb){ cb.checked=false; var w=cb.closest('.cb-item'); if(w) w.classList.remove('checked'); }});
- if(currentUser){
- // Sync insurance data from form fields in case user filled them this session
- var _fProv = (document.getElementById('s1-ins-provider')&&document.getElementById('s1-ins-provider').value.trim())
-           || (document.getElementById('iq-provider')&&document.getElementById('iq-provider').value.trim()) || '';
- var _fMem  = (document.getElementById('s1-ins-member')&&document.getElementById('s1-ins-member').value.trim())
-           || (document.getElementById('iq-member')&&document.getElementById('iq-member').value.trim()) || '';
- if(_fProv) currentUser.insurer  = _fProv;
- if(_fMem)  currentUser.memberId = _fMem;
- document.getElementById('c-first').value=currentUser.first||'';
- document.getElementById('c-last').value=currentUser.last||'';
- document.getElementById('c-insurer').value=currentUser.insurer||'';
- document.getElementById('c-member').value=currentUser.memberId||'';
- document.getElementById('c-holder').value=(currentUser.first||'')+' '+(currentUser.last||'');
- }
- document.getElementById('c-date').value=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
- document.getElementById('c-ts').textContent=new Date().toLocaleString('en-US',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
- initCanvas();
- setupScrollTracker();
-}
-function setupScrollTracker(){
- const el=document.getElementById('c-scroll');
- const fill=document.getElementById('c-scroll-fill');
- const pctEl=document.getElementById('c-scroll-pct');
- const done=document.getElementById('c-scroll-done');
-
- // Reset bar
- fill.style.width='0%';
- pctEl.textContent='0%';
- done.classList.remove('show');
- document.getElementById('c-cb-card').style.opacity='.5';
- document.getElementById('c-cb-card').style.pointerEvents='none';
-
- function unlockCbs(){
- if(cScrollDone) return;
- cScrollDone=true;
- fill.style.width='100%';
- pctEl.textContent='100%';
- done.classList.add('show');
- document.getElementById('c-cb-card').style.opacity='1';
- document.getElementById('c-cb-card').style.pointerEvents='auto';
- }
-
- el.addEventListener('scroll',()=>{
- const max = el.scrollHeight - el.clientHeight;
- const pct = max > 0 ? Math.min(100, Math.round(el.scrollTop / max * 100)) : 100;
- fill.style.width=pct+'%';
- pctEl.textContent=pct+'%';
- if(pct>=90) unlockCbs();
- });
-
- // For demo: if contract is too short to scroll, unlock after 5s of being on screen
- setTimeout(()=>{
- const max = el.scrollHeight - el.clientHeight;
- if(max <= 10) unlockCbs(); // can\'t scroll -- unlock
- }, 800);
-}
-window.onCb = function onCb(){const ids=['cb1','cb2','cb3','cb4','cb5'];ids.forEach(id=>{const w=document.getElementById(id).closest('.cb-item');document.getElementById(id).checked?w.classList.add('checked'):w.classList.remove('checked')});cAllChecked=ids.every(id=>document.getElementById(id).checked);checkSubmit()}
-window.onSigInput = function onSigInput(){
- const val = document.getElementById('sig-name')?.value.trim() || '';
- cSigTyped = val.length >= 2;
- updateSigBtn();
- // User must click Confirm button explicitly -- no auto-confirm
-}
-window.updateSigBtn = function updateSigBtn(){
- var btn = document.getElementById('sig-confirm-btn');
- if(btn) btn.disabled = !cSigTyped;
-}
-window.resetSigBtn = function resetSigBtn(){
- const btn=document.getElementById('sig-confirm-btn');
- btn.classList.remove('confirmed');
- btn.innerHTML=' Confirm Signature';
- document.getElementById('sig-confirmed-badge').classList.remove('show');
- // Unlock fields
- const nameInp=document.getElementById('sig-name');
- nameInp.readOnly=false;
- nameInp.style.background='';
- nameInp.style.borderColor='';
- nameInp.style.color='';
- document.querySelector('.canvas-wrap').classList.remove('locked');
-}
-window.confirmSig = function confirmSig(){
- const name = document.getElementById('sig-name')?.value.trim() || '';
- if(name.length < 2) return;
- cSigConfirmed = true;
- cSigTyped = true;
- // Hide confirm button, show badge
- const btn = document.getElementById('sig-confirm-btn');
- const badge = document.getElementById('sig-confirmed-badge');
- const nameEl = document.getElementById('sig-confirmed-name');
- if(btn) btn.style.display = 'none';
- if(badge) badge.classList.add('show');
- if(nameEl) nameEl.textContent = name;
- // Lock name input -- no edits after confirming
- const nameInp = document.getElementById('sig-name');
- if(nameInp){
- nameInp.readOnly = true;
- nameInp.style.background = 'var(--teal-xlight)';
- nameInp.style.borderColor = 'var(--teal-light)';
- nameInp.style.color = 'var(--teal-dark)';
- }
- // Lock canvas drawing -- but Clear button stays active
- const wrap = document.querySelector('.canvas-wrap');
- if(wrap) wrap.setAttribute('data-locked','1');
- const canvas = document.getElementById('sig-canvas');
- if(canvas) canvas.style.pointerEvents = 'none';
- checkSubmit();
-}
-
-window.checkSubmit = function checkSubmit(){const btn=document.getElementById('c-submit-btn');if(btn)btn.disabled=!cSigConfirmed}
-function cSubmit(){
- const routing=document.getElementById('routing').value.replace(/\D/g,'');
- const account=document.getElementById('account').value.replace(/\D/g,'');
- const err=document.getElementById('c-err');
- const errTxt=document.getElementById('c-err-txt');
- err.classList.remove('show');
- if(routing.length!==9){errTxt.textContent='Routing number must be exactly 9 digits.';err.classList.add('show');return}
- if(account.length<4){errTxt.textContent='Please enter a valid account number (min 4 digits).';err.classList.add('show');return}
- // Go to payment screen (Step 5) instead of dashboard
- // Read plan from all sources -- _selectedPlan is the most reliable
- var plan = window._selectedPlan
-   || (window.currentUser && window.currentUser.plan)
-   || (window._getUser && window._getUser() && window._getUser().plan)
-   || 'standard';
- if(plan === 'premium'){
-   if(window.goTo) window.goTo('s-step5');
- } else {
-   // Standard - collect payment method for future 15% fee
-   window._skipProcessingAnim = true;
-   if(window.goTo) window.goTo('s-std-payment');
- }
-}
-
-// Canvas drawing
-let sigDrawing=false,sigLastX=0,sigLastY=0;
-function initCanvas(){
- const wrap = document.getElementById('sig-canvas-wrap');
- const canvas = document.getElementById('sig-canvas');
- if(!canvas) return;
- // Size canvas to wrapper
- const W = wrap.clientWidth || 343;
- const dpr = window.devicePixelRatio || 1;
- canvas.width = W * dpr;
- canvas.height = 200 * dpr;
- canvas.style.width = W + 'px';
- canvas.style.height = '200px';
- const ctx = canvas.getContext('2d');
- ctx.scale(dpr, dpr);
- ctx.strokeStyle = '#1e293b';
- ctx.lineWidth = 2.2;
- ctx.lineCap = 'round';
- ctx.lineJoin = 'round';
-
- let drawing = false;
- function getPos(e) {
- const rect = canvas.getBoundingClientRect();
- const src = e.touches ? e.touches[0] : e;
- return { x: src.clientX - rect.left, y: src.clientY - rect.top };
- }
- function start(e){ e.preventDefault(); drawing=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
- function move(e){ if(!drawing) return; e.preventDefault(); const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); onDraw(); }
- function end(e){ drawing=false; }
-
- canvas.addEventListener('mousedown', start);
- canvas.addEventListener('mousemove', move);
- canvas.addEventListener('mouseup', end);
- canvas.addEventListener('mouseleave', end);
- canvas.addEventListener('touchstart', start, {passive:false});
- canvas.addEventListener('touchmove', move, {passive:false});
- canvas.addEventListener('touchend', end);
-}
-
-window.onDraw = function onDraw(){document.getElementById('canvas-ph').style.display='none';document.getElementById('canvas-clr').classList.add('show');cSigDrawn=true;updateSigBtn()}
-window.clearCanvas = function clearCanvas(){
- const canvas = document.getElementById('sig-canvas');
- if(canvas){ const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); }
- // Reset canvas UI
- const ph = document.getElementById('canvas-ph');
- const clr = document.getElementById('canvas-clr');
- if(ph) ph.style.display='';
- if(clr) clr.classList.remove('show');
- // Unlock canvas for redrawing
- const wrap = document.querySelector('.canvas-wrap');
- if(wrap) wrap.removeAttribute('data-locked');
- const canvas2 = document.getElementById('sig-canvas');
- if(canvas2) canvas2.style.pointerEvents = '';
- // If was confirmed, fully reset signature
- if(cSigConfirmed){
- cSigConfirmed = false;
- // Restore confirm button
- const btn = document.getElementById('sig-confirm-btn');
- if(btn){ btn.style.display=''; btn.disabled = !cSigTyped; }
- // Hide confirmed badge
- const badge = document.getElementById('sig-confirmed-badge');
- if(badge) badge.classList.remove('show');
- // Unlock name input
- const nameInp = document.getElementById('sig-name');
- if(nameInp){
- nameInp.readOnly = false;
- nameInp.style.background = '';
- nameInp.style.borderColor = '';
- nameInp.style.color = '';
- }
- }
- cSigDrawn = false;
- checkSubmit();
-}
-
-// 
 // STEP 5 - PAYMENT
 // 
 function showCardForm(){
@@ -6015,7 +4006,6 @@ async function initStripePayment(){
         })
       });
       var data = await resp.json();
-      console.log('[Credimed] Payment intent response:', JSON.stringify(data));
       clientSecret = data.clientSecret || data.client_secret || data.paymentIntentClientSecret || null;
     } catch(fetchErr) {
       console.warn('[Credimed] Lambda payment failed:', fetchErr);
@@ -6043,7 +4033,6 @@ async function initStripePayment(){
     if(container){
       paymentEl.mount('#stripe-payment-element');
       stripePaymentElement = paymentEl;
-      console.log('[Credimed] Stripe Payment Element mounted OK');
       // Hide skeleton, show real element
       paymentEl.on('ready', function() {
         var skel = document.getElementById('stripe-skeleton');
@@ -6626,14 +4615,6 @@ function initDashboard(){
    if(!u.amount && window.claimData && window.claimData.amountPaid){
      u.amount = window.claimData.amountPaid;
    }
-   console.log('[initDashboard] received:', {
-     first: u.first,
-     insurer: u.insurer,
-     procedure: u.procedure,
-     amount: u.amount,
-     dentist: u.dentist,
-     claimData: window.claimData
-   });
    _s('dash-name-display', u.first ? 'Welcome, '+u.first+'!' : 'Welcome!');
    _s('dash-avatar', (u.first||'U')[0].toUpperCase());
    if(u.insurer) _s('dash-insurer-sub','Estimated from your '+u.insurer+' plan');
@@ -6651,7 +4632,6 @@ function initDashboard(){
      var dashEl = document.getElementById('s-dashboard');
      if(dashEl){
        dashEl.style.cssText = 'display:block !important;position:absolute;top:0;left:0;width:100%;height:100%;overflow-y:auto;background:white;z-index:999;';
-       console.log('[initDashboard] dashboard el display:', dashEl.style.display, 'offsetHeight:', dashEl.offsetHeight);
      }
    }, 100);
 }
@@ -6729,7 +4709,6 @@ window.stdMountStripe = async function() {
       body:JSON.stringify({action:'setup_intent', email:(window.currentUser&&window.currentUser.email)||''})
     });
     var data = await resp.json();
-    console.log('[STD] Lambda response:', data);
     if(data.clientSecret) {
       var elements = stripe.elements({ clientSecret: data.clientSecret, appearance:{ theme:'stripe', variables:{ colorPrimary:'#0D9488' } } });
       var payEl = elements.create('payment');
@@ -6841,7 +4820,6 @@ window.showProfile = function() {
   if(!cd.insurer && sessionStorage.getItem('_claimData')){
     try{ cd=JSON.parse(sessionStorage.getItem('_claimData')); }catch(e){}
   }
-  console.log('[Profile insurance] u.insurer:', u.insurer, 'u.memberId:', u.memberId, 'cd.insurer:', cd.insurer, 'cd.memberId:', cd.memberId);
   set('pf-insurer', u.insurer||cd.insurer||'--');
   set('pf-member', u.memberId||cd.memberId||'--');
   set('pf-group', u.groupId||cd.groupId||'--');
@@ -6966,7 +4944,6 @@ window.showDashboard = function() {
   window.navHistory = ['s-dashboard'];
   // Clear paid flag so refresh returns to landing, not dashboard
   sessionStorage.removeItem('paid');
-  console.log('[showDashboard] visible:', dash ? dash.offsetHeight : 'not found');
 
   // Update follow-up card based on claim age
   try { window.updateFollowUpCard && window.updateFollowUpCard(); } catch(e){}
@@ -7364,229 +5341,6 @@ function showTapHint() {
 }
 
 
-
-async function runRefundEstimate() {
- try {
- // Reset UI
- const analyzing = document.getElementById('refund-analyzing');
-    // Reset big number to analyzing state
-    var bnEl = document.getElementById('refund-big-number');
-    if(bnEl) { bnEl.style.fontSize='28px'; bnEl.style.fontStyle='italic'; bnEl.textContent='Calculating what we can recover...'; }
- const resultEl = document.getElementById('refund-result');
- if(analyzing) analyzing.style.display = 'flex';
- if(resultEl) resultEl.style.display = 'none';
-
- ['rc1','rc2','rc3','rc4'].forEach(id => {
- const el = document.getElementById(id);
- if(el){ el.style.opacity='0'; const spans=el.querySelectorAll('span'); if(spans[0])spans[0].textContent='...'; }
- });
-
- // Get claim data
- // Only use OCR-detected amount -- never fallback to stale session data
- const rawAmt = (window.claimData && window.claimData.amountPaid) || window._lastOcrAmount || 0;
- if (!rawAmt) { console.warn('[Credimed] No OCR amount -- aborting runRefundEstimate'); return; }
- const currency = window._amountCurrency || window._currency || 'USD';
- const amt = (currency === 'MXN' && window._MXN_RATE) ? Math.round(rawAmt / window._MXN_RATE) : rawAmt;
- const currLabel = currency === 'MXN' ? 'MXN ' : '';
- const proc = document.getElementById('s2-proc')?.value || currentUser?.procedure || 'Crown';
- const insurer = document.getElementById('s1-ins-provider')?.value ||
- document.getElementById('s1-m-provider')?.value ||
- currentUser?.insurer || 'Delta Dental';
- const memberId = currentUser?.memberId || '--';
- const dentist = currentUser?.dentist || 'Unknown';
-
- const sub = document.getElementById('refund-analyzing-sub');
- if(sub) sub.textContent = 'Analyzing your ' + insurer + ' PPO claim...';
-
- // 
- // CREDIMED AGENT -- Claude analyzes the claim
- // 
- let agentResult = null;
- try {
- const agentPrompt = `You are the Credimed claim analysis agent. Analyze this dental insurance claim and return a JSON object.
-
-CLAIM DATA:
-- Insurance: ${insurer}
-- Member ID: ${memberId}
-- Procedure: ${proc}
-- Amount paid: $${amt}
-- Dentist/clinic: ${dentist}
-
-Return ONLY a valid JSON object with this exact structure:
-{
- "isPPO": true,
- "cdtCode": "D2750",
- "coveragePercent": 75,
- "estimatedRefund": 637,
- "netCost": 213,
- "checks": [
- "Insurance benefits verified ",
- "Out-of-network coverage: 75% ", 
- "CDT D2750 -- Crown confirmed ",
- "Refund estimate ready "
- ],
- "confidence": "high",
- "notes": "Delta Dental PPO plans typically cover crowns at 50-75% of UCR fee. Out-of-network treatment in Mexico qualifies for reimbursement under your out-of-network benefits."
-}
-
-Use real CDT codes, realistic coverage percentages for the specific insurer and procedure, and accurate refund calculations.`;
-
- // Using static calculation (no external API needed)
- } catch(e) {
- console.warn('Calculation error:', e);
- }
-
- // Use agent result or fallback to static calculation
- const cdtMap = {
- 'Crown':'D2750','Implant':'D6010','Root Canal':'D3330',
- 'Extraction':'D7210','Bridge':'D6240','Cleaning':'D1110',
- 'Whitening':'D9975','Veneer':'D2960','Partial Denture':'D5213','Other':'D9999'
- };
- const cdt = agentResult?.cdtCode || cdtMap[proc] || 'D2750';
- const coveragePct = 75;
- const refund = Math.round(amt * 0.75);
- const net = Math.round(amt - refund);
- const agentNotes = agentResult?.notes || '';
-
- // Store agent analysis on user
- if(currentUser) {
- currentUser.cdtCode = cdt;
- currentUser.estimatedRefund = refund;
- currentUser.amount = amt;
- currentUser.procedure = proc;
- currentUser.insurer = insurer;
- currentUser.agentNotes = agentNotes;
- try { sessionStorage.setItem('_cUser', JSON.stringify(currentUser)); } catch(e){}
- }
-
- if(sub) sub.textContent = 'Analysis complete -- ' + insurer + ' PPO confirmed';
-
- const checks = agentResult?.checks || [
- 'Insurance benefits verified ',
- 'Out-of-network coverage: ' + coveragePct + '% ',
- 'CDT ' + cdt + ' -- ' + proc + ' confirmed ',
- 'Refund estimate ready ',
- ];
-
- // Show checks with animation
- checks.forEach((c, i) => {
- const delay = 400 + i * 700;
- setTimeout(() => {
- const el = document.getElementById(c.id);
- if(!el) return;
- el.style.opacity = '1';
- const spans = el.querySelectorAll('span');
- if(spans[0]) spans[0].textContent = '';
- if(spans[1]) { spans[1].textContent = c.text; spans[1].style.color = 'rgba(255,255,255,.8)'; }
- }, delay);
- });
- // Show result after all checks done
- setTimeout(showRefundResult, 600 + checks.length * 900 + 600);
-
-
-
- function showRefundResult() {
- try {
- const a = document.getElementById('refund-analyzing');
- const r = document.getElementById('refund-result');
- if(a) a.style.display = 'none';
- if(r) r.style.display = 'flex';
-
- const paidEl = document.getElementById('refund-paid');
- const insEl = document.getElementById('refund-insurance');
- const netEl = document.getElementById('refund-net');
- const cdtEl = document.getElementById('refund-cdt');
- var _rate = window._MXN_RATE || 17.5;
- // Note: amt/refund/net are already in USD at this point (rawAmt was converted on line ~6662).
- // For MXN originals, we reconstruct the MXN value and show both currencies.
- function _fmtAmt(usdVal){
-   if(currency === 'MXN'){
-     var mxn = Math.round(usdVal * _rate);
-     return 'MXN $' + mxn.toLocaleString() + ' (~$' + usdVal.toLocaleString() + ' USD)';
-   }
-   return '$' + usdVal.toLocaleString() + ' USD';
- }
- if(paidEl) paidEl.textContent = _fmtAmt(amt);
- if(insEl) insEl.textContent = _fmtAmt(refund);
- if(netEl) netEl.textContent = _fmtAmt(net);
- if(cdtEl) cdtEl.textContent = cdt;
-
- // Show agent analysis notes if available
- if(agentNotes) {
- let notesEl = document.getElementById('agent-notes');
- if(!notesEl) {
- notesEl = document.createElement('div');
- notesEl.id = 'agent-notes';
- notesEl.style.cssText = 'margin-top:14px;padding:12px 14px;background:rgba(147,197,253,.08);border:1px solid rgba(147,197,253,.2);border-radius:12px;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6';
- r.appendChild(notesEl);
- }
- notesEl.innerHTML = '<span style="font-size:10px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px"> Agent Analysis</span>' + agentNotes;
- }
-
- // Animate the big number counting up (show USD headline always for clarity)
- const bigNum = document.getElementById('refund-big-number');
- if(bigNum) {
-    bigNum.style.fontSize = '56px';
-    bigNum.style.fontStyle = 'normal';
-    let current = 0;
- const duration = 1800;
- const steps = 60;
- // refund is already in USD here (rawAmt was converted on line ~6671)
- var displayRefund = refund;
- const increment = displayRefund / steps;
- const interval = duration / steps;
- const counter = setInterval(() => {
- current += increment;
- if(current >= displayRefund) {
- current = displayRefund;
- clearInterval(counter);
- bigNum.style.transform = 'scale(1.08)';
- setTimeout(() => bigNum.style.transform = 'scale(1)', 200);
- }
- bigNum.textContent = '$' + Math.round(current).toLocaleString() + ' USD';
- }, interval);
- bigNum.style.transition = 'transform .2s ease';
- }
- } catch(e) { console.warn('showRefundResult error:', e); }
- }
- } catch(e) { console.warn('runRefundEstimate error:', e); }
-}
-
-function runReadyScreen() {
- // Populate captured data
- const insurer = document.getElementById('s1-ins-provider')?.value ||
- document.getElementById('s1-m-provider')?.value || 'Your Insurance';
- const proc = document.getElementById('s2-proc')?.value || '--';
- const city = document.getElementById('s2-city')?.value || '--';
- const amount = parseFloat(document.getElementById('s2-amount')?.value) || 0;
-
- const el_ins = document.getElementById('ready-insurer');
- const el_proc = document.getElementById('ready-proc');
- const el_city = document.getElementById('ready-city');
- const el_amt = document.getElementById('ready-amount');
- if(el_ins) el_ins.textContent = insurer;
- if(el_proc) el_proc.textContent = proc;
- if(el_city) el_city.textContent = city || '--';
- if(el_amt) el_amt.textContent = amount ? '$' + amount.toLocaleString() : '--';
-
- // Pulse the checkmark icon
- const icon = document.getElementById('ready-icon');
- if(icon) {
- icon.style.transform = 'scale(1.15)';
- setTimeout(() => icon.style.transform = 'scale(1)', 300);
- }
-
- // Animate progress bar then auto-advance
- const bar = document.getElementById('ready-bar');
- if(bar) {
- bar.style.width = '0%';
- setTimeout(() => bar.style.width = '100%', 100);
- }
-
- // Auto-advance to plan selection
- setTimeout(() => goTo('s-plan'), 2900);
-}
-
 function runProcessing() {
  // Cancel any previous processing timers
  if(window._procTimers) window._procTimers.forEach(function(t){ clearTimeout(t); });
@@ -7625,12 +5379,10 @@ function runProcessing() {
  // -- Save claim to AWS backend ---------------------------------
  // Singleton: only ONE API call per session, but UI always updates
  if(window._CLAIM_FETCH_SENT === true){
-   console.log('Claim already sent -- skipping API, UI already updated');
    // Still run the processing animation
  }
  if(window._CLAIM_FETCH_SENT !== true) {
  window._CLAIM_FETCH_SENT = true;
- console.log('Sending claim to API - first and only time');
  (function saveClaim(){
    var payload = {
      email:     (currentUser && currentUser.email)     || '',
@@ -7657,7 +5409,6 @@ function runProcessing() {
    .then(function(r){ return r.json(); })
    .then(function(data){
      if(data.claimId && currentUser) currentUser.claimId = data.claimId;
-     console.log('Claim saved:', data.claimId);
    })
    .catch(function(err){ console.warn('Claim save failed:', err); });
  })();
@@ -7814,14 +5565,10 @@ function triggerUpload(id) {
  if (el) el.click();
 }
 window.triggerUpload = triggerUpload;
-if(typeof s1HandleFile==='function') window.s1HandleFile = s1HandleFile;
-if(typeof s2HandleFile==='function') window.s2HandleFile = s2HandleFile;
-// onCb and confirmSig now directly exposed as window.XXX above
-if(typeof cSubmit==='function') window.cSubmit = cSubmit;
 if(typeof doPayment==='function') window.doPayment = doPayment;
 if(typeof runCounters==='function') window.runCounters = runCounters;
 function toggleHelp(){
- var claimScreens = ['s-checklist','s-step1','s-step1b','s-step2','s-step-id','s-step3','s-step4','s-ready'];
+ var claimScreens = ['s-receipt-quick','s-insurance-quick','s-processing','s-plan','s-plan-confirm','s-std-payment','s-step5'];
  var cur = navHistory[navHistory.length-1];
  var inClaimFlow = claimScreens.includes(cur);
  if(inClaimFlow) {
@@ -7882,28 +5629,12 @@ if(typeof doRegister==='function') window.doRegister = doRegister;
 if(typeof doLogin==='function') window.doLogin = doLogin;
 if(typeof doConfirm==='function') window.doConfirm = doConfirm;
 if(typeof doResendCode==='function') window.doResendCode = doResendCode;
-if(typeof s1Continue==='function') window.s1Continue = s1Continue;
-if(typeof s1Submit==='function') window.s1Submit = s1Submit;
-if(typeof s1Reset==='function') window.s1Reset = s1Reset;
-if(typeof s1ToggleManual==='function') window.s1ToggleManual = s1ToggleManual;
-if(typeof s1UseCard==='function') window.s1UseCard = s1UseCard;
-if(typeof s1CheckManual==='function') window.s1CheckManual = s1CheckManual;
-if(typeof s1UseCard==='function') window.s1UseCard = s1UseCard;
-if(typeof s2EditFields==='function') window.s2EditFields = s2EditFields;
-if(typeof s2ConfirmForStep1==='function') window.s2ConfirmForStep1 = s2ConfirmForStep1;
-if(typeof s1TryEnableContinue==='function') window.s1TryEnableContinue = s1TryEnableContinue;
-if(typeof s2Continue==='function') window.s2Continue = s2Continue;
-if(typeof s2CheckFields==='function') window.s2CheckFields = s2CheckFields;
-// s2Confirm moved to Script 1
-if(typeof s2Reset==='function') window.s2Reset = s2Reset;
-// confirmSig and clearCanvas now directly exposed as window.XXX above
 if(typeof showCardForm==='function') window.showCardForm = showCardForm;
 if(typeof hideCardForm==='function') window.hideCardForm = hideCardForm;
 if(typeof doPayment==='function') window.doPayment = doPayment;
 if(typeof sendChat==='function') window.sendChat = sendChat;
 if(typeof sendQuick==='function') window.sendQuick = sendQuick;
 // All sig functions now directly exposed as window.XXX above
-if(typeof cSubmit==='function') window.cSubmit = cSubmit;
 if(typeof initCanvas==='function') window.initCanvas = initCanvas;
 if(typeof initDashboard==='function') window.initDashboard = initDashboard;
 if(typeof autoResize==='function') window.autoResize = autoResize;
@@ -11813,52 +9544,177 @@ window.rqRunOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct+2, 85); if(fill) fill.style.width=pct+'%'; }, 100);
   var b64 = base64.split(',')[1] || base64;
+
+  /* OCR FIX: Visible diagnostic for admins — shows OCR response on screen
+     Admin detection: email contains "jlcsanchez" or role==="admin" */
+  function isAdmin(){
+    var u = window.currentUser;
+    return u && (u.role === 'admin' || (u.email && u.email.indexOf('jlcsanchez') >= 0));
+  }
+  function showDiag(label, data){
+    if(!isAdmin()) return;
+    var panel = document.getElementById('ocr-diag');
+    if(!panel){
+      panel = document.createElement('div');
+      panel.id = 'ocr-diag';
+      panel.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;z-index:99999;background:rgba(30,41,59,.97);color:#fca5a5;padding:10px 12px;border-radius:10px;font-family:ui-monospace,monospace;font-size:10px;line-height:1.4;max-height:45vh;overflow:auto;white-space:pre-wrap;word-break:break-word;border:2px solid #f87171';
+      panel.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong style="color:#fca5a5">🔬 OCR DIAG</strong><button onclick="this.parentNode.parentNode.remove()" style="background:#334155;color:white;border:none;padding:2px 8px;border-radius:4px;font-size:10px">×</button></div><div id="ocr-diag-body"></div>';
+      document.body.appendChild(panel);
+    }
+    var body = document.getElementById('ocr-diag-body');
+    if(body){
+      var entry = document.createElement('div');
+      entry.style.cssText = 'margin-bottom:6px;padding:4px;background:rgba(0,0,0,.3);border-radius:4px';
+      var payload;
+      try { payload = JSON.stringify(data, null, 2); } catch(e){ payload = String(data); }
+      if(payload && payload.length > 1200) payload = payload.substring(0, 1200) + '...';
+      entry.textContent = '[' + new Date().toLocaleTimeString() + '] ' + label + '\n' + (payload || '(null)');
+      body.appendChild(entry);
+    }
+  }
+
+  /* OCR FIX: Normalize field names — Lambda may return different keys */
+  function pickAmount(d){
+    if(!d) return null;
+    var candidates = [d.amount, d.amount_paid, d.total, d.total_paid, d.totalPaid, d.importe, d.total_pagado];
+    for(var i=0;i<candidates.length;i++){
+      var v = candidates[i];
+      if(v !== undefined && v !== null && v !== ''){
+        var num = parseFloat(String(v).replace(/[,$\s]/g,''));
+        if(!isNaN(num) && num > 0) return num;
+      }
+    }
+    return null;
+  }
+  function pickProcedures(d){
+    if(!d) return [];
+    var src = d.procedures || d.items || d.services || d.tratamientos || d.procedures_list || [];
+    if(Array.isArray(src)) {
+      // Could be array of strings OR array of objects {name, ...}
+      return src.map(function(x){
+        if(typeof x === 'string') return x;
+        if(x && typeof x === 'object') return x.name || x.description || x.descripcion || JSON.stringify(x);
+        return String(x);
+      }).filter(Boolean);
+    }
+    // Could be a string with commas/newlines
+    if(typeof src === 'string' && src.trim()) return src.split(/[,\n;]/).map(function(s){return s.trim();}).filter(Boolean);
+    return [];
+  }
+
+  /* OCR DIAG v2: Log payload size + auth token state BEFORE fetch */
+  var payloadSizeKB = Math.round(b64.length * 0.75 / 1024);
+  var idTokenPreview = 'n/a';
+  try {
+    var t = sessionStorage.getItem('idToken');
+    if(t) idTokenPreview = t.substring(0, 20) + '... (len=' + t.length + ')';
+  } catch(e){}
+  showDiag('Pre-fetch state', {
+    url: 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',
+    mediaType: mediaType || 'image/jpeg',
+    imgSizeKB: payloadSizeKB,
+    bodySizeKB: Math.round((b64.length + 100) / 1024),
+    tokenPreview: idTokenPreview,
+    origin: window.location.origin
+  });
+
   authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64:b64, mediaType:mediaType||'image/jpeg', type:'receipt'})
-  }).then(function(r){ return r.json(); }).then(function(d){
+  }).then(function(r){
+    showDiag('HTTP ' + r.status + ' ' + r.statusText, { ok: r.ok, headers: { ct: r.headers.get('content-type') } });
+    return r.json();
+  }).then(function(d){
     clearInterval(iv);
     if(fill) fill.style.width='100%';
     setTimeout(function(){ if(ocrEl) ocrEl.style.display='none'; }, 400);
+
+    /* OCR FIX: Show raw response to admin for diagnosis */
+    showDiag('Lambda response', d);
+
+    /* OCR FIX: Use normalizer to support multiple field name formats */
+    var normalizedAmount = pickAmount(d);
+    var normalizedProcs = pickProcedures(d);
+    showDiag('Normalized', { amount: normalizedAmount, procedures: normalizedProcs, currency: d.currency });
+
     // VALIDATE: Must have amount AND at least one procedure to be a valid receipt
-    var hasValidAmount = d.amount && parseFloat(String(d.amount).replace(/,/g,'')) > 0;
-    var hasProcedures = d.procedures && Array.isArray(d.procedures) && d.procedures.length > 0;
+    var hasValidAmount = normalizedAmount !== null;
+    var hasProcedures = normalizedProcs.length > 0;
     var isValidReceipt = hasValidAmount && hasProcedures;
     if(!isValidReceipt){
-      // Reject the image - not a valid dental receipt
-      var zone = document.getElementById('rq-upload-zone');
-      var preview = document.getElementById('rq-preview');
-      if(preview) preview.style.display = 'none';
-      if(zone) zone.style.display = 'block';
-      // Clear state
-      window._lastOcrAmount = 0;
-      window._docUploads = window._docUploads || {};
-      delete window._docUploads['receipt'];
-      // Show error message
-      var errMsg = document.getElementById('rq-error-msg');
-      if(!errMsg){
-        errMsg = document.createElement('div');
-        errMsg.id = 'rq-error-msg';
-        errMsg.style.cssText = 'background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:14px;padding:14px 16px;margin-bottom:16px;color:#fca5a5;font-size:14px;line-height:1.5';
-        if(zone && zone.parentNode) zone.parentNode.insertBefore(errMsg, zone);
+      /* OCR FIX: Less aggressive rejection. If we got ANY useful data, keep going with manual completion.
+         Only full-reject if we got nothing at all. */
+      var gotSomething = hasValidAmount || hasProcedures;
+
+      if(!gotSomething){
+        // True rejection: OCR returned nothing useful
+        var zone = document.getElementById('rq-upload-zone');
+        var preview = document.getElementById('rq-preview');
+        if(preview) preview.style.display = 'none';
+        if(zone) zone.style.display = 'block';
+        window._lastOcrAmount = 0;
+        window._docUploads = window._docUploads || {};
+        delete window._docUploads['receipt'];
+        var errMsg = document.getElementById('rq-error-msg');
+        if(!errMsg){
+          errMsg = document.createElement('div');
+          errMsg.id = 'rq-error-msg';
+          errMsg.style.cssText = 'background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:14px;padding:14px 16px;margin-bottom:16px;color:#fca5a5;font-size:14px;line-height:1.5';
+          if(zone && zone.parentNode) zone.parentNode.insertBefore(errMsg, zone);
+        }
+        errMsg.innerHTML = '⚠️ <strong>We couldn\'t read your receipt.</strong><br>Please upload a clearer photo, or enter the amount manually below.';
+        errMsg.style.display = 'block';
+        setTimeout(function(){ if(errMsg) errMsg.style.display = 'none'; }, 8000);
+        return;
       }
-      errMsg.innerHTML = '⚠️ <strong>This does not look like a dental receipt.</strong><br>Please upload a clear photo of your receipt showing the amount paid and dental procedures.';
-      errMsg.style.display = 'block';
-      // Auto-hide error after 8 seconds
-      setTimeout(function(){ if(errMsg) errMsg.style.display = 'none'; }, 8000);
+
+      /* OCR PARTIAL: Got some data but not complete — show manual input prominently */
+      window._rqFile = window._rqFile || null;
+      window._docUploads = window._docUploads || {};
+      window._docUploads['receipt'] = window._rqFile;
+
+      var partialMsg = document.getElementById('rq-partial-msg');
+      if(!partialMsg){
+        partialMsg = document.createElement('div');
+        partialMsg.id = 'rq-partial-msg';
+        partialMsg.style.cssText = 'background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);border-radius:14px;padding:12px 14px;margin-bottom:12px;color:#fcd34d;font-size:13px;line-height:1.4';
+        var results = document.getElementById('rq-results');
+        if(results && results.parentNode) results.parentNode.insertBefore(partialMsg, results);
+      }
+      partialMsg.innerHTML = '📝 <strong>Scanner needs your help</strong><br>Please confirm the amount below';
+      partialMsg.style.display = 'block';
+
+      // Still show results card + manual input + strengthen
+      var resultsEl2 = document.getElementById('rq-results');
+      if(resultsEl2) resultsEl2.style.display = 'block';
+      var manual = document.getElementById('rq-manual');
+      if(manual) manual.style.display = 'block';
+      var trustEl = document.getElementById('rq-trust-moment');
+      if(trustEl) trustEl.style.display = 'block';
+      var strengthen = document.getElementById('rq-strengthen');
+      if(strengthen) strengthen.style.display = 'block';
+      if(window.rqShowStrengthen) window.rqShowStrengthen((normalizedProcs[0])||'');
+
+      // Auto-focus on manual amount
+      setTimeout(function(){
+        var manualInp = document.getElementById('rq-manual-amount');
+        if(manualInp) { manualInp.focus(); }
+      }, 200);
       return;
     }
     // Valid receipt — clear any previous error
     var existingErr = document.getElementById('rq-error-msg');
     if(existingErr) existingErr.style.display = 'none';
+    var existingPartial = document.getElementById('rq-partial-msg');
+    if(existingPartial) existingPartial.style.display = 'none';
     // Show results
     var results = document.getElementById('rq-results');
     if(results) results.style.display = 'block';
     var currency = d.currency || 'USD';
-    if(d.amount) {
+    if(normalizedAmount !== null) {
       var el = document.getElementById('rq-r-amount');
-      var _rawOcr = parseFloat(String(d.amount).replace(/,/g,''))||0;
+      var _rawOcr = normalizedAmount;
       window._lastOcrAmount = _rawOcr;
       window._currency = currency;
       window._amountCurrency = currency;
@@ -11895,18 +9751,18 @@ window.rqRunOCR = function(base64, mediaType) {
     }
     var curEl = document.getElementById('rq-r-currency');
     if(curEl) curEl.textContent = currency;
-    if(d.procedures && Array.isArray(d.procedures)) {
+    if(normalizedProcs.length > 0) {
       var procsEl = document.getElementById('rq-r-procs');
       if(procsEl) {
         procsEl.innerHTML = '';
-        d.procedures.slice(0,3).forEach(function(p) {
+        normalizedProcs.slice(0,3).forEach(function(p) {
           var chip = document.createElement('span');
           chip.style.cssText = 'background:rgba(147,197,253,.12);border:1px solid rgba(147,197,253,.3);color:#93c5fd;border-radius:12px;padding:2px 8px;font-size:11px;font-weight:600';
           chip.textContent = p;
           procsEl.appendChild(chip);
         });
       }
-      window._selectedProcedures = d.procedures;
+      window._selectedProcedures = normalizedProcs;
     }
     if(d.dentist) { var s2d = document.getElementById('s2-dentist'); if(s2d) s2d.value=d.dentist; }
     if(d.date) { var s2dt = document.getElementById('s2-date'); if(s2dt) s2dt.value=d.date; }
@@ -11972,9 +9828,10 @@ window.rqRunOCR = function(base64, mediaType) {
       var btn = document.getElementById('rq-continue-btn');
       if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
     }
-  }).catch(function(){
+  }).catch(function(err){
     clearInterval(iv);
     if(ocrEl) ocrEl.style.display='none';
+    showDiag('CATCH ERROR', { error: err && (err.message || String(err)), stack: err && err.stack });
     // On error: show results card + manual entry + strengthen (degraded mode)
     var results = document.getElementById('rq-results');
     if(results) results.style.display = 'block';
@@ -11985,6 +9842,11 @@ window.rqRunOCR = function(base64, mediaType) {
     /* Phase 1 FIX: Show Strengthen even when OCR fails — user still needs to see optional boosts */
     var strengthen = document.getElementById('rq-strengthen');
     if(strengthen) strengthen.style.display = 'block';
+    /* OCR FIX: Auto-focus manual input so user can type immediately */
+    setTimeout(function(){
+      var manualInp = document.getElementById('rq-manual-amount');
+      if(manualInp) manualInp.focus();
+    }, 200);
     var btn = document.getElementById('rq-continue-btn');
     if(btn) { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
   });
