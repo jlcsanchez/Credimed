@@ -969,7 +969,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- ═══════════════════════════════════════
      AWS COGNITO SDK (Phase 1 — Auth integration)
      ═══════════════════════════════════════ -->
+
 <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+
 <script>
 /* Credimed Cognito configuration (us-west-2_8GgqReC58) */
 window.CREDIMED_COGNITO = {
@@ -1114,6 +1116,321 @@ window.authFetch = async function(url, opts){
     var user = pool.getCurrentUser();
     if (user) user.signOut();
   };
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   PHASE 0 — GLOBAL STATE + CLAIM API ADAPTER
+   ═══════════════════════════════════════════════════════════════════
+   Introduces:
+   - window.appState: hierarchical claim object + UI state
+   - window.claimAPI: adapter between new claim shape and current Lambda backend
+   - Session persistence: survives refresh
+   - Safe logging: never prints PHI
+
+   Design principle: backend Lambdas keep their flat shape for now.
+   The adapter translates in/out. When backend migrates (Phase 7), only
+   this adapter changes — the rest of the frontend stays untouched.
+   ═══════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  /* ---------- Canonical claim shape ---------- */
+  function emptyClaim(){
+    return {
+      claimId: null,
+      userId: null,
+      status: 'draft',                  /* draft | processing | estimated | unlocked | submitted | paid | rejected */
+      insurance: {
+        provider:    '',
+        memberId:    '',
+        groupNumber: ''
+      },
+      treatment: {
+        procedures:   [],               /* [{name, costMXN}] */
+        totalCostMXN: 0,
+        date:         ''
+      },
+      evidence: {
+        insuranceCardUrl: '',
+        receiptUrl:       '',
+        xrays:            []            /* [{type:'before'|'after', url}] */
+      },
+      estimate: {
+        reimbursementUSD: 0,
+        reimbursementMXN: 0,
+        coveragePercent:  70,
+        confidence:       'standard',   /* 'standard' | 'high' */
+        fxRateUsed:       17,           /* TODO Phase 7: snapshot from backend daily rate */
+        strengthScore:    0             /* 0-100 */
+      },
+      outcome: {
+        wasSubmitted:    false,
+        submittedAt:     null,
+        wasPaid:         false,
+        amountPaidUSD:   0,
+        paidAt:          null,
+        daysToPayment:   0,
+        rejectionReason: ''
+      },
+      metadata: {
+        hasXrays:  false,
+        createdAt: null,
+        updatedAt: null
+      }
+    };
+  }
+
+  /* ---------- Global state ---------- */
+  window.appState = {
+    claimId:      null,
+    claim:        null,
+    currentScreen:'landing',
+    loading:      false
+  };
+
+  /* ---------- PHI-safe logger ---------- */
+  /* Never logs claim.insurance or claim.evidence. Redacts treatment amounts > $0.
+     Use for all claim-related logging instead of console.log. */
+  window.safeLog = function(label, claim){
+    if (!claim) { console.log('[claim] ' + label + ': (null)'); return; }
+    console.log('[claim] ' + label, {
+      claimId:   claim.claimId,
+      status:    claim.status,
+      hasAmount: !!(claim.treatment && claim.treatment.totalCostMXN),
+      hasXrays:  !!(claim.metadata && claim.metadata.hasXrays),
+      updatedAt: claim.metadata && claim.metadata.updatedAt
+    });
+  };
+
+  /* ---------- Adapter: new shape ⇄ current backend shape ----------
+     Current backend (credimed-save-claim) expects FLAT payload:
+       { email, firstName, lastName, memberId, insurer, procedure, amount, ... }
+     New canonical shape is hierarchical. These helpers translate.
+     When backend migrates to accept hierarchical directly, remove these. */
+
+  function toBackendPayload(claim){
+    var u = window.currentUser || {};
+    return {
+      /* Backwards-compatible flat fields */
+      email:     u.email  || '',
+      firstName: u.first  || '',
+      lastName:  u.last   || '',
+      memberId:  (claim.insurance && claim.insurance.memberId)    || '',
+      insurer:   (claim.insurance && claim.insurance.provider)    || '',
+      procedure: (claim.treatment && claim.treatment.procedures && claim.treatment.procedures[0] && claim.treatment.procedures[0].name) || '',
+      amount:    (claim.treatment && claim.treatment.totalCostMXN) || 0,
+      dentist:   u.dentist || '',
+      /* Forward-compatible nested payload for when backend supports it */
+      _v2:       claim
+    };
+  }
+
+  function fromBackendResponse(resp){
+    /* Backend currently returns at minimum { claimId, ...echoFields }.
+       Rehydrate into canonical shape, preserving any fields already set. */
+    var base = (window.appState.claim && window.appState.claim.claimId === resp.claimId)
+      ? window.appState.claim
+      : emptyClaim();
+
+    base.claimId = resp.claimId || base.claimId;
+    if (resp.userId)  base.userId = resp.userId;
+    if (resp.status)  base.status = resp.status;
+
+    /* If backend sent _v2 hierarchical, prefer it */
+    if (resp._v2 && typeof resp._v2 === 'object') {
+      return Object.assign(emptyClaim(), resp._v2, { claimId: base.claimId });
+    }
+
+    /* Otherwise merge flat fields into the hierarchy */
+    if (resp.memberId  !== undefined) base.insurance.memberId   = resp.memberId;
+    if (resp.insurer   !== undefined) base.insurance.provider   = resp.insurer;
+    if (resp.amount    !== undefined) base.treatment.totalCostMXN = Number(resp.amount) || 0;
+    if (resp.procedure !== undefined && resp.procedure) {
+      base.treatment.procedures = [{ name: resp.procedure, costMXN: base.treatment.totalCostMXN }];
+    }
+    base.metadata.updatedAt = Date.now();
+    return base;
+  }
+
+  /* ---------- claimAPI: public interface ---------- */
+  window.claimAPI = {
+
+    /* Create a new claim (POST /claims). Returns the created claim with claimId. */
+    create: async function(partial){
+      var claim = Object.assign(emptyClaim(), partial || {});
+      claim.metadata.createdAt = Date.now();
+      claim.metadata.updatedAt = Date.now();
+      claim.metadata.hasXrays = (claim.evidence.xrays || []).filter(function(x){ return x && x.url; }).length >= 2;
+
+      try {
+        var resp = await window.authFetch(window.CREDIMED_API + '/claims', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(toBackendPayload(claim))
+        });
+        if (!resp.ok) throw new Error('POST /claims ' + resp.status);
+        var data = await resp.json();
+        var full = fromBackendResponse(data);
+        /* Merge local-only fields that backend doesn't persist yet */
+        full.evidence = claim.evidence;
+        full.estimate = claim.estimate;
+        full.outcome  = claim.outcome;
+        full.metadata = Object.assign({}, claim.metadata, full.metadata);
+        window.appState.claim   = full;
+        window.appState.claimId = full.claimId;
+        window._persistClaim();
+        window.safeLog('create', full);
+        return full;
+      } catch(err) {
+        console.warn('[claimAPI.create] failed:', err && err.message);
+        /* Graceful degradation: keep the claim locally even if backend failed. */
+        claim.claimId = claim.claimId || ('local_' + Date.now());
+        window.appState.claim   = claim;
+        window.appState.claimId = claim.claimId;
+        window._persistClaim();
+        return claim;
+      }
+    },
+
+    /* Partial update. Merges patch into current claim and persists. */
+    update: async function(patch){
+      var current = window.appState.claim || emptyClaim();
+      /* Deep-ish merge (one level) */
+      Object.keys(patch || {}).forEach(function(k){
+        if (patch[k] && typeof patch[k] === 'object' && !Array.isArray(patch[k])) {
+          current[k] = Object.assign({}, current[k], patch[k]);
+        } else {
+          current[k] = patch[k];
+        }
+      });
+      current.metadata.updatedAt = Date.now();
+      current.metadata.hasXrays = (current.evidence.xrays || []).filter(function(x){ return x && x.url; }).length >= 2;
+
+      /* Save locally immediately so refresh never loses data */
+      window.appState.claim = current;
+      window._persistClaim();
+
+      /* Best-effort backend sync. Current backend only supports POST /claims
+         (creates new row). Until a PATCH endpoint exists, we POST the latest
+         state on important transitions. Not ideal but non-blocking. */
+      if (patch && patch.status) {
+        try {
+          var resp = await window.authFetch(window.CREDIMED_API + '/claims', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(toBackendPayload(current))
+          });
+          if (resp.ok) {
+            var data = await resp.json();
+            if (data.claimId && !current.claimId.startsWith('local_')) {
+              /* keep existing claimId */
+            } else if (data.claimId) {
+              current.claimId = data.claimId;
+              window.appState.claimId = data.claimId;
+              window._persistClaim();
+            }
+          }
+        } catch(err) {
+          console.warn('[claimAPI.update] backend sync failed (local OK):', err && err.message);
+        }
+      }
+      window.safeLog('update', current);
+      return current;
+    },
+
+    /* Fetch a specific claim by ID. Current backend has no GET /claims/{id},
+       so we list and filter until that endpoint is added (Phase 7). */
+    fetch: async function(claimId){
+      if (!claimId) return null;
+      try {
+        var resp = await window.authFetch(window.CREDIMED_API + '/claims');
+        if (!resp.ok) throw new Error('GET /claims ' + resp.status);
+        var data = await resp.json();
+        var list = Array.isArray(data) ? data : (data.claims || data.Items || []);
+        var match = list.find(function(c){ return c.claimId === claimId; });
+        return match ? fromBackendResponse(match) : null;
+      } catch(err) {
+        console.warn('[claimAPI.fetch] failed:', err && err.message);
+        return null;
+      }
+    },
+
+    /* List all claims for current user. */
+    list: async function(){
+      try {
+        var resp = await window.authFetch(window.CREDIMED_API + '/claims');
+        if (!resp.ok) throw new Error('GET /claims ' + resp.status);
+        var data = await resp.json();
+        var list = Array.isArray(data) ? data : (data.claims || data.Items || []);
+        return list.map(fromBackendResponse);
+      } catch(err) {
+        console.warn('[claimAPI.list] failed:', err && err.message);
+        return [];
+      }
+    }
+  };
+
+  /* Expose for internal use */
+  window._emptyClaim = emptyClaim;
+
+  /* ---------- Persistence (sessionStorage) ----------
+     Stores the claim locally so refresh/close don't lose progress.
+     Note: this IS PHI-sensitive storage but sessionStorage is per-tab
+     and cleared on close. For stricter HIPAA posture (Phase 7), move
+     to backend-only with stricter token rotation. */
+  window._persistClaim = function(){
+    try {
+      if (window.appState.claim) {
+        sessionStorage.setItem('_credimedClaim', JSON.stringify(window.appState.claim));
+      } else {
+        sessionStorage.removeItem('_credimedClaim');
+      }
+    } catch(e){ /* quota / privacy mode */ }
+  };
+
+  /* Rehydrate on page load. Runs after Cognito session restoration above. */
+  window._rehydrateClaim = async function(){
+    /* 1) Try session cache (fast) */
+    try {
+      var cached = sessionStorage.getItem('_credimedClaim');
+      if (cached) {
+        var parsed = JSON.parse(cached);
+        if (parsed && parsed.claimId) {
+          window.appState.claim   = parsed;
+          window.appState.claimId = parsed.claimId;
+          window.safeLog('rehydrate:cache', parsed);
+        }
+      }
+    } catch(e){}
+
+    /* 2) Refresh from backend if we have a claimId and are logged in */
+    if (window.appState.claimId && !String(window.appState.claimId).startsWith('local_')) {
+      try {
+        var fresh = await window.claimAPI.fetch(window.appState.claimId);
+        if (fresh) {
+          /* Preserve local-only fields (evidence URLs, estimate) that backend
+             doesn't persist yet. Merge fresh status over cache. */
+          var merged = Object.assign({}, window.appState.claim, fresh);
+          merged.evidence = (window.appState.claim && window.appState.claim.evidence) || fresh.evidence;
+          merged.estimate = (window.appState.claim && window.appState.claim.estimate) || fresh.estimate;
+          window.appState.claim = merged;
+          window._persistClaim();
+          window.safeLog('rehydrate:backend', merged);
+        }
+      } catch(e){
+        console.warn('[rehydrate] backend fetch failed, using cache');
+      }
+    }
+  };
+
+  /* Kick off rehydration after DOM ready */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ window._rehydrateClaim(); });
+  } else {
+    window._rehydrateClaim();
+  }
+
+  console.log('[Phase 0] appState + claimAPI ready');
 })();
 </script>
 
@@ -4059,8 +4376,8 @@ function startNewClaim() {
  var s2conf = document.getElementById('s2-confirm-banner'); if(s2conf) s2conf.style.display='none';
  var bn = document.getElementById('bottom-nav');
  if(bn) { bn.classList.remove('show'); bn.style.display='none'; }
- try { goTo('s-checklist'); } catch(e) {
- const target = 's-checklist';
+ try { goTo('s-step1'); } catch(e) {
+ const target = 's-step1';
  navHistory = [target];
  const screen = document.getElementById(target);
  if(screen) { screen.classList.add('active'); screen.style.display='block'; screen.scrollTop=0; }
@@ -4377,7 +4694,7 @@ function loginUser(u){
    return;
  }
  const isNew = !u.hasCompletedOnce;
- if(isNew) { u.hasCompletedOnce = true; goTo('s-checklist'); }
+ if(isNew) { u.hasCompletedOnce = true; goTo('s-step1'); }
  else goTo('s-dashboard');
 }
 
