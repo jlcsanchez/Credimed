@@ -4376,8 +4376,9 @@ function startNewClaim() {
  var s2conf = document.getElementById('s2-confirm-banner'); if(s2conf) s2conf.style.display='none';
  var bn = document.getElementById('bottom-nav');
  if(bn) { bn.classList.remove('show'); bn.style.display='none'; }
- try { goTo('s-step1'); } catch(e) {
- const target = 's-step1';
+ /* Phase 1 — flujo v2.2: go to receipt-quick (not s-step1 with old tabs) */
+ try { goTo('s-receipt-quick'); } catch(e) {
+ const target = 's-receipt-quick';
  navHistory = [target];
  const screen = document.getElementById(target);
  if(screen) { screen.classList.add('active'); screen.style.display='block'; screen.scrollTop=0; }
@@ -4694,7 +4695,8 @@ function loginUser(u){
    return;
  }
  const isNew = !u.hasCompletedOnce;
- if(isNew) { u.hasCompletedOnce = true; goTo('s-step1'); }
+ /* Phase 1 — flujo v2.2: receipt-first (low friction) instead of Insurance+Receipt together */
+ if(isNew) { u.hasCompletedOnce = true; goTo('s-receipt-quick'); }
  else goTo('s-dashboard');
 }
 
@@ -11912,6 +11914,45 @@ window.rqRunOCR = function(base64, mediaType) {
     // Mark receipt as done in full flow
     window._docUploads = window._docUploads || {};
     window._docUploads['receipt'] = window._rqFile;
+
+    /* ═══ PHASE 1 — Sync to appState.claim ═══
+       When OCR succeeds, create/update claim in global state.
+       Non-blocking: if claimAPI fails, the UI flow continues. */
+    try {
+      if (window.claimAPI && window.appState) {
+        var existing = window.appState.claim;
+        var totalMXN = (currency === 'MXN') ? _rawOcr : (_usdAmt * 17); // snapshot to MXN for canonical storage
+        var procedureList = (d.procedures || []).map(function(p){
+          return { name: p, costMXN: 0 };
+        });
+        var patch = {
+          status: 'processing',
+          treatment: {
+            procedures: procedureList,
+            totalCostMXN: totalMXN,
+            date: d.date || ''
+          },
+          estimate: {
+            reimbursementUSD: refundHigh || 0,
+            reimbursementMXN: (refundHigh || 0) * 17,
+            coveragePercent: 70,
+            confidence: 'standard',
+            fxRateUsed: 17,
+            strengthScore: 62
+          }
+        };
+        if (existing && existing.claimId) {
+          /* Update existing draft */
+          window.claimAPI.update(patch).catch(function(e){ console.warn('[Phase 1] update failed', e && e.message); });
+        } else {
+          /* Create new claim */
+          window.claimAPI.create(patch).catch(function(e){ console.warn('[Phase 1] create failed', e && e.message); });
+        }
+      }
+    } catch(phase1Err) {
+      console.warn('[Phase 1] sync to appState failed (non-blocking):', phase1Err && phase1Err.message);
+    }
+
     // Show trust moment + enable continue
     var trustEl = document.getElementById('rq-trust-moment');
     if(trustEl) trustEl.style.display = 'block';
@@ -11997,6 +12038,14 @@ window.rqReset = function() {
 };
 
 window.rqContinue = function() {
+  /* Phase 1 — mark claim as 'estimated' before moving forward */
+  try {
+    if (window.claimAPI && window.appState && window.appState.claim) {
+      window.claimAPI.update({ status: 'estimated' })
+        .catch(function(e){ console.warn('[Phase 1] continue status sync failed:', e && e.message); });
+    }
+  } catch(e) { /* non-blocking */ }
+
   // Receipt done → ask for insurance card next
   if(window.goTo) window.goTo('s-insurance-quick');
 };
@@ -12122,6 +12171,45 @@ window.rqHandleStrengthen = function(input, key) {
   }
   window.rqMarkCheck(key);
   window.rqRenderFiles(key);
+
+  /* ═══ PHASE 1 — Sync strengthen docs to appState.claim.evidence ═══
+     We don't upload files to backend here (that's Phase 7 with S3).
+     We just flag WHAT was uploaded so estimate + strength can reflect it. */
+  try {
+    if (window.claimAPI && window.appState) {
+      var xrayCount = Array.isArray(window._docUploads.xray) ? window._docUploads.xray.length : (window._docUploads.xray ? 1 : 0);
+      var hasXrays = xrayCount >= 2;
+      var hasTreatment = !!window._docUploads.treatment;
+      var hasId = !!window._docUploads.id;
+
+      /* Claim strength bumps: xrays=22, treatment=10, id=6 (from _rqStrengthPcts) */
+      var score = 62 + (hasXrays ? 22 : 0) + (hasTreatment ? 10 : 0) + (hasId ? 6 : 0);
+      score = Math.min(score, 100);
+      var confidence = (xrayCount >= 2) ? 'high' : 'standard';
+
+      /* Build xrays array for appState (metadata only — no base64 PHI in state) */
+      var xraysArr = [];
+      if (xrayCount > 0) {
+        xraysArr.push({ type: 'before', url: '' });
+        if (xrayCount > 1) xraysArr.push({ type: 'after', url: '' });
+      }
+
+      window.claimAPI.update({
+        evidence: {
+          xrays: xraysArr
+        },
+        estimate: {
+          strengthScore: score,
+          confidence: confidence
+        },
+        metadata: {
+          hasXrays: hasXrays
+        }
+      }).catch(function(e){ console.warn('[Phase 1] strengthen sync failed:', e && e.message); });
+    }
+  } catch(phase1Err) {
+    console.warn('[Phase 1] strengthen→appState non-blocking error:', phase1Err && phase1Err.message);
+  }
 };
 </script>
 
