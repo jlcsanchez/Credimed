@@ -11963,6 +11963,9 @@ window.rqRunOCR = function(base64, mediaType) {
     if(!d.amount || parseFloat(d.amount) <= 0) {
       var manual = document.getElementById('rq-manual');
       if(manual) manual.style.display = 'block';
+      /* Phase 1 FIX: Strengthen was already shown above via rqShowStrengthen — ensure it stays visible */
+      var strengthen = document.getElementById('rq-strengthen');
+      if(strengthen) strengthen.style.display = 'block';
       var btn = document.getElementById('rq-continue-btn');
       if(btn) { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
     } else {
@@ -11972,13 +11975,16 @@ window.rqRunOCR = function(base64, mediaType) {
   }).catch(function(){
     clearInterval(iv);
     if(ocrEl) ocrEl.style.display='none';
-    // On error: show results card + manual entry
+    // On error: show results card + manual entry + strengthen (degraded mode)
     var results = document.getElementById('rq-results');
     if(results) results.style.display = 'block';
     var manual = document.getElementById('rq-manual');
     if(manual) manual.style.display = 'block';
     var trustEl = document.getElementById('rq-trust-moment');
     if(trustEl) trustEl.style.display = 'block';
+    /* Phase 1 FIX: Show Strengthen even when OCR fails — user still needs to see optional boosts */
+    var strengthen = document.getElementById('rq-strengthen');
+    if(strengthen) strengthen.style.display = 'block';
     var btn = document.getElementById('rq-continue-btn');
     if(btn) { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
   });
@@ -12018,6 +12024,61 @@ window.rqManualInput = function() {
     if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
     var trustEl = document.getElementById('rq-trust-moment');
     if(trustEl) trustEl.style.display = 'block';
+
+    /* ═══ PHASE 1 FIX — Show Strengthen + Refund estimate even when OCR failed ═══ */
+    try {
+      /* 1. Show Strengthen your claim section (was hidden because OCR failed) */
+      var strengthen = document.getElementById('rq-strengthen');
+      if(strengthen) strengthen.style.display = 'block';
+
+      /* 2. Compute USD equivalent */
+      var fxRate = 17;
+      var usdAmt = (currency === 'MXN') ? Math.round(val / fxRate) : val;
+
+      /* 3. Compute refund range (40%-80% heuristic) in USD */
+      var refundLow  = Math.round(usdAmt * 0.40 / 10) * 10;
+      var refundHigh = Math.round(usdAmt * 0.80 / 10) * 10;
+
+      /* 4. Populate estimated refund UI */
+      var refundBox = document.getElementById('rq-estimated-refund');
+      var refundPrimary = document.getElementById('rq-refund-primary');
+      var refundRangeLine = document.getElementById('rq-refund-range-line');
+      if(refundPrimary && usdAmt > 0) {
+        refundPrimary.textContent = 'Up to $' + refundHigh.toLocaleString() + ' back from your insurance';
+      }
+      if(refundRangeLine && usdAmt > 0) {
+        refundRangeLine.textContent = 'Most patients recover between $' + refundLow.toLocaleString() + '–$' + refundHigh.toLocaleString() + ' depending on their PPO plan';
+      }
+      if(refundBox && usdAmt > 0) refundBox.style.display = 'block';
+
+      /* 5. Sync to appState.claim (Phase 1) */
+      if(window.claimAPI && window.appState) {
+        var totalMXN = (currency === 'MXN') ? val : (usdAmt * fxRate);
+        var patch = {
+          status: 'processing',
+          treatment: {
+            procedures: window.appState.claim && window.appState.claim.treatment && window.appState.claim.treatment.procedures || [],
+            totalCostMXN: totalMXN,
+            date: (window.appState.claim && window.appState.claim.treatment && window.appState.claim.treatment.date) || ''
+          },
+          estimate: {
+            reimbursementUSD: refundHigh,
+            reimbursementMXN: refundHigh * fxRate,
+            coveragePercent: 70,
+            confidence: (window.appState.claim && window.appState.claim.estimate && window.appState.claim.estimate.confidence) || 'standard',
+            fxRateUsed: fxRate,
+            strengthScore: (window.appState.claim && window.appState.claim.estimate && window.appState.claim.estimate.strengthScore) || 62
+          }
+        };
+        if(window.appState.claim && window.appState.claim.claimId) {
+          window.claimAPI.update(patch).catch(function(e){ console.warn('[Phase 1 manual] update failed', e && e.message); });
+        } else {
+          window.claimAPI.create(patch).catch(function(e){ console.warn('[Phase 1 manual] create failed', e && e.message); });
+        }
+      }
+    } catch(fixErr) {
+      console.warn('[Phase 1 FIX] manual input enhancement non-blocking error:', fixErr && fixErr.message);
+    }
   } else {
     var btn = document.getElementById('rq-continue-btn');
     if(btn) { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
