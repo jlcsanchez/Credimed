@@ -9604,19 +9604,30 @@ window.rqRunOCR = function(base64, mediaType) {
 
   /* OCR DIAG v2: Log payload size + auth token state BEFORE fetch */
   var payloadSizeKB = Math.round(b64.length * 0.75 / 1024);
-  var idTokenPreview = 'n/a';
-  try {
-    var t = sessionStorage.getItem('idToken');
-    if(t) idTokenPreview = t.substring(0, 20) + '... (len=' + t.length + ')';
-  } catch(e){}
-  showDiag('Pre-fetch state', {
-    url: 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',
-    mediaType: mediaType || 'image/jpeg',
-    imgSizeKB: payloadSizeKB,
-    bodySizeKB: Math.round((b64.length + 100) / 1024),
-    tokenPreview: idTokenPreview,
-    origin: window.location.origin
-  });
+  var _doFetchOcr = function(idTokenPreview){
+    showDiag('Pre-fetch state', {
+      url: 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr',
+      mediaType: mediaType || 'image/jpeg',
+      imgSizeKB: payloadSizeKB,
+      bodySizeKB: Math.round((b64.length + 100) / 1024),
+      tokenPreview: idTokenPreview,
+      origin: window.location.origin
+    });
+  };
+  // Try the real source: window.cognitoGetIdToken()
+  if (typeof window.cognitoGetIdToken === 'function') {
+    try {
+      window.cognitoGetIdToken().then(function(tok){
+        _doFetchOcr(tok ? (tok.substring(0, 20) + '... (len=' + tok.length + ')') : 'empty');
+      }).catch(function(e){
+        _doFetchOcr('getIdToken rejected: ' + (e && e.message || String(e)));
+      });
+    } catch(e){
+      _doFetchOcr('getIdToken threw: ' + (e && e.message || String(e)));
+    }
+  } else {
+    _doFetchOcr('cognitoGetIdToken missing');
+  }
 
   authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
