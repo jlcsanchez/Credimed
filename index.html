@@ -1432,6 +1432,156 @@ window.authFetch = async function(url, opts){
 
   console.log('[Phase 0] appState + claimAPI ready');
 })();
+
+/* ═══════════════════════════════════════════════════════════════════
+   DEBUG PANEL — Solo visible para admin (ceo@credimed.us)
+   Intercepta llamadas al endpoint /ocr y muestra la respuesta en
+   pantalla. Útil para depurar sin acceso a Console en móvil.
+   ═══════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  /* Create overlay UI */
+  function createDebugPanel(){
+    if (document.getElementById('credimed-debug-panel')) return;
+    var panel = document.createElement('div');
+    panel.id = 'credimed-debug-panel';
+    panel.style.cssText = [
+      'position:fixed',
+      'top:60px',
+      'right:12px',
+      'left:12px',
+      'max-width:560px',
+      'margin-left:auto',
+      'background:rgba(220,38,38,.95)',
+      'color:#fff',
+      'padding:12px 14px',
+      'border-radius:10px',
+      'font-family:ui-monospace,monospace',
+      'font-size:11px',
+      'line-height:1.45',
+      'z-index:99999',
+      'box-shadow:0 12px 30px rgba(0,0,0,.5)',
+      'max-height:60vh',
+      'overflow:auto',
+      'display:none',
+      'white-space:pre-wrap',
+      'word-break:break-word'
+    ].join(';');
+    panel.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px">'
+      + '<strong style="font-size:12px;letter-spacing:.5px">🔬 OCR DEBUG</strong>'
+      + '<button onclick="window.credimedDebug.clear()" style="background:rgba(255,255,255,.15);border:none;color:white;border-radius:6px;padding:2px 8px;font-size:10px;cursor:pointer">clear</button>'
+      + '<button onclick="document.getElementById(\'credimed-debug-panel\').style.display=\'none\'" style="background:rgba(255,255,255,.15);border:none;color:white;border-radius:6px;padding:2px 8px;font-size:10px;cursor:pointer">×</button>'
+      + '</div>'
+      + '<div id="credimed-debug-body" style="font-size:11px"></div>';
+    document.body.appendChild(panel);
+  }
+
+  window.credimedDebug = {
+    log: function(label, data){
+      /* Only admins see debug */
+      var u = window.currentUser;
+      var isAdmin = u && (u.email === 'ceo@credimed.us' || u.role === 'admin' || (u.email && u.email.indexOf('jlcsanchez') >= 0));
+      if (!isAdmin) return;
+
+      createDebugPanel();
+      var panel = document.getElementById('credimed-debug-panel');
+      var body = document.getElementById('credimed-debug-body');
+      if (!panel || !body) return;
+      panel.style.display = 'block';
+
+      var entry = document.createElement('div');
+      entry.style.cssText = 'margin-bottom:10px;padding:8px;background:rgba(0,0,0,.35);border-radius:6px;border-left:3px solid #fca5a5';
+      var time = new Date().toLocaleTimeString();
+      var payload;
+      try { payload = JSON.stringify(data, null, 2); } catch(e){ payload = String(data); }
+      if (payload && payload.length > 1500) payload = payload.substring(0, 1500) + '\n... (truncated)';
+      entry.innerHTML = '<div style="font-weight:700;color:#fca5a5;margin-bottom:4px">[' + time + '] ' + label + '</div>'
+        + '<pre style="margin:0;font-size:11px;line-height:1.4;color:#fef2f2;white-space:pre-wrap;word-break:break-word">' + (payload || '(empty)') + '</pre>';
+
+```
+  body.appendChild(entry);
+
+  /* Scroll to bottom */
+  panel.scrollTop = panel.scrollHeight;
+},
+clear: function(){
+  var body = document.getElementById('credimed-debug-body');
+  if (body) body.innerHTML = '';
+}
+```
+
+};
+
+/* Monkey-patch authFetch to intercept /ocr calls */
+var pending = null;
+var originalAuthFetch = null;
+
+function wrapAuthFetch(){
+if (originalAuthFetch || !window.authFetch) return;
+originalAuthFetch = window.authFetch;
+window.authFetch = function(url, opts){
+var isOcr = typeof url === ‘string’ && url.indexOf(’/ocr’) >= 0;
+
+```
+  if (isOcr) {
+    var startTime = Date.now();
+    var ocrType = 'unknown';
+    try {
+      var bodyParsed = opts && opts.body ? JSON.parse(opts.body) : {};
+      ocrType = bodyParsed.type || 'unknown';
+      var imgLen = (bodyParsed.imageBase64 || '').length;
+      window.credimedDebug.log('REQUEST → /ocr', {
+        type: ocrType,
+        mediaType: bodyParsed.mediaType,
+        imageBase64_length: imgLen,
+        imageBase64_kb: Math.round(imgLen * 0.75 / 1024) + ' KB'
+      });
+    } catch(e){}
+
+    return originalAuthFetch.call(this, url, opts).then(function(resp){
+      var cloned = resp.clone();
+      var elapsed = Date.now() - startTime;
+      cloned.text().then(function(text){
+        var parsed;
+        try { parsed = JSON.parse(text); } catch(e) { parsed = text; }
+        window.credimedDebug.log(
+          'RESPONSE ← /ocr (' + resp.status + ', ' + elapsed + 'ms, type=' + ocrType + ')',
+          parsed
+        );
+      }).catch(function(e){
+        window.credimedDebug.log('RESPONSE body parse failed', { error: e.message });
+      });
+      return resp;
+    }).catch(function(err){
+      var elapsed = Date.now() - startTime;
+      window.credimedDebug.log('ERROR ← /ocr (' + elapsed + 'ms, type=' + ocrType + ')', {
+        error: err && err.message || String(err),
+        stack: err && err.stack
+      });
+      throw err;
+    });
+  }
+
+  return originalAuthFetch.call(this, url, opts);
+};
+```
+
+}
+
+/* Wait for authFetch to be defined, then wrap */
+if (window.authFetch) {
+wrapAuthFetch();
+} else {
+var retries = 0;
+var iv = setInterval(function(){
+if (window.authFetch) { wrapAuthFetch(); clearInterval(iv); }
+else if (++retries > 40) clearInterval(iv); /* give up after 2s */
+}, 50);
+}
+
+console.log(’[Debug Panel] ready (admin only)’);
+})();
 </script>
 
 </head>
