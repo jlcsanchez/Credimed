@@ -9544,52 +9544,161 @@ window.rqRunOCR = function(base64, mediaType) {
   var pct = 0;
   var iv = setInterval(function(){ pct = Math.min(pct+2, 85); if(fill) fill.style.width=pct+'%'; }, 100);
   var b64 = base64.split(',')[1] || base64;
+
+  /* OCR FIX: Visible diagnostic for admins — shows OCR response on screen
+     Admin detection: email contains "jlcsanchez" or role==="admin" */
+  function isAdmin(){
+    var u = window.currentUser;
+    return u && (u.role === 'admin' || (u.email && u.email.indexOf('jlcsanchez') >= 0));
+  }
+  function showDiag(label, data){
+    if(!isAdmin()) return;
+    var panel = document.getElementById('ocr-diag');
+    if(!panel){
+      panel = document.createElement('div');
+      panel.id = 'ocr-diag';
+      panel.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;z-index:99999;background:rgba(30,41,59,.97);color:#fca5a5;padding:10px 12px;border-radius:10px;font-family:ui-monospace,monospace;font-size:10px;line-height:1.4;max-height:45vh;overflow:auto;white-space:pre-wrap;word-break:break-word;border:2px solid #f87171';
+      panel.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong style="color:#fca5a5">🔬 OCR DIAG</strong><button onclick="this.parentNode.parentNode.remove()" style="background:#334155;color:white;border:none;padding:2px 8px;border-radius:4px;font-size:10px">×</button></div><div id="ocr-diag-body"></div>';
+      document.body.appendChild(panel);
+    }
+    var body = document.getElementById('ocr-diag-body');
+    if(body){
+      var entry = document.createElement('div');
+      entry.style.cssText = 'margin-bottom:6px;padding:4px;background:rgba(0,0,0,.3);border-radius:4px';
+      var payload;
+      try { payload = JSON.stringify(data, null, 2); } catch(e){ payload = String(data); }
+      if(payload && payload.length > 1200) payload = payload.substring(0, 1200) + '...';
+      entry.textContent = '[' + new Date().toLocaleTimeString() + '] ' + label + '\n' + (payload || '(null)');
+      body.appendChild(entry);
+    }
+  }
+
+  /* OCR FIX: Normalize field names — Lambda may return different keys */
+  function pickAmount(d){
+    if(!d) return null;
+    var candidates = [d.amount, d.amount_paid, d.total, d.total_paid, d.totalPaid, d.importe, d.total_pagado];
+    for(var i=0;i<candidates.length;i++){
+      var v = candidates[i];
+      if(v !== undefined && v !== null && v !== ''){
+        var num = parseFloat(String(v).replace(/[,$\s]/g,''));
+        if(!isNaN(num) && num > 0) return num;
+      }
+    }
+    return null;
+  }
+  function pickProcedures(d){
+    if(!d) return [];
+    var src = d.procedures || d.items || d.services || d.tratamientos || d.procedures_list || [];
+    if(Array.isArray(src)) {
+      // Could be array of strings OR array of objects {name, ...}
+      return src.map(function(x){
+        if(typeof x === 'string') return x;
+        if(x && typeof x === 'object') return x.name || x.description || x.descripcion || JSON.stringify(x);
+        return String(x);
+      }).filter(Boolean);
+    }
+    // Could be a string with commas/newlines
+    if(typeof src === 'string' && src.trim()) return src.split(/[,\n;]/).map(function(s){return s.trim();}).filter(Boolean);
+    return [];
+  }
+
   authFetch('https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com/ocr', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({imageBase64:b64, mediaType:mediaType||'image/jpeg', type:'receipt'})
-  }).then(function(r){ return r.json(); }).then(function(d){
+  }).then(function(r){
+    showDiag('HTTP ' + r.status + ' ' + r.statusText, { ok: r.ok });
+    return r.json();
+  }).then(function(d){
     clearInterval(iv);
     if(fill) fill.style.width='100%';
     setTimeout(function(){ if(ocrEl) ocrEl.style.display='none'; }, 400);
+
+    /* OCR FIX: Show raw response to admin for diagnosis */
+    showDiag('Lambda response', d);
+
+    /* OCR FIX: Use normalizer to support multiple field name formats */
+    var normalizedAmount = pickAmount(d);
+    var normalizedProcs = pickProcedures(d);
+    showDiag('Normalized', { amount: normalizedAmount, procedures: normalizedProcs, currency: d.currency });
+
     // VALIDATE: Must have amount AND at least one procedure to be a valid receipt
-    var hasValidAmount = d.amount && parseFloat(String(d.amount).replace(/,/g,'')) > 0;
-    var hasProcedures = d.procedures && Array.isArray(d.procedures) && d.procedures.length > 0;
+    var hasValidAmount = normalizedAmount !== null;
+    var hasProcedures = normalizedProcs.length > 0;
     var isValidReceipt = hasValidAmount && hasProcedures;
     if(!isValidReceipt){
-      // Reject the image - not a valid dental receipt
-      var zone = document.getElementById('rq-upload-zone');
-      var preview = document.getElementById('rq-preview');
-      if(preview) preview.style.display = 'none';
-      if(zone) zone.style.display = 'block';
-      // Clear state
-      window._lastOcrAmount = 0;
-      window._docUploads = window._docUploads || {};
-      delete window._docUploads['receipt'];
-      // Show error message
-      var errMsg = document.getElementById('rq-error-msg');
-      if(!errMsg){
-        errMsg = document.createElement('div');
-        errMsg.id = 'rq-error-msg';
-        errMsg.style.cssText = 'background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:14px;padding:14px 16px;margin-bottom:16px;color:#fca5a5;font-size:14px;line-height:1.5';
-        if(zone && zone.parentNode) zone.parentNode.insertBefore(errMsg, zone);
+      /* OCR FIX: Less aggressive rejection. If we got ANY useful data, keep going with manual completion.
+         Only full-reject if we got nothing at all. */
+      var gotSomething = hasValidAmount || hasProcedures;
+
+      if(!gotSomething){
+        // True rejection: OCR returned nothing useful
+        var zone = document.getElementById('rq-upload-zone');
+        var preview = document.getElementById('rq-preview');
+        if(preview) preview.style.display = 'none';
+        if(zone) zone.style.display = 'block';
+        window._lastOcrAmount = 0;
+        window._docUploads = window._docUploads || {};
+        delete window._docUploads['receipt'];
+        var errMsg = document.getElementById('rq-error-msg');
+        if(!errMsg){
+          errMsg = document.createElement('div');
+          errMsg.id = 'rq-error-msg';
+          errMsg.style.cssText = 'background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:14px;padding:14px 16px;margin-bottom:16px;color:#fca5a5;font-size:14px;line-height:1.5';
+          if(zone && zone.parentNode) zone.parentNode.insertBefore(errMsg, zone);
+        }
+        errMsg.innerHTML = '⚠️ <strong>We couldn\'t read your receipt.</strong><br>Please upload a clearer photo, or enter the amount manually below.';
+        errMsg.style.display = 'block';
+        setTimeout(function(){ if(errMsg) errMsg.style.display = 'none'; }, 8000);
+        return;
       }
-      errMsg.innerHTML = '⚠️ <strong>This does not look like a dental receipt.</strong><br>Please upload a clear photo of your receipt showing the amount paid and dental procedures.';
-      errMsg.style.display = 'block';
-      // Auto-hide error after 8 seconds
-      setTimeout(function(){ if(errMsg) errMsg.style.display = 'none'; }, 8000);
+
+      /* OCR PARTIAL: Got some data but not complete — show manual input prominently */
+      window._rqFile = window._rqFile || null;
+      window._docUploads = window._docUploads || {};
+      window._docUploads['receipt'] = window._rqFile;
+
+      var partialMsg = document.getElementById('rq-partial-msg');
+      if(!partialMsg){
+        partialMsg = document.createElement('div');
+        partialMsg.id = 'rq-partial-msg';
+        partialMsg.style.cssText = 'background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);border-radius:14px;padding:12px 14px;margin-bottom:12px;color:#fcd34d;font-size:13px;line-height:1.4';
+        var results = document.getElementById('rq-results');
+        if(results && results.parentNode) results.parentNode.insertBefore(partialMsg, results);
+      }
+      partialMsg.innerHTML = '📝 <strong>Scanner needs your help</strong><br>Please confirm the amount below';
+      partialMsg.style.display = 'block';
+
+      // Still show results card + manual input + strengthen
+      var resultsEl2 = document.getElementById('rq-results');
+      if(resultsEl2) resultsEl2.style.display = 'block';
+      var manual = document.getElementById('rq-manual');
+      if(manual) manual.style.display = 'block';
+      var trustEl = document.getElementById('rq-trust-moment');
+      if(trustEl) trustEl.style.display = 'block';
+      var strengthen = document.getElementById('rq-strengthen');
+      if(strengthen) strengthen.style.display = 'block';
+      if(window.rqShowStrengthen) window.rqShowStrengthen((normalizedProcs[0])||'');
+
+      // Auto-focus on manual amount
+      setTimeout(function(){
+        var manualInp = document.getElementById('rq-manual-amount');
+        if(manualInp) { manualInp.focus(); }
+      }, 200);
       return;
     }
     // Valid receipt — clear any previous error
     var existingErr = document.getElementById('rq-error-msg');
     if(existingErr) existingErr.style.display = 'none';
+    var existingPartial = document.getElementById('rq-partial-msg');
+    if(existingPartial) existingPartial.style.display = 'none';
     // Show results
     var results = document.getElementById('rq-results');
     if(results) results.style.display = 'block';
     var currency = d.currency || 'USD';
-    if(d.amount) {
+    if(normalizedAmount !== null) {
       var el = document.getElementById('rq-r-amount');
-      var _rawOcr = parseFloat(String(d.amount).replace(/,/g,''))||0;
+      var _rawOcr = normalizedAmount;
       window._lastOcrAmount = _rawOcr;
       window._currency = currency;
       window._amountCurrency = currency;
@@ -9626,18 +9735,18 @@ window.rqRunOCR = function(base64, mediaType) {
     }
     var curEl = document.getElementById('rq-r-currency');
     if(curEl) curEl.textContent = currency;
-    if(d.procedures && Array.isArray(d.procedures)) {
+    if(normalizedProcs.length > 0) {
       var procsEl = document.getElementById('rq-r-procs');
       if(procsEl) {
         procsEl.innerHTML = '';
-        d.procedures.slice(0,3).forEach(function(p) {
+        normalizedProcs.slice(0,3).forEach(function(p) {
           var chip = document.createElement('span');
           chip.style.cssText = 'background:rgba(147,197,253,.12);border:1px solid rgba(147,197,253,.3);color:#93c5fd;border-radius:12px;padding:2px 8px;font-size:11px;font-weight:600';
           chip.textContent = p;
           procsEl.appendChild(chip);
         });
       }
-      window._selectedProcedures = d.procedures;
+      window._selectedProcedures = normalizedProcs;
     }
     if(d.dentist) { var s2d = document.getElementById('s2-dentist'); if(s2d) s2d.value=d.dentist; }
     if(d.date) { var s2dt = document.getElementById('s2-date'); if(s2dt) s2dt.value=d.date; }
@@ -9703,9 +9812,10 @@ window.rqRunOCR = function(base64, mediaType) {
       var btn = document.getElementById('rq-continue-btn');
       if(btn) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
     }
-  }).catch(function(){
+  }).catch(function(err){
     clearInterval(iv);
     if(ocrEl) ocrEl.style.display='none';
+    showDiag('CATCH ERROR', { error: err && (err.message || String(err)), stack: err && err.stack });
     // On error: show results card + manual entry + strengthen (degraded mode)
     var results = document.getElementById('rq-results');
     if(results) results.style.display = 'block';
@@ -9716,6 +9826,11 @@ window.rqRunOCR = function(base64, mediaType) {
     /* Phase 1 FIX: Show Strengthen even when OCR fails — user still needs to see optional boosts */
     var strengthen = document.getElementById('rq-strengthen');
     if(strengthen) strengthen.style.display = 'block';
+    /* OCR FIX: Auto-focus manual input so user can type immediately */
+    setTimeout(function(){
+      var manualInp = document.getElementById('rq-manual-amount');
+      if(manualInp) manualInp.focus();
+    }, 200);
     var btn = document.getElementById('rq-continue-btn');
     if(btn) { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
   });
