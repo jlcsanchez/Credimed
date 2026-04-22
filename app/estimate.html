@@ -798,6 +798,7 @@ mount();
 
   var MXN_TO_USD = 0.055; // ≈ 18 MXN = 1 USD
   var r = window.CredimedState.get('receipt', {}) || {};
+  var ins = window.CredimedState.get('insurance', {}) || {};
 
   /* Prefer the USD-converted value populated by documents.html after receipt OCR.
      Fall back to raw amountPaid + currency if that's all we have. */
@@ -817,21 +818,36 @@ mount();
   var mid     = Math.round(paidUSD * 0.70);
   var covered = Math.round(paidUSD * 0.92);
 
+  /* Build the plan label: use the carrier extracted from the insurance card.
+     E.g. 'Massachusetts Medical PPO'. Fall back to 'US PPO' if we don't have it. */
+  var insurerName = (ins.insurer || '').trim();
+  var planLabel = insurerName
+    ? (/ppo$/i.test(insurerName) ? insurerName : insurerName + ' PPO')
+    : 'US PPO';
+
   /* Persist for downstream screens */
   window.CredimedState.merge('estimate', {
-    rangeMin: low, rangeMax: high, midpoint: mid, refundPercent: 75, paidUSD: paidUSD
+    rangeMin: low, rangeMax: high, midpoint: mid, refundPercent: 75, paidUSD: paidUSD,
+    insurer: insurerName || null, planLabel: planLabel
   });
+
+  var breakdown = [
+    { label: 'Insurer',                value: insurerName || '—', highlight: !!insurerName }
+  ];
+  if (ins.memberId) breakdown.push({ label: 'Member ID', value: ins.memberId });
+  breakdown.push(
+    { label: 'Out-of-network benefit', value: '75%' },
+    { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted from MXN)' : ' USD') },
+    { label: 'Procedure',              value: r.procedure || '—' }
+  );
 
   var real = {
     low: low, high: high,
     receipt: paidUSD,
     clinic: r.city || 'your clinic',
-    plan: 'US PPO',
-    breakdown: [
-      { label: 'Out-of-network benefit', value: '75%', highlight: true },
-      { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted)' : ' USD') },
-      { label: 'Procedure',              value: r.procedure || '—' }
-    ],
+    plan: planLabel,
+    insurer: insurerName || null,
+    breakdown: breakdown,
     calc: [
       { label: 'Receipt total',          value: '$' + paidUSD.toLocaleString() },
       { label: 'Covered procedures',     value: '$' + covered.toLocaleString() },
