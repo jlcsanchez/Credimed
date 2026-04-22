@@ -1287,6 +1287,14 @@ setInterval(() => {
       if (dz.querySelector('input[data-card-input]')) return;
 
       var cardId = dz.getAttribute('data-card');
+
+      /* NUKE Claude Design's mock click handler (simulateUpload) by cloning the dropzone.
+         Cloning drops all attached event listeners. We then re-install our own. */
+      var clone = dz.cloneNode(true);
+      dz.parentNode.replaceChild(clone, dz);
+      dz = clone;
+      dz.style.position = 'relative';
+
       var input = document.createElement('input');
       input.type = 'file';
       input.accept = acceptFor(cardId);
@@ -1299,9 +1307,8 @@ setInterval(() => {
         '-webkit-appearance:none;appearance:none;' +
         'font-size:16px;'; /* prevent iOS zoom */
 
-      /* Make dropzone positioned so our absolute input sits on top */
-      var cs = window.getComputedStyle(dz);
-      if (cs.position === 'static') dz.style.position = 'relative';
+      /* Belt + suspenders: stop clicks from bubbling to any ancestor mock handler */
+      input.addEventListener('click', function (e) { e.stopPropagation(); }, false);
 
       input.addEventListener('change', function () {
         var files = Array.from(input.files || []);
@@ -1313,6 +1320,22 @@ setInterval(() => {
       dz.appendChild(input);
     });
   }
+
+  /* Also kill the mock simulateUpload + defaultNames by intercepting clicks on .dropzone
+     at capture phase — any leftover bubble hits get swallowed before they reach
+     the Claude Design listeners. */
+  document.addEventListener('click', function (e) {
+    var realInput = e.target && e.target.matches && e.target.matches('input[data-card-input]');
+    if (realInput) return; /* our overlay input — let it through */
+    var dz = e.target && e.target.closest && e.target.closest('.dropzone[data-card]');
+    if (dz) {
+      /* A click somewhere inside the dropzone that isn't our input — cancel it
+         so Claude Design's mock simulateUpload() never fires. User will re-tap on
+         the overlay input area anyway. */
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }, true);
 
   /* Inject on load + whenever DOM changes (after removes, re-renders, etc.) */
   injectFileInputs();
