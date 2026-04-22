@@ -354,7 +354,55 @@ html, body {
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script src="state.js"></script>
 <script>
+/* --- hydrate UI with real data from state (+ cognito user) --- */
+(async function () {
+  var claim = (window.CredimedState && window.CredimedState.submitClaim) ? window.CredimedState.submitClaim() : null;
+  var claimId = (claim && claim.id) || (window.CredimedState && window.CredimedState.get('claim.id')) || 'CMX-2026-0A4B29';
+  var codeEl = document.getElementById('claimCode');
+  if (codeEl) codeEl.textContent = claimId;
+
+  /* Grab user email for display if needed */
+  var email = null;
+  try {
+    var cu = await window.cognitoGetCurrentUser();
+    if (cu && cu.attributes) email = cu.attributes.email;
+  } catch (e) { /* not signed in */ }
+  if (email) {
+    var sub = document.querySelector('.hero .sub');
+    if (sub) sub.textContent = "We've filed your claim with your insurer. Updates will go to " + email + ".";
+  }
+
+  /* If this page loaded from Stripe redirect (?paid=1 or payment_intent_client_secret),
+     POST the claim to the backend so it's actually stored and processed. */
+  var params = new URLSearchParams(window.location.search);
+  var justPaid = params.get('paid') === '1' || params.has('payment_intent_client_secret');
+  if (justPaid) {
+    try {
+      var body = {
+        claimId: claimId,
+        plan: (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard',
+        paidAmount: (window.CredimedState && window.CredimedState.get('receipt.amountPaid')) || null,
+        estimateMin: (window.CredimedState && window.CredimedState.get('estimate.rangeMin')) || null,
+        estimateMax: (window.CredimedState && window.CredimedState.get('estimate.rangeMax')) || null,
+        city: (window.CredimedState && window.CredimedState.get('receipt.city')) || null,
+        procedure: (window.CredimedState && window.CredimedState.get('receipt.procedure')) || null,
+        submittedAt: new Date().toISOString()
+      };
+      if (window.authFetch && window.CREDIMED_API) {
+        await window.authFetch(window.CREDIMED_API + '/claims', { method: 'POST', body: body });
+      }
+    } catch (e) {
+      console.warn('[submission-confirmed] could not POST claim:', e);
+      /* soft-fail; user still sees their confirmation */
+    }
+  }
+})();
+
+/* --- copy claim ID button --- */
 document.getElementById('copyBtn').addEventListener('click', function () {
   var code = document.getElementById('claimCode').textContent;
   var btn = this;

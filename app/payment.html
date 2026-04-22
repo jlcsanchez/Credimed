@@ -1214,5 +1214,160 @@ mountScope('desktop');
 
 <script src="connector.js"></script>
 <script src="ana.js"></script>
+
+<!-- Production Stripe integration — real Payment Element + Lambda PaymentIntent.
+     Skipped with ?dev=1 so design reviewers still see the mock variants. -->
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script src="state.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+(function () {
+  'use strict';
+
+  if (location.search.indexOf('dev=1') >= 0) return;  // design preview mode, leave mock
+
+  /* Hide the top dev tabs (Default/Basic/Ready/etc.) in prod */
+  var devStyle = document.createElement('style');
+  devStyle.textContent =
+    '.topbar{display:none !important}' +
+    '.device-wrap + .device-wrap{display:none !important}' +
+    '.device-wrap{margin:0 auto !important;padding:0 !important;width:100% !important;max-width:480px !important}' +
+    '.iphone{border:none !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important;padding:0 !important;margin:0 !important;width:100% !important;max-width:480px !important;min-height:100vh !important;height:auto !important}' +
+    '.device-label,.chrome{display:none !important}' +
+    '.stage{padding:0 !important;background:#f0eee9 !important;min-height:100vh !important;display:block !important}' +
+    '.screen{width:100% !important;max-width:100% !important;min-height:100vh !important;height:auto !important;border-radius:0 !important}' +
+    'body{background:#f0eee9 !important;margin:0 !important;padding:0 !important}' +
+    '#credimed-stripe-mount{min-height:260px}' +
+    '#credimed-stripe-mount .stripe-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--slate-500);font-size:13px;gap:8px}' +
+    '#credimed-stripe-mount .stripe-placeholder .spin{width:22px;height:22px;border:2.5px solid #e2e8f0;border-top-color:#0D9488;border-radius:50%;animation:cm-spin 700ms linear infinite}' +
+    '@keyframes cm-spin{to{transform:rotate(360deg)}}';
+  document.head.appendChild(devStyle);
+
+  function $(sel, root) { return (root || document).querySelector(sel); }
+
+  var state = {
+    clientSecret: null,
+    mounted: false,
+    submitting: false
+  };
+
+  /* --- Replace mock card form with Stripe Payment Element --- */
+  async function injectStripeElement() {
+    var scope = 'mobile'; // production renders mobile
+    var cardPanel = document.querySelector('[data-panel="card"][data-scope="' + scope + '"]');
+    if (!cardPanel) {
+      // Rendering lifecycle may not have fired yet; try again on next tick.
+      return setTimeout(injectStripeElement, 120);
+    }
+    if (cardPanel.dataset.stripeReady === '1') return;
+    cardPanel.dataset.stripeReady = '1';
+
+    cardPanel.innerHTML =
+      '<div id="credimed-stripe-mount">' +
+        '<div class="stripe-placeholder"><div class="spin"></div><div>Loading secure payment form...</div></div>' +
+      '</div>';
+
+    /* Hide the "other" payment tabs (apple/google/link) since Stripe Payment Element already includes them */
+    document.querySelectorAll('[data-stripe-tab][data-scope="' + scope + '"]').forEach(function (t) {
+      if (t.dataset.stripeTab !== 'card') t.style.display = 'none';
+    });
+    document.querySelectorAll('[data-panel][data-scope="' + scope + '"]').forEach(function (p) {
+      if (p.dataset.panel !== 'card') p.classList.add('hidden');
+    });
+
+    /* Figure out plan + amount from state */
+    var plan   = (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard';
+    var amount = plan === 'premium' ? 3900 : 2900;
+
+    var user = {};
+    try {
+      var cu = await window.cognitoGetCurrentUser();
+      if (cu && cu.attributes) user = { email: cu.attributes.email, sub: cu.sub };
+    } catch (e) { /* anon checkout not allowed, will fail below */ }
+
+    if (!user.email) {
+      cardPanel.innerHTML =
+        '<div class="stripe-placeholder" style="color:#B91C1C">' +
+          '<div>You need to sign in before paying.</div>' +
+          '<a href="/app/login.html?mode=login" style="color:#0D9488;font-weight:600;text-decoration:underline">Sign in</a>' +
+        '</div>';
+      return;
+    }
+
+    var claimId = (window.CredimedState && window.CredimedState.get('claim.id')) ||
+                  (window.CredimedState && window.CredimedState.generateClaimId && window.CredimedState.generateClaimId());
+
+    try {
+      var pi = await window.createPaymentIntent({
+        plan: plan,
+        amount: amount,
+        currency: 'usd',
+        email: user.email,
+        claimId: claimId
+      });
+      state.clientSecret = pi.clientSecret;
+
+      $('#credimed-stripe-mount').innerHTML = '<div id="stripe-payment-element"></div>';
+      await window.mountStripePaymentElement(pi.clientSecret, 'stripe-payment-element');
+      state.mounted = true;
+
+      /* Enable CTA once Stripe is ready */
+      var cta = document.querySelector('[data-cta][data-scope="' + scope + '"]');
+      if (cta) cta.disabled = false;
+    } catch (err) {
+      console.error('[Credimed] Stripe init failed:', err);
+      $('#credimed-stripe-mount').innerHTML =
+        '<div class="stripe-placeholder" style="color:#B91C1C">' +
+          '<b>Could not load payment form.</b>' +
+          '<div style="font-size:12px;opacity:.85">' + (err && err.message || 'Network error') + '</div>' +
+          '<button onclick="location.reload()" style="margin-top:8px;padding:6px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;cursor:pointer">Retry</button>' +
+        '</div>';
+    }
+  }
+
+  /* --- Hook CTA for real confirmPayment --- */
+  document.addEventListener('click', async function (e) {
+    var cta = e.target.closest('[data-cta][data-scope="mobile"]');
+    if (!cta) return;
+    if (!state.mounted || state.submitting) return;
+    if (cta.hasAttribute('disabled')) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    state.submitting = true;
+    cta.disabled = true;
+    cta.innerHTML = '<span class="spinner"></span><span>Processing...</span>';
+
+    try {
+      var returnUrl = window.location.origin + '/app/submission-confirmed.html?paid=1';
+      var result = await window.confirmStripePayment(returnUrl);
+      if (result && result.error) {
+        cta.innerHTML = '<span>Pay · Submit my claim</span>';
+        cta.disabled = false;
+        state.submitting = false;
+        var msg = result.error.message || 'Payment failed. Try again.';
+        alert(msg);
+      }
+      // If no error, Stripe redirects us to return_url automatically.
+    } catch (err) {
+      console.error('[Credimed] confirmPayment error:', err);
+      cta.innerHTML = '<span>Pay · Submit my claim</span>';
+      cta.disabled = false;
+      state.submitting = false;
+      alert('Payment error: ' + (err && err.message || 'unknown'));
+    }
+  }, true);
+
+  /* Kick off */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectStripeElement);
+  } else {
+    setTimeout(injectStripeElement, 50); // let the Claude Design renderScreen settle
+  }
+})();
+</script>
 </body>
 </html>

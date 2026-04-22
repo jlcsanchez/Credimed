@@ -916,6 +916,12 @@ function wire() {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const id = btn.getAttribute('data-plan-cta');
+      // Persist plan selection so payment.html can read it.
+      // Map legacy ids: plus -> premium, basic -> standard
+      try {
+        var planKey = (id === 'plus' || id === 'premium') ? 'premium' : 'standard';
+        if (window.CredimedState) window.CredimedState.set('plan.selected', planKey);
+      } catch (err) {}
       // Only "Plus selected" is a predefined tab; if the user clicks Basic's CTA,
       // we still visualize a selected Basic state for preview.
       activeVariant = 'selected';
@@ -1026,6 +1032,7 @@ mount();
 </script>
 
 <script src="connector.js"></script>
+<script src="state.js"></script>
 <script src="ana.js"></script>
 </body>
 </html>

@@ -323,21 +323,21 @@ html, body {
       <div class="logo-mark">H</div>
       <span>Credimed</span>
     </div>
-    <div class="avatar" title="Your profile">J</div>
+    <div class="avatar" id="dbAvatar" title="Your profile">J</div>
   </header>
 
   <section class="greeting">
-    <h1>Hi, John 👋</h1>
+    <h1 id="dbGreeting">Hi, John 👋</h1>
     <p>Here's where your claims stand.</p>
   </section>
 
   <div class="section-label">Active claim</div>
-  <article class="claim-card">
+  <article class="claim-card" id="dbClaimCard">
     <div class="claim-head">
       <div class="claim-head-left">
-        <div class="ref">CMX-2026-0A4B29</div>
-        <div class="title">Crown · Cancún</div>
-        <div class="meta">Submitted Apr 22, 2026</div>
+        <div class="ref" id="dbClaimRef">CMX-2026-0A4B29</div>
+        <div class="title" id="dbClaimTitle">Crown · Cancún</div>
+        <div class="meta" id="dbClaimMeta">Submitted Apr 22, 2026</div>
       </div>
       <span class="status-pill in-review">In review</span>
     </div>
@@ -366,19 +366,19 @@ html, body {
     <div class="claim-body">
       <div class="kv-row">
         <span class="k">What you paid</span>
-        <span class="v">$450 USD</span>
+        <span class="v" id="dbPaid">$450 USD</span>
       </div>
       <div class="kv-row">
         <span class="k">Estimated recovery</span>
-        <span class="v estimate">$191 – $259</span>
+        <span class="v estimate" id="dbEstimate">$191 – $259</span>
       </div>
       <div class="kv-row">
         <span class="k">Expected by</span>
-        <span class="v">May 15 – Jun 3, 2026</span>
+        <span class="v" id="dbExpected">May 15 – Jun 3, 2026</span>
       </div>
       <div class="kv-row">
         <span class="k">Plan</span>
-        <span class="v">Premium · $39</span>
+        <span class="v" id="dbPlan">Premium · $39</span>
       </div>
     </div>
 
@@ -411,6 +411,78 @@ html, body {
   <div class="bottom-space"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script src="state.js"></script>
+<script>
+(async function hydrate() {
+  /* Gate: require Cognito session. If no session, redirect to login. */
+  var token = null;
+  try { token = await window.cognitoGetIdToken(); } catch (e) {}
+  if (!token) {
+    location.href = '/app/login.html?mode=login&expired=1';
+    return;
+  }
+
+  var S = window.CredimedState;
+
+  /* Greeting + avatar from Cognito attributes */
+  try {
+    var cu = await window.cognitoGetCurrentUser();
+    if (cu && cu.attributes) {
+      S && S.merge('user', {
+        firstName: cu.attributes.given_name || '',
+        lastName:  cu.attributes.family_name || '',
+        email:     cu.attributes.email || ''
+      });
+    }
+  } catch (e) {}
+
+  var first = (S && S.get('user.firstName', '')) || '';
+  var last  = (S && S.get('user.lastName', '')) || '';
+  if (first) document.getElementById('dbGreeting').textContent = 'Hi, ' + first + ' 👋';
+  document.getElementById('dbAvatar').textContent = ((first[0] || '') + (last[0] || '')).toUpperCase() || 'J';
+
+  /* Active claim (from state or from API if backend exposes /claims GET) */
+  var claim = S && S.get('claim');
+  if (claim && claim.id) {
+    document.getElementById('dbClaimRef').textContent = claim.id;
+    var title = [claim.procedure || 'Dental claim', claim.city].filter(Boolean).join(' · ');
+    if (title) document.getElementById('dbClaimTitle').textContent = title;
+    if (claim.submittedAt) {
+      var d = new Date(claim.submittedAt);
+      document.getElementById('dbClaimMeta').textContent = 'Submitted ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    if (claim.paidAmount != null) document.getElementById('dbPaid').textContent = '$' + Number(claim.paidAmount).toLocaleString('en-US') + ' USD';
+    if (claim.estimateMin != null && claim.estimateMax != null) {
+      document.getElementById('dbEstimate').textContent = '$' + claim.estimateMin + ' – $' + claim.estimateMax;
+    }
+    if (claim.expectedByMin && claim.expectedByMax) {
+      document.getElementById('dbExpected').textContent = S.formatDateRange(claim.expectedByMin, claim.expectedByMax);
+    }
+    var planLabel = claim.plan === 'premium' ? 'Premium · $39' : 'Standard · $29';
+    document.getElementById('dbPlan').textContent = planLabel;
+  }
+
+  /* Try to refresh from backend (non-blocking) */
+  try {
+    if (window.authFetch && window.CREDIMED_API) {
+      var resp = await window.authFetch(window.CREDIMED_API + '/claims');
+      if (resp.ok) {
+        var data = await resp.json();
+        if (data && data.claims && data.claims.length && S) {
+          /* store the most recent one */
+          var latest = data.claims[0];
+          S.set('claim', Object.assign({}, S.get('claim', {}), latest));
+          /* Reload the page to re-hydrate cleanly */
+          /* (kept soft to avoid loops; only do if claim id changed) */
+          if (latest.id && latest.id !== (claim && claim.id)) location.reload();
+        }
+      }
+    }
+  } catch (e) { /* non-blocking */ }
+})();
+</script>
 <script src="ana.js"></script>
 </body>
 </html>
