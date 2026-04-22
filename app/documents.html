@@ -1113,6 +1113,36 @@ setInterval(() => {
     }
   }
 
+  /* Map OCR'd insurer name -> known corporate domain, used to fetch the logo from
+     Clearbit's logo CDN (https://logo.clearbit.com/<domain>). Unknown names fall
+     through and we just render the text without a logo. */
+  function getInsurerLogoUrl(name) {
+    if (!name) return null;
+    var n = String(name).toLowerCase();
+    var domain = null;
+
+    if (n.indexOf('cigna') >= 0)                                          domain = 'cigna.com';
+    else if (n.indexOf('delta') >= 0 && n.indexOf('dental') >= 0)         domain = 'deltadental.com';
+    else if (n.indexOf('aetna') >= 0)                                     domain = 'aetna.com';
+    else if (n.indexOf('metlife') >= 0 || n.indexOf('met life') >= 0)     domain = 'metlife.com';
+    else if (n.indexOf('united') >= 0 || n.indexOf('uhc') >= 0)           domain = 'uhc.com';
+    else if (n.indexOf('anthem') >= 0)                                    domain = 'anthem.com';
+    else if (n.indexOf('blue cross') >= 0 || n.indexOf('bcbs') >= 0 || n.indexOf('blue shield') >= 0) domain = 'bcbs.com';
+    else if (n.indexOf('guardian') >= 0)                                  domain = 'guardianlife.com';
+    else if (n.indexOf('humana') >= 0)                                    domain = 'humana.com';
+    else if (n.indexOf('principal') >= 0)                                 domain = 'principal.com';
+    else if (n.indexOf('ameritas') >= 0)                                  domain = 'ameritas.com';
+    else if (n.indexOf('sun life') >= 0 || n.indexOf('sunlife') >= 0)     domain = 'sunlife.com';
+    else if (n.indexOf('lincoln') >= 0)                                   domain = 'lfg.com';
+    else if (n.indexOf('mutual of omaha') >= 0)                           domain = 'mutualofomaha.com';
+    else if (n.indexOf('mass') >= 0 && n.indexOf('medical') >= 0)         domain = 'bluecrossma.com';
+    else if (n.indexOf('kaiser') >= 0)                                    domain = 'kaiserpermanente.org';
+    else if (n.indexOf('harvard') >= 0)                                   domain = 'harvardpilgrim.org';
+    else if (n.indexOf('tufts') >= 0)                                     domain = 'tuftshealthplan.com';
+
+    return domain ? ('https://logo.clearbit.com/' + domain + '?size=64') : null;
+  }
+
   function updateCardDone(cardId, filename, metaText, extracted) {
     var root = document.querySelector('[data-card-root="' + cardId + '"]');
     if (!root) return;
@@ -1120,10 +1150,27 @@ setInterval(() => {
     var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
     var extractedHtml = '';
     if (extracted) {
+      /* If this is the insurance card and we have a recognised insurer, render the logo at the top */
+      var headerHtml = '';
+      if (cardId === 'insurance' && extracted.insurer) {
+        var logoUrl = getInsurerLogoUrl(extracted.insurer);
+        if (logoUrl) {
+          headerHtml =
+            '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--teal-200,#99F6E4)">' +
+              '<img src="' + logoUrl + '" alt="' + extracted.insurer + '" ' +
+                'style="width:36px;height:36px;border-radius:8px;background:#fff;object-fit:contain;padding:2px;border:1px solid var(--teal-200,#99F6E4)" ' +
+                'onerror="this.style.display=\'none\'">' +
+              '<div style="font-weight:700;color:var(--teal-800,#0A7A70);font-size:13px">' + extracted.insurer + '</div>' +
+            '</div>';
+        }
+      }
       extractedHtml =
         '<div class="extracted-preview" style="margin-top:10px;padding:10px 12px;background:var(--teal-50,#F0FDFA);border:1px solid var(--teal-200,#99F6E4);border-radius:10px;font-size:12px;color:var(--slate-700,#334155);line-height:1.5">' +
+          headerHtml +
           Object.keys(extracted).map(function (k) {
             if (!extracted[k]) return '';
+            /* If we rendered the insurer inside the logo header, skip re-printing it in the body */
+            if (k === 'insurer' && headerHtml) return '';
             return '<div><b style="color:var(--teal-800,#0A7A70);text-transform:capitalize">' + k.replace(/([A-Z])/g, ' $1') + ':</b> ' + extracted[k] + '</div>';
           }).join('') +
         '</div>';
