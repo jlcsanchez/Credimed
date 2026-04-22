@@ -12365,5 +12365,35 @@ window.showProcShare = function() {
   </div>
 </div>
 
+<script>
+/* Monolith is the fallback for post-flow screens (dashboard, profile, support, claims history).
+   URL hash jumps straight there instead of rendering the internal landing. */
+(function () {
+  var ALLOWED = { dashboard: 's-dashboard', profile: 's-profile', support: 's-support', claims: 's-claims' };
+
+  function route() {
+    if (typeof window.goTo !== 'function') { setTimeout(route, 40); return; }
+    var hash = (location.hash || '').replace(/^#/, '').toLowerCase();
+    var target = ALLOWED[hash];
+    if (!target) return; /* no valid hash -> let monolith show default */
+
+    /* dashboard needs its init to populate data */
+    if (hash === 'dashboard' && typeof window.initDashboard === 'function') {
+      try { window.initDashboard(); } catch (e) {}
+    }
+    window.goTo(target);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', route);
+  } else {
+    route();
+  }
+
+  /* Keep response to live hashchange (in-app nav between dashboard/profile/support) */
+  window.addEventListener('hashchange', route);
+})();
+</script>
+
 </body>
 </html>
