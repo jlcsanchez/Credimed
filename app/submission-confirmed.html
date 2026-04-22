@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credimed — Claim submitted</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --teal-50: #F0FDFA;
+  --teal-100: #CCFBF1;
+  --teal-200: #99F6E4;
+  --teal-300: #5EEAD4;
+  --teal-400: #2DD4BF;
+  --teal-500: #14B8A6;
+  --teal-600: #0D9488;
+  --teal-700: #0B8278;
+  --teal-800: #0A7A70;
+  --teal-900: #134E4A;
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
+  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #134e4a 60%, #0D9488 100%);
+  --shadow-card: 0 8px 40px rgba(0,0,0,0.15);
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--slate-900);
+  background: #f0eee9;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #fff;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  background: var(--hero-gradient);
+  color: #fff;
+  padding: 56px 24px 48px;
+  text-align: center;
+  position: relative;
+}
+
+.check {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 20px;
+  background: #fff;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25), 0 0 0 8px rgba(255,255,255,0.08);
+  animation: pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.check svg { width: 44px; height: 44px; color: var(--teal-600); }
+
+@keyframes pop {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 8px;
+}
+.hero h1 {
+  margin: 0 0 12px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.hero .sub {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+}
+
+.claim-id {
+  margin: 28px 24px -28px;
+  padding: 18px 20px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+.claim-id .label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-500);
+  margin-bottom: 4px;
+}
+.claim-id .code {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--slate-900);
+  letter-spacing: 0.02em;
+}
+.copy-btn {
+  background: var(--teal-50);
+  color: var(--teal-700);
+  border: 1px solid var(--teal-200);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 150ms;
+}
+.copy-btn:hover { background: var(--teal-100); }
+.copy-btn.copied { background: var(--teal-600); color: #fff; border-color: var(--teal-600); }
+.copy-btn svg { width: 14px; height: 14px; }
+
+.body {
+  padding: 48px 24px 32px;
+  flex: 1;
+}
+
+.section-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate-500);
+  margin: 0 0 16px;
+}
+
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px;
+  position: relative;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: var(--slate-200);
+}
+.timeline li {
+  position: relative;
+  padding: 0 0 22px 48px;
+}
+.timeline li:last-child { padding-bottom: 0; }
+.timeline .dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--teal-600);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 0 4px #fff, 0 2px 8px rgba(13,148,136,0.3);
+}
+.timeline .when {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teal-700);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+.timeline .what {
+  font-size: 15px;
+  color: var(--slate-700);
+  line-height: 1.5;
+}
+
+.support {
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 32px;
+}
+.support h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+.support p {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--slate-600);
+  line-height: 1.5;
+}
+.support-btns {
+  display: flex;
+  gap: 10px;
+}
+.support-btn {
+  flex: 1;
+  border: 1px solid var(--slate-300);
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--slate-700);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.support-btn:hover { border-color: var(--slate-400); background: var(--slate-50); }
+.support-btn svg { width: 14px; height: 14px; }
+
+.footer-cta {
+  padding: 20px 24px 32px;
+  border-top: 1px solid var(--slate-100);
+}
+.btn-primary {
+  width: 100%;
+  height: 60px;
+  background: var(--teal-600);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms;
+  font-family: inherit;
+}
+.btn-primary:hover { background: var(--teal-700); }
+.btn-primary:active { background: var(--teal-800); }
+
+.trust-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 24px 28px;
+  font-size: 11px;
+  color: var(--slate-500);
+}
+.trust-row span { display: flex; align-items: center; gap: 5px; }
+.trust-row svg { width: 12px; height: 12px; color: var(--teal-600); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <section class="hero">
+    <div class="check">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="eyebrow">Claim submitted</div>
+    <h1>You're all set.</h1>
+    <p class="sub">We've filed your claim with your insurer. You'll get email updates as it moves forward.</p>
+  </section>
+
+  <div class="claim-id">
+    <div>
+      <div class="label">Reference number</div>
+      <div class="code" id="claimCode">CMX-2026-0A4B29</div>
+    </div>
+    <button class="copy-btn" id="copyBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      <span>Copy</span>
+    </button>
+  </div>
+
+  <div class="body">
+    <div class="section-title">What happens next</div>
+    <ul class="timeline">
+      <li>
+        <div class="dot">1</div>
+        <div class="when">Within 24 hours</div>
+        <div class="what">We review your documentation and submit your claim electronically to your insurer.</div>
+      </li>
+      <li>
+        <div class="dot">2</div>
+        <div class="when">2–6 weeks</div>
+        <div class="what">Your insurer processes the claim. Timing depends on your plan and state of residence.</div>
+      </li>
+      <li>
+        <div class="dot">3</div>
+        <div class="when">When approved</div>
+        <div class="what">Your insurer mails a check directly to your address, or deposits it according to your plan settings. You keep 100% of what they send.</div>
+      </li>
+    </ul>
+
+    <div class="support">
+      <h3>Questions? We're here.</h3>
+      <p>Your assigned claims specialist will reach out within 24 hours. You can also reach us anytime:</p>
+      <div class="support-btns">
+        <a class="support-btn" href="mailto:support@credimed.us">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Email
+        </a>
+        <a class="support-btn" href="https://wa.me/5215555555555" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-cta">
+    <a href="/" style="text-decoration:none;display:block">
+      <button class="btn-primary" type="button">Back to home</button>
+    </a>
+  </div>
+
+  <div class="trust-row">
+    <span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      HIPAA compliant
+    </span>
+    <span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      256-bit encrypted
+    </span>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('copyBtn').addEventListener('click', function () {
+  var code = document.getElementById('claimCode').textContent;
+  var btn = this;
+  (navigator.clipboard && navigator.clipboard.writeText
+    ? navigator.clipboard.writeText(code)
+    : Promise.resolve()
+  ).then(function () {
+    btn.classList.add('copied');
+    btn.querySelector('span').textContent = 'Copied';
+    setTimeout(function () {
+      btn.classList.remove('copied');
+      btn.querySelector('span').textContent = 'Copy';
+    }, 1800);
+  });
+});
+</script>
+
+</body>
+</html>
