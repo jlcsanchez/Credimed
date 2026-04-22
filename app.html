@@ -209,5 +209,21 @@ document.addEventListener('DOMContentLoaded', async function() {
   else document.addEventListener("DOMContentLoaded", start);
 })();
 </script>
+<script>
+(function () {
+  if (location.search.indexOf("dev=1") >= 0) return;
+  try { localStorage.setItem("credimed_auth_tab", "prototype"); } catch(e) {}
+  var css = document.createElement("style");
+  css.textContent = ""
+    + ".topbar,.flow-nav,.tweak-row,.tweak-label,.tweak-seg,.design-canvas,.device-label,.chrome{display:none !important}"
+    + ".device-wrap + .device-wrap{display:none !important}"
+    + ".device-wrap{margin:0 auto !important;padding:0 !important;width:100% !important;max-width:480px !important}"
+    + ".iphone{border:none !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important;padding:0 !important;margin:0 !important;width:100% !important;max-width:480px !important;min-height:100vh !important;height:auto !important}"
+    + ".proto-tab,.proto-stage{padding:0 !important;background:#f0eee9 !important;min-height:100vh !important;display:block !important}"
+    + ".screen{width:100% !important;max-width:100% !important;min-height:100vh !important;height:auto !important;border-radius:0 !important}"
+    + "body{background:#f0eee9 !important;margin:0 !important;padding:0 !important}";
+  document.head.appendChild(css);
+})();
+</script>
 </body>
 </html>
