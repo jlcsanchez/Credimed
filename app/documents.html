@@ -1312,7 +1312,9 @@ setInterval(() => {
       input.type = 'file';
       input.accept = acceptFor(cardId);
       if (cardId === 'supporting') input.multiple = true;
-      if (cardId === 'insurance' || cardId === 'receipt') input.setAttribute('capture', 'environment');
+      /* NOTE: no capture attribute — iOS should present the full picker
+         (Photo Library / Take Photo / Choose File) so users can upload
+         existing photos or documents instead of being forced into camera. */
       input.setAttribute('data-card-input', cardId);
       input.style.cssText =
         'position:absolute;left:-9999px;top:auto;width:1px;height:1px;opacity:0;';
