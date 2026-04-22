@@ -49,6 +49,37 @@ html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !i
 .hero { padding-top: calc(24px + env(safe-area-inset-top)) !important; }
 /* Hide the fake iPhone Dynamic Island notch that Claude Design draws inside .iphone */
 .iphone::before { display: none !important; }
+
+/* Desktop (>=768px): center the 480px content as a focused app panel */
+@media (min-width: 768px) {
+  html, body {
+    background:
+      radial-gradient(ellipse at top left, rgba(13,148,136,0.04), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(94,234,212,0.05), transparent 50%),
+      #f0eee9 !important;
+  }
+  .stage, .proto-tab, .proto-stage {
+    min-height: 100vh !important;
+    padding: 40px 20px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+  }
+  .device-wrap {
+    max-width: 520px !important;
+    margin: 0 auto !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    box-shadow: 0 24px 64px rgba(15,23,42,0.14), 0 4px 16px rgba(15,23,42,0.06) !important;
+    background: #fff !important;
+  }
+  .iphone, .desktop {
+    max-width: 520px !important;
+    min-height: auto !important;
+    border-radius: 0 !important;
+  }
+  .screen { min-height: auto !important; }
+}
 </style>
 <script>
 /* Reveal dev chrome with ?dev=1 for design reviews */
