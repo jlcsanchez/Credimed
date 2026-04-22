@@ -40,9 +40,10 @@
 .screen {
   width: 100% !important;
   max-width: 100% !important;
-  min-height: 100vh !important;
+  min-height: auto !important;
   height: auto !important;
   border-radius: 0 !important;
+  padding-bottom: env(safe-area-inset-bottom) !important;
 }
 html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !important; }
 /* Safe-area: push hero content below the iPhone Dynamic Island / notch */
