@@ -1127,7 +1127,12 @@ setInterval(() => {
     else if (n.indexOf('metlife') >= 0 || n.indexOf('met life') >= 0)     domain = 'metlife.com';
     else if (n.indexOf('united') >= 0 || n.indexOf('uhc') >= 0)           domain = 'uhc.com';
     else if (n.indexOf('anthem') >= 0)                                    domain = 'anthem.com';
-    else if (n.indexOf('blue cross') >= 0 || n.indexOf('bcbs') >= 0 || n.indexOf('blue shield') >= 0) domain = 'bcbs.com';
+    /* BCBS / Blue Cross / Blue Shield — including the Massachusetts regional
+       brand "Massachusetts Medical" which is BCBS-MA. Use the federation domain
+       (bluecrossblueshield.com) since Clearbit reliably returns the BCBS shield. */
+    else if (n.indexOf('blue cross') >= 0 || n.indexOf('bcbs') >= 0 ||
+             n.indexOf('blue shield') >= 0 ||
+             (n.indexOf('mass') >= 0 && n.indexOf('medical') >= 0))       domain = 'bluecrossblueshield.com';
     else if (n.indexOf('guardian') >= 0)                                  domain = 'guardianlife.com';
     else if (n.indexOf('humana') >= 0)                                    domain = 'humana.com';
     else if (n.indexOf('principal') >= 0)                                 domain = 'principal.com';
@@ -1135,12 +1140,29 @@ setInterval(() => {
     else if (n.indexOf('sun life') >= 0 || n.indexOf('sunlife') >= 0)     domain = 'sunlife.com';
     else if (n.indexOf('lincoln') >= 0)                                   domain = 'lfg.com';
     else if (n.indexOf('mutual of omaha') >= 0)                           domain = 'mutualofomaha.com';
-    else if (n.indexOf('mass') >= 0 && n.indexOf('medical') >= 0)         domain = 'bluecrossma.com';
     else if (n.indexOf('kaiser') >= 0)                                    domain = 'kaiserpermanente.org';
     else if (n.indexOf('harvard') >= 0)                                   domain = 'harvardpilgrim.org';
     else if (n.indexOf('tufts') >= 0)                                     domain = 'tuftshealthplan.com';
 
-    return domain ? ('https://logo.clearbit.com/' + domain + '?size=64') : null;
+    if (!domain) return null;
+    /* Return an array of logo URLs ordered by likely quality. The <img> onerror
+       chain walks down the list until one loads (or falls through to hide). */
+    return [
+      'https://img.logo.dev/' + domain + '?size=96&format=png',
+      'https://logo.clearbit.com/' + domain + '?size=96',
+      'https://external-content.duckduckgo.com/ip3/' + domain + '.ico',
+      'https://www.google.com/s2/favicons?domain=' + domain + '&sz=64'
+    ];
+  }
+
+  /* Install a next-url fallback on an <img>. Called once at insert time. */
+  function installLogoFallback(imgEl, urls) {
+    var i = 0;
+    imgEl.addEventListener('error', function () {
+      i++;
+      if (i < urls.length) imgEl.src = urls[i];
+      else imgEl.style.display = 'none';
+    });
   }
 
   function updateCardDone(cardId, filename, metaText, extracted) {
@@ -1149,17 +1171,17 @@ setInterval(() => {
     root.className = 'upload-card state-done';
     var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
     var extractedHtml = '';
+    var logoUrls = null;
     if (extracted) {
       /* If this is the insurance card and we have a recognised insurer, render the logo at the top */
       var headerHtml = '';
       if (cardId === 'insurance' && extracted.insurer) {
-        var logoUrl = getInsurerLogoUrl(extracted.insurer);
-        if (logoUrl) {
+        logoUrls = getInsurerLogoUrl(extracted.insurer);
+        if (logoUrls && logoUrls.length) {
           headerHtml =
             '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--teal-200,#99F6E4)">' +
-              '<img src="' + logoUrl + '" alt="' + extracted.insurer + '" ' +
-                'style="width:36px;height:36px;border-radius:8px;background:#fff;object-fit:contain;padding:2px;border:1px solid var(--teal-200,#99F6E4)" ' +
-                'onerror="this.style.display=\'none\'">' +
+              '<img data-insurer-logo src="' + logoUrls[0] + '" alt="' + extracted.insurer + '" ' +
+                'style="width:36px;height:36px;border-radius:8px;background:#fff;object-fit:contain;padding:2px;border:1px solid var(--teal-200,#99F6E4)">' +
               '<div style="font-weight:700;color:var(--teal-800,#0A7A70);font-size:13px">' + extracted.insurer + '</div>' +
             '</div>';
         }
@@ -1169,7 +1191,6 @@ setInterval(() => {
           headerHtml +
           Object.keys(extracted).map(function (k) {
             if (!extracted[k]) return '';
-            /* If we rendered the insurer inside the logo header, skip re-printing it in the body */
             if (k === 'insurer' && headerHtml) return '';
             return '<div><b style="color:var(--teal-800,#0A7A70);text-transform:capitalize">' + k.replace(/([A-Z])/g, ' $1') + ':</b> ' + extracted[k] + '</div>';
           }).join('') +
@@ -1187,6 +1208,13 @@ setInterval(() => {
             '<button class="icon-action danger" aria-label="Remove" data-remove="' + cardId + '">✕</button>' +
           '</div>' +
         '</div>' + extractedHtml;
+
+      /* Wire up the logo fallback chain on the newly inserted <img> */
+      if (logoUrls && logoUrls.length) {
+        var newRoot = document.querySelector('[data-card-root="' + cardId + '"]');
+        var img = newRoot && newRoot.querySelector('img[data-insurer-logo]');
+        if (img) installLogoFallback(img, logoUrls);
+      }
     }
     tryEnableContinue();
   }
