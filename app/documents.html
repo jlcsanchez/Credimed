@@ -703,13 +703,33 @@ const CARDS = [
     hasAmount: true,
   },
   {
-    id: 'supporting',
+    id: 'xray-before',
     icon: ICONS.supporting,
-    title: 'Supporting documents',
+    title: 'X-ray (before treatment)',
     required: false,
-    desc: 'X-rays, treatment plan, EOB, before/after photos — anything that strengthens your claim.',
-    dropzonePrimary: '<span class="em">Drop files</span> or tap to upload',
-    dropzoneSecondary: 'Multiple files · PDF, JPG, PNG · up to 10 MB each',
+    desc: 'Pre-treatment dental X-ray — strengthens your claim if you have it.',
+    dropzonePrimary: '<span class="em">Drop a file</span> or tap to upload',
+    dropzoneSecondary: 'PDF, JPG, PNG · up to 10 MB',
+    hasAmount: false,
+  },
+  {
+    id: 'xray-after',
+    icon: ICONS.supporting,
+    title: 'X-ray (after treatment)',
+    required: false,
+    desc: 'Post-treatment dental X-ray showing the completed work.',
+    dropzonePrimary: '<span class="em">Drop a file</span> or tap to upload',
+    dropzoneSecondary: 'PDF, JPG, PNG · up to 10 MB',
+    hasAmount: false,
+  },
+  {
+    id: 'treatment-plan',
+    icon: ICONS.supporting,
+    title: 'Treatment plan',
+    required: false,
+    desc: 'Written treatment plan or itemized procedures, if your dentist provided one.',
+    dropzonePrimary: '<span class="em">Drop a file</span> or tap to upload',
+    dropzoneSecondary: 'PDF, JPG, PNG · up to 10 MB',
     hasAmount: false,
   },
 ];
@@ -717,9 +737,11 @@ const CARDS = [
 // Per-variant state: maps cardId -> {status, filename, progress, meta}
 const VARIANT_STATES = {
   default: {
-    insurance: { status: 'empty' },
-    receipt:   { status: 'empty' },
-    supporting:{ status: 'empty' },
+    insurance:      { status: 'empty' },
+    receipt:        { status: 'empty' },
+    'xray-before':  { status: 'empty' },
+    'xray-after':   { status: 'empty' },
+    'treatment-plan': { status: 'empty' },
   },
   midflow: {
     insurance: {
@@ -733,7 +755,9 @@ const VARIANT_STATES = {
       filename: 'receipt-cancun-clinic.pdf',
       progress: 62,
     },
-    supporting: { status: 'empty' },
+    'xray-before':    { status: 'empty' },
+    'xray-after':     { status: 'empty' },
+    'treatment-plan': { status: 'empty' },
   },
 };
 
@@ -1160,12 +1184,26 @@ setInterval(() => {
 
     updateCardUploading(cardId, file.name, 40);
 
-    /* Supporting docs don't need OCR — just save metadata and mark done */
-    if (cardId === 'supporting') {
-      var listKey = 'supportingDocs';
-      var list = (window.CredimedState && window.CredimedState.get(listKey, [])) || [];
-      list.push({ name: file.name, size: file.size, type: file.type, uploadedAt: new Date().toISOString() });
-      window.CredimedState && window.CredimedState.set(listKey, list);
+    /* Supporting docs (x-rays, treatment plan) don't need OCR — just save metadata and mark done */
+    var SUPPORTING_IDS = { 'xray-before': 1, 'xray-after': 1, 'treatment-plan': 1, 'supporting': 1 };
+    if (SUPPORTING_IDS[cardId]) {
+      var docRec = {
+        type: cardId,
+        name: file.name,
+        size: file.size,
+        fileType: file.type,
+        uploadedAt: new Date().toISOString()
+      };
+      /* Save under a dedicated key per card so we can re-show + re-upload individually */
+      if (window.CredimedState) {
+        if (cardId === 'supporting') {
+          var list = window.CredimedState.get('supportingDocs', []) || [];
+          list.push(docRec);
+          window.CredimedState.set('supportingDocs', list);
+        } else {
+          window.CredimedState.set('supportingDocs.' + cardId, docRec);
+        }
+      }
       updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Uploaded', null);
       return;
     }
@@ -1276,6 +1314,22 @@ setInterval(() => {
       if (rec.city) shownR.city = rec.city;
       if (rec.treatmentDate) shownR.date = rec.treatmentDate;
       updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Extracted', Object.keys(shownR).length ? shownR : null);
+
+      /* Auto-fill the visible "Amount paid (USD)" input so the user doesn't have to
+         type it again. If currency is MXN, convert at ~18:1 (conservative). */
+      if (amtNum != null) {
+        var MXN_TO_USD = 1 / 18;
+        var usd = currency === 'MXN' ? Math.round(amtNum * MXN_TO_USD) : Math.round(amtNum);
+        /* Store USD value in state for estimate.html to read later */
+        window.CredimedState && window.CredimedState.merge('receipt', { amountPaidUSD: usd });
+
+        var amountInput = document.querySelector('.amount-input');
+        if (amountInput) {
+          amountInput.value = usd;
+          /* Fire input event so any Claude Design listeners (enabling CTA, etc.) react */
+          amountInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
     }
   }
 
