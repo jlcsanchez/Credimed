@@ -46,6 +46,8 @@
 html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !important; }
 /* Safe-area: push hero content below the iPhone Dynamic Island / notch */
 .hero { padding-top: calc(24px + env(safe-area-inset-top)) !important; }
+/* Hide the fake iPhone Dynamic Island notch that Claude Design draws inside .iphone */
+.iphone::before { display: none !important; }
 </style>
 <script>
 /* Reveal dev chrome with ?dev=1 for design reviews */
@@ -797,56 +799,68 @@ mount();
   var MXN_TO_USD = 0.055; // ≈ 18 MXN = 1 USD
   var r = window.CredimedState.get('receipt', {}) || {};
 
-  /* Fall back to defaults if no receipt data yet */
+  /* Prefer the USD-converted value populated by documents.html after receipt OCR.
+     Fall back to raw amountPaid + currency if that's all we have. */
   var paidUSD = null;
-  if (r.amountPaid != null) {
+  if (r.amountPaidUSD != null) {
+    paidUSD = Math.round(Number(r.amountPaidUSD));
+  } else if (r.amountPaid != null) {
     var n = parseFloat(r.amountPaid);
     if (!isNaN(n)) {
       paidUSD = r.currency === 'MXN' ? Math.round(n * MXN_TO_USD) : Math.round(n);
     }
   }
-  if (!paidUSD) return; // keep Claude Design defaults if receipt not uploaded yet
+  if (!paidUSD) return; /* keep Claude Design defaults if receipt not uploaded yet */
 
-  var low   = Math.round(paidUSD * 0.60);
-  var high  = Math.round(paidUSD * 0.75);
-  var mid   = Math.round(paidUSD * 0.70);
-  var covered = Math.round(paidUSD * 0.92); // assume ~92% of receipt is covered procedures
+  var low     = Math.round(paidUSD * 0.60);
+  var high    = Math.round(paidUSD * 0.75);
+  var mid     = Math.round(paidUSD * 0.70);
+  var covered = Math.round(paidUSD * 0.92);
 
   /* Persist for downstream screens */
   window.CredimedState.merge('estimate', {
-    rangeMin: low,
-    rangeMax: high,
-    midpoint: mid,
-    refundPercent: 75,
-    paidUSD: paidUSD
+    rangeMin: low, rangeMax: high, midpoint: mid, refundPercent: 75, paidUSD: paidUSD
   });
 
-  /* Override the default VARIANTS object before renderScreen is called.
-     We re-read AFTER the main script parses (so it exists in the global scope). */
-  function applyOverride() {
-    if (typeof window.VARIANTS === 'undefined') return setTimeout(applyOverride, 30);
-    var real = {
-      low: low, high: high,
-      receipt: paidUSD,
-      clinic: r.city || 'your clinic',
-      plan: 'US PPO',
-      breakdown: [
-        { label: 'Out-of-network benefit', value: '75%', highlight: true },
-        { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted)' : ' USD') },
-        { label: 'Procedure',              value: r.procedure || '—' }
-      ],
-      calc: [
-        { label: 'Receipt total',          value: '$' + paidUSD.toLocaleString() },
-        { label: 'Covered procedures',     value: '$' + covered.toLocaleString() },
-        { label: 'Out-of-network rate',    value: '× 75%' },
-        { label: 'Estimated refund (mid)', value: '$' + mid.toLocaleString(), final: true }
-      ],
-      expanded: false
-    };
-    window.VARIANTS.default  = real;
-    window.VARIANTS.expanded = Object.assign({}, real, { expanded: true });
+  var real = {
+    low: low, high: high,
+    receipt: paidUSD,
+    clinic: r.city || 'your clinic',
+    plan: 'US PPO',
+    breakdown: [
+      { label: 'Out-of-network benefit', value: '75%', highlight: true },
+      { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted)' : ' USD') },
+      { label: 'Procedure',              value: r.procedure || '—' }
+    ],
+    calc: [
+      { label: 'Receipt total',          value: '$' + paidUSD.toLocaleString() },
+      { label: 'Covered procedures',     value: '$' + covered.toLocaleString() },
+      { label: 'Out-of-network rate',    value: '× 75%' },
+      { label: 'Estimated refund (mid)', value: '$' + mid.toLocaleString(), final: true }
+    ],
+    expanded: false
+  };
 
-    /* Trigger re-render if the page already rendered with mock data */
+  /* VARIANTS is declared as `const` at top-level of a classic script in the Claude Design
+     block. `const` at top-level does NOT get attached to window — it lives in the Script
+     Global Environment (shared across classic scripts in the same document). So we must
+     reference `VARIANTS` directly (not `window.VARIANTS`). Same for `renderScreen`
+     which IS a `function` declaration and DOES end up on window. */
+  var tries = 0;
+  function applyOverride() {
+    var V;
+    try { V = (typeof VARIANTS !== 'undefined') ? VARIANTS : null; }
+    catch (e) { V = null; }
+
+    if (!V) {
+      if (tries++ > 150) { console.warn('[estimate] VARIANTS never appeared'); return; }
+      return setTimeout(applyOverride, 30);
+    }
+
+    V.default  = real;
+    V.expanded = Object.assign({}, real, { expanded: true });
+
+    /* Re-render mobile + desktop with the real data */
     if (typeof window.renderScreen === 'function') {
       ['screen-mobile', 'screen-desktop'].forEach(function (id) {
         var host = document.getElementById(id);

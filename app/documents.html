@@ -47,6 +47,8 @@
 html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !important; }
 /* Safe-area: push hero content below the iPhone Dynamic Island / notch */
 .hero { padding-top: calc(24px + env(safe-area-inset-top)) !important; }
+/* Hide the fake iPhone Dynamic Island notch that Claude Design draws inside .iphone */
+.iphone::before { display: none !important; }
 </style>
 <script>
 /* Reveal dev chrome with ?dev=1 for design reviews */
