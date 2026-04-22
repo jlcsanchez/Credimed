@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credimed — Documents</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ---- tokens (aligned to landing + auth) ---- */
+:root {
+  --teal-50: #F0FDFA;
+  --teal-100: #CCFBF1;
+  --teal-200: #99F6E4;
+  --teal-300: #5EEAD4;
+  --teal-400: #2DD4BF;
+  --teal-500: #14B8A6;
+  --teal-600: #0D9488;
+  --teal-700: #0B8278;
+  --teal-800: #0A7A70;
+  --teal-900: #134E4A;
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
+  --success-bg: #ECFDF5;
+  --success-fg: #047857;
+  --success-border: #A7F3D0;
+  --danger-bg: #FEF2F2;
+  --danger-fg: #B91C1C;
+  --danger-border: #FECACA;
+  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #134e4a 60%, #0D9488 100%);
+  --shadow-card: 0 8px 40px rgba(0,0,0,0.15);
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--slate-900);
+  background: #f0eee9;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Top toolbar ---- */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  height: 56px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(14px) saturate(180%);
+  border-bottom: 1px solid var(--slate-200);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 13px;
+  letter-spacing: 0.14em; color: var(--slate-900);
+}
+.brand .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--teal-600); }
+.tabs { display: flex; gap: 4px; background: var(--slate-100); padding: 4px; border-radius: 999px; }
+.tab {
+  padding: 7px 14px; border-radius: 999px; border: none;
+  background: transparent; font-weight: 600; font-size: 13px;
+  color: var(--slate-600); cursor: pointer; font-family: inherit;
+}
+.tab.active { background: var(--slate-900); color: white; }
+.meta { font-size: 12px; color: var(--slate-500); font-weight: 500; }
+
+/* ---- Stage ---- */
+.stage {
+  min-height: 100vh;
+  padding-top: 80px; padding-bottom: 48px;
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: 48px; flex-wrap: wrap;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(13,148,136,0.06), transparent 50%),
+    radial-gradient(ellipse at 85% 60%, rgba(94,234,212,0.08), transparent 55%),
+    #f0eee9;
+}
+.device-wrap { position: relative; }
+.device-label {
+  position: absolute; top: -32px; left: 0;
+  font-size: 12px; font-weight: 600; color: var(--slate-500);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* iPhone */
+.iphone {
+  width: 390px; height: 810px;
+  background: #0f172a;
+  border-radius: 52px; padding: 10px;
+  box-shadow: 0 30px 80px rgba(15,23,42,0.22), 0 6px 16px rgba(15,23,42,0.1);
+  position: relative; flex-shrink: 0;
+}
+.iphone::before {
+  content: ""; position: absolute; top: 18px; left: 50%;
+  transform: translateX(-50%); width: 110px; height: 28px;
+  background: #020617; border-radius: 999px; z-index: 10;
+}
+.iphone .screen {
+  width: 100%; height: 100%;
+  background: white; border-radius: 42px;
+  overflow: hidden; overflow-y: auto;
+  position: relative;
+  scrollbar-width: none;
+}
+.iphone .screen::-webkit-scrollbar { display: none; }
+
+/* Desktop */
+.desktop {
+  width: 720px;
+  background: white; border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(15,23,42,0.18), 0 6px 16px rgba(15,23,42,0.08);
+  overflow: hidden; display: flex; flex-direction: column;
+  flex-shrink: 0;
+}
+.desktop .chrome {
+  height: 44px; background: #f8fafc;
+  border-bottom: 1px solid var(--slate-200);
+  display: flex; align-items: center; padding: 0 16px; gap: 8px;
+}
+.chrome .dots { display: flex; gap: 6px; }
+.chrome .dot { width: 11px; height: 11px; border-radius: 999px; }
+.chrome .dot.r { background: #fc615d; } .chrome .dot.y { background: #fcbb40; } .chrome .dot.g { background: #34c749; }
+.chrome .url {
+  flex: 1; margin-left: 12px; height: 26px;
+  background: white; border: 1px solid var(--slate-200);
+  border-radius: 8px; padding: 0 12px;
+  display: flex; align-items: center; font-size: 12px;
+  color: var(--slate-500); gap: 8px;
+}
+.desktop .body {
+  height: 760px;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(13,148,136,0.05), transparent 55%),
+    radial-gradient(ellipse at 80% 50%, rgba(94,234,212,0.06), transparent 55%),
+    #f8fafc;
+  overflow-y: auto;
+  padding: 40px 0;
+  display: flex; justify-content: center; align-items: flex-start;
+}
+.desktop-inner { width: 100%; max-width: 480px; }
+
+/* ---- Hero (same pattern as auth) ---- */
+.hero {
+  position: relative;
+  background: var(--hero-gradient);
+  color: white;
+  padding: 24px 24px 40px;
+  overflow: hidden;
+}
+.hero::before {
+  content: ""; position: absolute; inset: -40%;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(94,234,212,0.25), transparent 50%),
+    radial-gradient(ellipse at 85% 30%, rgba(13,148,136,0.35), transparent 55%);
+  pointer-events: none;
+}
+.hero-top {
+  position: relative; display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 24px;
+}
+.back-btn {
+  width: 36px; height: 36px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.08);
+  color: white; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; backdrop-filter: blur(6px);
+}
+.logo-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 14px 8px 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
+}
+.logo-badge .circle {
+  width: 28px; height: 28px; border-radius: 999px; background: white;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-badge .text {
+  font-weight: 700; font-size: 12px;
+  letter-spacing: 0.14em; color: white;
+}
+.hero-title {
+  position: relative;
+  font-size: 28px; font-weight: 700; line-height: 1.15;
+  letter-spacing: -0.015em; margin: 0 0 6px;
+}
+.hero-sub {
+  position: relative;
+  font-size: 14px; color: rgba(255,255,255,0.72);
+  margin: 0 0 18px;
+}
+.progress {
+  position: relative;
+  display: flex; gap: 6px;
+}
+.progress-seg {
+  flex: 1; height: 4px; border-radius: 999px;
+  background: rgba(255,255,255,0.18);
+}
+.progress-seg.active {
+  background: linear-gradient(90deg, var(--teal-300), var(--teal-400));
+}
+.progress-label {
+  position: relative;
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.72);
+  margin-top: 10px;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Body ---- */
+.body-wrap {
+  padding: 20px 20px 160px;
+}
+.card-stack { display: flex; flex-direction: column; gap: 14px; }
+
+/* ---- Upload card ---- */
+.upload-card {
+  background: white;
+  border-radius: 16px;
+  border: 1.5px solid var(--slate-200);
+  padding: 18px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  position: relative;
+}
+.upload-card.state-uploading { border-color: var(--teal-300); }
+.upload-card.state-done {
+  background: linear-gradient(180deg, #fff 0%, #F0FDFA 100%);
+  border-color: var(--teal-300);
+}
+.upload-card.state-error {
+  border-color: var(--danger-border);
+  background: #fff;
+}
+.upload-card.drag-over {
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 4px rgba(13,148,136,0.12);
+  background: var(--teal-50);
+}
+
+.card-head {
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-bottom: 14px;
+}
+.card-icon {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--teal-50);
+  color: var(--teal-700);
+  display: flex; align-items: center; justify-content: center;
+}
+.upload-card.state-done .card-icon {
+  background: var(--teal-600); color: white;
+}
+.upload-card.state-error .card-icon {
+  background: var(--danger-bg); color: var(--danger-fg);
+}
+.card-head-text { flex: 1; min-width: 0; }
+.card-title-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+.card-title {
+  font-size: 15px; font-weight: 600; color: var(--slate-900);
+  margin: 0; line-height: 1.2;
+}
+.pill {
+  font-size: 10px; font-weight: 700;
+  padding: 3px 7px; border-radius: 999px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.pill.required { background: rgba(13,148,136,0.08); color: var(--teal-700); }
+.pill.optional { background: var(--slate-100); color: var(--slate-500); }
+.card-desc {
+  font-size: 13px; color: var(--slate-500);
+  margin: 0; line-height: 1.4;
+}
+
+/* ---- Dropzone ---- */
+.dropzone {
+  border: 1.5px dashed var(--slate-300);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.dropzone:hover { border-color: var(--teal-600); background: var(--teal-50); }
+.dropzone-icon {
+  width: 36px; height: 36px;
+  margin: 0 auto 10px;
+  border-radius: 999px;
+  background: var(--slate-100);
+  color: var(--slate-600);
+  display: flex; align-items: center; justify-content: center;
+}
+.dropzone-primary {
+  font-size: 14px; font-weight: 600;
+  color: var(--slate-900); margin-bottom: 2px;
+}
+.dropzone-primary .em { color: var(--teal-600); }
+.dropzone-secondary {
+  font-size: 12px; color: var(--slate-500);
+}
+
+/* ---- Upload states ---- */
+.uploading-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 12px;
+  background: var(--teal-50);
+  border-radius: 12px;
+  border: 1px solid var(--teal-200);
+}
+.uploading-icon {
+  width: 36px; height: 36px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--teal-600);
+}
+.uploading-body { flex: 1; min-width: 0; }
+.uploading-filename {
+  font-size: 13px; font-weight: 600;
+  color: var(--slate-900);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+.uploading-bar {
+  height: 4px; background: white;
+  border-radius: 999px; overflow: hidden;
+  position: relative;
+}
+.uploading-bar-fill {
+  height: 100%; background: var(--teal-600);
+  border-radius: 999px;
+  transition: width 400ms ease;
+  position: relative;
+  overflow: hidden;
+}
+.uploading-bar-fill::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); } 100% { transform: translateX(100%); }
+}
+.uploading-pct {
+  font-size: 11px; font-weight: 600; color: var(--teal-700);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.uploaded-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--teal-200);
+}
+.uploaded-thumb {
+  width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--slate-100);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.uploaded-thumb svg { width: 20px; height: 20px; color: var(--teal-700); }
+.uploaded-thumb .file-preview {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #0D9488 0%, #134e4a 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: white;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px;
+}
+.uploaded-thumb .file-preview .line {
+  width: 70%; height: 1.5px; background: rgba(255,255,255,0.6);
+  margin-top: 2px;
+}
+.uploaded-thumb .file-preview .line.short { width: 45%; }
+.uploaded-body { flex: 1; min-width: 0; }
+.uploaded-filename {
+  font-size: 13px; font-weight: 600; color: var(--slate-900);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.uploaded-meta {
+  font-size: 11px; color: var(--slate-500);
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 2px;
+}
+.uploaded-meta .check {
+  color: var(--success-fg); display: inline-flex; align-items: center; gap: 3px;
+  font-weight: 600;
+}
+.uploaded-actions {
+  display: flex; gap: 4px; flex-shrink: 0;
+}
+.icon-action {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: none; border: none; cursor: pointer;
+  color: var(--slate-500);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 150ms ease;
+}
+.icon-action:hover { background: var(--slate-100); color: var(--slate-800); }
+.icon-action.danger:hover { background: var(--danger-bg); color: var(--danger-fg); }
+
+.error-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--danger-bg);
+  border-radius: 10px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--danger-fg);
+  font-weight: 500;
+}
+.error-row svg { flex-shrink: 0; }
+
+/* ---- Secondary actions / fields ---- */
+.amount-field {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.amount-field-label {
+  font-size: 12px; font-weight: 600;
+  color: var(--slate-700);
+  flex-shrink: 0;
+}
+.amount-input-wrap {
+  flex: 1;
+  position: relative;
+}
+.amount-input-wrap .prefix {
+  position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px; font-weight: 600;
+  color: var(--slate-500);
+}
+.amount-input {
+  width: 100%; height: 40px;
+  border-radius: 10px;
+  border: 1.5px solid var(--slate-200);
+  background: white;
+  padding: 0 12px 0 26px;
+  font-size: 14px; font-weight: 600;
+  color: var(--slate-900);
+  font-family: var(--font-ui);
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.amount-input:focus {
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 4px rgba(13,148,136,0.12);
+}
+
+.secondary-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 12px;
+  font-size: 12px; font-weight: 600;
+  color: var(--teal-700);
+  background: none; border: none;
+  padding: 6px 8px; margin-left: -8px;
+  border-radius: 8px; cursor: pointer;
+  font-family: inherit;
+  transition: background 150ms ease;
+}
+.secondary-link:hover { background: var(--teal-50); }
+
+/* ---- Footer CTA ---- */
+.footer-cta {
+  padding: 18px 20px 22px;
+  background: white;
+  border-top: 1px solid var(--slate-200);
+  box-shadow: 0 -8px 24px -12px rgba(15,23,42,0.08);
+  position: sticky; bottom: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.btn-primary {
+  width: 100%; height: 54px;
+  border-radius: 14px;
+  background: var(--teal-600);
+  color: white; border: none;
+  font-weight: 700; font-size: 15px;
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 6px 18px rgba(13,148,136,0.28);
+  font-family: inherit;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--teal-800);
+  box-shadow: 0 10px 24px rgba(13,148,136,0.36);
+  transform: translateY(-1px);
+}
+.btn-primary:disabled {
+  background: var(--slate-200);
+  color: var(--slate-400);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.btn-primary .arrow { transition: transform 150ms ease; }
+.btn-primary:hover:not(:disabled) .arrow { transform: translateX(3px); }
+
+.footer-link {
+  font-size: 13px; font-weight: 600;
+  color: var(--teal-700);
+  background: none; border: none;
+  cursor: pointer; font-family: inherit;
+  padding: 4px 8px;
+}
+.footer-link:hover { text-decoration: underline; }
+
+.required-summary {
+  font-size: 12px; color: var(--slate-500);
+  font-weight: 500; text-align: center;
+  margin-top: -2px;
+}
+.required-summary .check {
+  color: var(--success-fg); font-weight: 700;
+}
+
+input[type=file] { display: none; }
+
+@media (max-width: 1200px) {
+  .desktop { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    CREDIMED · Documents
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-variant="default">Default</button>
+    <button class="tab" data-variant="midflow">Mid-flow</button>
+  </div>
+  <div class="meta">Step 1 of 4 · Claim setup</div>
+</div>
+
+<div class="stage">
+  <!-- Mobile -->
+  <div class="device-wrap">
+    <div class="device-label">Mobile · 375px</div>
+    <div class="iphone">
+      <div class="screen" id="screen-mobile">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="device-wrap">
+    <div class="device-label">Desktop · 480px max</div>
+    <div class="desktop">
+      <div class="chrome">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          app.credimed.us/claim/new/documents
+        </div>
+      </div>
+      <div class="body">
+        <div class="desktop-inner" id="screen-desktop">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Documents screen — renderer
+   Two display variants: "default" (all empty) and "midflow"
+   (card 1 uploaded, card 2 uploading at 62%, card 3 empty).
+   Individual cards are also interactive — tap or drag a file
+   in default mode and you'll see the live states.
+   ============================================================ */
+
+const ICONS = {
+  back: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+  mark: '<svg width="18" height="18" viewBox="0 0 32 32"><path d="M16 2 C 7 2, 3 7, 3 15 C 3 24, 8 30, 16 30 C 24 30, 29 24, 29 15 C 29 7, 25 2, 16 2 Z M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#0D9488"/></svg>',
+  insurance: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="7" y1="15" x2="13" y2="15"/></svg>',
+  receipt: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3H5a2 2 0 0 0-2 2v16l3-2 3 2 3-2 3 2 3-2 3 2V5a2 2 0 0 0-2-2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>',
+  supporting: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>',
+  upload: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+  check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  checkSmall: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  spinner: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2 A 10 10 0 0 1 22 12" opacity="0.9"/><path d="M22 12 A 10 10 0 0 1 14 21.8" opacity="0.4"/></svg>',
+  trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  eye: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  alert: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  sparkle: '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"/></svg>',
+};
+
+// Full spinner rotation — attached inline because each card clone
+// needs it and there's no global CSS target.
+const SPINNER_STYLE = 'animation: spin 1s linear infinite;';
+
+// Inject @keyframes spin once
+(function(){
+  const s = document.createElement('style');
+  s.textContent = '@keyframes spin { to { transform: rotate(360deg); } } .spinner { animation: spin 1s linear infinite; }';
+  document.head.appendChild(s);
+})();
+
+const CARDS = [
+  {
+    id: 'insurance',
+    icon: ICONS.insurance,
+    title: 'Insurance card',
+    required: true,
+    desc: 'Front of your US PPO card — we need the member ID and group number.',
+    dropzonePrimary: '<span class="em">Drop a photo</span> or tap to upload',
+    dropzoneSecondary: 'JPG, PNG or HEIC · up to 10 MB',
+    hasAmount: false,
+  },
+  {
+    id: 'receipt',
+    icon: ICONS.receipt,
+    title: 'Receipt from Mexico',
+    required: true,
+    desc: 'PDF or photo — must show the total amount you paid.',
+    dropzonePrimary: '<span class="em">Drop a file</span> or tap to upload',
+    dropzoneSecondary: 'PDF, JPG, PNG · up to 10 MB',
+    hasAmount: true,
+  },
+  {
+    id: 'supporting',
+    icon: ICONS.supporting,
+    title: 'Supporting documents',
+    required: false,
+    desc: 'X-rays, treatment plan, EOB, before/after photos — anything that strengthens your claim.',
+    dropzonePrimary: '<span class="em">Drop files</span> or tap to upload',
+    dropzoneSecondary: 'Multiple files · PDF, JPG, PNG · up to 10 MB each',
+    hasAmount: false,
+  },
+];
+
+// Per-variant state: maps cardId -> {status, filename, progress, meta}
+const VARIANT_STATES = {
+  default: {
+    insurance: { status: 'empty' },
+    receipt:   { status: 'empty' },
+    supporting:{ status: 'empty' },
+  },
+  midflow: {
+    insurance: {
+      status: 'done',
+      filename: 'bcbs-ppo-card.jpg',
+      meta: '1.8 MB · Uploaded just now',
+      thumbKind: 'card',
+    },
+    receipt: {
+      status: 'uploading',
+      filename: 'receipt-cancun-clinic.pdf',
+      progress: 62,
+    },
+    supporting: { status: 'empty' },
+  },
+};
+
+function renderCard(card, state, deviceKey) {
+  const stateClass = `state-${state.status}`;
+  let inner = '';
+
+  if (state.status === 'empty') {
+    inner = `
+      <div class="dropzone" data-card="${card.id}" data-device="${deviceKey}">
+        <div class="dropzone-icon">${ICONS.upload}</div>
+        <div class="dropzone-primary">${card.dropzonePrimary}</div>
+        <div class="dropzone-secondary">${card.dropzoneSecondary}</div>
+      </div>
+      ${card.hasAmount ? amountField(state) : ''}
+      <button type="button" class="secondary-link" data-help="${card.id}">
+        I don't have this →
+      </button>
+    `;
+  } else if (state.status === 'uploading') {
+    inner = `
+      <div class="uploading-row">
+        <div class="uploading-icon spinner">${ICONS.spinner}</div>
+        <div class="uploading-body">
+          <div class="uploading-filename">${state.filename}</div>
+          <div class="uploading-bar"><div class="uploading-bar-fill" style="width:${state.progress||0}%"></div></div>
+        </div>
+        <div class="uploading-pct">${state.progress||0}%</div>
+      </div>
+      ${card.hasAmount ? amountField(state) : ''}
+    `;
+  } else if (state.status === 'done') {
+    inner = `
+      <div class="uploaded-row">
+        <div class="uploaded-thumb">${thumbFor(state)}</div>
+        <div class="uploaded-body">
+          <div class="uploaded-filename">${state.filename}</div>
+          <div class="uploaded-meta">
+            <span class="check">${ICONS.checkSmall} Uploaded</span>
+            <span>·</span>
+            <span>${state.meta || ''}</span>
+          </div>
+        </div>
+        <div class="uploaded-actions">
+          <button class="icon-action" aria-label="Preview">${ICONS.eye}</button>
+          <button class="icon-action danger" aria-label="Remove" data-remove="${card.id}" data-device="${deviceKey}">${ICONS.trash}</button>
+        </div>
+      </div>
+      ${card.hasAmount ? amountField(state) : ''}
+    `;
+  } else if (state.status === 'error') {
+    inner = `
+      <div class="dropzone" data-card="${card.id}" data-device="${deviceKey}">
+        <div class="dropzone-icon">${ICONS.upload}</div>
+        <div class="dropzone-primary">Try again</div>
+        <div class="dropzone-secondary">${card.dropzoneSecondary}</div>
+      </div>
+      <div class="error-row">${ICONS.alert} Upload failed. ${state.error || 'Please try again.'}</div>
+      ${card.hasAmount ? amountField(state) : ''}
+      <button type="button" class="secondary-link" data-help="${card.id}">
+        I don't have this →
+      </button>
+    `;
+  }
+
+  const pill = card.required
+    ? '<span class="pill required">Required</span>'
+    : '<span class="pill optional">Optional</span>';
+
+  return `
+    <div class="upload-card ${stateClass}" data-card-root="${card.id}" data-device="${deviceKey}">
+      <div class="card-head">
+        <div class="card-icon">${state.status === 'done' ? ICONS.check : card.icon}</div>
+        <div class="card-head-text">
+          <div class="card-title-row">
+            <h3 class="card-title">${card.title}</h3>
+            ${pill}
+          </div>
+          <p class="card-desc">${card.desc}</p>
+        </div>
+      </div>
+      ${inner}
+    </div>
+  `;
+}
+
+function amountField(state) {
+  return `
+    <div class="amount-field">
+      <label class="amount-field-label">Amount paid (USD)</label>
+      <div class="amount-input-wrap">
+        <span class="prefix">$</span>
+        <input type="text" class="amount-input" placeholder="0.00" value="${state.amount || ''}" inputmode="decimal">
+      </div>
+    </div>
+  `;
+}
+
+function thumbFor(state) {
+  // Tiny "document preview" rendered purely with CSS — stands in for
+  // the uploaded thumbnail without loading a real image.
+  if (state.thumbKind === 'card') {
+    return `<div class="file-preview">
+      <span style="font-size:8px; opacity:0.85;">PPO</span>
+      <div class="line"></div>
+      <div class="line short"></div>
+      <div class="line"></div>
+    </div>`;
+  }
+  if (state.thumbKind === 'receipt') {
+    return `<div class="file-preview" style="background:linear-gradient(135deg,#F59E0B,#B45309);">
+      <div class="line"></div>
+      <div class="line short"></div>
+      <div class="line"></div>
+      <div class="line short"></div>
+    </div>`;
+  }
+  return ICONS.pdf;
+}
+
+function summaryLine(state) {
+  const req = [state.insurance, state.receipt].filter(s => s.status === 'done').length;
+  if (req === 2) return `<span class="check">✓ Both required documents ready</span>`;
+  return `${req} of 2 required documents uploaded`;
+}
+
+function ctaEnabled(state) {
+  return state.insurance.status === 'done' && state.receipt.status === 'done';
+}
+
+function render(variantKey, device) {
+  const state = VARIANT_STATES[variantKey];
+  const progressSegs = Array.from({length: 4}, (_, i) => i === 0
+    ? '<div class="progress-seg active"></div>'
+    : '<div class="progress-seg"></div>'
+  ).join('');
+
+  const deviceKey = device;
+
+  return `
+    <div class="hero">
+      <div class="hero-top">
+        <button class="back-btn" aria-label="Back">${ICONS.back}</button>
+        <div class="logo-badge">
+          <span class="circle">${ICONS.mark}</span>
+          <span class="text">CREDIMED</span>
+        </div>
+        <span style="width:36px"></span>
+      </div>
+      <h1 class="hero-title">Upload your documents</h1>
+      <p class="hero-sub">Takes about 2 minutes.</p>
+      <div class="progress">${progressSegs}</div>
+      <div class="progress-label">Step 1 of 4 · Claim setup</div>
+    </div>
+    <div class="body-wrap">
+      <div class="card-stack">
+        ${CARDS.map(c => renderCard(c, state[c.id], deviceKey)).join('')}
+      </div>
+    </div>
+    <div class="footer-cta">
+      <div class="required-summary">${summaryLine(state)}</div>
+      <button class="btn-primary" ${ctaEnabled(state) ? '' : 'disabled'}>
+        <span>Continue</span>
+        <span class="arrow">→</span>
+      </button>
+      <button class="footer-link">Save and finish later</button>
+    </div>
+  `;
+}
+
+/* ---- mount ---- */
+
+let activeVariant = 'default';
+
+function mount() {
+  document.getElementById('screen-mobile').innerHTML = render(activeVariant, 'mobile');
+  document.getElementById('screen-desktop').innerHTML = render(activeVariant, 'desktop');
+  wireInteractions();
+}
+
+function wireInteractions() {
+  // Dropzones — tap or drag to simulate upload
+  document.querySelectorAll('.dropzone').forEach(dz => {
+    const cardId = dz.getAttribute('data-card');
+    const deviceKey = dz.getAttribute('data-device');
+
+    dz.addEventListener('click', () => simulateUpload(cardId));
+    dz.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dz.closest('.upload-card').classList.add('drag-over');
+    });
+    dz.addEventListener('dragleave', () => {
+      dz.closest('.upload-card').classList.remove('drag-over');
+    });
+    dz.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dz.closest('.upload-card').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      simulateUpload(cardId, file ? file.name : undefined);
+    });
+  });
+
+  // Remove button
+  document.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cardId = btn.getAttribute('data-remove');
+      VARIANT_STATES[activeVariant][cardId] = { status: 'empty' };
+      mount();
+    });
+  });
+
+  // Help (Sofia) button — placeholder, no wiring
+  document.querySelectorAll('[data-help]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // no-op — connector will wire this to Sofia/WhatsApp widget
+    });
+  });
+}
+
+function simulateUpload(cardId, suggestedName) {
+  const defaultNames = {
+    insurance: 'ppo-card-front.jpg',
+    receipt: 'cancun-receipt.pdf',
+    supporting: 'xray-treatment-plan.pdf',
+  };
+  const name = suggestedName || defaultNames[cardId] || 'document.pdf';
+
+  VARIANT_STATES[activeVariant][cardId] = {
+    status: 'uploading',
+    filename: name,
+    progress: 0,
+  };
+  mount();
+
+  let p = 0;
+  const tick = () => {
+    p += Math.random() * 18 + 8;
+    if (p >= 100) {
+      VARIANT_STATES[activeVariant][cardId] = {
+        status: 'done',
+        filename: name,
+        meta: `${(Math.random() * 2 + 0.8).toFixed(1)} MB · Uploaded just now`,
+        thumbKind: cardId === 'insurance' ? 'card' : cardId === 'receipt' ? 'receipt' : 'pdf',
+      };
+      mount();
+    } else {
+      VARIANT_STATES[activeVariant][cardId].progress = Math.round(p);
+      // Only update the progress bar in place, not re-render whole thing
+      document.querySelectorAll(`[data-card-root="${cardId}"] .uploading-bar-fill`).forEach(el => {
+        el.style.width = Math.round(p) + '%';
+      });
+      document.querySelectorAll(`[data-card-root="${cardId}"] .uploading-pct`).forEach(el => {
+        el.textContent = Math.round(p) + '%';
+      });
+      setTimeout(tick, 260);
+    }
+  };
+  setTimeout(tick, 280);
+}
+
+/* ---- tab switching ---- */
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    activeVariant = t.getAttribute('data-variant');
+    mount();
+  });
+});
+
+mount();
+
+// Keep the mid-flow progress bar animating for visual effect
+setInterval(() => {
+  if (activeVariant !== 'midflow') return;
+  const recv = VARIANT_STATES.midflow.receipt;
+  if (recv.status !== 'uploading') return;
+  recv.progress = recv.progress >= 78 ? 62 : recv.progress + 4;
+  document.querySelectorAll('[data-card-root="receipt"] .uploading-bar-fill').forEach(el => {
+    el.style.width = recv.progress + '%';
+  });
+  document.querySelectorAll('[data-card-root="receipt"] .uploading-pct').forEach(el => {
+    el.textContent = recv.progress + '%';
+  });
+}, 700);
+</script>
+
+</body>
+</html>

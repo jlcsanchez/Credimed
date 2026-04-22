@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credimed — Service Agreement</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --teal-50: #F0FDFA;
+  --teal-100: #CCFBF1;
+  --teal-200: #99F6E4;
+  --teal-300: #5EEAD4;
+  --teal-400: #2DD4BF;
+  --teal-500: #14B8A6;
+  --teal-600: #0D9488;
+  --teal-700: #0B8278;
+  --teal-800: #0A7A70;
+  --teal-900: #134E4A;
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
+  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #134e4a 60%, #0D9488 100%);
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--slate-900);
+  background: #f0eee9;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Toolbar ---- */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  height: 56px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(14px) saturate(180%);
+  border-bottom: 1px solid var(--slate-200);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 13px;
+  letter-spacing: 0.14em; color: var(--slate-900);
+}
+.brand .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--teal-600); }
+.tabs { display: flex; gap: 4px; background: var(--slate-100); padding: 4px; border-radius: 999px; }
+.tab {
+  padding: 7px 12px; border-radius: 999px; border: none;
+  background: transparent; font-weight: 600; font-size: 12px;
+  color: var(--slate-600); cursor: pointer; font-family: inherit;
+  white-space: nowrap;
+}
+.tab.active { background: var(--slate-900); color: white; }
+.meta { font-size: 12px; color: var(--slate-500); font-weight: 500; }
+
+/* ---- Stage ---- */
+.stage {
+  min-height: 100vh;
+  padding-top: 80px; padding-bottom: 48px;
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: 48px; flex-wrap: wrap;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(13,148,136,0.06), transparent 50%),
+    radial-gradient(ellipse at 85% 60%, rgba(94,234,212,0.08), transparent 55%),
+    #f0eee9;
+}
+.device-wrap { position: relative; }
+.device-label {
+  position: absolute; top: -32px; left: 0;
+  font-size: 12px; font-weight: 600; color: var(--slate-500);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* iPhone */
+.iphone {
+  width: 390px; height: 810px;
+  background: #0f172a;
+  border-radius: 52px; padding: 10px;
+  box-shadow: 0 30px 80px rgba(15,23,42,0.22), 0 6px 16px rgba(15,23,42,0.1);
+  position: relative; flex-shrink: 0;
+}
+.iphone::before {
+  content: ""; position: absolute; top: 18px; left: 50%;
+  transform: translateX(-50%); width: 110px; height: 28px;
+  background: #020617; border-radius: 999px; z-index: 10;
+}
+.iphone .screen {
+  width: 100%; height: 100%;
+  background: white; border-radius: 42px;
+  overflow: hidden; overflow-y: auto;
+  position: relative;
+  scrollbar-width: none;
+}
+.iphone .screen::-webkit-scrollbar { display: none; }
+
+/* Desktop */
+.desktop {
+  width: 720px;
+  background: white; border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(15,23,42,0.18), 0 6px 16px rgba(15,23,42,0.08);
+  overflow: hidden; display: flex; flex-direction: column;
+  flex-shrink: 0;
+}
+.desktop .chrome {
+  height: 44px; background: #f8fafc;
+  border-bottom: 1px solid var(--slate-200);
+  display: flex; align-items: center; padding: 0 16px; gap: 8px;
+}
+.chrome .dots { display: flex; gap: 6px; }
+.chrome .dot { width: 11px; height: 11px; border-radius: 999px; }
+.chrome .dot.r { background: #fc615d; } .chrome .dot.y { background: #fcbb40; } .chrome .dot.g { background: #34c749; }
+.chrome .url {
+  flex: 1; margin-left: 12px; height: 26px;
+  background: white; border: 1px solid var(--slate-200);
+  border-radius: 8px; padding: 0 12px;
+  display: flex; align-items: center; font-size: 12px;
+  color: var(--slate-500); gap: 8px;
+}
+.desktop .body {
+  height: 760px;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(13,148,136,0.05), transparent 55%),
+    radial-gradient(ellipse at 80% 50%, rgba(94,234,212,0.06), transparent 55%),
+    #f8fafc;
+  padding: 40px 0;
+  display: flex; justify-content: center; align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+}
+.desktop-inner {
+  width: 100%; max-width: 520px;
+  height: 100%;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -6px rgba(15,23,42,0.08);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ---- Hero ---- */
+.hero {
+  position: relative;
+  background: var(--hero-gradient);
+  color: white;
+  padding: 22px 24px 28px;
+  overflow: hidden;
+}
+.hero::before {
+  content: ""; position: absolute; inset: -40%;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(94,234,212,0.25), transparent 50%),
+    radial-gradient(ellipse at 85% 30%, rgba(13,148,136,0.35), transparent 55%);
+  pointer-events: none;
+}
+.hero-top {
+  position: relative; display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 18px;
+}
+.back-btn {
+  width: 36px; height: 36px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.08);
+  color: white; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; backdrop-filter: blur(6px);
+}
+.logo-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 14px 8px 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
+}
+.logo-badge .circle {
+  width: 28px; height: 28px; border-radius: 999px; background: white;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-badge .text {
+  font-weight: 700; font-size: 12px;
+  letter-spacing: 0.14em; color: white;
+}
+
+.final-pill {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(94,234,212,0.14);
+  border: 1px solid rgba(94,234,212,0.3);
+  color: var(--teal-300);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.final-pill::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: var(--teal-300);
+  box-shadow: 0 0 10px rgba(94,234,212,0.8);
+}
+
+.hero-title {
+  position: relative;
+  font-size: 26px; font-weight: 700; line-height: 1.15;
+  letter-spacing: -0.02em; margin: 0 0 6px;
+}
+.hero-sub {
+  position: relative;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.58);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-sub .sep {
+  width: 3px; height: 3px; border-radius: 999px;
+  background: rgba(255,255,255,0.35);
+}
+
+/* ---- Body ---- */
+.body-wrap {
+  padding: 24px 20px 28px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--slate-500);
+  text-transform: uppercase;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-label .num {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 18px; height: 18px;
+  border-radius: 999px;
+  background: var(--slate-900);
+  color: white;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* ---- Terms box ---- */
+.terms-shell {
+  position: relative;
+  border: 1px solid var(--slate-200);
+  border-radius: 14px;
+  background: var(--slate-50);
+  overflow: hidden;
+}
+.terms-scroll {
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 16px 18px 16px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--slate-600);
+  scrollbar-width: thin;
+  scrollbar-color: var(--slate-300) transparent;
+}
+.terms-scroll::-webkit-scrollbar { width: 6px; }
+.terms-scroll::-webkit-scrollbar-thumb {
+  background: var(--slate-300); border-radius: 999px;
+}
+.terms-scroll h5 {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--teal-700);
+  text-transform: uppercase;
+  margin: 14px 0 4px;
+}
+.terms-scroll h5:first-child { margin-top: 0; }
+.terms-scroll p { margin: 0 0 8px; }
+.terms-scroll b { color: var(--slate-900); font-weight: 700; }
+
+.terms-fade-top,
+.terms-fade-bottom {
+  position: absolute;
+  left: 0; right: 0;
+  height: 22px;
+  pointer-events: none;
+  z-index: 2;
+}
+.terms-fade-top {
+  top: 0;
+  background: linear-gradient(180deg, var(--slate-50) 0%, rgba(248,250,252,0) 100%);
+}
+.terms-fade-bottom {
+  bottom: 34px;
+  background: linear-gradient(0deg, var(--slate-50) 0%, rgba(248,250,252,0) 100%);
+}
+
+.terms-footer {
+  height: 34px;
+  border-top: 1px solid var(--slate-200);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-size: 11.5px;
+  gap: 10px;
+  overflow: hidden;
+}
+.terms-footer .doc-ref {
+  color: var(--slate-500);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.terms-footer .doc-ref svg { flex-shrink: 0; }
+.terms-footer .doc-ref .fname {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.download-link { flex-shrink: 0; white-space: nowrap; }
+.download-link {
+  color: var(--teal-700);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  background: none; border: none;
+  font-family: inherit;
+  font-size: 11.5px;
+  padding: 0;
+}
+.download-link:hover { text-decoration: underline; }
+
+/* ---- Checkbox row ---- */
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 14px 14px;
+  margin-top: 14px;
+  border-radius: 12px;
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  cursor: pointer;
+  transition: all 150ms ease;
+  user-select: none;
+}
+.checkbox-row:hover {
+  background: white;
+  border-color: var(--slate-300);
+}
+.checkbox-row.checked {
+  background: var(--teal-50);
+  border-color: var(--teal-300);
+}
+.check-box {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid var(--slate-400);
+  background: white;
+  display: flex;
+  align-items: center; justify-content: center;
+  transition: all 150ms ease;
+  margin-top: 1px;
+}
+.checkbox-row.checked .check-box {
+  background: var(--teal-600);
+  border-color: var(--teal-600);
+}
+.check-box svg {
+  width: 14px; height: 14px;
+  color: white;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all 150ms ease;
+}
+.checkbox-row.checked .check-box svg {
+  opacity: 1; transform: scale(1);
+}
+.checkbox-label {
+  font-size: 13.5px;
+  color: var(--slate-800);
+  line-height: 1.5;
+  font-weight: 500;
+}
+.checkbox-label b { color: var(--slate-900); font-weight: 700; }
+.checkbox-label a {
+  color: var(--teal-700);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--teal-300);
+  text-underline-offset: 2px;
+}
+
+/* ---- Divider ---- */
+.block-spacer { height: 24px; }
+
+/* ---- Signature ---- */
+.sig-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 320 / 120;
+  border: 1.5px dashed var(--slate-300);
+  border-radius: 12px;
+  background: white;
+  overflow: hidden;
+  transition: border-color 150ms ease;
+  cursor: crosshair;
+  touch-action: none;
+}
+.sig-box:hover {
+  border-color: var(--slate-400);
+}
+.sig-box.active {
+  border-style: solid;
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 3px rgba(20,184,166,0.1);
+}
+.sig-box canvas {
+  width: 100%; height: 100%;
+  display: block;
+}
+.sig-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: var(--slate-400);
+  font-size: 13px;
+  font-weight: 500;
+  font-style: italic;
+  gap: 7px;
+}
+.sig-placeholder.hidden { opacity: 0; }
+.sig-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 11.5px;
+}
+.sig-hint {
+  color: var(--slate-500);
+  font-weight: 500;
+}
+.sig-hint b { color: var(--slate-700); font-weight: 600; }
+.clear-link {
+  color: var(--slate-600);
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11.5px;
+  padding: 4px 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.clear-link:hover { color: var(--slate-900); }
+.clear-link svg { width: 11px; height: 11px; }
+
+/* ---- Address card ---- */
+.address-card {
+  margin-top: 20px;
+  padding: 18px 18px 18px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #FEFCE8 0%, #FFFBEB 100%);
+  border: 1px solid #FDE68A;
+  position: relative;
+}
+.address-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  background: #D97706;
+  border-radius: 14px 0 0 14px;
+}
+.addr-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.addr-icon {
+  flex-shrink: 0;
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: #D97706;
+  color: white;
+  display: flex;
+  align-items: center; justify-content: center;
+}
+.addr-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--slate-900);
+  margin: 0 0 3px;
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+}
+.addr-helper {
+  font-size: 12px;
+  color: #78350F;
+  line-height: 1.45;
+  margin: 0;
+  font-weight: 500;
+}
+
+.field {
+  margin-bottom: 10px;
+}
+.field:last-child { margin-bottom: 0; }
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-700);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.field-label .optional {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--slate-400);
+  margin-left: 4px;
+}
+.field-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: 9px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--slate-900);
+  transition: all 150ms ease;
+}
+.field-input::placeholder {
+  color: var(--slate-400);
+  font-weight: 400;
+}
+.field-input:focus {
+  outline: none;
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 3px rgba(20,184,166,0.12);
+}
+.field-input:not(:placeholder-shown) {
+  background: white;
+  font-weight: 500;
+}
+.field-input.has-value {
+  background: white;
+  font-weight: 500;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 8px;
+}
+
+.autocomplete-hint {
+  position: relative;
+}
+.autocomplete-hint svg {
+  position: absolute;
+  right: 10px; top: 50%;
+  transform: translateY(-50%);
+  width: 14px; height: 14px;
+  color: var(--slate-400);
+  pointer-events: none;
+}
+.autocomplete-hint .field-input {
+  padding-right: 32px;
+}
+
+/* ---- Payment method ---- */
+.pay-intro {
+  font-size: 12.5px;
+  color: var(--slate-500);
+  line-height: 1.5;
+  margin: -4px 0 12px;
+}
+.pay-intro b { color: var(--slate-700); font-weight: 600; }
+
+.pay-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.pay-option {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 14px 14px;
+  border-radius: 12px;
+  background: white;
+  border: 1.5px solid var(--slate-200);
+  cursor: pointer;
+  transition: all 150ms ease;
+  user-select: none;
+}
+.pay-option:hover {
+  border-color: var(--slate-300);
+  background: var(--slate-50);
+}
+.pay-option.selected {
+  border-color: var(--teal-500);
+  background: var(--teal-50);
+  box-shadow: 0 0 0 3px rgba(20,184,166,0.1);
+}
+.radio-dot {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  border-radius: 999px;
+  border: 2px solid var(--slate-300);
+  background: white;
+  display: flex;
+  align-items: center; justify-content: center;
+  margin-top: 1px;
+  transition: all 150ms ease;
+}
+.pay-option.selected .radio-dot {
+  border-color: var(--teal-600);
+}
+.radio-dot::after {
+  content: "";
+  width: 9px; height: 9px;
+  border-radius: 999px;
+  background: var(--teal-600);
+  transform: scale(0);
+  transition: transform 150ms ease;
+}
+.pay-option.selected .radio-dot::after {
+  transform: scale(1);
+}
+.pay-content {
+  flex: 1;
+  min-width: 0;
+}
+.pay-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+.pay-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--slate-900);
+  letter-spacing: -0.005em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.pay-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--slate-100);
+  color: var(--slate-600);
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 150ms ease;
+}
+.pay-option.selected .pay-icon {
+  background: var(--teal-100);
+  color: var(--teal-700);
+}
+.rec-tag {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--teal-600);
+  color: white;
+  flex-shrink: 0;
+}
+.pay-meta {
+  font-size: 12px;
+  color: var(--slate-500);
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+}
+.pay-meta b {
+  color: var(--slate-700); font-weight: 600;
+}
+
+.pay-helper {
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: var(--slate-500);
+  line-height: 1.5;
+  padding: 0 2px;
+}
+.pay-helper b { color: var(--slate-700); font-weight: 600; }
+
+/* Bank fields */
+.bank-fields {
+  margin-top: 12px;
+  padding: 16px 16px 16px;
+  background: linear-gradient(180deg, #F0FDFA 0%, #ECFDF5 100%);
+  border: 1px solid var(--teal-200);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  animation: revealFields 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bank-fields::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  background: var(--teal-600);
+  border-radius: 12px 0 0 12px;
+}
+@keyframes revealFields {
+  from { opacity: 0; transform: translateY(-4px); max-height: 0; }
+  to   { opacity: 1; transform: translateY(0); max-height: 900px; }
+}
+.bank-fields .field-label { color: var(--slate-700); }
+.bank-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.input-with-eye {
+  position: relative;
+}
+.input-with-eye .field-input {
+  padding-right: 38px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.input-with-eye .field-input.masked {
+  -webkit-text-security: disc;
+  text-security: disc;
+  letter-spacing: 0.18em;
+}
+.eye-btn {
+  position: absolute;
+  top: 50%; right: 8px;
+  transform: translateY(-50%);
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: var(--slate-500);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+}
+.eye-btn:hover { color: var(--slate-800); background: var(--slate-100); }
+.eye-btn svg { width: 15px; height: 15px; }
+
+.acct-type-row {
+  display: flex;
+  gap: 8px;
+}
+.acct-type {
+  flex: 1;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: 1.5px solid var(--slate-200);
+  background: white;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slate-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 150ms ease;
+}
+.acct-type:hover { border-color: var(--slate-300); }
+.acct-type.selected {
+  border-color: var(--teal-600);
+  background: white;
+  color: var(--teal-800);
+  box-shadow: 0 0 0 3px rgba(20,184,166,0.12);
+}
+.acct-type .mini-dot {
+  width: 12px; height: 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--slate-300);
+  background: white;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+}
+.acct-type.selected .mini-dot {
+  border-color: var(--teal-600);
+}
+.acct-type.selected .mini-dot::after {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: var(--teal-600);
+}
+
+.bank-trust {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  background: white;
+  border: 1px solid var(--teal-200);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--teal-800);
+}
+.bank-trust svg { width: 12px; height: 12px; }
+
+.mismatch {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #B91C1C;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mismatch svg { width: 11px; height: 11px; }
+
+/* ---- Footer ---- */
+.footer-cta {
+  padding: 14px 20px 20px;
+  background: white;
+  border-top: 1px solid var(--slate-200);
+  box-shadow: 0 -8px 24px -12px rgba(15,23,42,0.08);
+  position: sticky; bottom: 0;
+  z-index: 5;
+}
+.btn-primary {
+  width: 100%; height: 54px;
+  border-radius: 14px;
+  background: var(--teal-600);
+  color: white; border: none;
+  font-weight: 700; font-size: 15px;
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 6px 18px rgba(13,148,136,0.28);
+  font-family: inherit;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--teal-800);
+  transform: translateY(-1px);
+}
+.btn-primary .arrow { transition: transform 150ms ease; }
+.btn-primary:hover:not(:disabled) .arrow { transform: translateX(3px); }
+.btn-primary:disabled {
+  background: var(--slate-200);
+  color: var(--slate-400);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.btn-primary:disabled .arrow { display: none; }
+
+.disabled-hint {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--slate-500);
+  text-align: center;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.disabled-hint svg { width: 12px; height: 12px; flex-shrink: 0; color: var(--slate-400); }
+
+.trust-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  font-size: 10.5px; color: var(--slate-500);
+  font-weight: 500;
+  margin-top: 10px;
+  letter-spacing: 0.01em;
+}
+.trust-row .dot-sep { color: var(--slate-300); }
+.trust-row svg { flex-shrink: 0; }
+
+@media (max-width: 1240px) {
+  .desktop { display: none; }
+}
+
+/* Desktop has more horizontal room */
+.desktop-inner .field-row {
+  grid-template-columns: 2fr 1fr 1fr;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    CREDIMED · Service Agreement
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-variant="default">Default</button>
+    <button class="tab" data-variant="progress">In progress</button>
+    <button class="tab" data-variant="ready">Ready</button>
+  </div>
+  <div class="meta">Final step before payment</div>
+</div>
+
+<div class="stage">
+  <!-- Mobile -->
+  <div class="device-wrap">
+    <div class="device-label">Mobile · 375px</div>
+    <div class="iphone">
+      <div class="screen" id="screen-mobile"></div>
+    </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="device-wrap">
+    <div class="device-label">Desktop · 520px max</div>
+    <div class="desktop">
+      <div class="chrome">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          app.credimed.us/claim/agreement
+        </div>
+      </div>
+      <div class="body">
+        <div class="desktop-inner" id="screen-desktop"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ICONS = {
+  back: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+  mark: '<svg width="18" height="18" viewBox="0 0 32 32"><path d="M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#0D9488"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  mailbox: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8.5"/><path d="M3 10.5V8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v2.5"/><path d="M8 10V5"/><path d="M3 10h18"/></svg>',
+  pdf: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  download: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+  pen: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
+  refresh: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
+  searchLoc: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  lock: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+  shield: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  alert: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  envelope: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polyline points="2 7 12 13 22 7"/></svg>',
+  bank: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8 2 8"/><line x1="3" y1="12" x2="3" y2="18"/><line x1="8" y1="12" x2="8" y2="18"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="16" y1="12" x2="16" y2="18"/><line x1="21" y1="12" x2="21" y2="18"/><line x1="2" y1="21" x2="22" y2="21"/></svg>',
+  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
+  shieldCheck: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>',
+};
+
+const TERMS_HTML = `
+<h5>1. Scope of service</h5>
+<p>Credimed Inc. ("Credimed", "we", "us") agrees to prepare, translate, itemize, and electronically submit one (1) out-of-network dental reimbursement claim on behalf of the undersigned ("you", "Member") based on the documents and information you provide. All procedures will be coded using standard CDT codes and submitted to your insurance carrier's claims portal within <b>24 hours</b> of receipt of your signed authorization.</p>
+
+<h5>2. No refund = no fee</h5>
+<p>If your insurer formally denies your claim in full and the denial is upheld after one (1) Credimed-supported resubmission, <b>you owe Credimed nothing beyond the submission fee already paid.</b> Credimed does not charge any percentage of your reimbursement, ever. The one-time fee you pay at checkout is the full extent of your obligation to us.</p>
+
+<h5>3. Reimbursement flow</h5>
+<p>Your insurance carrier will issue any approved reimbursement <b>directly to you</b> in the form of a paper check mailed to the address you provide on this screen. <b>Credimed never receives, holds, or forwards your refund.</b> We are not a payee, a third-party administrator, or a billing agent.</p>
+
+<h5>4. HIPAA &amp; data handling</h5>
+<p>All Protected Health Information (PHI) you upload is stored encrypted at rest (AES-256) and in transit (TLS 1.3). Access is strictly limited to the Credimed claims team assigned to your case. We follow HIPAA Security Rule standards and will sign a Business Associate Agreement on request. You may request deletion of your PHI at any time after your claim has reached a final determination.</p>
+
+<h5>5. Electronic submission authorization</h5>
+<p>You authorize Credimed to: (a) access your insurer's provider / member claims portal on your behalf for the limited purpose of submitting this claim; (b) communicate with your insurer's claims department about the specific submission; (c) digitally sign claim forms using the signature captured on this screen as your facsimile signature per 15 U.S.C. §§ 7001 et seq. (E-SIGN Act).</p>
+
+<h5>6. Your representations</h5>
+<p>You represent that (a) the documents and receipts you have uploaded are authentic, belong to you, and accurately reflect dental services you received and paid for; (b) you have not previously submitted and been reimbursed for these same services; (c) the insurance plan information you provided is current and in force as of the date of treatment.</p>
+
+<h5>7. Limitation of liability</h5>
+<p>Credimed does not guarantee any specific reimbursement outcome. Insurance carriers make all determinations of coverage and payment amounts based on your individual plan. Our aggregate liability is limited to the fees you have paid us in the preceding 12 months.</p>
+
+<h5>8. Governing law &amp; contact</h5>
+<p>This Agreement is governed by the laws of the State of Delaware. For questions, contact <b>legal@credimed.us</b>. To reach your assigned claims specialist, message Sofia on WhatsApp at <b>+1 (512) 555-0134</b>.</p>
+`;
+
+function renderScreen(variant, scope) {
+  // variant: 'default' | 'progress' | 'ready'
+  const checked = variant !== 'default';
+  const hasSig = variant !== 'default';
+  const sigScribble = variant !== 'default';
+
+  // Default payment method is 'check'. Ready variant switches to 'deposit' to showcase bank fields.
+  const payMethod = variant === 'ready' ? 'deposit' : 'check';
+
+  const addrValues = variant === 'default'
+    ? { name: '', street: '', apt: '', city: '', state: '', zip: '' }
+    : variant === 'progress'
+    ? { name: 'Maria Gonzalez Ramirez', street: '2847 Guadalupe St', apt: '', city: '', state: '', zip: '' }
+    : { name: 'Maria Gonzalez Ramirez', street: '2847 Guadalupe St', apt: 'Apt 4B', city: 'Austin', state: 'TX', zip: '78705' };
+
+  const bankValues = variant === 'ready'
+    ? {
+        holderName: 'Maria Gonzalez Ramirez',
+        bankName: 'Chase Bank',
+        routing: '021000021',
+        account: '7412893650',
+        confirm: '7412893650',
+        type: 'checking',
+      }
+    : { holderName: '', bankName: '', routing: '', account: '', confirm: '', type: 'checking' };
+
+  const ctaEnabled = variant === 'ready';
+
+  return `
+    <div class="hero">
+      <div class="hero-top">
+        <button class="back-btn" aria-label="Back">${ICONS.back}</button>
+        <div class="logo-badge">
+          <span class="circle">${ICONS.mark}</span>
+          <span class="text">CREDIMED</span>
+        </div>
+        <span style="width:36px"></span>
+      </div>
+      <div class="final-pill">Final step before payment</div>
+      <h1 class="hero-title">Sign your service agreement</h1>
+      <p class="hero-sub">
+        <span>Terms v4.3</span>
+        <span class="sep"></span>
+        <span>Last updated April 2026</span>
+      </p>
+    </div>
+    <div class="body-wrap">
+      <!-- Terms -->
+      <div class="section-label"><span class="num">1</span> Read the agreement</div>
+      <div class="terms-shell">
+        <div class="terms-fade-top"></div>
+        <div class="terms-scroll" data-terms-scroll>${TERMS_HTML}</div>
+        <div class="terms-fade-bottom"></div>
+        <div class="terms-footer">
+          <span class="doc-ref">${ICONS.pdf}<span class="fname">service-agreement-v4.3.pdf</span></span>
+          <button class="download-link">${ICONS.download} Download PDF</button>
+        </div>
+      </div>
+
+      <div class="checkbox-row ${checked ? 'checked' : ''}" data-checkbox data-scope="${scope}">
+        <div class="check-box">${ICONS.check}</div>
+        <div class="checkbox-label">
+          I've read and agree to the <a href="#">Service Agreement</a> and <a href="#">Privacy Policy</a>
+        </div>
+      </div>
+
+      <div class="block-spacer"></div>
+
+      <!-- Signature -->
+      <div class="section-label"><span class="num">2</span> Sign here</div>
+      <div class="sig-box ${hasSig ? 'active' : ''}" data-sigbox data-scope="${scope}">
+        <canvas data-canvas data-scope="${scope}"></canvas>
+        <div class="sig-placeholder ${hasSig ? 'hidden' : ''}" data-sig-placeholder>
+          ${ICONS.pen}
+          <span>Draw with your finger or mouse</span>
+        </div>
+      </div>
+      <div class="sig-actions">
+        <span class="sig-hint">Your signature acts as your <b>digital authorization</b>.</span>
+        <button class="clear-link" data-clear data-scope="${scope}">${ICONS.refresh} Clear</button>
+      </div>
+
+      <!-- Payment method -->
+      <div class="section-label"><span class="num">3</span> How should your refund reach you?</div>
+      <div class="pay-radio-group">
+        <label class="pay-option ${payMethod === 'check' ? 'selected' : ''}" data-pay-radio="check" data-scope="${scope}">
+          <span class="radio-dot"></span>
+          <div class="pay-content">
+            <div class="pay-title-row">
+              <span class="pay-title">
+                <span class="pay-icon">${ICONS.envelope}</span>
+                Paper check
+              </span>
+            </div>
+            <p class="pay-meta">4–6 weeks · mailed to your address</p>
+          </div>
+        </label>
+        <label class="pay-option ${payMethod === 'deposit' ? 'selected' : ''}" data-pay-radio="deposit" data-scope="${scope}">
+          <span class="radio-dot"></span>
+          <div class="pay-content">
+            <div class="pay-title-row">
+              <span class="pay-title">
+                <span class="pay-icon">${ICONS.bank}</span>
+                Direct deposit
+              </span>
+              <span class="rec-tag">Recommended</span>
+            </div>
+            <p class="pay-meta"><b>3–5 business days</b> · straight to your bank</p>
+          </div>
+        </label>
+      </div>
+      <p class="pay-helper">
+        Your insurer — not Credimed — sends the payment. <b>We never touch your refund.</b> Bank info is only shared with your insurer through encrypted claim submission.
+      </p>
+
+      <!-- Bank fields (only if deposit) -->
+      <div class="bank-fields" data-bank-fields data-scope="${scope}" ${payMethod === 'deposit' ? '' : 'style="display:none"'}>
+        <div class="field">
+          <label class="field-label">Full legal name on account</label>
+          <input type="text" class="field-input" data-bank-input data-scope="${scope}" data-key="holderName"
+                 placeholder="Exactly as it appears at your bank"
+                 value="${bankValues.holderName}">
+        </div>
+        <div class="field">
+          <label class="field-label">Bank name</label>
+          <input type="text" class="field-input" data-bank-input data-scope="${scope}" data-key="bankName"
+                 placeholder="e.g. Chase, Wells Fargo, Bank of America"
+                 value="${bankValues.bankName}">
+        </div>
+        <div class="field">
+          <label class="field-label">Routing number <span class="optional">(9 digits)</span></label>
+          <input type="text" class="field-input" data-bank-input data-scope="${scope}" data-key="routing"
+                 inputmode="numeric" pattern="[0-9]*" maxlength="9"
+                 placeholder="•••••••••"
+                 value="${bankValues.routing}">
+        </div>
+        <div class="field">
+          <label class="field-label">Account number</label>
+          <div class="input-with-eye">
+            <input type="text" class="field-input masked" data-bank-input data-scope="${scope}" data-key="account"
+                   inputmode="numeric" pattern="[0-9]*" maxlength="17"
+                   placeholder="••••••••••"
+                   value="${bankValues.account}">
+            <button type="button" class="eye-btn" data-eye-toggle data-scope="${scope}" aria-label="Show account number">${ICONS.eye}</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Confirm account number</label>
+          <input type="text" class="field-input" data-bank-input data-scope="${scope}" data-key="confirm"
+                 inputmode="numeric" pattern="[0-9]*" maxlength="17"
+                 placeholder="Re-enter to prevent typos"
+                 value="${bankValues.confirm}">
+          <div class="mismatch" data-match-hint data-scope="${scope}" style="display:none">${ICONS.alert} Account numbers don't match</div>
+        </div>
+        <div class="field">
+          <label class="field-label">Account type</label>
+          <div class="acct-type-row">
+            <button type="button" class="acct-type ${bankValues.type === 'checking' ? 'selected' : ''}" data-type-pill="checking" data-scope="${scope}">
+              <span class="mini-dot"></span>
+              Checking
+            </button>
+            <button type="button" class="acct-type ${bankValues.type === 'savings' ? 'selected' : ''}" data-type-pill="savings" data-scope="${scope}">
+              <span class="mini-dot"></span>
+              Savings
+            </button>
+          </div>
+        </div>
+        <div class="bank-trust">
+          ${ICONS.shieldCheck}
+          Bank-grade encryption · Zero Credimed access
+        </div>
+      </div>
+
+      <!-- Address -->
+      <!-- Address (always required) -->
+      <div class="section-label"><span class="num">4</span> Your mailing address</div>
+      <div class="address-card">
+        <div class="addr-head">
+          <div class="addr-icon">${ICONS.mailbox}</div>
+          <div>
+            <h3 class="addr-title">Mailing address on file</h3>
+            <p class="addr-helper">Required for both payment methods. Your insurer mails tax documents (1099) and any written correspondence here, regardless of how your refund arrives.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Full legal name</label>
+          <input type="text" class="field-input" data-addr-input data-scope="${scope}" data-key="name"
+                 placeholder="e.g. Maria Gonzalez Ramirez"
+                 value="${addrValues.name}">
+        </div>
+
+        <div class="field">
+          <label class="field-label">Street address</label>
+          <div class="autocomplete-hint">
+            <input type="text" class="field-input" data-addr-input data-scope="${scope}" data-key="street"
+                   placeholder="Start typing your address"
+                   value="${addrValues.street}">
+            ${ICONS.searchLoc}
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Apt / Unit <span class="optional">(optional)</span></label>
+          <input type="text" class="field-input" data-addr-input data-scope="${scope}" data-key="apt"
+                 placeholder="Apt, suite, unit"
+                 value="${addrValues.apt}">
+        </div>
+
+        <div class="field">
+          <div class="field-row">
+            <div>
+              <label class="field-label">City</label>
+              <input type="text" class="field-input" data-addr-input data-scope="${scope}" data-key="city"
+                     placeholder="Austin" value="${addrValues.city}">
+            </div>
+            <div>
+              <label class="field-label">State</label>
+              <input type="text" class="field-input" data-addr-input data-scope="${scope}" data-key="state"
+                     placeholder="TX" value="${addrValues.state}" maxlength="2">
+            </div>
+            <div>
+              <label class="field-label">ZIP</label>
+              <input type="text" class="field-input" data-addr-input data-scope="${scope}" data-key="zip"
+                     placeholder="78705" value="${addrValues.zip}" maxlength="5">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-cta">
+      <button class="btn-primary" data-cta data-scope="${scope}" ${ctaEnabled ? '' : 'disabled'}>
+        <span>Sign and continue to payment</span>
+        <span class="arrow">→</span>
+      </button>
+      <div class="disabled-hint" data-hint data-scope="${scope}" ${ctaEnabled ? 'style="display:none"' : ''}>
+        ${ICONS.alert}
+        <span data-hint-text>Complete all fields to continue</span>
+      </div>
+      <div class="trust-row">
+        ${ICONS.lock} Encrypted
+        <span class="dot-sep">·</span>
+        ${ICONS.shield} HIPAA-compliant
+        <span class="dot-sep">·</span>
+        Credimed never sells or shares your data
+      </div>
+    </div>
+  `;
+}
+
+// State per scope
+const DEFAULT_BANK = { holderName: '', bankName: '', routing: '', account: '', confirm: '', type: 'checking' };
+const state = {
+  mobile: { variant: 'default', checked: false, sig: false, addr: {}, pay: 'check', bank: { ...DEFAULT_BANK }, accountVisible: false },
+  desktop: { variant: 'default', checked: false, sig: false, addr: {}, pay: 'check', bank: { ...DEFAULT_BANK }, accountVisible: false },
+};
+
+function paintCanvas(canvas, variant) {
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#0F172A';
+  ctx.lineWidth = 2.2;
+
+  if (variant === 'default') return;
+
+  // Half-scribble for 'progress'; fuller signature for 'ready'
+  const w = rect.width, h = rect.height;
+  ctx.beginPath();
+  if (variant === 'progress') {
+    // Partial "Mar..." scribble
+    const baseY = h * 0.65;
+    ctx.moveTo(w * 0.1, baseY);
+    ctx.bezierCurveTo(w*0.12, baseY - 30, w*0.15, baseY - 35, w*0.18, baseY);
+    ctx.bezierCurveTo(w*0.20, baseY + 5, w*0.22, baseY - 25, w*0.24, baseY);
+    ctx.lineTo(w*0.27, baseY - 18);
+    ctx.bezierCurveTo(w*0.30, baseY - 25, w*0.33, baseY - 5, w*0.31, baseY);
+    ctx.lineTo(w*0.36, baseY);
+    ctx.bezierCurveTo(w*0.39, baseY - 22, w*0.42, baseY - 28, w*0.44, baseY);
+    ctx.stroke();
+  } else {
+    // Full flowing signature "Maria G."
+    const baseY = h * 0.62;
+    ctx.moveTo(w * 0.08, baseY);
+    // M
+    ctx.bezierCurveTo(w*0.09, baseY - 35, w*0.12, baseY - 38, w*0.14, baseY);
+    ctx.bezierCurveTo(w*0.16, baseY - 20, w*0.18, baseY - 22, w*0.20, baseY);
+    ctx.bezierCurveTo(w*0.22, baseY - 35, w*0.24, baseY - 38, w*0.26, baseY);
+    // a
+    ctx.bezierCurveTo(w*0.28, baseY + 5, w*0.30, baseY - 15, w*0.32, baseY - 5);
+    ctx.bezierCurveTo(w*0.34, baseY + 5, w*0.35, baseY + 3, w*0.36, baseY - 2);
+    // r
+    ctx.lineTo(w*0.40, baseY);
+    ctx.bezierCurveTo(w*0.41, baseY - 15, w*0.44, baseY - 18, w*0.45, baseY - 10);
+    // i
+    ctx.moveTo(w*0.49, baseY - 18);
+    ctx.lineTo(w*0.49, baseY);
+    ctx.moveTo(w*0.485, baseY - 26); ctx.arc(w*0.49, baseY - 26, 0.8, 0, Math.PI*2);
+    // a
+    ctx.moveTo(w*0.52, baseY);
+    ctx.bezierCurveTo(w*0.53, baseY - 12, w*0.56, baseY - 15, w*0.57, baseY - 5);
+    ctx.bezierCurveTo(w*0.58, baseY + 3, w*0.59, baseY - 2, w*0.61, baseY);
+    // swoosh
+    ctx.bezierCurveTo(w*0.67, baseY - 5, w*0.72, baseY - 10, w*0.80, baseY - 4);
+    // G
+    ctx.moveTo(w*0.88, baseY - 22);
+    ctx.bezierCurveTo(w*0.82, baseY - 28, w*0.78, baseY - 10, w*0.84, baseY + 2);
+    ctx.bezierCurveTo(w*0.90, baseY + 4, w*0.92, baseY - 5, w*0.89, baseY - 8);
+    ctx.lineTo(w*0.85, baseY - 8);
+    ctx.stroke();
+    // Dot period
+    ctx.beginPath();
+    ctx.arc(w*0.93, baseY + 2, 1.5, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+// Canvas drawing
+function attachDrawing(canvas, scope) {
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let lastX = 0, lastY = 0;
+
+  const getPos = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+  };
+
+  const start = (e) => {
+    e.preventDefault();
+    drawing = true;
+    const p = getPos(e);
+    lastX = p.x; lastY = p.y;
+    // Hide placeholder, mark active
+    const box = canvas.closest('[data-sigbox]');
+    box.classList.add('active');
+    const placeholder = box.querySelector('[data-sig-placeholder]');
+    if (placeholder) placeholder.classList.add('hidden');
+    state[scope].sig = true;
+    updateCta(scope);
+  };
+  const move = (e) => {
+    if (!drawing) return;
+    e.preventDefault();
+    const p = getPos(e);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#0F172A';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    lastX = p.x; lastY = p.y;
+  };
+  const end = () => { drawing = false; };
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start);
+  canvas.addEventListener('touchmove', move);
+  canvas.addEventListener('touchend', end);
+}
+
+function clearCanvas(scope) {
+  const canvas = document.querySelector(`[data-canvas][data-scope="${scope}"]`);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const box = canvas.closest('[data-sigbox]');
+  box.classList.remove('active');
+  const placeholder = box.querySelector('[data-sig-placeholder]');
+  if (placeholder) placeholder.classList.remove('hidden');
+  state[scope].sig = false;
+  updateCta(scope);
+}
+
+function bankComplete(scope) {
+  const s = state[scope];
+  if (s.pay !== 'deposit') return true;
+  const b = s.bank;
+  return !!(b.holderName && b.bankName && b.routing && b.routing.length === 9 && b.account && b.confirm && b.account === b.confirm && b.type);
+}
+
+function addrComplete(scope) {
+  const s = state[scope].addr;
+  return !!(s.name && s.street && s.city && s.state && s.zip);
+}
+
+function updateCta(scope) {
+  const cta = document.querySelector(`[data-cta][data-scope="${scope}"]`);
+  const hint = document.querySelector(`[data-hint][data-scope="${scope}"]`);
+  const hintText = hint.querySelector('[data-hint-text]');
+  const s = state[scope];
+  const ok = s.checked && s.sig && addrComplete(scope) && bankComplete(scope);
+
+  cta.disabled = !ok;
+  hint.style.display = ok ? 'none' : '';
+  if (!ok) {
+    const missing = [];
+    if (!s.checked) missing.push('agree to the terms');
+    if (!s.sig) missing.push('add your signature');
+    if (s.pay === 'deposit' && !bankComplete(scope)) missing.push('complete your bank info');
+    if (!addrComplete(scope)) missing.push('complete your address');
+    hintText.textContent = missing.length === 1
+      ? `Please ${missing[0]} to continue`
+      : `Complete all fields to continue`;
+  }
+}
+
+function mountScope(scope) {
+  const container = document.getElementById(`screen-${scope}`);
+  const variant = state[scope].variant;
+  container.innerHTML = renderScreen(variant, scope);
+
+  // Init state from variant
+  state[scope].checked = variant !== 'default';
+  state[scope].sig = variant !== 'default';
+  if (variant === 'default') state[scope].addr = {};
+  else if (variant === 'progress') state[scope].addr = { name: 'Maria Gonzalez Ramirez', street: '2847 Guadalupe St' };
+  else state[scope].addr = { name: 'Maria Gonzalez Ramirez', street: '2847 Guadalupe St', apt: 'Apt 4B', city: 'Austin', state: 'TX', zip: '78705' };
+
+  state[scope].pay = variant === 'ready' ? 'deposit' : 'check';
+  state[scope].bank = variant === 'ready'
+    ? { holderName: 'Maria Gonzalez Ramirez', bankName: 'Chase Bank', routing: '021000021', account: '7412893650', confirm: '7412893650', type: 'checking' }
+    : { ...DEFAULT_BANK };
+  state[scope].accountVisible = false;
+
+  // Canvas
+  const canvas = container.querySelector(`[data-canvas][data-scope="${scope}"]`);
+  requestAnimationFrame(() => {
+    paintCanvas(canvas, variant);
+    if (variant === 'default') attachDrawing(canvas, scope);
+  });
+
+  // Checkbox
+  const cb = container.querySelector(`[data-checkbox][data-scope="${scope}"]`);
+  cb.addEventListener('click', () => {
+    state[scope].checked = !state[scope].checked;
+    cb.classList.toggle('checked', state[scope].checked);
+    updateCta(scope);
+  });
+
+  // Clear
+  const clearBtn = container.querySelector(`[data-clear][data-scope="${scope}"]`);
+  clearBtn.addEventListener('click', () => clearCanvas(scope));
+
+  // Address inputs
+  container.querySelectorAll(`[data-addr-input][data-scope="${scope}"]`).forEach(input => {
+    input.addEventListener('input', (e) => {
+      state[scope].addr[input.dataset.key] = e.target.value.trim();
+      updateCta(scope);
+    });
+  });
+
+  // Payment method radios
+  container.querySelectorAll(`[data-pay-radio][data-scope="${scope}"]`).forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.preventDefault();
+      const method = opt.dataset.payRadio;
+      if (state[scope].pay === method) return;
+      state[scope].pay = method;
+      // Toggle selected visual
+      container.querySelectorAll(`[data-pay-radio][data-scope="${scope}"]`).forEach(o => {
+        o.classList.toggle('selected', o.dataset.payRadio === method);
+      });
+      // Toggle bank fields
+      const bankEl = container.querySelector(`[data-bank-fields][data-scope="${scope}"]`);
+      if (method === 'deposit') {
+        bankEl.style.display = '';
+      } else {
+        bankEl.style.display = 'none';
+      }
+      updateCta(scope);
+    });
+  });
+
+  // Bank inputs
+  container.querySelectorAll(`[data-bank-input][data-scope="${scope}"]`).forEach(input => {
+    input.addEventListener('input', (e) => {
+      const key = input.dataset.key;
+      let val = e.target.value;
+      if (key === 'routing' || key === 'account' || key === 'confirm') {
+        val = val.replace(/\D/g, '');
+        if (e.target.value !== val) e.target.value = val;
+      }
+      state[scope].bank[key] = val;
+
+      // Confirm match hint
+      if (key === 'account' || key === 'confirm') {
+        const hint = container.querySelector(`[data-match-hint][data-scope="${scope}"]`);
+        const { account, confirm } = state[scope].bank;
+        if (confirm && account && confirm !== account) {
+          hint.style.display = '';
+        } else {
+          hint.style.display = 'none';
+        }
+      }
+      updateCta(scope);
+    });
+  });
+
+  // Eye toggle for account
+  const eyeBtn = container.querySelector(`[data-eye-toggle][data-scope="${scope}"]`);
+  if (eyeBtn) {
+    eyeBtn.addEventListener('click', () => {
+      state[scope].accountVisible = !state[scope].accountVisible;
+      const acctInput = container.querySelector(`[data-bank-input][data-scope="${scope}"][data-key="account"]`);
+      if (state[scope].accountVisible) {
+        acctInput.classList.remove('masked');
+        eyeBtn.innerHTML = ICONS.eyeOff;
+      } else {
+        acctInput.classList.add('masked');
+        eyeBtn.innerHTML = ICONS.eye;
+      }
+    });
+  }
+
+  // Account type pills
+  container.querySelectorAll(`[data-type-pill][data-scope="${scope}"]`).forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      const type = pill.dataset.typePill;
+      state[scope].bank.type = type;
+      container.querySelectorAll(`[data-type-pill][data-scope="${scope}"]`).forEach(p => {
+        p.classList.toggle('selected', p.dataset.typePill === type);
+      });
+      updateCta(scope);
+    });
+  });
+
+  updateCta(scope);
+}
+
+function setVariant(v) {
+  state.mobile.variant = v;
+  state.desktop.variant = v;
+  mountScope('mobile');
+  mountScope('desktop');
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    setVariant(t.getAttribute('data-variant'));
+  });
+});
+
+mountScope('mobile');
+mountScope('desktop');
+</script>
+
+</body>
+</html>

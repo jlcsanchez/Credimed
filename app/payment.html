@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credimed — Payment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --teal-50: #F0FDFA;
+  --teal-100: #CCFBF1;
+  --teal-200: #99F6E4;
+  --teal-300: #5EEAD4;
+  --teal-400: #2DD4BF;
+  --teal-500: #14B8A6;
+  --teal-600: #0D9488;
+  --teal-700: #0B8278;
+  --teal-800: #0A7A70;
+  --teal-900: #134E4A;
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
+  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #134e4a 60%, #0D9488 100%);
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --red-50: #FEF2F2;
+  --red-100: #FEE2E2;
+  --red-200: #FECACA;
+  --red-600: #DC2626;
+  --red-700: #B91C1C;
+  --green-500: #10B981;
+  --green-600: #059669;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--slate-900);
+  background: #f0eee9;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Toolbar ---- */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  height: 56px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(14px) saturate(180%);
+  border-bottom: 1px solid var(--slate-200);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 13px;
+  letter-spacing: 0.14em; color: var(--slate-900);
+}
+.brand .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--teal-600); }
+.tabs { display: flex; gap: 4px; background: var(--slate-100); padding: 4px; border-radius: 999px; }
+.tab {
+  padding: 7px 12px; border-radius: 999px; border: none;
+  background: transparent; font-weight: 600; font-size: 12px;
+  color: var(--slate-600); cursor: pointer; font-family: inherit;
+  white-space: nowrap;
+}
+.tab.active { background: var(--slate-900); color: white; }
+.meta { font-size: 12px; color: var(--slate-500); font-weight: 500; }
+
+/* ---- Stage ---- */
+.stage {
+  min-height: 100vh;
+  padding-top: 80px; padding-bottom: 48px;
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: 48px; flex-wrap: wrap;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(13,148,136,0.06), transparent 50%),
+    radial-gradient(ellipse at 85% 60%, rgba(94,234,212,0.08), transparent 55%),
+    #f0eee9;
+}
+.device-wrap { position: relative; }
+.device-label {
+  position: absolute; top: -32px; left: 0;
+  font-size: 12px; font-weight: 600; color: var(--slate-500);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* iPhone */
+.iphone {
+  width: 390px; height: 810px;
+  background: #0f172a;
+  border-radius: 52px; padding: 10px;
+  box-shadow: 0 30px 80px rgba(15,23,42,0.22), 0 6px 16px rgba(15,23,42,0.1);
+  position: relative; flex-shrink: 0;
+}
+.iphone::before {
+  content: ""; position: absolute; top: 18px; left: 50%;
+  transform: translateX(-50%); width: 110px; height: 28px;
+  background: #020617; border-radius: 999px; z-index: 10;
+}
+.iphone .screen {
+  width: 100%; height: 100%;
+  background: white; border-radius: 42px;
+  overflow: hidden; overflow-y: auto;
+  position: relative;
+  scrollbar-width: none;
+}
+.iphone .screen::-webkit-scrollbar { display: none; }
+
+/* Desktop */
+.desktop {
+  width: 720px;
+  background: white; border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(15,23,42,0.18), 0 6px 16px rgba(15,23,42,0.08);
+  overflow: hidden; display: flex; flex-direction: column;
+  flex-shrink: 0;
+}
+.desktop .chrome {
+  height: 44px; background: var(--slate-50);
+  border-bottom: 1px solid var(--slate-200);
+  display: flex; align-items: center; padding: 0 16px; gap: 8px;
+}
+.chrome .dots { display: flex; gap: 6px; }
+.chrome .dot { width: 11px; height: 11px; border-radius: 999px; }
+.chrome .dot.r { background: #fc615d; } .chrome .dot.y { background: #fcbb40; } .chrome .dot.g { background: #34c749; }
+.chrome .url {
+  flex: 1; margin-left: 12px; height: 26px;
+  background: white; border: 1px solid var(--slate-200);
+  border-radius: 8px; padding: 0 12px;
+  display: flex; align-items: center; font-size: 12px;
+  color: var(--slate-500); gap: 8px;
+}
+.desktop .body {
+  height: 760px;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(13,148,136,0.05), transparent 55%),
+    radial-gradient(ellipse at 80% 50%, rgba(94,234,212,0.06), transparent 55%),
+    var(--slate-50);
+  padding: 40px 0;
+  display: flex; justify-content: center; align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+}
+.desktop-inner {
+  width: 100%; max-width: 480px;
+  height: 100%;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -6px rgba(15,23,42,0.08);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ---- Hero ---- */
+.hero {
+  position: relative;
+  background: var(--hero-gradient);
+  color: white;
+  padding: 22px 24px 28px;
+  overflow: hidden;
+}
+.hero::before {
+  content: ""; position: absolute; inset: -40%;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(94,234,212,0.25), transparent 50%),
+    radial-gradient(ellipse at 85% 30%, rgba(13,148,136,0.35), transparent 55%);
+  pointer-events: none;
+}
+.hero-top {
+  position: relative; display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 18px;
+}
+.back-btn {
+  width: 36px; height: 36px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.08);
+  color: white; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; backdrop-filter: blur(6px);
+}
+.logo-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 14px 8px 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
+}
+.logo-badge .circle {
+  width: 28px; height: 28px; border-radius: 999px; background: white;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-badge .text {
+  font-weight: 700; font-size: 12px;
+  letter-spacing: 0.14em; color: white;
+}
+.final-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center; gap: 6px;
+  padding: 4px 10px 4px 9px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--teal-200);
+  background: rgba(13,148,136,0.18);
+  border: 1px solid rgba(94,234,212,0.28);
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.final-pill .sparkle {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--teal-300);
+  box-shadow: 0 0 8px var(--teal-300);
+}
+.hero-title {
+  position: relative;
+  font-size: 26px; font-weight: 700; line-height: 1.15;
+  letter-spacing: -0.02em; margin: 0 0 8px;
+  max-width: 420px;
+}
+.hero-sub {
+  position: relative;
+  font-size: 13.5px; color: rgba(255,255,255,0.75);
+  line-height: 1.5; margin: 0;
+  max-width: 420px;
+}
+.hero-sub b {
+  color: var(--teal-200);
+  font-weight: 600;
+}
+
+/* ---- Body ---- */
+.body-wrap {
+  padding: 24px 20px 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---- Order summary card ---- */
+.order-card {
+  background: white;
+  border: 1px solid rgba(13,148,136,0.12);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.03);
+}
+.order-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px;
+}
+.order-plan-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--slate-900);
+  letter-spacing: -0.015em;
+  margin: 0 0 3px;
+}
+.order-plan-tag {
+  font-size: 11.5px;
+  color: var(--slate-500);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.order-plan-tag .sep { color: var(--slate-300); }
+.order-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--slate-900);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.order-divider {
+  height: 1px;
+  background: var(--slate-200);
+  margin: 14px 0 12px;
+}
+.order-line {
+  display: flex; justify-content: space-between;
+  font-size: 13px;
+  color: var(--slate-600);
+  font-weight: 500;
+  padding: 3px 0;
+}
+.order-line.total {
+  font-size: 14px;
+  color: var(--slate-900);
+  font-weight: 700;
+  padding-top: 8px;
+  border-top: 1px dashed var(--slate-200);
+  margin-top: 4px;
+}
+.order-line .val {
+  font-variant-numeric: tabular-nums;
+}
+.order-microcopy {
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: var(--slate-500);
+  line-height: 1.45;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.order-microcopy svg { flex-shrink: 0; width: 12px; height: 12px; color: var(--slate-400); }
+
+/* ---- Section label ---- */
+.section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-500);
+  margin: 4px 0 10px;
+  padding: 0 2px;
+}
+
+/* ---- Stripe element mockup ---- */
+.stripe-card {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: opacity 180ms ease;
+}
+.stripe-card.processing {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Tabs strip */
+.stripe-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px 12px 0;
+}
+.stripe-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 6px;
+  border: 1.5px solid var(--slate-200);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 140ms ease;
+  font-family: inherit;
+  color: var(--slate-700);
+  font-size: 11.5px;
+  font-weight: 600;
+  min-height: 72px;
+  text-align: center;
+  user-select: none;
+}
+.stripe-tab:hover:not(.active) {
+  border-color: var(--slate-300);
+  background: var(--slate-50);
+}
+.stripe-tab.active {
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
+  color: var(--slate-900);
+}
+.stripe-tab .tab-icon {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stripe-tab .tab-icon svg { display: block; }
+.stripe-tab .tab-label { line-height: 1.1; }
+
+/* Card panel (default tab) */
+.stripe-panel {
+  padding: 16px 14px 18px;
+}
+.stripe-panel.hidden { display: none; }
+.stripe-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.stripe-field + .stripe-field {
+  margin-top: 10px;
+}
+.stripe-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--slate-700);
+  letter-spacing: -0.005em;
+}
+.stripe-input {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--slate-200);
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  color: var(--slate-900);
+  font-family: inherit;
+  transition: all 140ms ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stripe-input.filled {
+  color: var(--slate-900);
+  border-color: var(--slate-300);
+}
+.stripe-input.empty {
+  color: var(--slate-400);
+}
+.stripe-input:focus-within {
+  outline: none;
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
+}
+.stripe-input .card-brand {
+  width: 28px; height: 18px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #1434CB 0%, #0e2a9f 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.stripe-input.empty .card-brand {
+  background: var(--slate-100);
+  color: var(--slate-400);
+}
+.stripe-input input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  padding: 0;
+}
+.stripe-input input::placeholder { color: var(--slate-400); }
+.stripe-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Express wallet panel */
+.express-panel {
+  padding: 24px 14px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.express-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.express-btn.apple {
+  background: #000;
+  color: white;
+}
+.express-btn.google {
+  background: white;
+  color: #202124;
+  border: 1px solid var(--slate-300);
+  font-family: "Google Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.express-btn.link {
+  background: #00d66f;
+  color: white;
+}
+.express-hint {
+  font-size: 11.5px;
+  color: var(--slate-500);
+  text-align: center;
+  line-height: 1.45;
+  max-width: 280px;
+}
+.express-hint b { color: var(--slate-700); font-weight: 600; }
+
+/* Trust chips */
+.trust-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.trust-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px 5px 8px;
+  background: white;
+  border: 1px solid var(--teal-200);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--slate-700);
+}
+.trust-chip svg { width: 12px; height: 12px; color: var(--teal-700); }
+
+/* Email row */
+.email-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: 10px;
+  margin-top: 4px;
+}
+.email-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.email-row-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: white;
+  border: 1px solid var(--slate-200);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--slate-500);
+  flex-shrink: 0;
+}
+.email-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+.email-row-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--slate-500);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.email-row-val {
+  font-size: 13px;
+  color: var(--slate-900);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.email-edit {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teal-700);
+  cursor: pointer;
+  padding: 4px 6px;
+  flex-shrink: 0;
+}
+.email-edit:hover { text-decoration: underline; }
+
+/* ---- Guarantee strip ---- */
+.guarantee {
+  background: var(--teal-50);
+  border: 1px solid var(--teal-200);
+  border-left: 4px solid var(--teal-600);
+  border-radius: 12px;
+  padding: 14px 16px;
+  position: relative;
+}
+.guarantee-title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal-800);
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.guarantee-title svg { width: 14px; height: 14px; }
+.guarantee-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.guarantee-item {
+  font-size: 12.5px;
+  color: var(--slate-800);
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.guarantee-item svg {
+  flex-shrink: 0;
+  width: 13px; height: 13px;
+  margin-top: 2px;
+  color: var(--teal-700);
+}
+.guarantee-item b {
+  color: var(--slate-900); font-weight: 700;
+}
+
+/* ---- Error banner (dismissible) ---- */
+.error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 10px 12px 14px;
+  background: var(--red-50);
+  border: 1px solid var(--red-200);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  animation: shakeIn 320ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes shakeIn {
+  0% { transform: translateX(0); opacity: 0; }
+  20% { transform: translateX(-4px); opacity: 1; }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+.error-icon {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  color: var(--red-600);
+  margin-top: 1px;
+}
+.error-text {
+  flex: 1;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--red-700);
+}
+.error-text b { color: #7f1d1d; font-weight: 700; }
+.error-close {
+  background: transparent;
+  border: none;
+  color: var(--red-600);
+  cursor: pointer;
+  padding: 2px;
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.error-close:hover { background: var(--red-100); }
+.error-close svg { width: 14px; height: 14px; }
+
+/* ---- Footer CTA ---- */
+.footer-cta {
+  padding: 14px 20px 18px;
+  background: white;
+  border-top: 1px solid var(--slate-200);
+  box-shadow: 0 -8px 24px -12px rgba(15,23,42,0.08);
+  position: sticky; bottom: 0;
+  z-index: 5;
+}
+.btn-primary {
+  width: 100%; height: 54px;
+  border-radius: 14px;
+  background: var(--teal-600);
+  color: white; border: none;
+  font-weight: 700; font-size: 15px;
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 6px 18px rgba(13,148,136,0.28);
+  font-family: inherit;
+  letter-spacing: -0.005em;
+  position: relative;
+}
+.btn-primary:hover:not(:disabled) { background: var(--teal-800); transform: translateY(-1px); }
+.btn-primary:disabled {
+  background: var(--slate-200);
+  color: var(--slate-400);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.btn-primary.success {
+  background: var(--green-600);
+  color: white;
+  box-shadow: 0 6px 18px rgba(16,185,129,0.3);
+}
+.btn-primary .arrow { transition: transform 150ms ease; }
+.btn-primary:hover:not(:disabled) .arrow { transform: translateX(3px); }
+
+.spinner {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: white;
+  animation: spin 700ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.fine-print {
+  font-size: 11px;
+  color: var(--slate-500);
+  line-height: 1.5;
+  text-align: center;
+  margin-top: 10px;
+  padding: 0 4px;
+}
+.fine-print b { color: var(--slate-700); font-weight: 600; }
+.fine-print-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 11px;
+}
+.fine-print-links a {
+  color: var(--slate-500);
+  text-decoration: none;
+  font-weight: 500;
+}
+.fine-print-links a:hover { color: var(--teal-700); text-decoration: underline; }
+.fine-print-links .sep { color: var(--slate-300); }
+
+@media (max-width: 1200px) {
+  .desktop { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    CREDIMED · Payment
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-variant="default">Default</button>
+    <button class="tab" data-variant="basic">Basic plan</button>
+    <button class="tab" data-variant="ready">Ready</button>
+    <button class="tab" data-variant="processing">Processing</button>
+    <button class="tab" data-variant="declined">Card declined</button>
+    <button class="tab" data-variant="success">Success flash</button>
+  </div>
+  <div class="meta">Final step · Payment</div>
+</div>
+
+<div class="stage">
+  <!-- Mobile -->
+  <div class="device-wrap">
+    <div class="device-label">Mobile · 375px</div>
+    <div class="iphone">
+      <div class="screen" id="screen-mobile"></div>
+    </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="device-wrap">
+    <div class="device-label">Desktop · 480px max</div>
+    <div class="desktop">
+      <div class="chrome">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          app.credimed.us/claim/payment
+        </div>
+      </div>
+      <div class="body">
+        <div class="desktop-inner" id="screen-desktop"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STRIPE INTEGRATION — replace mockup below with real Stripe Payment Element -->
+<!--
+  1) On mount:
+     const { client_secret, amount } = await fetch('/api/payment/create-intent', {
+       method: 'POST',
+       headers: { Authorization: `Bearer ${cognitoJwt}` },
+       body: JSON.stringify({ claim_id })
+     }).then(r => r.json())
+
+  2) Init Stripe Elements:
+     const stripe = await loadStripe(STRIPE_PUBLIC_KEY)
+     const elements = stripe.elements({
+       clientSecret: client_secret,
+       appearance: {
+         theme: 'stripe',
+         variables: {
+           colorPrimary: '#0D9488',
+           colorBackground: '#ffffff',
+           colorText: '#0f172a',
+           fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
+           borderRadius: '12px'
+         }
+       }
+     })
+     const paymentElement = elements.create('payment', { layout: 'tabs' })
+     paymentElement.mount('#payment-element')
+
+  3) On submit:
+     const { error } = await stripe.confirmPayment({
+       elements,
+       confirmParams: { return_url: `${origin}/submission-confirmed` },
+       redirect: 'if_required'
+     })
+     if (error) showError(error.message)
+     else window.location = '/submission-confirmed'
+
+  NOTE: Never pass `amount` from frontend. Lambda reads plan from DynamoDB and
+  creates PaymentIntent server-side. Webhook `payment_intent.succeeded` triggers
+  claim submission to insurer + receipt email (incl. signed agreement PDF).
+-->
+
+<script>
+const ICONS = {
+  back: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+  mark: '<svg width="18" height="18" viewBox="0 0 32 32"><path d="M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#0D9488"/></svg>',
+  check: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  checkBig: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+  cardIcon: '<svg width="18" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>',
+  apple: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.86-3.08.38-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.38C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>',
+  google: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21.8 12.23c0-.71-.06-1.4-.18-2.07H12v3.92h5.5c-.24 1.27-.96 2.35-2.04 3.07v2.55h3.3c1.93-1.78 3.04-4.4 3.04-7.47z" fill="#4285F4"/><path d="M12 22c2.75 0 5.06-.91 6.74-2.47l-3.3-2.55c-.92.62-2.1.98-3.44.98-2.64 0-4.88-1.79-5.68-4.18H2.91v2.63C4.58 19.7 8.02 22 12 22z" fill="#34A853"/><path d="M6.32 13.78a6 6 0 0 1 0-3.56V7.59H2.91a10 10 0 0 0 0 8.82l3.41-2.63z" fill="#FBBC04"/><path d="M12 5.94c1.5 0 2.83.52 3.89 1.52l2.91-2.91C17.05 2.93 14.74 2 12 2 8.02 2 4.58 4.3 2.91 7.59l3.41 2.63C7.12 7.83 9.36 5.94 12 5.94z" fill="#EA4335"/></svg>',
+  link: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.93L7.07 13h2.93V7h2v6h2.93L11 16.93z"/></svg>',
+  alertCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  mailSmall: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><polyline points="2 7 12 13 22 7"/></svg>',
+  receipt: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>',
+};
+
+const PAYMENT_TABS = [
+  { id: 'card', label: 'Card', icon: ICONS.cardIcon, color: 'var(--slate-700)' },
+  { id: 'apple', label: 'Apple Pay', icon: ICONS.apple, color: '#000' },
+  { id: 'google', label: 'Google Pay', icon: ICONS.google, color: 'inherit' },
+  { id: 'link', label: 'Link', icon: ICONS.link, color: '#00d66f' },
+];
+
+function planInfo(variant) {
+  // variant: 'default' | 'basic' | 'ready' | 'processing' | 'declined' | 'success'
+  const isBasic = variant === 'basic';
+  return isBasic
+    ? { name: 'Basic Plan', price: 29, priceStr: '$29.00', ctaPrice: '$29' }
+    : { name: 'Plus Plan', price: 39, priceStr: '$39.00', ctaPrice: '$39' };
+}
+
+function variantFlags(variant) {
+  // What's filled / what's the state
+  return {
+    filled: ['ready', 'processing', 'success'].includes(variant),
+    processing: variant === 'processing',
+    declined: variant === 'declined',
+    success: variant === 'success',
+    ctaEnabled: ['ready', 'processing', 'success', 'declined'].includes(variant),
+  };
+}
+
+function paymentTabsHtml(scope, activeTabId) {
+  return PAYMENT_TABS.map(tab => `
+    <button class="stripe-tab ${tab.id === activeTabId ? 'active' : ''}"
+            data-stripe-tab="${tab.id}" data-scope="${scope}" type="button">
+      <span class="tab-icon" style="color: ${tab.color}">${tab.icon}</span>
+      <span class="tab-label">${tab.label}</span>
+    </button>
+  `).join('');
+}
+
+function cardPanelHtml(filled) {
+  return `
+    <div class="stripe-field">
+      <label class="stripe-label">Card number</label>
+      <div class="stripe-input ${filled ? 'filled' : 'empty'}">
+        <span class="card-brand">${filled ? 'VISA' : ''}</span>
+        <input type="text" readonly
+               value="${filled ? '4242 4242 4242 4242' : ''}"
+               placeholder="1234 1234 1234 1234">
+      </div>
+    </div>
+    <div class="stripe-field-row">
+      <div class="stripe-field">
+        <label class="stripe-label">Expiration</label>
+        <div class="stripe-input ${filled ? 'filled' : 'empty'}">
+          <input type="text" readonly
+                 value="${filled ? '04 / 28' : ''}"
+                 placeholder="MM / YY">
+        </div>
+      </div>
+      <div class="stripe-field">
+        <label class="stripe-label">CVC</label>
+        <div class="stripe-input ${filled ? 'filled' : 'empty'}">
+          <input type="text" readonly
+                 value="${filled ? '•••' : ''}"
+                 placeholder="CVC">
+        </div>
+      </div>
+    </div>
+    <div class="stripe-field" style="margin-top:10px">
+      <label class="stripe-label">ZIP</label>
+      <div class="stripe-input ${filled ? 'filled' : 'empty'}" style="max-width:160px">
+        <input type="text" readonly
+               value="${filled ? '78705' : ''}"
+               placeholder="78705">
+      </div>
+    </div>
+  `;
+}
+
+function expressPanelHtml(kind) {
+  if (kind === 'apple') {
+    return `
+      <button class="express-btn apple" type="button">
+        ${ICONS.apple}
+        <span>Pay</span>
+      </button>
+      <p class="express-hint">You'll be prompted to confirm with <b>Face ID</b>. Your card and address come from Apple Pay — no typing required.</p>
+    `;
+  }
+  if (kind === 'google') {
+    return `
+      <button class="express-btn google" type="button">
+        ${ICONS.google}
+        <span>Pay</span>
+      </button>
+      <p class="express-hint">Confirm with the card you have saved in <b>Google Pay</b>. No manual entry needed.</p>
+    `;
+  }
+  if (kind === 'link') {
+    return `
+      <button class="express-btn link" type="button">
+        ${ICONS.link}
+        <span>Pay with Link</span>
+      </button>
+      <p class="express-hint">One-click checkout powered by Stripe. Use the card you've saved with <b>Link</b> on any Stripe merchant.</p>
+    `;
+  }
+  return '';
+}
+
+function renderScreen(variant, scope) {
+  const plan = planInfo(variant);
+  const f = variantFlags(variant);
+  const activeTabId = 'card'; // default to card tab for all variants
+
+  const errorBanner = f.declined
+    ? `
+      <div class="error-banner" data-error-banner data-scope="${scope}">
+        <span class="error-icon">${ICONS.alertCircle}</span>
+        <div class="error-text">
+          <b>Your card was declined.</b> Try another payment method.
+        </div>
+        <button class="error-close" data-error-close data-scope="${scope}" aria-label="Dismiss">${ICONS.close}</button>
+      </div>
+    `
+    : '';
+
+  const ctaContent = f.success
+    ? `${ICONS.checkBig}<span>Payment confirmed</span>`
+    : f.processing
+    ? `<span class="spinner"></span><span>Processing payment...</span>`
+    : `<span>Pay ${plan.ctaPrice} · Submit my claim</span>`;
+
+  const ctaClasses = `btn-primary ${f.success ? 'success' : ''}`;
+  const ctaDisabled = !f.ctaEnabled || f.processing || f.success;
+
+  return `
+    <div class="hero">
+      <div class="hero-top">
+        <button class="back-btn" aria-label="Back">${ICONS.back}</button>
+        <div class="logo-badge">
+          <span class="circle">${ICONS.mark}</span>
+          <span class="text">CREDIMED</span>
+        </div>
+        <span style="width:36px"></span>
+      </div>
+      <div class="final-pill">
+        <span class="sparkle"></span>
+        Final step · Payment
+      </div>
+      <h1 class="hero-title">Complete your payment</h1>
+      <p class="hero-sub">One-time fee. <b>No percentage of your refund.</b> Ever.</p>
+    </div>
+
+    <div class="body-wrap">
+
+      <!-- Order summary -->
+      <div class="order-card">
+        <div class="order-row">
+          <div>
+            <h3 class="order-plan-name">${plan.name}</h3>
+            <div class="order-plan-tag">
+              <span>One-time</span>
+              <span class="sep">·</span>
+              <span>no subscription</span>
+            </div>
+          </div>
+          <div class="order-price">$${plan.price}</div>
+        </div>
+        <div class="order-divider"></div>
+        <div class="order-line">
+          <span>Subtotal</span>
+          <span class="val">${plan.priceStr}</span>
+        </div>
+        <div class="order-line total">
+          <span>Total today</span>
+          <span class="val">${plan.priceStr}</span>
+        </div>
+        <div class="order-microcopy">
+          ${ICONS.receipt}
+          <span>Charged once. You'll get a receipt by email.</span>
+        </div>
+      </div>
+
+      <!-- Payment method -->
+      <div>
+        <div class="section-label">Payment method</div>
+        ${errorBanner}
+        <div class="stripe-card ${f.processing ? 'processing' : ''}" data-stripe-card data-scope="${scope}">
+          <div class="stripe-tabs">
+            ${paymentTabsHtml(scope, activeTabId)}
+          </div>
+          <div class="stripe-panel" data-panel="card" data-scope="${scope}">
+            ${cardPanelHtml(f.filled)}
+          </div>
+          <div class="stripe-panel hidden" data-panel="apple" data-scope="${scope}">
+            ${expressPanelHtml('apple')}
+          </div>
+          <div class="stripe-panel hidden" data-panel="google" data-scope="${scope}">
+            ${expressPanelHtml('google')}
+          </div>
+          <div class="stripe-panel hidden" data-panel="link" data-scope="${scope}">
+            ${expressPanelHtml('link')}
+          </div>
+        </div>
+
+        <!-- Email row -->
+        <div class="email-row" style="margin-top:10px">
+          <div class="email-row-left">
+            <div class="email-row-icon">${ICONS.mailSmall}</div>
+            <div class="email-row-text">
+              <span class="email-row-label">Receipt to</span>
+              <span class="email-row-val">maria.gonzalez@email.com</span>
+            </div>
+          </div>
+          <button type="button" class="email-edit">Edit</button>
+        </div>
+
+        <!-- Trust chips -->
+        <div class="trust-chips">
+          <span class="trust-chip">${ICONS.lock} 256-bit SSL</span>
+          <span class="trust-chip">${ICONS.shield} PCI DSS Level 1</span>
+          <span class="trust-chip">${ICONS.shield} HIPAA-aligned</span>
+        </div>
+      </div>
+
+      <!-- Guarantee strip -->
+      <div class="guarantee">
+        <h4 class="guarantee-title">${ICONS.shield} Our guarantee</h4>
+        <ul class="guarantee-list">
+          <li class="guarantee-item">
+            ${ICONS.check}
+            <span>If your insurer <b>formally denies</b> the claim and upholds the denial after our resubmission, you <b>pay nothing more</b>.</span>
+          </li>
+          <li class="guarantee-item">
+            ${ICONS.check}
+            <span><b>We never touch your refund.</b> It goes directly from your insurer to you.</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-cta">
+      <button class="${ctaClasses}" data-cta data-scope="${scope}" ${ctaDisabled ? 'disabled' : ''}>
+        ${ctaContent}
+      </button>
+      <p class="fine-print">
+        By paying, you confirm the service agreement you signed in the previous step.
+      </p>
+      <div class="fine-print-links">
+        <a href="#">Terms</a>
+        <span class="sep">·</span>
+        <a href="#">Privacy</a>
+        <span class="sep">·</span>
+        <a href="#">Refund policy</a>
+      </div>
+    </div>
+  `;
+}
+
+// State per scope
+const state = {
+  mobile: { variant: 'default', activeTab: 'card' },
+  desktop: { variant: 'default', activeTab: 'card' },
+};
+
+function mountScope(scope) {
+  const container = document.getElementById(`screen-${scope}`);
+  const variant = state[scope].variant;
+  container.innerHTML = renderScreen(variant, scope);
+  state[scope].activeTab = 'card';
+  wireScope(scope);
+}
+
+function wireScope(scope) {
+  const container = document.getElementById(`screen-${scope}`);
+
+  // Payment method tabs
+  container.querySelectorAll(`[data-stripe-tab][data-scope="${scope}"]`).forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = tab.dataset.stripeTab;
+      if (state[scope].activeTab === id) return;
+      state[scope].activeTab = id;
+      container.querySelectorAll(`[data-stripe-tab][data-scope="${scope}"]`).forEach(t => {
+        t.classList.toggle('active', t.dataset.stripeTab === id);
+      });
+      container.querySelectorAll(`[data-panel][data-scope="${scope}"]`).forEach(p => {
+        p.classList.toggle('hidden', p.dataset.panel !== id);
+      });
+    });
+  });
+
+  // Error banner dismiss
+  const closeBtn = container.querySelector(`[data-error-close][data-scope="${scope}"]`);
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      const banner = container.querySelector(`[data-error-banner][data-scope="${scope}"]`);
+      if (banner) {
+        banner.style.transition = 'opacity 180ms ease, transform 180ms ease';
+        banner.style.opacity = '0';
+        banner.style.transform = 'translateY(-4px)';
+        setTimeout(() => banner.remove(), 200);
+      }
+    });
+  }
+
+  // CTA click — if 'ready' variant, simulate flow: processing → success
+  const cta = container.querySelector(`[data-cta][data-scope="${scope}"]`);
+  if (cta && state[scope].variant === 'ready') {
+    cta.addEventListener('click', () => {
+      // Advance to processing
+      state[scope].variant = 'processing';
+      mountScope(scope);
+      setTimeout(() => {
+        state[scope].variant = 'success';
+        mountScope(scope);
+        // In real app, Stripe redirect would happen here
+      }, 2200);
+    });
+  }
+}
+
+function setVariant(v) {
+  state.mobile.variant = v;
+  state.desktop.variant = v;
+  mountScope('mobile');
+  mountScope('desktop');
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    setVariant(t.getAttribute('data-variant'));
+  });
+});
+
+mountScope('mobile');
+mountScope('desktop');
+</script>
+
+</body>
+</html>
