@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style id="credimed-prod-overrides">
 /* Credimed production mode: hide Claude Design dev chrome.
    Add ?dev=1 to URL to reveal it (see script below). */
@@ -44,6 +45,8 @@
   border-radius: 0 !important;
 }
 html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !important; }
+/* Safe-area: push hero content below the iPhone Dynamic Island / notch */
+.hero { padding-top: calc(24px + env(safe-area-inset-top)) !important; }
 </style>
 <script>
 /* Reveal dev chrome with ?dev=1 for design reviews */
@@ -1284,16 +1287,26 @@ setInterval(() => {
 
   function injectFileInputs() {
     document.querySelectorAll('.dropzone[data-card]').forEach(function (dz) {
-      if (dz.querySelector('input[data-card-input]')) return;
+      if (dz.dataset.realInputInjected === '1') return;
 
       var cardId = dz.getAttribute('data-card');
 
-      /* NUKE Claude Design's mock click handler (simulateUpload) by cloning the dropzone.
-         Cloning drops all attached event listeners. We then re-install our own. */
+      /* NUKE Claude Design's mock click handler (simulateUpload) by cloning.
+         Cloning drops all attached event listeners. */
       var clone = dz.cloneNode(true);
       dz.parentNode.replaceChild(clone, dz);
       dz = clone;
-      dz.style.position = 'relative';
+
+      /* iOS-safe pattern: convert the dropzone <div> into a <label> element so taps
+         anywhere inside it naturally open the wrapped <input type=file>'s picker
+         (labels trigger their for-input on click, no opacity hacks needed). */
+      var label = document.createElement('label');
+      /* Copy over the dropzone's classes + dataset so existing CSS still applies */
+      label.className = dz.className;
+      Object.keys(dz.dataset).forEach(function (k) { label.dataset[k] = dz.dataset[k]; });
+      label.dataset.realInputInjected = '1';
+      label.style.cssText = 'cursor:pointer;display:block;-webkit-tap-highlight-color:rgba(13,148,136,.12);';
+      while (dz.firstChild) label.appendChild(dz.firstChild);
 
       var input = document.createElement('input');
       input.type = 'file';
@@ -1302,40 +1315,18 @@ setInterval(() => {
       if (cardId === 'insurance' || cardId === 'receipt') input.setAttribute('capture', 'environment');
       input.setAttribute('data-card-input', cardId);
       input.style.cssText =
-        'position:absolute;inset:0;width:100%;height:100%;' +
-        'opacity:0;cursor:pointer;z-index:2;border:0;' +
-        '-webkit-appearance:none;appearance:none;' +
-        'font-size:16px;'; /* prevent iOS zoom */
-
-      /* Belt + suspenders: stop clicks from bubbling to any ancestor mock handler */
-      input.addEventListener('click', function (e) { e.stopPropagation(); }, false);
+        'position:absolute;left:-9999px;top:auto;width:1px;height:1px;opacity:0;';
 
       input.addEventListener('change', function () {
         var files = Array.from(input.files || []);
         files.forEach(function (f) { handleFile(cardId, f); });
-        /* Reset so picking the same file again still fires change */
-        input.value = '';
+        input.value = ''; /* allow picking same file again */
       });
 
-      dz.appendChild(input);
+      label.appendChild(input);
+      dz.parentNode.replaceChild(label, dz);
     });
   }
-
-  /* Also kill the mock simulateUpload + defaultNames by intercepting clicks on .dropzone
-     at capture phase — any leftover bubble hits get swallowed before they reach
-     the Claude Design listeners. */
-  document.addEventListener('click', function (e) {
-    var realInput = e.target && e.target.matches && e.target.matches('input[data-card-input]');
-    if (realInput) return; /* our overlay input — let it through */
-    var dz = e.target && e.target.closest && e.target.closest('.dropzone[data-card]');
-    if (dz) {
-      /* A click somewhere inside the dropzone that isn't our input — cancel it
-         so Claude Design's mock simulateUpload() never fires. User will re-tap on
-         the overlay input area anyway. */
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  }, true);
 
   /* Inject on load + whenever DOM changes (after removes, re-renders, etc.) */
   injectFileInputs();

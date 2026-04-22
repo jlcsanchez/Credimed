@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Credimed — Claim submitted</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
 :root {
   --teal-50: #F0FDFA;
@@ -54,7 +54,7 @@ html, body {
 .hero {
   background: var(--hero-gradient);
   color: #fff;
-  padding: 56px 24px 48px;
+  padding: calc(56px + env(safe-area-inset-top)) 24px 48px;
   text-align: center;
   position: relative;
 }

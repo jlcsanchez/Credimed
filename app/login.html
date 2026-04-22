@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Credimed — Sign in</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
@@ -23,7 +23,7 @@ html, body { margin: 0; padding: 0; background: #f0eee9; font-family: "DM Sans",
 
 .page { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #fff; box-shadow: var(--shadow-card); display: flex; flex-direction: column; }
 
-.hero { background: var(--hero-gradient); color: #fff; padding: 56px 28px 80px; position: relative; }
+.hero { background: var(--hero-gradient); color: #fff; padding: calc(56px + env(safe-area-inset-top)) 28px 80px; position: relative; }
 .hero .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 48px; }
 .hero .logo-mark { width: 36px; height: 36px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-weight: 800; color: var(--teal-600); font-size: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.2); }
 .hero .logo-text { font-weight: 700; letter-spacing: .02em; font-size: 14px; }

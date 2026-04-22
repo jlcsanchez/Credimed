@@ -44,6 +44,8 @@
   border-radius: 0 !important;
 }
 html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !important; }
+/* Safe-area: push hero content below the iPhone Dynamic Island / notch */
+.hero { padding-top: calc(24px + env(safe-area-inset-top)) !important; }
 </style>
 <script>
 /* Reveal dev chrome with ?dev=1 for design reviews */
@@ -56,7 +58,7 @@ if (location.search.indexOf("dev=1") >= 0) {
 </script>
 <meta charset="UTF-8">
 <title>Credimed — Payment</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
 :root {
   --teal-50: #F0FDFA;
