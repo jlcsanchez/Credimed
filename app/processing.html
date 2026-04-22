@@ -46,6 +46,11 @@
 html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !important; }
 /* Safe-area: push hero content below the iPhone Dynamic Island / notch */
 .hero { padding-top: calc(24px + env(safe-area-inset-top)) !important; }
+/* Processing-specific: the .proc container holds the animation and gradient background.
+   Force it to fill the viewport on mobile so there's no bare dark space below the animation. */
+.iphone .proc,
+.desktop .proc { min-height: 100vh !important; }
+.iphone .screen { background: transparent !important; }
 </style>
 <script>
 /* Reveal dev chrome with ?dev=1 for design reviews */
