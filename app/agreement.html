@@ -1662,5 +1662,118 @@ mountScope('desktop');
 
 <script src="connector.js"></script>
 <script src="ana.js"></script>
+
+<!-- Production wiring: signature capture + banking persistence + real CTA gate.
+     Saves signature data URL, agreement timestamp, and banking info to CredimedState. -->
+<script src="state.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (location.search.indexOf('dev=1') >= 0) return;
+  if (!window.CredimedState) return;
+
+  var SCOPE = 'mobile';
+  var S = window.CredimedState;
+
+  function scoped(sel) { return document.querySelector(sel + '[data-scope="' + SCOPE + '"]'); }
+
+  function hasSignature() {
+    var box = scoped('[data-sigbox]');
+    return !!(box && box.classList.contains('active'));
+  }
+  function hasChecked() {
+    var cb = scoped('[data-checkbox]');
+    return !!(cb && cb.classList.contains('checked'));
+  }
+  function currentPayMethod() {
+    var sel = document.querySelector('[data-pay-radio][data-scope="' + SCOPE + '"].selected');
+    return sel ? sel.getAttribute('data-pay-radio') : 'check';
+  }
+  function bankFieldsValid() {
+    if (currentPayMethod() !== 'deposit') return true;
+    var keys = ['holderName', 'bankName', 'routing', 'account', 'confirm'];
+    var bank = {};
+    for (var i = 0; i < keys.length; i++) {
+      var el = document.querySelector('[data-bank-input][data-scope="' + SCOPE + '"][data-key="' + keys[i] + '"]');
+      bank[keys[i]] = (el && el.value || '').trim();
+      if (!bank[keys[i]]) return false;
+    }
+    if (bank.routing.replace(/\D/g, '').length !== 9) return false;
+    if (bank.account !== bank.confirm) return false;
+    return true;
+  }
+
+  function syncBankingToState() {
+    var method = currentPayMethod();
+    var bank = { paymentMethod: method };
+    if (method === 'deposit') {
+      ['holderName', 'bankName', 'routing', 'account'].forEach(function (key) {
+        var el = document.querySelector('[data-bank-input][data-scope="' + SCOPE + '"][data-key="' + key + '"]');
+        if (el) bank[key] = (el.value || '').trim();
+      });
+      var typePill = document.querySelector('[data-type-pill][data-scope="' + SCOPE + '"].selected');
+      bank.accountType = typePill ? typePill.getAttribute('data-type-pill') : 'checking';
+    }
+    S.set('banking', bank);
+  }
+
+  function updateCtaState() {
+    var cta = document.querySelector('[data-cta][data-scope="' + SCOPE + '"]');
+    if (!cta) return;
+    var ok = hasSignature() && hasChecked() && bankFieldsValid();
+    if (ok) cta.removeAttribute('disabled');
+    else cta.setAttribute('disabled', 'disabled');
+  }
+
+  /* Poll to handle dynamic re-renders inside scope (variant changes, canvas draw, etc.) */
+  setInterval(function () {
+    updateCtaState();
+    syncBankingToState();
+  }, 400);
+
+  /* Pre-fill bank holderName with user's name when deposit gets selected */
+  document.addEventListener('click', function (e) {
+    var opt = e.target.closest('[data-pay-radio="deposit"][data-scope="' + SCOPE + '"]');
+    if (!opt) return;
+    setTimeout(function () {
+      var holder = document.querySelector('[data-bank-input][data-scope="' + SCOPE + '"][data-key="holderName"]');
+      if (holder && !holder.value) {
+        var first = S.get('user.firstName', '') || '';
+        var last  = S.get('user.lastName', '')  || '';
+        if (first || last) holder.value = (first + ' ' + last).trim();
+      }
+    }, 80);
+  }, true);
+
+  /* Intercept CTA in capture phase: save everything, then let connector.js navigate */
+  document.addEventListener('click', function (e) {
+    var cta = e.target.closest('[data-cta][data-scope="' + SCOPE + '"]');
+    if (!cta) return;
+    if (cta.hasAttribute('disabled')) { e.preventDefault(); e.stopPropagation(); return; }
+
+    var canvas = document.querySelector('[data-canvas][data-scope="' + SCOPE + '"]');
+    var sigDataUrl = null;
+    if (canvas) {
+      try { sigDataUrl = canvas.toDataURL('image/png'); } catch (err) {}
+    }
+
+    syncBankingToState();
+
+    S.set('agreement', {
+      version: 'v1.1',
+      signedAt: new Date().toISOString(),
+      signatureDataUrl: sigDataUrl,
+      signerFirstName: S.get('user.firstName', ''),
+      signerLastName:  S.get('user.lastName', ''),
+      signerEmail:     S.get('user.email', ''),
+      termsAccepted: true,
+      privacyAccepted: true
+    });
+    /* do NOT preventDefault — connector.js will navigate on .footer-cta .btn-primary click */
+  }, true);
+
+  setTimeout(updateCtaState, 300);
+})();
+</script>
 </body>
 </html>

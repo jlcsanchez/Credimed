@@ -167,6 +167,28 @@ window.authFetch = async function (url, opts) {
     var user = pool.getCurrentUser();
     if (user) user.signOut();
   };
+
+  /* Kick off password reset: emails a code to the user. */
+  window.cognitoForgotPassword = function (email) {
+    return new Promise(function (resolve, reject) {
+      var user = new AmazonCognitoIdentity.CognitoUser({ Username: email, Pool: pool });
+      user.forgotPassword({
+        onSuccess: function (data) { resolve(data); },
+        onFailure: function (err) { reject(err); }
+      });
+    });
+  };
+
+  /* Complete password reset with the emailed code + a new password. */
+  window.cognitoConfirmPassword = function (email, code, newPassword) {
+    return new Promise(function (resolve, reject) {
+      var user = new AmazonCognitoIdentity.CognitoUser({ Username: email, Pool: pool });
+      user.confirmPassword(code, newPassword, {
+        onSuccess: function (data) { resolve(data); },
+        onFailure: function (err) { reject(err); }
+      });
+    });
+  };
 })();
 
 /* ---------- Stripe helpers ---------- */

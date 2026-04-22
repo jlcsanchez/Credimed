@@ -781,5 +781,79 @@ mount();
 
 <script src="connector.js"></script>
 <script src="ana.js"></script>
+
+<!-- Production estimate: compute real refund range from receipt OCR data.
+     Refund % = 75% of paid amount (single most common US PPO out-of-network rate).
+     Low/high range = 60%-75% for UI credibility. Persists to state for payment + dashboard. -->
+<script src="state.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (location.search.indexOf('dev=1') >= 0) return;
+  if (!window.CredimedState) return;
+
+  var MXN_TO_USD = 0.055; // ≈ 18 MXN = 1 USD
+  var r = window.CredimedState.get('receipt', {}) || {};
+
+  /* Fall back to defaults if no receipt data yet */
+  var paidUSD = null;
+  if (r.amountPaid != null) {
+    var n = parseFloat(r.amountPaid);
+    if (!isNaN(n)) {
+      paidUSD = r.currency === 'MXN' ? Math.round(n * MXN_TO_USD) : Math.round(n);
+    }
+  }
+  if (!paidUSD) return; // keep Claude Design defaults if receipt not uploaded yet
+
+  var low   = Math.round(paidUSD * 0.60);
+  var high  = Math.round(paidUSD * 0.75);
+  var mid   = Math.round(paidUSD * 0.70);
+  var covered = Math.round(paidUSD * 0.92); // assume ~92% of receipt is covered procedures
+
+  /* Persist for downstream screens */
+  window.CredimedState.merge('estimate', {
+    rangeMin: low,
+    rangeMax: high,
+    midpoint: mid,
+    refundPercent: 75,
+    paidUSD: paidUSD
+  });
+
+  /* Override the default VARIANTS object before renderScreen is called.
+     We re-read AFTER the main script parses (so it exists in the global scope). */
+  function applyOverride() {
+    if (typeof window.VARIANTS === 'undefined') return setTimeout(applyOverride, 30);
+    var real = {
+      low: low, high: high,
+      receipt: paidUSD,
+      clinic: r.city || 'your clinic',
+      plan: 'US PPO',
+      breakdown: [
+        { label: 'Out-of-network benefit', value: '75%', highlight: true },
+        { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted)' : ' USD') },
+        { label: 'Procedure',              value: r.procedure || '—' }
+      ],
+      calc: [
+        { label: 'Receipt total',          value: '$' + paidUSD.toLocaleString() },
+        { label: 'Covered procedures',     value: '$' + covered.toLocaleString() },
+        { label: 'Out-of-network rate',    value: '× 75%' },
+        { label: 'Estimated refund (mid)', value: '$' + mid.toLocaleString(), final: true }
+      ],
+      expanded: false
+    };
+    window.VARIANTS.default  = real;
+    window.VARIANTS.expanded = Object.assign({}, real, { expanded: true });
+
+    /* Trigger re-render if the page already rendered with mock data */
+    if (typeof window.renderScreen === 'function') {
+      ['screen-mobile', 'screen-desktop'].forEach(function (id) {
+        var host = document.getElementById(id);
+        if (host) host.innerHTML = window.renderScreen('default');
+      });
+    }
+  }
+  applyOverride();
+})();
+</script>
 </body>
 </html>

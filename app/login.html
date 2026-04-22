@@ -173,9 +173,51 @@ html, body { margin: 0; padding: 0; background: #f0eee9; font-family: "DM Sans",
         <label for="li-pw">Password</label>
         <input id="li-pw" type="password" autocomplete="current-password" placeholder="Your password">
       </div>
+      <div style="text-align:right;margin-top:-8px;margin-bottom:10px">
+        <a href="#" data-go="forgot-email" style="color:var(--teal-700);font-size:12.5px;font-weight:500;text-decoration:none">Forgot password?</a>
+      </div>
       <button class="btn-primary" id="btnLogin"><span class="spinner"></span>Sign in</button>
       <div class="alt-link">
         New to Credimed? <a href="#" data-go="signup">Create an account</a>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: Forgot password — enter email -->
+    <div class="screen" id="screen-forgot-email">
+      <p style="margin:0 0 18px;font-size:13.5px;color:var(--slate-600);line-height:1.5">Enter the email on your account. We'll send a 6-digit code so you can set a new password.</p>
+      <div class="field">
+        <label for="fp-email">Email</label>
+        <input id="fp-email" type="email" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <button class="btn-primary" id="btnForgotSend"><span class="spinner"></span>Send reset code</button>
+      <div class="alt-link">
+        Remembered it? <a href="#" data-go="login">Sign in</a>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: Forgot password — code + new password -->
+    <div class="screen" id="screen-forgot-reset">
+      <div style="text-align:center">
+        <div class="badge-email" id="fpEmailLabel">you@example.com</div>
+        <p style="margin:0 0 8px;font-size:13.5px;color:var(--slate-600)">Enter the 6-digit code we emailed you and choose a new password.</p>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label for="fp-code">Verification code</label>
+        <input id="fp-code" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]*" placeholder="123456" style="letter-spacing:.3em;font-family:'SF Mono',Menlo,monospace">
+      </div>
+      <div class="field">
+        <label for="fp-new-pw">New password</label>
+        <input id="fp-new-pw" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+        <div class="pw-hints" id="fpPwHints">
+          <span data-hint="len">8+ chars</span>
+          <span data-hint="mix">Aa</span>
+          <span data-hint="num">0-9</span>
+          <span data-hint="sym">!@#</span>
+        </div>
+      </div>
+      <button class="btn-primary" id="btnForgotConfirm"><span class="spinner"></span>Set new password</button>
+      <div class="alt-link">
+        Didn't get a code? <button id="fpResend" type="button">Resend</button>
       </div>
     </div>
   </div>
@@ -199,7 +241,7 @@ html, body { margin: 0; padding: 0; background: #f0eee9; font-family: "DM Sans",
   /* ---------- helpers ---------- */
   function $(id) { return document.getElementById(id); }
   function show(screenId) {
-    ['screen-signup', 'screen-verify', 'screen-login'].forEach(function (s) {
+    ['screen-signup', 'screen-verify', 'screen-login', 'screen-forgot-email', 'screen-forgot-reset'].forEach(function (s) {
       $(s).classList.remove('active');
     });
     $(screenId).classList.add('active');
@@ -220,6 +262,14 @@ html, body { margin: 0; padding: 0; background: #f0eee9; font-family: "DM Sans",
       t.textContent = 'Welcome back';
       s.textContent = 'Sign in to continue your claim';
       p.innerHTML = '';
+    } else if (screenId === 'screen-forgot-email') {
+      t.textContent = 'Reset your password';
+      s.textContent = 'Step 1 of 2 · Enter your email';
+      p.innerHTML = '<div class="on"></div><div></div>';
+    } else if (screenId === 'screen-forgot-reset') {
+      t.textContent = 'Set a new password';
+      s.textContent = 'Step 2 of 2 · Verify and choose';
+      p.innerHTML = '<div class="on"></div><div class="on"></div>';
     }
   }
   function clearBanners() {
@@ -430,6 +480,76 @@ html, body { margin: 0; padding: 0; background: #f0eee9; font-family: "DM Sans",
       });
     }
   }
+
+  /* ---------- forgot password: send code ---------- */
+  var fpEmail = '';
+  $('btnForgotSend').addEventListener('click', async function () {
+    var email = $('fp-email').value.trim().toLowerCase();
+    if (!isValidEmail(email)) return showError('Please enter a valid email.');
+    setLoading('btnForgotSend', true);
+    clearBanners();
+    try {
+      await window.cognitoForgotPassword(email);
+      fpEmail = email;
+      $('fpEmailLabel').textContent = email;
+      show('screen-forgot-reset');
+      showSuccess('Code sent. Check your inbox.');
+      setTimeout(function () { $('fp-code').focus(); }, 100);
+    } catch (err) {
+      showError(friendlyCognitoErr(err));
+    } finally {
+      setLoading('btnForgotSend', false);
+    }
+  });
+
+  /* ---------- forgot password: new password strength hints ---------- */
+  $('fp-new-pw').addEventListener('input', function () {
+    var s = pwStrength($('fp-new-pw').value);
+    $('fpPwHints').querySelectorAll('span').forEach(function (span) {
+      span.classList.toggle('ok', s[span.getAttribute('data-hint')]);
+    });
+  });
+
+  /* ---------- forgot password: confirm code + new password ---------- */
+  $('btnForgotConfirm').addEventListener('click', async function () {
+    var code  = $('fp-code').value.trim();
+    var newPw = $('fp-new-pw').value;
+    if (!/^\d{6}$/.test(code)) return showError('Enter the 6-digit code from your email.');
+    var s = pwStrength(newPw);
+    if (!s.ok) return showError('Password needs 8+ chars, upper + lower + a number.');
+
+    setLoading('btnForgotConfirm', true);
+    clearBanners();
+    try {
+      await window.cognitoConfirmPassword(fpEmail, code, newPw);
+      /* Auto sign-in with the new password */
+      try {
+        await window.cognitoSignIn(fpEmail, newPw);
+        showSuccess('Password updated. Redirecting...');
+        setTimeout(function () { window.location.href = POST_AUTH_URL; }, 600);
+        return;
+      } catch (e) {}
+      showSuccess('Password updated. Please sign in with your new password.');
+      show('screen-login');
+      $('li-email').value = fpEmail;
+      $('li-pw').focus();
+    } catch (err) {
+      showError(friendlyCognitoErr(err));
+    } finally {
+      setLoading('btnForgotConfirm', false);
+    }
+  });
+
+  /* Resend the forgot-password code */
+  $('fpResend').addEventListener('click', async function () {
+    if (!fpEmail) return showError('Start over from the Forgot password screen.');
+    try {
+      await window.cognitoForgotPassword(fpEmail);
+      showSuccess('New code sent. Check your inbox.');
+    } catch (err) {
+      showError(friendlyCognitoErr(err));
+    }
+  });
 
   /* ---------- login ---------- */
   $('btnLogin').addEventListener('click', async function () {
