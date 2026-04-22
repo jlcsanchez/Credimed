@@ -1250,26 +1250,48 @@ setInterval(() => {
     }
   }
 
-  /* ---- dropzone click → file picker; also drag&drop ---- */
-  document.addEventListener('click', function (e) {
-    var dz = e.target.closest('.dropzone[data-card]');
-    if (!dz) return;
-    var cardId = dz.getAttribute('data-card');
-    var input = document.createElement('input');
-    input.type = 'file';
-    if (cardId === 'insurance') input.accept = 'image/*';
-    else if (cardId === 'receipt') input.accept = 'image/*,.pdf,application/pdf';
-    else input.accept = 'image/*,.pdf,application/pdf';
-    if (cardId === 'supporting') input.multiple = true;
-    input.style.display = 'none';
-    document.body.appendChild(input);
-    input.addEventListener('change', function () {
-      var files = Array.from(input.files || []);
-      files.forEach(function (f) { handleFile(cardId, f); });
-      document.body.removeChild(input);
+  /* ---- Real file inputs overlayed on each dropzone (iOS Safari compatible) ---- */
+  function acceptFor(cardId) {
+    if (cardId === 'insurance') return 'image/*';
+    return 'image/*,.pdf,application/pdf';
+  }
+
+  function injectFileInputs() {
+    document.querySelectorAll('.dropzone[data-card]').forEach(function (dz) {
+      if (dz.querySelector('input[data-card-input]')) return;
+
+      var cardId = dz.getAttribute('data-card');
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = acceptFor(cardId);
+      if (cardId === 'supporting') input.multiple = true;
+      if (cardId === 'insurance' || cardId === 'receipt') input.setAttribute('capture', 'environment');
+      input.setAttribute('data-card-input', cardId);
+      input.style.cssText =
+        'position:absolute;inset:0;width:100%;height:100%;' +
+        'opacity:0;cursor:pointer;z-index:2;border:0;' +
+        '-webkit-appearance:none;appearance:none;' +
+        'font-size:16px;'; /* prevent iOS zoom */
+
+      /* Make dropzone positioned so our absolute input sits on top */
+      var cs = window.getComputedStyle(dz);
+      if (cs.position === 'static') dz.style.position = 'relative';
+
+      input.addEventListener('change', function () {
+        var files = Array.from(input.files || []);
+        files.forEach(function (f) { handleFile(cardId, f); });
+        /* Reset so picking the same file again still fires change */
+        input.value = '';
+      });
+
+      dz.appendChild(input);
     });
-    input.click();
-  }, true);
+  }
+
+  /* Inject on load + whenever DOM changes (after removes, re-renders, etc.) */
+  injectFileInputs();
+  var mo = new MutationObserver(function () { injectFileInputs(); });
+  mo.observe(document.body, { childList: true, subtree: true });
 
   /* Drag & drop on dropzones */
   ['dragover', 'dragleave', 'drop'].forEach(function (evt) {
