@@ -1,6 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<style id="credimed-prod-overrides">
+/* Credimed production mode: hide Claude Design dev chrome.
+   Add ?dev=1 to URL to reveal it (see script below). */
+.topbar,
+.device-label,
+.chrome,
+.design-canvas,
+.tweak-row,
+.tweak-label,
+.tweak-seg { display: none !important; }
+.device-wrap + .device-wrap { display: none !important; }
+.device-wrap {
+  margin: 0 auto !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 480px !important;
+}
+.iphone, .desktop {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 480px !important;
+  min-height: 100vh !important;
+  height: auto !important;
+}
+.stage, .proto-tab, .proto-stage {
+  padding: 0 !important;
+  background: #f0eee9 !important;
+  min-height: 100vh !important;
+  display: block !important;
+}
+.screen {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  border-radius: 0 !important;
+}
+html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !important; }
+</style>
+<script>
+/* Reveal dev chrome with ?dev=1 for design reviews */
+if (location.search.indexOf("dev=1") >= 0) {
+  document.addEventListener("DOMContentLoaded", function () {
+    var s = document.getElementById("credimed-prod-overrides");
+    if (s) s.disabled = true;
+  });
+}
+</script>
 <meta charset="UTF-8">
 <title>Credimed — Documents</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
