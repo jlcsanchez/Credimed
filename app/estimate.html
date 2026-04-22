@@ -876,8 +876,12 @@ mount();
     V.default  = real;
     V.expanded = Object.assign({}, real, { expanded: true });
 
-    /* Re-render mobile + desktop with the real data */
-    if (typeof window.renderScreen === 'function') {
+    /* Re-render mobile + desktop with the real data AND re-wire the accordion.
+       window.mount() does both — innerHTML replacement lost the addEventListener
+       on [data-how-trigger] which is why 'How is this calculated?' didn't expand. */
+    if (typeof window.mount === 'function') {
+      window.mount();
+    } else if (typeof window.renderScreen === 'function') {
       ['screen-mobile', 'screen-desktop'].forEach(function (id) {
         var host = document.getElementById(id);
         if (host) host.innerHTML = window.renderScreen('default');
