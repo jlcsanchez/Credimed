@@ -1129,6 +1129,18 @@ setInterval(() => {
     }
   }
 
+  function showOcrNotice(cardId, msg) {
+    var root = document.querySelector('[data-card-root="' + cardId + '"]');
+    if (!root) return;
+    var existing = root.querySelector('.ocr-notice');
+    if (existing) existing.remove();
+    var n = document.createElement('div');
+    n.className = 'ocr-notice';
+    n.style.cssText = 'margin-top:10px;padding:10px 12px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;font-size:12px;color:#92400E;line-height:1.5';
+    n.innerHTML = '<b>⚠ ' + msg + '</b>';
+    root.appendChild(n);
+  }
+
   /* ---- upload + OCR pipeline ---- */
   async function handleFile(cardId, file) {
     if (!file) return;
@@ -1159,17 +1171,29 @@ setInterval(() => {
     var ocrType = cardId === 'insurance' ? 'insurance' : 'receipt';
     updateCardUploading(cardId, file.name, 70);
     var ocrData = null;
+    var ocrError = null;
     try {
+      console.log('[OCR] calling', window.CREDIMED_API + '/ocr', 'type=' + ocrType);
       var resp = await window.authFetch(window.CREDIMED_API + '/ocr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: { imageBase64: base64, mediaType: file.type || 'image/jpeg', type: ocrType }
       });
-      ocrData = await resp.json();
+      if (!resp.ok) {
+        ocrError = 'OCR server returned HTTP ' + resp.status;
+        console.warn('[OCR]', ocrError);
+      } else {
+        ocrData = await resp.json();
+        console.log('[OCR] response:', ocrData);
+      }
     } catch (err) {
+      ocrError = (err && err.message) || String(err);
       console.warn('[OCR] ' + ocrType + ' failed:', err);
-      /* Don't error out — user can still continue without OCR extraction.
-         Just show file as uploaded without extracted fields. */
+    }
+
+    /* Surface OCR failures in-UI so the user knows auto-extract didn't run */
+    if (ocrError && !ocrData) {
+      showOcrNotice(cardId, 'Auto-extract unavailable — ' + ocrError + '. Your file is saved; you can continue.');
     }
 
     updateCardUploading(cardId, file.name, 95);
