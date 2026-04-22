@@ -1287,7 +1287,7 @@ setInterval(() => {
 
     /* Call OCR Lambda — with 30s timeout so we never hang at 93% forever */
     var ocrType = cardId === 'insurance' ? 'insurance' : 'receipt';
-    updateCardUploading(cardId, file.name, 55);
+    updateCardUploading(cardId, file.name, 35);
     var ocrData = null;
     var ocrError = null;
 
@@ -1299,12 +1299,14 @@ setInterval(() => {
                                     function (e) { clearTimeout(timer); throw e; });
     }
 
-    /* Animate progress bar while we wait on OCR */
-    var progressTicker = 55;
+    /* Animate progress bar while we wait on OCR.
+       Lambda typically responds in 3-6s. We pace the bar to reach ~88% by second 5
+       so it roughly matches the real work and never sits idle at 92% for 10s. */
+    var progressTicker = 35;
     var pt = setInterval(function () {
-      progressTicker = Math.min(92, progressTicker + 3);
+      progressTicker = Math.min(90, progressTicker + 6);
       updateCardUploading(cardId, file.name, progressTicker);
-    }, 900);
+    }, 350);
 
     try {
       console.log('[OCR] POST', window.CREDIMED_API + '/ocr', 'type=' + ocrType, 'size=' + file.size);
