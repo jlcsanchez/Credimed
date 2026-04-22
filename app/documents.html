@@ -12,12 +12,15 @@
 .tweak-row,
 .tweak-label,
 .tweak-seg { display: none !important; }
-.device-wrap + .device-wrap { display: none !important; }
-.device-wrap {
-  margin: 0 auto !important;
-  padding: 0 !important;
-  width: 100% !important;
-  max-width: 480px !important;
+/* Mobile (<768px): show the mobile device-wrap, hide the desktop one */
+@media (max-width: 767px) {
+  .device-wrap:nth-of-type(2) { display: none !important; }
+  .device-wrap:nth-of-type(1) { margin: 0 auto !important; padding: 0 !important; width: 100% !important; max-width: 480px !important; }
+}
+/* Desktop (>=768px): hide mobile, show the desktop variant (Claude Design built it) */
+@media (min-width: 768px) {
+  .device-wrap:nth-of-type(1) { display: none !important; }
+  .device-wrap:nth-of-type(2) { margin: 40px auto !important; padding: 0 !important; max-width: 960px !important; }
 }
 .iphone, .desktop {
   border: none !important;
@@ -51,7 +54,7 @@ html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !i
 /* Hide the fake iPhone Dynamic Island notch that Claude Design draws inside .iphone */
 .iphone::before { display: none !important; }
 
-/* Desktop (>=768px): center the 480px content as a focused app panel */
+/* Desktop (>=768px): reveal the Claude Design desktop variant; strip its browser chrome */
 @media (min-width: 768px) {
   html, body {
     background:
@@ -66,20 +69,19 @@ html, body { background: #f0eee9 !important; margin: 0 !important; padding: 0 !i
     justify-content: center !important;
     align-items: flex-start !important;
   }
-  .device-wrap {
-    max-width: 520px !important;
-    margin: 0 auto !important;
-    border-radius: 24px !important;
-    overflow: hidden !important;
-    box-shadow: 0 24px 64px rgba(15,23,42,0.14), 0 4px 16px rgba(15,23,42,0.06) !important;
-    background: #fff !important;
-  }
-  .iphone, .desktop {
-    max-width: 520px !important;
+  .desktop {
+    width: auto !important;
+    max-width: 960px !important;
     min-height: auto !important;
-    border-radius: 0 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 24px 64px rgba(15,23,42,0.14), 0 4px 16px rgba(15,23,42,0.06) !important;
+    overflow: hidden !important;
   }
-  .screen { min-height: auto !important; }
+  .desktop .chrome { display: none !important; }
+  .desktop .body {
+    height: auto !important;
+    min-height: auto !important;
+  }
 }
 </style>
 <script>
