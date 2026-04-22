@@ -1344,6 +1344,14 @@ mountScope('desktop');
       if (cu && cu.attributes) user = { email: cu.attributes.email, sub: cu.sub };
     } catch (e) { /* anon checkout not allowed, will fail below */ }
 
+    /* Replace the Claude Design mock email ('maria.gonzalez@email.com') with the real
+       Cognito email everywhere it appears on this page. */
+    if (user.email) {
+      document.querySelectorAll('.email-row-val').forEach(function (el) {
+        el.textContent = user.email;
+      });
+    }
+
     if (!user.email) {
       cardPanel.innerHTML =
         '<div class="stripe-placeholder" style="color:#B91C1C">' +
@@ -1375,11 +1383,23 @@ mountScope('desktop');
       if (cta) cta.disabled = false;
     } catch (err) {
       console.error('[Credimed] Stripe init failed:', err);
+      var errMsg = (err && err.message) || String(err) || 'Network error';
+      var hint = '';
+      if (/Failed to fetch|Load failed|NetworkError|CORS/i.test(errMsg)) {
+        hint = 'The payment server is unreachable. This is usually a CORS or Lambda config issue.';
+      } else if (/No clientSecret/i.test(errMsg)) {
+        hint = 'The Lambda responded but without a payment intent. Check CloudWatch logs for credimed-payment.';
+      } else if (/HTTP 401|HTTP 403/i.test(errMsg)) {
+        hint = 'Authentication rejected by the payment Lambda.';
+      } else if (/HTTP 5/.test(errMsg)) {
+        hint = 'Lambda crashed. Check CloudWatch logs for credimed-payment.';
+      }
       $('#credimed-stripe-mount').innerHTML =
-        '<div class="stripe-placeholder" style="color:#B91C1C">' +
+        '<div class="stripe-placeholder" style="color:#B91C1C;padding:20px;text-align:center">' +
           '<b>Could not load payment form.</b>' +
-          '<div style="font-size:12px;opacity:.85">' + (err && err.message || 'Network error') + '</div>' +
-          '<button onclick="location.reload()" style="margin-top:8px;padding:6px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;cursor:pointer">Retry</button>' +
+          '<div style="font-size:12px;opacity:.9;margin-top:6px;font-family:monospace;word-break:break-word">' + errMsg + '</div>' +
+          (hint ? '<div style="font-size:11px;color:#92400E;background:#FEF3C7;padding:8px 10px;border-radius:8px;margin-top:8px">' + hint + '</div>' : '') +
+          '<button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;cursor:pointer;font-size:13px">Retry</button>' +
         '</div>';
     }
   }
