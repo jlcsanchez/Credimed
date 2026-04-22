@@ -1167,31 +1167,57 @@ setInterval(() => {
       return;
     }
 
-    /* Call OCR Lambda */
+    /* Call OCR Lambda — with 30s timeout so we never hang at 93% forever */
     var ocrType = cardId === 'insurance' ? 'insurance' : 'receipt';
-    updateCardUploading(cardId, file.name, 70);
+    updateCardUploading(cardId, file.name, 55);
     var ocrData = null;
     var ocrError = null;
+
+    function fetchWithTimeout(url, opts, ms) {
+      var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      if (ctrl) opts.signal = ctrl.signal;
+      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, ms);
+      return fetch(url, opts).then(function (r) { clearTimeout(timer); return r; },
+                                    function (e) { clearTimeout(timer); throw e; });
+    }
+
+    /* Animate progress bar while we wait on OCR */
+    var progressTicker = 55;
+    var pt = setInterval(function () {
+      progressTicker = Math.min(92, progressTicker + 3);
+      updateCardUploading(cardId, file.name, progressTicker);
+    }, 900);
+
     try {
-      console.log('[OCR] calling', window.CREDIMED_API + '/ocr', 'type=' + ocrType);
-      var resp = await window.authFetch(window.CREDIMED_API + '/ocr', {
+      console.log('[OCR] POST', window.CREDIMED_API + '/ocr', 'type=' + ocrType, 'size=' + file.size);
+      /* Direct fetch (not authFetch) so we control timeout; still attach JWT if available */
+      var token = null;
+      try { token = await window.cognitoGetIdToken(); } catch (e) {}
+      var resp = await fetchWithTimeout(window.CREDIMED_API + '/ocr', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: { imageBase64: base64, mediaType: file.type || 'image/jpeg', type: ocrType }
-      });
+        headers: Object.assign(
+          { 'Content-Type': 'application/json' },
+          token ? { 'Authorization': 'Bearer ' + token } : {}
+        ),
+        body: JSON.stringify({ imageBase64: base64, mediaType: file.type || 'image/jpeg', type: ocrType })
+      }, 30000);
+
       if (!resp.ok) {
-        ocrError = 'OCR server returned HTTP ' + resp.status;
+        ocrError = 'OCR returned HTTP ' + resp.status + ' (' + resp.statusText + ')';
         console.warn('[OCR]', ocrError);
       } else {
         ocrData = await resp.json();
         console.log('[OCR] response:', ocrData);
       }
     } catch (err) {
-      ocrError = (err && err.message) || String(err);
+      if (err && err.name === 'AbortError') ocrError = 'OCR timed out after 30s (Lambda may be cold-starting — try again)';
+      else ocrError = (err && err.message) || String(err);
       console.warn('[OCR] ' + ocrType + ' failed:', err);
+    } finally {
+      clearInterval(pt);
+      updateCardUploading(cardId, file.name, 100);
     }
 
-    /* Surface OCR failures in-UI so the user knows auto-extract didn't run */
     if (ocrError && !ocrData) {
       showOcrNotice(cardId, 'Auto-extract unavailable — ' + ocrError + '. Your file is saved; you can continue.');
     }
