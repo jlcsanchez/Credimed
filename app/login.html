@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credimed — Sign in</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-200:#99F6E4; --teal-300:#5EEAD4;
+  --teal-500:#14B8A6; --teal-600:#0D9488; --teal-700:#0B8278; --teal-800:#0A7A70; --teal-900:#134E4A;
+  --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
+  --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1E293B; --slate-900:#0F172A;
+  --danger-bg:#FEF2F2; --danger-fg:#B91C1C; --danger-border:#FECACA;
+  --success-bg:#ECFDF5; --success-fg:#047857; --success-border:#A7F3D0;
+  --hero-gradient:linear-gradient(160deg,#0f172a 0%,#134e4a 60%,#0D9488 100%);
+  --shadow-card:0 8px 40px rgba(0,0,0,.15);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #f0eee9; font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--slate-900); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+.page { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #fff; box-shadow: var(--shadow-card); display: flex; flex-direction: column; }
+
+.hero { background: var(--hero-gradient); color: #fff; padding: 56px 28px 80px; position: relative; }
+.hero .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 48px; }
+.hero .logo-mark { width: 36px; height: 36px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-weight: 800; color: var(--teal-600); font-size: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+.hero .logo-text { font-weight: 700; letter-spacing: .02em; font-size: 14px; }
+.hero h1 { font-family: "Playfair Display", Georgia, serif; font-size: 34px; font-weight: 700; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.01em; }
+.hero .sub { font-size: 14px; color: rgba(255,255,255,.82); margin: 0; }
+.hero .progress { display: flex; gap: 6px; margin-top: 24px; }
+.hero .progress div { height: 3px; flex: 1; background: rgba(255,255,255,.2); border-radius: 99px; }
+.hero .progress .on { background: var(--teal-300); }
+
+.card { margin: -48px 20px 0; background: #fff; border-radius: 18px; padding: 28px 24px; box-shadow: 0 10px 30px rgba(15,23,42,.08); position: relative; z-index: 2; }
+
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--slate-500); letter-spacing: .02em; margin-bottom: 6px; text-transform: uppercase; }
+.field input { width: 100%; height: 52px; padding: 0 16px; border: 1px solid var(--slate-200); border-radius: 12px; font-size: 15px; font-family: inherit; color: var(--slate-900); background: #fff; outline: none; transition: border-color 150ms, box-shadow 150ms; }
+.field input:focus { border-color: var(--teal-600); box-shadow: 0 0 0 4px rgba(13,148,136,.12); }
+.field input::placeholder { color: var(--slate-400); }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.btn-primary { width: 100%; height: 60px; background: var(--teal-600); color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 150ms; margin-top: 8px; }
+.btn-primary:hover:not(:disabled) { background: var(--teal-700); }
+.btn-primary:active:not(:disabled) { background: var(--teal-800); }
+.btn-primary:disabled { background: var(--slate-300); cursor: not-allowed; }
+.btn-primary .spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin 700ms linear infinite; vertical-align: middle; margin-right: 8px; }
+.btn-primary.loading .spinner { display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.alt-link { margin-top: 18px; text-align: center; font-size: 13px; color: var(--slate-500); }
+.alt-link a, .alt-link button { color: var(--teal-700); font-weight: 600; text-decoration: none; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13px; }
+.alt-link a:hover, .alt-link button:hover { text-decoration: underline; }
+
+.banner { padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.4; margin-bottom: 16px; display: none; }
+.banner.show { display: block; }
+.banner.error { background: var(--danger-bg); color: var(--danger-fg); border: 1px solid var(--danger-border); }
+.banner.success { background: var(--success-bg); color: var(--success-fg); border: 1px solid var(--success-border); }
+
+.otp-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 18px 0 10px; }
+.otp-row input { width: 100%; height: 56px; text-align: center; font-size: 22px; font-weight: 600; border: 1px solid var(--slate-200); border-radius: 12px; background: #fff; font-family: "SF Mono", Menlo, monospace; outline: none; color: var(--slate-900); }
+.otp-row input:focus { border-color: var(--teal-600); box-shadow: 0 0 0 4px rgba(13,148,136,.12); }
+
+.resend-row { text-align: center; font-size: 12px; color: var(--slate-500); margin-top: 4px; }
+.resend-row .countdown { color: var(--slate-400); }
+.resend-row button { font-weight: 600; color: var(--teal-700); background: none; border: none; cursor: pointer; font-family: inherit; font-size: 12px; }
+.resend-row button:hover { text-decoration: underline; }
+
+.pw-hints { margin-top: 6px; display: flex; gap: 6px; font-size: 11px; color: var(--slate-500); }
+.pw-hints span { flex: 1; padding: 2px 0; text-align: center; border-radius: 4px; background: var(--slate-100); color: var(--slate-400); }
+.pw-hints span.ok { background: var(--success-bg); color: var(--success-fg); }
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+.legal { padding: 24px 28px 40px; font-size: 11px; color: var(--slate-400); text-align: center; line-height: 1.5; }
+.legal a { color: var(--slate-500); text-decoration: underline; }
+
+.badge-email { background: var(--teal-50); color: var(--teal-800); border: 1px solid var(--teal-200); padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 500; display: inline-block; margin: 6px 0 12px; }
+
+@media (max-width: 375px) {
+  .hero { padding: 44px 22px 74px; }
+  .hero h1 { font-size: 28px; }
+  .card { margin: -40px 14px 0; padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <section class="hero">
+    <div class="brand">
+      <div class="logo-mark">H</div>
+      <div class="logo-text">CREDIMED</div>
+    </div>
+    <h1 id="heroTitle">Create your account</h1>
+    <p class="sub" id="heroSub">Step 1 of 2 · Start your claim</p>
+    <div class="progress" id="progress">
+      <div class="on"></div>
+      <div></div>
+    </div>
+  </section>
+
+  <div class="card">
+    <div class="banner error" id="errBanner"></div>
+    <div class="banner success" id="okBanner"></div>
+
+    <!-- SCREEN 1: Sign up -->
+    <div class="screen active" id="screen-signup">
+      <div class="row-2">
+        <div class="field">
+          <label for="su-first">First name</label>
+          <input id="su-first" type="text" autocomplete="given-name" placeholder="John">
+        </div>
+        <div class="field">
+          <label for="su-last">Last name</label>
+          <input id="su-last" type="text" autocomplete="family-name" placeholder="Doe">
+        </div>
+      </div>
+      <div class="field">
+        <label for="su-email">Email</label>
+        <input id="su-email" type="email" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="su-pw">Password</label>
+        <input id="su-pw" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+        <div class="pw-hints" id="pwHints">
+          <span data-hint="len">8+ chars</span>
+          <span data-hint="mix">Aa</span>
+          <span data-hint="num">0-9</span>
+          <span data-hint="sym">!@#</span>
+        </div>
+      </div>
+      <button class="btn-primary" id="btnSignup"><span class="spinner"></span>Create account</button>
+      <div class="alt-link">
+        Already have an account? <a href="#" data-go="login">Sign in</a>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: Verify (OTP from email) -->
+    <div class="screen" id="screen-verify">
+      <div style="text-align:center">
+        <div class="badge-email" id="verifyEmailLabel">you@example.com</div>
+        <p style="margin:0 0 8px;font-size:13.5px;color:var(--slate-600)">Enter the 6-digit code we emailed you.</p>
+      </div>
+      <div class="otp-row" id="otpRow">
+        <input inputmode="numeric" maxlength="1" autocomplete="one-time-code" pattern="[0-9]*">
+        <input inputmode="numeric" maxlength="1" pattern="[0-9]*">
+        <input inputmode="numeric" maxlength="1" pattern="[0-9]*">
+        <input inputmode="numeric" maxlength="1" pattern="[0-9]*">
+        <input inputmode="numeric" maxlength="1" pattern="[0-9]*">
+        <input inputmode="numeric" maxlength="1" pattern="[0-9]*">
+      </div>
+      <div class="resend-row">
+        <span id="resendState">Didn't get it? <button id="btnResend" type="button">Resend</button></span>
+      </div>
+      <button class="btn-primary" id="btnVerify" style="margin-top:18px" disabled><span class="spinner"></span>Verify</button>
+      <div class="alt-link">
+        Wrong email? <a href="#" data-go="signup">Start over</a>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: Login -->
+    <div class="screen" id="screen-login">
+      <div class="field">
+        <label for="li-email">Email</label>
+        <input id="li-email" type="email" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="li-pw">Password</label>
+        <input id="li-pw" type="password" autocomplete="current-password" placeholder="Your password">
+      </div>
+      <button class="btn-primary" id="btnLogin"><span class="spinner"></span>Sign in</button>
+      <div class="alt-link">
+        New to Credimed? <a href="#" data-go="signup">Create an account</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="legal">
+    By continuing you agree to our <a href="/legal/AGREEMENT_v1.1.md" target="_blank">Service Agreement</a> and <a href="#" target="_blank">Privacy Policy</a>.<br>
+    HIPAA compliant · 256-bit encrypted · US-incorporated
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script src="state.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var POST_AUTH_URL = '/app/documents.html';
+
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function show(screenId) {
+    ['screen-signup', 'screen-verify', 'screen-login'].forEach(function (s) {
+      $(s).classList.remove('active');
+    });
+    $(screenId).classList.add('active');
+    updateHero(screenId);
+    clearBanners();
+  }
+  function updateHero(screenId) {
+    var t = $('heroTitle'), s = $('heroSub'), p = $('progress');
+    if (screenId === 'screen-signup') {
+      t.textContent = 'Create your account';
+      s.textContent = 'Step 1 of 2 · Start your claim';
+      p.innerHTML = '<div class="on"></div><div></div>';
+    } else if (screenId === 'screen-verify') {
+      t.textContent = 'Check your email';
+      s.textContent = 'Step 2 of 2 · Verify your account';
+      p.innerHTML = '<div class="on"></div><div class="on"></div>';
+    } else if (screenId === 'screen-login') {
+      t.textContent = 'Welcome back';
+      s.textContent = 'Sign in to continue your claim';
+      p.innerHTML = '';
+    }
+  }
+  function clearBanners() {
+    $('errBanner').classList.remove('show');
+    $('okBanner').classList.remove('show');
+  }
+  function showError(msg) {
+    var e = $('errBanner');
+    e.textContent = msg;
+    e.classList.add('show');
+    $('okBanner').classList.remove('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function showSuccess(msg) {
+    var e = $('okBanner');
+    e.textContent = msg;
+    e.classList.add('show');
+    $('errBanner').classList.remove('show');
+  }
+  function setLoading(btnId, on) {
+    var btn = $(btnId);
+    btn.classList.toggle('loading', on);
+    btn.disabled = on;
+  }
+  function isValidEmail(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
+  function pwStrength(pw) {
+    var r = { len: pw.length >= 8, mix: /[a-z]/.test(pw) && /[A-Z]/.test(pw), num: /\d/.test(pw), sym: /[^A-Za-z0-9]/.test(pw) };
+    r.ok = r.len && r.mix && r.num;
+    return r;
+  }
+  function friendlyCognitoErr(err) {
+    var m = (err && (err.message || err.code)) || String(err);
+    if (/UsernameExistsException/.test(m) || /already exists/i.test(m)) return 'An account with this email already exists. Try signing in instead.';
+    if (/InvalidPasswordException/.test(m) || /password/i.test(m)) return 'Password must be at least 8 characters with a mix of upper, lower, and a number.';
+    if (/UserNotFoundException/.test(m) || /NotAuthorizedException/.test(m) || /Incorrect username or password/i.test(m)) return 'Email or password is incorrect.';
+    if (/UserNotConfirmedException/.test(m)) return 'Please verify your email first. Check your inbox for the code.';
+    if (/CodeMismatchException/.test(m)) return 'That code is incorrect. Try again.';
+    if (/ExpiredCodeException/.test(m)) return 'That code expired. Tap Resend to get a new one.';
+    if (/LimitExceededException/.test(m)) return 'Too many attempts. Please wait a few minutes and try again.';
+    if (/NetworkingError/.test(m) || /Failed to fetch/.test(m)) return 'Network error. Check your connection and try again.';
+    return m || 'Something went wrong. Please try again.';
+  }
+
+  /* ---------- state (pending email for verify screen) ---------- */
+  var pendingEmail = '';
+
+  /* ---------- nav links ---------- */
+  document.querySelectorAll('[data-go]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      var target = el.getAttribute('data-go');
+      show('screen-' + target);
+    });
+  });
+
+  /* ---------- password strength indicator ---------- */
+  var pwInput = $('su-pw');
+  pwInput.addEventListener('input', function () {
+    var s = pwStrength(pwInput.value);
+    $('pwHints').querySelectorAll('span').forEach(function (span) {
+      span.classList.toggle('ok', s[span.getAttribute('data-hint')]);
+    });
+  });
+
+  /* ---------- signup ---------- */
+  $('btnSignup').addEventListener('click', async function () {
+    var first = $('su-first').value.trim();
+    var last  = $('su-last').value.trim();
+    var email = $('su-email').value.trim().toLowerCase();
+    var pw    = $('su-pw').value;
+
+    if (!first || !last) return showError('Please enter your first and last name.');
+    if (!isValidEmail(email)) return showError('Please enter a valid email address.');
+    var s = pwStrength(pw);
+    if (!s.ok) return showError('Password must be at least 8 characters, with upper + lowercase letters and a number.');
+
+    setLoading('btnSignup', true);
+    clearBanners();
+
+    try {
+      await window.cognitoSignUp(email, pw, first, last);
+      pendingEmail = email;
+      $('verifyEmailLabel').textContent = email;
+
+      // persist basics for downstream screens
+      try {
+        window.CredimedState && window.CredimedState.merge('user', {
+          firstName: first, lastName: last, email: email
+        });
+      } catch (e) {}
+
+      show('screen-verify');
+      showSuccess('We emailed you a 6-digit code. Enter it below to verify your account.');
+      startResendCountdown();
+      setTimeout(function () { $('otpRow').querySelector('input').focus(); }, 100);
+    } catch (err) {
+      if (/UsernameExistsException/.test(err && err.message || '')) {
+        // Might already have an unconfirmed account; try resending
+        try {
+          await window.cognitoResendCode(email);
+          pendingEmail = email;
+          $('verifyEmailLabel').textContent = email;
+          show('screen-verify');
+          showSuccess('This email is already registered. We sent you a new verification code.');
+          startResendCountdown();
+        } catch (e2) {
+          showError(friendlyCognitoErr(err));
+        }
+      } else {
+        showError(friendlyCognitoErr(err));
+      }
+    } finally {
+      setLoading('btnSignup', false);
+    }
+  });
+
+  /* ---------- OTP behavior ---------- */
+  var otpInputs = Array.from($('otpRow').querySelectorAll('input'));
+  otpInputs.forEach(function (inp, i) {
+    inp.addEventListener('input', function () {
+      inp.value = inp.value.replace(/\D/g, '');
+      if (inp.value && i < otpInputs.length - 1) otpInputs[i + 1].focus();
+      checkOtpFull();
+    });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key === 'Backspace' && !inp.value && i > 0) otpInputs[i - 1].focus();
+    });
+    inp.addEventListener('paste', function (e) {
+      var txt = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+      if (txt.length === 6) {
+        e.preventDefault();
+        for (var k = 0; k < 6; k++) otpInputs[k].value = txt[k];
+        checkOtpFull();
+      }
+    });
+  });
+  function otpValue() { return otpInputs.map(function (i) { return i.value; }).join(''); }
+  function checkOtpFull() {
+    var btn = $('btnVerify');
+    btn.disabled = otpValue().length !== 6;
+  }
+
+  /* ---------- verify ---------- */
+  $('btnVerify').addEventListener('click', async function () {
+    var code = otpValue();
+    if (code.length !== 6) return;
+
+    setLoading('btnVerify', true);
+    clearBanners();
+
+    try {
+      await window.cognitoConfirmSignUp(pendingEmail, code);
+      // Auto sign-in is not possible from here (we don't have the password anymore).
+      // But the user is fresh from signup so we DO have it — pass it forward.
+      var pw = $('su-pw').value;
+      if (pw) {
+        try {
+          await window.cognitoSignIn(pendingEmail, pw);
+          showSuccess('Account verified. Redirecting...');
+          setTimeout(function () { window.location.href = POST_AUTH_URL; }, 800);
+          return;
+        } catch (e) {
+          // Fall through to login screen
+        }
+      }
+      showSuccess('Account verified! Please sign in.');
+      show('screen-login');
+      $('li-email').value = pendingEmail;
+      $('li-pw').focus();
+    } catch (err) {
+      showError(friendlyCognitoErr(err));
+      otpInputs[0].focus();
+      otpInputs.forEach(function (i) { i.value = ''; });
+      checkOtpFull();
+    } finally {
+      setLoading('btnVerify', false);
+    }
+  });
+
+  /* ---------- resend code ---------- */
+  var resendTimer = 0;
+  function startResendCountdown() {
+    resendTimer = 45;
+    updateResendState();
+    var iv = setInterval(function () {
+      resendTimer--;
+      if (resendTimer <= 0) { clearInterval(iv); }
+      updateResendState();
+    }, 1000);
+  }
+  function updateResendState() {
+    var el = $('resendState');
+    if (resendTimer > 0) {
+      el.innerHTML = 'Resend available in <span class="countdown">' + resendTimer + 's</span>';
+    } else {
+      el.innerHTML = 'Didn\'t get it? <button id="btnResend" type="button">Resend</button>';
+      $('btnResend').addEventListener('click', async function () {
+        if (!pendingEmail) return;
+        try {
+          await window.cognitoResendCode(pendingEmail);
+          showSuccess('New code sent. Check your inbox.');
+          startResendCountdown();
+        } catch (err) {
+          showError(friendlyCognitoErr(err));
+        }
+      });
+    }
+  }
+
+  /* ---------- login ---------- */
+  $('btnLogin').addEventListener('click', async function () {
+    var email = $('li-email').value.trim().toLowerCase();
+    var pw    = $('li-pw').value;
+
+    if (!isValidEmail(email)) return showError('Please enter a valid email.');
+    if (!pw) return showError('Please enter your password.');
+
+    setLoading('btnLogin', true);
+    clearBanners();
+
+    try {
+      await window.cognitoSignIn(email, pw);
+      try {
+        var cu = await window.cognitoGetCurrentUser();
+        if (cu && cu.attributes) {
+          window.CredimedState && window.CredimedState.merge('user', {
+            firstName: cu.attributes.given_name || '',
+            lastName:  cu.attributes.family_name || '',
+            email:     cu.attributes.email || email
+          });
+        }
+      } catch (e) {}
+      showSuccess('Signed in. Redirecting...');
+      setTimeout(function () { window.location.href = POST_AUTH_URL; }, 500);
+    } catch (err) {
+      showError(friendlyCognitoErr(err));
+    } finally {
+      setLoading('btnLogin', false);
+    }
+  });
+
+  /* ---------- auto route: if user is logged in already, skip to docs ---------- */
+  (async function () {
+    try {
+      var token = await window.cognitoGetIdToken();
+      if (token) {
+        // Logged in. Skip straight to documents.
+        window.location.href = POST_AUTH_URL;
+      }
+    } catch (e) { /* not logged in, stay on page */ }
+
+    // If URL says ?mode=login, show login. Default is signup.
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'login' || window.location.hash === '#login') {
+      show('screen-login');
+    }
+    if (params.get('expired') === '1') {
+      show('screen-login');
+      showError('Your session expired. Please sign in again.');
+    }
+  })();
+})();
+</script>
+
+<script src="ana.js"></script>
+</body>
+</html>
