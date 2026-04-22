@@ -968,5 +968,283 @@ setInterval(() => {
 
 <script src="connector.js"></script>
 <script src="ana.js"></script>
+
+<!-- Production OCR + upload — real Lambda-backed extraction via /ocr endpoint.
+     Skipped with ?dev=1 so Claude Design mock variants still work for review. -->
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script src="state.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  if (location.search.indexOf('dev=1') >= 0) return;
+
+  /* Hide Claude Design dev chrome (top tabs, secondary device preview) */
+  var devStyle = document.createElement('style');
+  devStyle.textContent =
+    '.topbar{display:none !important}' +
+    '.device-wrap + .device-wrap{display:none !important}' +
+    '.device-wrap{margin:0 auto !important;padding:0 !important;width:100% !important;max-width:480px !important}' +
+    '.iphone{border:none !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important;padding:0 !important;margin:0 !important;width:100% !important;max-width:480px !important;min-height:100vh !important;height:auto !important}' +
+    '.device-label,.chrome{display:none !important}' +
+    '.stage{padding:0 !important;background:#f0eee9 !important;min-height:100vh !important;display:block !important}' +
+    '.screen{width:100% !important;max-width:100% !important;min-height:100vh !important;height:auto !important;border-radius:0 !important}' +
+    'body{background:#f0eee9 !important;margin:0 !important;padding:0 !important}';
+  document.head.appendChild(devStyle);
+
+  /* ---- helpers ---- */
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () {
+        var s = r.result || '';
+        var comma = s.indexOf(',');
+        resolve(comma >= 0 ? s.slice(comma + 1) : s);
+      };
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+  function bytesLabel(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+    return (n / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function updateCardUploading(cardId, filename, pct) {
+    var root = document.querySelector('[data-card-root="' + cardId + '"]');
+    if (!root) return;
+    root.className = 'upload-card state-uploading';
+    /* Replace the dropzone inner with progress */
+    var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
+    if (content) {
+      content.outerHTML =
+        '<div class="uploading-row">' +
+          '<div class="uploading-icon spinner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55" /></svg></div>' +
+          '<div class="uploading-body">' +
+            '<div class="uploading-filename">' + filename + '</div>' +
+            '<div class="uploading-bar"><div class="uploading-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '</div>' +
+          '<div class="uploading-pct">' + pct + '%</div>' +
+        '</div>';
+    }
+  }
+
+  function updateCardDone(cardId, filename, metaText, extracted) {
+    var root = document.querySelector('[data-card-root="' + cardId + '"]');
+    if (!root) return;
+    root.className = 'upload-card state-done';
+    var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
+    var extractedHtml = '';
+    if (extracted) {
+      extractedHtml =
+        '<div class="extracted-preview" style="margin-top:10px;padding:10px 12px;background:var(--teal-50,#F0FDFA);border:1px solid var(--teal-200,#99F6E4);border-radius:10px;font-size:12px;color:var(--slate-700,#334155);line-height:1.5">' +
+          Object.keys(extracted).map(function (k) {
+            if (!extracted[k]) return '';
+            return '<div><b style="color:var(--teal-800,#0A7A70);text-transform:capitalize">' + k.replace(/([A-Z])/g, ' $1') + ':</b> ' + extracted[k] + '</div>';
+          }).join('') +
+        '</div>';
+    }
+    if (content) {
+      content.outerHTML =
+        '<div class="uploaded-row">' +
+          '<div class="uploaded-thumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+          '<div class="uploaded-body">' +
+            '<div class="uploaded-filename">' + filename + '</div>' +
+            '<div class="uploaded-meta"><span class="check">Uploaded</span><span>·</span><span>' + metaText + '</span></div>' +
+          '</div>' +
+          '<div class="uploaded-actions">' +
+            '<button class="icon-action danger" aria-label="Remove" data-remove="' + cardId + '">✕</button>' +
+          '</div>' +
+        '</div>' + extractedHtml;
+    }
+    tryEnableContinue();
+  }
+
+  function updateCardError(cardId, msg) {
+    var root = document.querySelector('[data-card-root="' + cardId + '"]');
+    if (!root) return;
+    root.className = 'upload-card state-error';
+    var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
+    if (content) {
+      content.outerHTML =
+        '<div class="dropzone" data-card="' + cardId + '">' +
+          '<div class="dropzone-primary" style="color:#B91C1C"><b>' + msg + '</b></div>' +
+          '<div class="dropzone-secondary">Tap to try again</div>' +
+        '</div>';
+    }
+  }
+
+  /* ---- upload + OCR pipeline ---- */
+  async function handleFile(cardId, file) {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      updateCardError(cardId, 'File too large. Max 10 MB.');
+      return;
+    }
+
+    updateCardUploading(cardId, file.name, 12);
+
+    var base64;
+    try { base64 = await fileToBase64(file); }
+    catch (e) { updateCardError(cardId, 'Could not read file.'); return; }
+
+    updateCardUploading(cardId, file.name, 40);
+
+    /* Supporting docs don't need OCR — just save metadata and mark done */
+    if (cardId === 'supporting') {
+      var listKey = 'supportingDocs';
+      var list = (window.CredimedState && window.CredimedState.get(listKey, [])) || [];
+      list.push({ name: file.name, size: file.size, type: file.type, uploadedAt: new Date().toISOString() });
+      window.CredimedState && window.CredimedState.set(listKey, list);
+      updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Uploaded', null);
+      return;
+    }
+
+    /* Call OCR Lambda */
+    var ocrType = cardId === 'insurance' ? 'insurance' : 'receipt';
+    updateCardUploading(cardId, file.name, 70);
+    var ocrData = null;
+    try {
+      var resp = await window.authFetch(window.CREDIMED_API + '/ocr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: { imageBase64: base64, mediaType: file.type || 'image/jpeg', type: ocrType }
+      });
+      ocrData = await resp.json();
+    } catch (err) {
+      console.warn('[OCR] ' + ocrType + ' failed:', err);
+      /* Don't error out — user can still continue without OCR extraction.
+         Just show file as uploaded without extracted fields. */
+    }
+
+    updateCardUploading(cardId, file.name, 95);
+
+    if (ocrType === 'insurance') {
+      var ins = {
+        insurer:    (ocrData && (ocrData.insurer || ocrData.provider || ocrData.carrier || ocrData.insurance || ocrData.company)) || null,
+        memberId:   (ocrData && (ocrData.memberId || ocrData.member || ocrData.id)) || null,
+        groupId:    (ocrData && (ocrData.groupId || ocrData.group)) || null,
+        memberName: (ocrData && (ocrData.memberName || ocrData.name)) || null,
+        fileName:   file.name,
+        fileSize:   file.size,
+        fileType:   file.type
+      };
+      window.CredimedState && window.CredimedState.merge('insurance', ins);
+      var shown = {};
+      if (ins.insurer) shown.insurer = ins.insurer;
+      if (ins.memberId) shown['memberId'] = ins.memberId;
+      if (ins.groupId) shown['groupId'] = ins.groupId;
+      if (ins.memberName) shown['memberName'] = ins.memberName;
+      updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Extracted', Object.keys(shown).length ? shown : null);
+    } else {
+      /* receipt */
+      var amt = ocrData && (ocrData.amount || ocrData.total || ocrData.cost || ocrData.price);
+      var currency = (ocrData && ocrData.currency) || null;
+      var amtNum = null;
+      if (amt) {
+        var raw = String(amt).replace(/,/g, '').replace(/[^0-9.]/g, '');
+        amtNum = parseFloat(raw) || null;
+        if (!currency) currency = (amtNum && amtNum > 500) ? 'MXN' : 'USD';
+      }
+      var rec = {
+        dentist:     (ocrData && (ocrData.dentist || ocrData.clinic || ocrData.provider)) || null,
+        procedure:   (ocrData && (ocrData.procedure || ocrData.treatment || ocrData.service)) || null,
+        procedures:  (ocrData && ocrData.procedures) || null,
+        cdtCode:     (ocrData && ocrData.cdtCode) || null,
+        amountPaid:  amtNum,
+        currency:    currency,
+        city:        (ocrData && ocrData.city) || null,
+        treatmentDate: (ocrData && ocrData.date) || null,
+        patientName: (ocrData && ocrData.patientName) || null,
+        fileName:    file.name,
+        fileSize:    file.size,
+        fileType:    file.type
+      };
+      window.CredimedState && window.CredimedState.merge('receipt', rec);
+      var shownR = {};
+      if (rec.dentist) shownR.dentist = rec.dentist;
+      if (rec.procedure) shownR.procedure = rec.procedure;
+      if (rec.amountPaid != null) shownR.amount = '$' + rec.amountPaid + ' ' + (currency || 'USD');
+      if (rec.city) shownR.city = rec.city;
+      if (rec.treatmentDate) shownR.date = rec.treatmentDate;
+      updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Extracted', Object.keys(shownR).length ? shownR : null);
+    }
+  }
+
+  /* ---- dropzone click → file picker; also drag&drop ---- */
+  document.addEventListener('click', function (e) {
+    var dz = e.target.closest('.dropzone[data-card]');
+    if (!dz) return;
+    var cardId = dz.getAttribute('data-card');
+    var input = document.createElement('input');
+    input.type = 'file';
+    if (cardId === 'insurance') input.accept = 'image/*';
+    else if (cardId === 'receipt') input.accept = 'image/*,.pdf,application/pdf';
+    else input.accept = 'image/*,.pdf,application/pdf';
+    if (cardId === 'supporting') input.multiple = true;
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    input.addEventListener('change', function () {
+      var files = Array.from(input.files || []);
+      files.forEach(function (f) { handleFile(cardId, f); });
+      document.body.removeChild(input);
+    });
+    input.click();
+  }, true);
+
+  /* Drag & drop on dropzones */
+  ['dragover', 'dragleave', 'drop'].forEach(function (evt) {
+    document.addEventListener(evt, function (e) {
+      var dz = e.target.closest('.dropzone[data-card]');
+      if (!dz) return;
+      e.preventDefault();
+      if (evt === 'dragover') dz.classList.add('drag-over');
+      if (evt === 'dragleave') dz.classList.remove('drag-over');
+      if (evt === 'drop') {
+        dz.classList.remove('drag-over');
+        var cardId = dz.getAttribute('data-card');
+        var files = Array.from(e.dataTransfer && e.dataTransfer.files || []);
+        files.forEach(function (f) { handleFile(cardId, f); });
+      }
+    }, true);
+  });
+
+  /* Remove handler */
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-remove]');
+    if (!btn) return;
+    var cardId = btn.getAttribute('data-remove');
+    var root = document.querySelector('[data-card-root="' + cardId + '"]');
+    if (!root) return;
+    root.className = 'upload-card state-empty';
+    /* Restore dropzone */
+    var inner = root.querySelector('.uploaded-row, .extracted-preview, .error-row');
+    if (inner) {
+      root.querySelectorAll('.extracted-preview').forEach(function (n) { n.remove(); });
+      inner.outerHTML =
+        '<div class="dropzone" data-card="' + cardId + '">' +
+          '<div class="dropzone-primary"><span class="em">Drop a file</span> or tap to upload</div>' +
+          '<div class="dropzone-secondary">Re-upload to replace</div>' +
+        '</div>';
+    }
+    if (cardId === 'insurance') window.CredimedState && window.CredimedState.set('insurance', {});
+    if (cardId === 'receipt')   window.CredimedState && window.CredimedState.set('receipt', {});
+    tryEnableContinue();
+  }, true);
+
+  /* Gate Continue button on insurance + receipt being present */
+  function tryEnableContinue() {
+    var hasIns = !!document.querySelector('[data-card-root="insurance"].state-done');
+    var hasRec = !!document.querySelector('[data-card-root="receipt"].state-done');
+    var cta = document.querySelector('.footer-cta .btn-primary');
+    if (cta) cta.disabled = !(hasIns && hasRec);
+  }
+  /* Disable CTA initially until both required docs are uploaded */
+  setTimeout(tryEnableContinue, 200);
+})();
+</script>
+
 </body>
 </html>
