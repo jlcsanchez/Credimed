@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style id="credimed-prod-overrides">
+.topbar,.device-label,.chrome,.design-canvas,.tweak-row,.tweak-label,.tweak-seg{display:none !important}
+.device-wrap + .device-wrap{display:none !important}
+body{margin:0 !important;padding:0 !important;background:#0f172a !important}
+</style>
+<meta charset="UTF-8">
+<title>Credimed — Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-300:#5EEAD4; --teal-500:#14B8A6;
+  --teal-600:#0D9488; --teal-700:#0B8278; --teal-800:#0A7A70;
+  --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
+  --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1E293B; --slate-900:#0F172A;
+  --navy: #0B1F3A;
+  --amber-bg:#FEF3C7; --amber-fg:#92400E;
+  --success-bg:#DCFCE7; --success-fg:#166534;
+  --danger-bg:#FEE2E2; --danger-fg:#991B1B;
+  --info-bg:#DBEAFE; --info-fg:#1E40AF;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(--slate-50); color: var(--slate-900); -webkit-font-smoothing: antialiased; min-height:100vh; }
+
+/* ---- Gate (login screen) ---- */
+.gate { min-height:100vh; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #0f172a, #134e4a); }
+.gate-card { background:#fff; border-radius:18px; padding:32px 28px; width:360px; max-width:92vw; box-shadow: 0 24px 60px rgba(0,0,0,.3); }
+.gate-card h1 { margin:0 0 4px; font-size:22px; font-weight:700; color:var(--slate-900); }
+.gate-card p { margin:0 0 22px; font-size:13px; color:var(--slate-500); }
+.gate-card .field { margin-bottom:14px; }
+.gate-card label { display:block; font-size:11px; font-weight:700; color:var(--slate-500); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+.gate-card input { width:100%; padding:10px 14px; border:1.5px solid var(--slate-200); border-radius:10px; font-size:14px; outline:none; font-family:inherit; }
+.gate-card input:focus { border-color:var(--teal-600); box-shadow: 0 0 0 3px rgba(13,148,136,.12); }
+.gate-btn { width:100%; padding:13px; background:var(--navy); color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+.gate-btn:hover { background:#0a1a30; }
+.gate-err { color:var(--danger-fg); font-size:12px; margin-bottom:12px; text-align:center; display:none; }
+.gate-err.show { display:block; }
+
+/* ---- Shell ---- */
+.shell { display:none; min-height:100vh; background:var(--slate-50); }
+.shell.show { display:block; }
+.admin-header {
+  background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
+  padding: 14px 20px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:10;
+}
+.admin-logo { display:flex; align-items:center; gap:10px; }
+.admin-logo-mark { width:32px; height:32px; background:var(--navy); border-radius:8px; display:grid; place-items:center; color:#fff; font-weight:800; }
+.admin-logo-name { font-family: "Playfair Display", Georgia, serif; font-size:16px; font-weight:700; color:#fff; }
+.admin-logo-name span { color:#93c5fd; }
+.admin-logo-sub { font-size:9px; color:rgba(255,255,255,.45); font-weight:700; text-transform:uppercase; letter-spacing:1px; }
+.admin-user { display:flex; align-items:center; gap:10px; color:rgba(255,255,255,.75); font-size:12px; }
+.admin-avatar { width:30px; height:30px; background:var(--navy); border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:700; border:1.5px solid rgba(255,255,255,.3); font-size:12px; }
+.signout-btn { background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.2); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight:600; cursor:pointer; font-family:inherit; }
+.signout-btn:hover { background: rgba(255,255,255,.18); }
+
+/* ---- Tab nav ---- */
+.admin-nav { background:#0f172a; padding: 0 12px; display:flex; gap:2px; overflow-x:auto; border-bottom:1px solid rgba(255,255,255,.05); }
+.admin-nav::-webkit-scrollbar { display:none; }
+.admin-nav-tab { height:42px; padding:0 14px; display:flex; align-items:center; font-size:13px; font-weight:600; color:rgba(255,255,255,.45); cursor:pointer; border-bottom:2px solid transparent; background:none; border-left:none; border-right:none; border-top:none; font-family:inherit; white-space:nowrap; }
+.admin-nav-tab.active { color:#fff; border-bottom-color:var(--teal-500); }
+.admin-nav-tab:hover:not(.active) { color:rgba(255,255,255,.7); }
+
+/* ---- Body ---- */
+.admin-body { padding: 20px; max-width: 1100px; margin: 0 auto; }
+.page-title { font-size: 22px; font-weight: 700; margin: 0 0 4px; color: var(--slate-900); font-family: "Playfair Display", Georgia, serif; }
+.page-sub { font-size: 13px; color: var(--slate-500); margin: 0 0 20px; }
+
+/* ---- Stats row ---- */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-card { background:#fff; border:1px solid var(--slate-200); border-radius:14px; padding:16px; }
+.stat-lbl { font-size:11px; color:var(--slate-500); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+.stat-val { font-family: "Playfair Display", Georgia, serif; font-size:28px; font-weight:700; color:var(--slate-900); line-height:1; }
+.stat-trend { font-size:11px; font-weight:600; color:var(--success-fg); margin-top:6px; }
+.stat-trend.dn { color: var(--danger-fg); }
+
+/* ---- Table ---- */
+.claims-table { background:#fff; border:1px solid var(--slate-200); border-radius:14px; overflow:hidden; }
+.claims-table-header, .claims-row { display: grid; grid-template-columns: 120px 1fr 100px 110px 130px 110px; gap: 12px; padding: 12px 16px; align-items:center; font-size: 13px; }
+@media (max-width: 800px) {
+  .claims-table-header, .claims-row { grid-template-columns: 1fr auto; row-gap: 4px; }
+  .claims-table-header .hide-mobile, .claims-row .hide-mobile { display: none; }
+}
+.claims-table-header { background: var(--slate-50); border-bottom: 1px solid var(--slate-200); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--slate-500); }
+.claims-row { border-bottom: 1px solid var(--slate-100); cursor: pointer; transition: background 120ms; }
+.claims-row:hover { background: var(--slate-50); }
+.claims-row:last-child { border-bottom: none; }
+.claim-id { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; color: var(--slate-500); }
+.claim-name { font-weight: 600; color: var(--slate-900); }
+.claim-sub { font-size: 11px; color: var(--slate-500); margin-top: 2px; }
+.claim-amount { font-weight: 600; font-family: "SF Mono", Menlo, monospace; font-size: 13px; }
+.claim-date { color: var(--slate-500); font-size: 12px; }
+
+.status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.status-submitted { background: var(--info-bg); color: var(--info-fg); }
+.status-in-review { background: var(--amber-bg); color: var(--amber-fg); }
+.status-approved { background: var(--teal-50); color: var(--teal-800); }
+.status-paid { background: var(--success-bg); color: var(--success-fg); }
+.status-denied { background: var(--danger-bg); color: var(--danger-fg); }
+
+.status-select { width:100%; padding: 6px 8px; border: 1px solid var(--slate-200); border-radius: 8px; font-size: 12px; background:#fff; font-family: inherit; cursor: pointer; }
+.status-select:focus { outline: none; border-color: var(--teal-600); box-shadow: 0 0 0 3px rgba(13,148,136,.12); }
+
+.empty-table { padding: 48px 20px; text-align: center; color: var(--slate-500); font-size: 14px; }
+.empty-table strong { color: var(--slate-700); display: block; margin-bottom: 4px; }
+
+.loading { padding: 48px 20px; text-align: center; color: var(--slate-500); }
+.loading .spin { width: 24px; height: 24px; border: 2.5px solid var(--slate-200); border-top-color: var(--teal-600); border-radius: 50%; animation: cm-spin 700ms linear infinite; margin: 0 auto 10px; }
+@keyframes cm-spin { to { transform: rotate(360deg); } }
+
+/* ---- Section visibility ---- */
+.sec { display: none; }
+.sec.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <h1>Admin sign in</h1>
+    <p>Sign in with your Credimed administrator account.</p>
+    <div class="gate-err" id="gateErr"></div>
+    <div class="field">
+      <label for="gEmail">Email</label>
+      <input id="gEmail" type="email" placeholder="admin@credimed.us" autocomplete="email">
+    </div>
+    <div class="field">
+      <label for="gPass">Password</label>
+      <input id="gPass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="gate-btn" id="gBtn">Enter Admin Dashboard</button>
+  </div>
+</div>
+
+<!-- ADMIN SHELL -->
+<div class="shell" id="shell">
+  <header class="admin-header">
+    <div class="admin-logo">
+      <div class="admin-logo-mark">H</div>
+      <div>
+        <div class="admin-logo-name">CREDI<span>MED</span></div>
+        <div class="admin-logo-sub">Operations Dashboard</div>
+      </div>
+    </div>
+    <div class="admin-user">
+      <div id="adminName">—</div>
+      <div class="admin-avatar" id="adminAvatar">A</div>
+      <button class="signout-btn" id="signoutBtn">Sign out</button>
+    </div>
+  </header>
+  <nav class="admin-nav">
+    <button class="admin-nav-tab active" data-sec="overview">Overview</button>
+    <button class="admin-nav-tab" data-sec="claims">Claims</button>
+    <button class="admin-nav-tab" data-sec="patients">Patients</button>
+  </nav>
+
+  <div class="admin-body">
+    <!-- OVERVIEW -->
+    <section class="sec active" id="sec-overview">
+      <h1 class="page-title">Overview</h1>
+      <p class="page-sub">Real-time operations metrics from your Credimed account.</p>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-lbl">Total claims</div>
+          <div class="stat-val" id="stTotal">—</div>
+          <div class="stat-trend" id="stTotalTrend">&nbsp;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Active (in review)</div>
+          <div class="stat-val" id="stActive">—</div>
+          <div class="stat-trend" id="stActiveTrend">&nbsp;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Paid out this month</div>
+          <div class="stat-val" id="stPaid">—</div>
+          <div class="stat-trend" id="stPaidTrend">&nbsp;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Revenue MTD</div>
+          <div class="stat-val" id="stRevenue">—</div>
+          <div class="stat-trend" id="stRevenueTrend">&nbsp;</div>
+        </div>
+      </div>
+      <h2 style="font-size:15px;font-weight:700;margin:0 0 10px;color:var(--slate-700)">Recent submissions</h2>
+      <div class="claims-table" id="recentTable">
+        <div class="loading"><div class="spin"></div>Loading...</div>
+      </div>
+    </section>
+
+    <!-- CLAIMS -->
+    <section class="sec" id="sec-claims">
+      <h1 class="page-title">Claims</h1>
+      <p class="page-sub">All submitted claims. Change status to trigger the user's dashboard + email updates.</p>
+      <div class="claims-table" id="claimsTable">
+        <div class="loading"><div class="spin"></div>Loading...</div>
+      </div>
+    </section>
+
+    <!-- PATIENTS -->
+    <section class="sec" id="sec-patients">
+      <h1 class="page-title">Patients</h1>
+      <p class="page-sub">All Credimed members. Tap to see their claim history.</p>
+      <div class="claims-table" id="patientsTable">
+        <div class="empty-table"><strong>Patients view coming soon</strong>Lists patients from Cognito + their claims.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* --- Admin email allowlist. Update this list as you add operators. --- */
+  var ADMIN_EMAILS = [
+    'admin@credimed.us',
+    'jlcsanchezavila@gmail.com'
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function enterShell(user) {
+    $('gate').style.display = 'none';
+    $('shell').classList.add('show');
+    var name = (user && user.attributes && (user.attributes.given_name || '')) + ' ' + (user && user.attributes && (user.attributes.family_name || ''));
+    $('adminName').textContent = name.trim() || (user && user.attributes && user.attributes.email) || 'Admin';
+    $('adminAvatar').textContent = ((user && user.attributes && user.attributes.given_name) || 'A')[0].toUpperCase();
+    loadOverview();
+  }
+
+  /* --- Gate login --- */
+  $('gBtn').addEventListener('click', async function () {
+    var email = ($('gEmail').value || '').trim().toLowerCase();
+    var pass  = $('gPass').value;
+    var err   = $('gateErr');
+    err.classList.remove('show');
+
+    if (ADMIN_EMAILS.indexOf(email) === -1) {
+      err.textContent = 'This email is not authorized for admin access.';
+      err.classList.add('show');
+      return;
+    }
+    try {
+      await window.cognitoSignIn(email, pass);
+      var cu = await window.cognitoGetCurrentUser();
+      enterShell(cu);
+    } catch (e) {
+      err.textContent = (e && e.message) || 'Sign-in failed.';
+      err.classList.add('show');
+    }
+  });
+  $('gPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('gBtn').click(); });
+
+  /* --- Sign out --- */
+  $('signoutBtn').addEventListener('click', function () {
+    window.cognitoSignOut();
+    location.reload();
+  });
+
+  /* --- Auto-enter if already signed in as admin --- */
+  (async function () {
+    try {
+      var cu = await window.cognitoGetCurrentUser();
+      if (cu && cu.attributes && ADMIN_EMAILS.indexOf((cu.attributes.email || '').toLowerCase()) !== -1) {
+        enterShell(cu);
+      }
+    } catch (e) { /* not signed in */ }
+  })();
+
+  /* --- Tab switching --- */
+  document.querySelectorAll('.admin-nav-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.admin-nav-tab').forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var secId = tab.getAttribute('data-sec');
+      document.querySelectorAll('.sec').forEach(function (s) { s.classList.remove('active'); });
+      $('sec-' + secId).classList.add('active');
+      if (secId === 'overview') loadOverview();
+      if (secId === 'claims')   loadClaims();
+    });
+  });
+
+  /* --- Data loaders --- */
+  var STATUS_LABELS = {
+    'submitted': 'Submitted',
+    'in-review': 'In review',
+    'approved':  'Approved',
+    'paid':      'Paid',
+    'denied':    'Denied'
+  };
+  var STATUS_OPTIONS = ['submitted', 'in-review', 'approved', 'paid', 'denied'];
+
+  function money(n) {
+    if (n == null) return '—';
+    var v = Number(n);
+    if (isNaN(v)) return '—';
+    return '$' + v.toLocaleString('en-US');
+  }
+  function shortDate(iso) {
+    if (!iso) return '—';
+    try { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+    catch (e) { return iso; }
+  }
+
+  async function fetchClaims() {
+    try {
+      var resp = await window.authFetch(window.CREDIMED_API + '/claims?admin=1');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var data = await resp.json();
+      return data.claims || [];
+    } catch (e) {
+      console.warn('[admin] fetchClaims failed:', e);
+      return null;
+    }
+  }
+
+  function renderClaimRow(c) {
+    var name = (c.firstName || '') + ' ' + (c.lastName || '');
+    name = name.trim() || c.email || '—';
+    var proc = c.procedure || 'Dental claim';
+    var city = c.city ? (' · ' + c.city) : '';
+    var statusClass = 'status-' + (c.status || 'in-review');
+    var options = STATUS_OPTIONS.map(function (s) {
+      return '<option value="' + s + '"' + (c.status === s ? ' selected' : '') + '>' + STATUS_LABELS[s] + '</option>';
+    }).join('');
+    return (
+      '<div class="claims-row" data-claim-id="' + (c.id || '') + '">' +
+        '<div class="claim-id hide-mobile">' + (c.id || '—') + '</div>' +
+        '<div>' +
+          '<div class="claim-name">' + name + '</div>' +
+          '<div class="claim-sub">' + proc + city + '</div>' +
+        '</div>' +
+        '<div class="claim-amount hide-mobile">' + money(c.paidAmount) + '</div>' +
+        '<div class="claim-date hide-mobile">' + shortDate(c.submittedAt) + '</div>' +
+        '<div><select class="status-select" data-status-for="' + (c.id || '') + '">' + options + '</select></div>' +
+        '<div><span class="status-pill ' + statusClass + '">' + (STATUS_LABELS[c.status] || '—') + '</span></div>' +
+      '</div>'
+    );
+  }
+
+  async function updateStatus(claimId, newStatus) {
+    try {
+      var resp = await window.authFetch(window.CREDIMED_API + '/claims', {
+        method: 'POST',
+        body: { action: 'update_status', claimId: claimId, status: newStatus, admin: true }
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return true;
+    } catch (e) {
+      alert('Failed to update status: ' + (e.message || 'unknown'));
+      return false;
+    }
+  }
+
+  async function loadOverview() {
+    $('recentTable').innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
+    var claims = await fetchClaims();
+    if (claims === null) {
+      $('recentTable').innerHTML = '<div class="empty-table"><strong>Could not reach the backend.</strong>Check that /claims endpoint is deployed and that your admin email is registered in Cognito.</div>';
+      ['stTotal', 'stActive', 'stPaid', 'stRevenue'].forEach(function (id) { $(id).textContent = '—'; });
+      return;
+    }
+    /* Stats */
+    var total = claims.length;
+    var active = claims.filter(function (c) { return c.status === 'in-review' || c.status === 'submitted'; }).length;
+    var now = new Date();
+    var thisMonth = function (iso) {
+      if (!iso) return false;
+      var d = new Date(iso);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    };
+    var paidThisMonth = claims.filter(function (c) { return c.status === 'paid' && thisMonth(c.paidAt || c.submittedAt); });
+    var revenue = claims.reduce(function (sum, c) {
+      var fee = c.plan === 'premium' ? 39 : 29;
+      if (thisMonth(c.submittedAt)) sum += fee;
+      return sum;
+    }, 0);
+    $('stTotal').textContent = total;
+    $('stActive').textContent = active;
+    $('stPaid').textContent = paidThisMonth.length;
+    $('stRevenue').textContent = '$' + revenue.toLocaleString('en-US');
+
+    /* Recent 5 */
+    var recent = claims.slice(0, 5);
+    if (recent.length === 0) {
+      $('recentTable').innerHTML = '<div class="empty-table"><strong>No claims yet.</strong>When patients submit, they appear here.</div>';
+    } else {
+      $('recentTable').innerHTML =
+        '<div class="claims-table-header">' +
+          '<div class="hide-mobile">Claim ID</div><div>Patient</div><div class="hide-mobile">Amount</div><div class="hide-mobile">Submitted</div><div>Status</div><div>Pill</div>' +
+        '</div>' + recent.map(renderClaimRow).join('');
+    }
+  }
+
+  async function loadClaims() {
+    $('claimsTable').innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
+    var claims = await fetchClaims();
+    if (claims === null) {
+      $('claimsTable').innerHTML = '<div class="empty-table"><strong>Could not reach the backend.</strong>Check that /claims endpoint is deployed.</div>';
+      return;
+    }
+    if (claims.length === 0) {
+      $('claimsTable').innerHTML = '<div class="empty-table"><strong>No claims yet.</strong></div>';
+      return;
+    }
+    $('claimsTable').innerHTML =
+      '<div class="claims-table-header">' +
+        '<div class="hide-mobile">Claim ID</div><div>Patient</div><div class="hide-mobile">Amount</div><div class="hide-mobile">Submitted</div><div>Status</div><div>Pill</div>' +
+      '</div>' + claims.map(renderClaimRow).join('');
+  }
+
+  /* Status change handler */
+  document.addEventListener('change', async function (e) {
+    var sel = e.target.closest('[data-status-for]');
+    if (!sel) return;
+    var claimId = sel.getAttribute('data-status-for');
+    var newStatus = sel.value;
+    var ok = await updateStatus(claimId, newStatus);
+    if (ok) {
+      /* Update the pill inline */
+      var row = sel.closest('.claims-row');
+      var pill = row && row.querySelector('.status-pill');
+      if (pill) {
+        pill.className = 'status-pill status-' + newStatus;
+        pill.textContent = STATUS_LABELS[newStatus];
+      }
+    } else {
+      /* Revert the select */
+      loadOverview(); loadClaims();
+    }
+  });
+})();
+</script>
+</body>
+</html>
