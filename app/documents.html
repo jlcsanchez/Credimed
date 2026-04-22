@@ -706,33 +706,13 @@ const CARDS = [
     hasAmount: true,
   },
   {
-    id: 'xray-before',
+    id: 'supporting',
     icon: ICONS.supporting,
-    title: 'X-ray (before treatment)',
+    title: 'Supporting documents',
     required: false,
-    desc: 'Pre-treatment dental X-ray — strengthens your claim if you have it.',
-    dropzonePrimary: '<span class="em">Drop a file</span> or tap to upload',
-    dropzoneSecondary: 'PDF, JPG, PNG · up to 10 MB',
-    hasAmount: false,
-  },
-  {
-    id: 'xray-after',
-    icon: ICONS.supporting,
-    title: 'X-ray (after treatment)',
-    required: false,
-    desc: 'Post-treatment dental X-ray showing the completed work.',
-    dropzonePrimary: '<span class="em">Drop a file</span> or tap to upload',
-    dropzoneSecondary: 'PDF, JPG, PNG · up to 10 MB',
-    hasAmount: false,
-  },
-  {
-    id: 'treatment-plan',
-    icon: ICONS.supporting,
-    title: 'Treatment plan',
-    required: false,
-    desc: 'Written treatment plan or itemized procedures, if your dentist provided one.',
-    dropzonePrimary: '<span class="em">Drop a file</span> or tap to upload',
-    dropzoneSecondary: 'PDF, JPG, PNG · up to 10 MB',
+    desc: 'X-rays (before and after), treatment plan, EOB — any documents that strengthen your claim. Upload multiple if you have them.',
+    dropzonePrimary: '<span class="em">Drop files</span> or tap to upload',
+    dropzoneSecondary: 'Multiple files allowed · PDF, JPG, PNG · up to 10 MB each',
     hasAmount: false,
   },
 ];
@@ -740,11 +720,9 @@ const CARDS = [
 // Per-variant state: maps cardId -> {status, filename, progress, meta}
 const VARIANT_STATES = {
   default: {
-    insurance:      { status: 'empty' },
-    receipt:        { status: 'empty' },
-    'xray-before':  { status: 'empty' },
-    'xray-after':   { status: 'empty' },
-    'treatment-plan': { status: 'empty' },
+    insurance:  { status: 'empty' },
+    receipt:    { status: 'empty' },
+    supporting: { status: 'empty' },
   },
   midflow: {
     insurance: {
@@ -758,9 +736,7 @@ const VARIANT_STATES = {
       filename: 'receipt-cancun-clinic.pdf',
       progress: 62,
     },
-    'xray-before':    { status: 'empty' },
-    'xray-after':     { status: 'empty' },
-    'treatment-plan': { status: 'empty' },
+    supporting: { status: 'empty' },
   },
 };
 
