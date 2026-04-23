@@ -1436,13 +1436,30 @@ mountScope('desktop');
                   (window.CredimedState && window.CredimedState.generateClaimId && window.CredimedState.generateClaimId());
 
     try {
-      var pi = await window.createPaymentIntent({
-        plan: plan,
-        amount: amount,
-        currency: 'usd',
-        email: user.email,
-        claimId: claimId
-      });
+      /* Use the prefetched PaymentIntent from agreement.html if available
+         and fresh. Saves the ~1-1.5s Lambda round-trip, so Stripe mounts
+         visibly at the same time as the rest of the page renders.
+         Freshness window: 10 minutes (PaymentIntents are valid for longer
+         but we refetch if the user idled in agreement for too long). */
+      var pi = null;
+      var pending = (window.CredimedState && window.CredimedState.get('pendingPaymentIntent', null)) || null;
+      var TEN_MIN = 10 * 60 * 1000;
+      if (pending && pending.clientSecret
+          && pending.plan === plan
+          && pending.claimId === claimId
+          && typeof pending.createdAt === 'number'
+          && (Date.now() - pending.createdAt) < TEN_MIN) {
+        pi = { clientSecret: pending.clientSecret };
+        console.log('[payment] using prefetched clientSecret from agreement.html');
+      } else {
+        pi = await window.createPaymentIntent({
+          plan: plan,
+          amount: amount,
+          currency: 'usd',
+          email: user.email,
+          claimId: claimId
+        });
+      }
       state.clientSecret = pi.clientSecret;
 
       $('#credimed-stripe-mount').innerHTML = '<div id="stripe-payment-element"></div>';

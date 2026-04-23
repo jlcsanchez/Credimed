@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Preconnect to Stripe so TLS handshake to its CDN is warm by the time
+     payment.html loads and actually fetches js.stripe.com + api iframes.
+     Saves ~200-400ms from the visible Stripe load on the next screen. -->
+<link rel="preconnect" href="https://js.stripe.com" crossorigin>
+<link rel="preconnect" href="https://api.stripe.com" crossorigin>
+<link rel="dns-prefetch" href="https://js.stripe.com">
 <style id="credimed-prod-overrides">
 /* Credimed production mode: hide Claude Design dev chrome.
    Add ?dev=1 to URL to reveal it (see script below). */
@@ -1811,6 +1817,79 @@ mountScope('desktop');
   }, true);
 
   setTimeout(updateCtaState, 300);
+})();
+</script>
+
+<script>
+/* ---- Stripe PaymentIntent prefetch ----
+   Fires while the user is reading terms + signing. Result goes into
+   CredimedState.pendingPaymentIntent. When payment.html loads, it
+   reads the cached clientSecret and mounts Stripe immediately — no
+   Lambda round-trip on the payment screen.
+   Silent failure: if any step fails, payment.html falls back to its
+   own createPaymentIntent call. No user-visible error.
+   Decodes the Cognito ID token from localStorage without needing the
+   Cognito SDK on this page (saves ~200kb of JS on agreement.html). */
+(function () {
+  try {
+    if (!window.CredimedState) return;
+    var pricing = window.CredimedState.get('pricing', null);
+    if (!pricing || !pricing.plan) return;
+
+    /* Decode the Cognito ID token stored by the SDK on prior screens.
+       Key shape: CognitoIdentityServiceProvider.<clientId>.<sub>.idToken */
+    var email = null;
+    try {
+      var keys = Object.keys(localStorage);
+      var idKey = keys.find(function (k) {
+        return /CognitoIdentityServiceProvider\..+\..+\.idToken$/.test(k);
+      });
+      if (idKey) {
+        var payload = JSON.parse(atob(localStorage.getItem(idKey).split('.')[1]));
+        email = payload.email;
+      }
+    } catch (e) { /* can't read token */ }
+    if (!email) return;
+
+    var claimId = window.CredimedState.get('claim.id');
+    if (!claimId && window.CredimedState.generateClaimId) {
+      claimId = window.CredimedState.generateClaimId();
+    }
+    if (!claimId) return;
+
+    var LAMBDA = 'https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/';
+    var amountForPlan =
+      pricing.plan === 'premium' ? 9900 :
+      pricing.plan === 'plus'    ? 7900 :
+                                   4900;
+
+    console.log('[prefetch] triggering PaymentIntent for', pricing.plan, amountForPlan);
+    fetch(LAMBDA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'create_payment_intent',
+        plan: pricing.plan,
+        amount: amountForPlan,
+        currency: 'usd',
+        email: email,
+        claimId: claimId
+      })
+    }).then(function (r) { return r.json(); })
+      .then(function (data) {
+        var cs = data.clientSecret || data.client_secret || data.paymentIntentClientSecret;
+        if (!cs) return;
+        window.CredimedState.set('pendingPaymentIntent', {
+          clientSecret: cs,
+          plan: pricing.plan,
+          amount: data.amount || amountForPlan,
+          claimId: claimId,
+          createdAt: Date.now()
+        });
+        console.log('[prefetch] PaymentIntent cached, clientSecret len=' + cs.length);
+      })
+      .catch(function (e) { console.warn('[prefetch] failed (non-fatal):', e); });
+  } catch (e) { /* non-fatal */ }
 })();
 </script>
 </body>
