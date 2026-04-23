@@ -1442,7 +1442,17 @@ setInterval(() => {
       window.CredimedState && window.CredimedState.merge('receipt', rec);
       var shownR = {};
       if (rec.dentist) shownR.dentist = rec.dentist;
-      if (rec.procedure) shownR.procedure = rec.procedure;
+      /* Show the procedures extracted by OCR. Prefer the array (gives
+         the full list of treatments) over the single-string fallback —
+         visibility matters because the pricing engine uses the count of
+         procedures as a signal, and the user should see what's being
+         counted. Joined with '·' for readability; shownR key is
+         'procedures' so it displays as 'Procedures' in the card. */
+      if (Array.isArray(rec.procedures) && rec.procedures.length) {
+        shownR.procedures = rec.procedures.join(' · ');
+      } else if (rec.procedure) {
+        shownR.procedure = rec.procedure;
+      }
       if (rec.amountPaid != null) shownR.amount = '$' + rec.amountPaid + ' ' + (currency || 'USD');
       if (rec.city) shownR.city = rec.city;
       if (rec.treatmentDate) shownR.date = rec.treatmentDate;
