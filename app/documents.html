@@ -1229,6 +1229,44 @@ setInterval(() => {
     tryEnableContinue();
   }
 
+  /* Supporting docs support multiple uploads. Render the full list + a
+     persistent "+ Add another" dropzone so the user can keep adding files.
+     The MutationObserver picks up the new dropzone and wires a fresh
+     file input into it. */
+  function renderSupportingStack() {
+    var root = document.querySelector('[data-card-root="supporting"]');
+    if (!root) return;
+    var list = (window.CredimedState && window.CredimedState.get('supportingDocs', [])) || [];
+    root.className = 'upload-card' + (list.length ? ' state-done' : ' state-empty');
+    var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row, .supporting-stack');
+    if (!content) return;
+    var rowsHtml = '';
+    list.forEach(function (doc, idx) {
+      rowsHtml +=
+        '<div class="uploaded-row" style="margin-bottom:8px">' +
+          '<div class="uploaded-thumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+          '<div class="uploaded-body">' +
+            '<div class="uploaded-filename">' + doc.name + '</div>' +
+            '<div class="uploaded-meta"><span class="check">Uploaded</span><span>·</span><span>' + bytesLabel(doc.size) + '</span></div>' +
+          '</div>' +
+          '<div class="uploaded-actions">' +
+            '<button class="icon-action danger" aria-label="Remove" data-remove-supporting="' + idx + '">✕</button>' +
+          '</div>' +
+        '</div>';
+    });
+    var addMoreLabel = list.length ? '+ Add another file' : 'Drop a file or tap to upload';
+    var addMoreSub = list.length ? 'Upload as many supporting docs as you like' : 'X-rays, treatment plan, EOB, etc.';
+    content.outerHTML =
+      '<div class="supporting-stack">' +
+        rowsHtml +
+        '<div class="dropzone" data-card="supporting" style="padding:14px;border-style:dashed;margin-top:4px">' +
+          '<div class="dropzone-primary" style="font-size:14px"><span class="em">' + addMoreLabel + '</span></div>' +
+          '<div class="dropzone-secondary">' + addMoreSub + '</div>' +
+        '</div>' +
+      '</div>';
+    tryEnableContinue();
+  }
+
   function updateCardError(cardId, msg) {
     var root = document.querySelector('[data-card-root="' + cardId + '"]');
     if (!root) return;
@@ -1291,7 +1329,11 @@ setInterval(() => {
           window.CredimedState.set('supportingDocs.' + cardId, docRec);
         }
       }
-      updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Uploaded', null);
+      if (cardId === 'supporting') {
+        renderSupportingStack();
+      } else {
+        updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Uploaded', null);
+      }
       return;
     }
 
@@ -1495,8 +1537,22 @@ setInterval(() => {
     }, true);
   });
 
-  /* Remove handler */
+  /* Remove handler — supporting docs are a list so each file has its own
+     index-keyed remove button. */
   document.addEventListener('click', function (e) {
+    var suppBtn = e.target.closest('[data-remove-supporting]');
+    if (suppBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      var idx = parseInt(suppBtn.getAttribute('data-remove-supporting'), 10);
+      var list = (window.CredimedState && window.CredimedState.get('supportingDocs', [])) || [];
+      if (!isNaN(idx) && idx >= 0 && idx < list.length) {
+        list.splice(idx, 1);
+        window.CredimedState && window.CredimedState.set('supportingDocs', list);
+        renderSupportingStack();
+      }
+      return;
+    }
     var btn = e.target.closest('[data-remove]');
     if (!btn) return;
     var cardId = btn.getAttribute('data-remove');
@@ -1527,6 +1583,13 @@ setInterval(() => {
   }
   /* Disable CTA initially until both required docs are uploaded */
   setTimeout(tryEnableContinue, 200);
+
+  /* Restore the supporting stack from state on page load so previously
+     uploaded files + the Add-more dropzone come back after a refresh. */
+  setTimeout(function () {
+    var supp = (window.CredimedState && window.CredimedState.get('supportingDocs', [])) || [];
+    if (supp.length) renderSupportingStack();
+  }, 250);
 })();
 </script>
 
