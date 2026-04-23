@@ -30,10 +30,13 @@
      page. Bound before the FLOW early-return so it works on every screen
      that loads this script (including ones not in the flow map). Only the
      page-header .brand is treated as a nav affordance — clones inside cards
-     or previews are skipped. */
+     or previews are skipped. Payment is deliberately excluded: a stray tap
+     mid-checkout would bail the user out of the Stripe Payment Element
+     session, same failure mode as the Apple Pay connector bug. */
   document.addEventListener('click', function (e) {
     const brand = e.target.closest('.brand');
     if (!brand) return;
+    if (currentScreen() === 'payment') return;
     if (brand.closest('.hero, header, .page-header, section.hero, .app-header')) {
       e.preventDefault();
       e.stopPropagation();
