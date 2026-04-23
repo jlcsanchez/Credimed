@@ -1160,6 +1160,28 @@ mount();
            '</div>';
   }).join('');
 
+  /* Read the OCR-extracted procedures from the receipt so the user sees
+     the concrete treatments Credimed is helping them recover — makes the
+     price feel tied to their actual claim, not an abstract tier. */
+  var receipt = (window.CredimedState && window.CredimedState.get('receipt', {})) || {};
+  var procedures = Array.isArray(receipt.procedures) ? receipt.procedures : [];
+  var proceduresBlock = '';
+  if (procedures.length) {
+    var procItems = procedures.map(function (p) {
+      return '<div style="display:flex;align-items:flex-start;gap:8px;margin:5px 0;font-size:13.5px;line-height:1.4;color:var(--slate-800,#1e293b)">' +
+               '<span style="color:var(--teal-600,#0D9488);font-weight:700;flex-shrink:0">✓</span>' +
+               '<span>' + p + '</span>' +
+             '</div>';
+    }).join('');
+    proceduresBlock =
+      '<div style="margin:14px 16px 0;padding:14px 16px;background:var(--teal-50,#F0FDFA);border:1px solid var(--teal-200,#99F6E4);border-radius:12px">' +
+        '<div style="color:var(--teal-800,#0A7A70);text-transform:uppercase;font-size:10.5px;letter-spacing:.6px;font-weight:700;margin-bottom:8px">' +
+          "What we're submitting for" +
+        '</div>' +
+        procItems +
+      '</div>';
+  }
+
   function singleCardHtml() {
     return (
       '<div class="hero">' +
@@ -1181,6 +1203,7 @@ mount();
           '<div class="features">' + bulletsHtml + '</div>' +
         '</div>' +
       '</div>' +
+      proceduresBlock +
       '<div class="footer-cta">' +
         '<button class="btn-primary">' +
           '<span>Recover my refund — $' + price + '</span>' +

@@ -1201,9 +1201,24 @@ setInterval(() => {
         '<div class="extracted-preview" style="margin-top:10px;padding:10px 12px;background:var(--teal-50,#F0FDFA);border:1px solid var(--teal-200,#99F6E4);border-radius:10px;font-size:12px;color:var(--slate-700,#334155);line-height:1.5">' +
           headerHtml +
           Object.keys(extracted).map(function (k) {
-            if (!extracted[k]) return '';
+            var v = extracted[k];
+            if (!v) return '';
             if (k === 'insurer' && headerHtml) return '';
-            return '<div><b style="color:var(--teal-800,#0A7A70);text-transform:capitalize">' + k.replace(/([A-Z])/g, ' $1') + ':</b> ' + extracted[k] + '</div>';
+            /* Procedures gets a highlighted treatment: teal callout box
+               with a count header and checkmark per item. The array comes
+               through shownR.procedures unchanged. */
+            if (k === 'procedures' && Array.isArray(v) && v.length) {
+              var items = v.map(function (p) {
+                return '<div style="display:flex;align-items:flex-start;gap:8px;margin:4px 0;font-size:13px"><span style="color:var(--teal-600,#0D9488);font-weight:700;flex-shrink:0;line-height:1.4">✓</span><span style="line-height:1.4">' + p + '</span></div>';
+              }).join('');
+              return '<div style="margin:10px -4px;padding:10px 12px;background:var(--teal-100,#CCFBF1);border-radius:8px">' +
+                       '<div style="color:var(--teal-800,#0A7A70);text-transform:uppercase;font-size:10.5px;letter-spacing:.6px;font-weight:700;margin-bottom:4px">' +
+                         v.length + (v.length === 1 ? ' procedure' : ' procedures') + ' detected' +
+                       '</div>' +
+                       items +
+                     '</div>';
+            }
+            return '<div><b style="color:var(--teal-800,#0A7A70);text-transform:capitalize">' + k.replace(/([A-Z])/g, ' $1') + ':</b> ' + v + '</div>';
           }).join('') +
         '</div>';
     }
@@ -1442,14 +1457,12 @@ setInterval(() => {
       window.CredimedState && window.CredimedState.merge('receipt', rec);
       var shownR = {};
       if (rec.dentist) shownR.dentist = rec.dentist;
-      /* Show the procedures extracted by OCR. Prefer the array (gives
-         the full list of treatments) over the single-string fallback —
-         visibility matters because the pricing engine uses the count of
-         procedures as a signal, and the user should see what's being
-         counted. Joined with '·' for readability; shownR key is
-         'procedures' so it displays as 'Procedures' in the card. */
+      /* Pass procedures as the raw array so updateCardDone can render a
+         highlighted block with per-procedure checkmarks, making the
+         value of what the user's paying for visible at a glance.
+         Fallback to singular procedure string if array is absent. */
       if (Array.isArray(rec.procedures) && rec.procedures.length) {
-        shownR.procedures = rec.procedures.join(' · ');
+        shownR.procedures = rec.procedures;
       } else if (rec.procedure) {
         shownR.procedure = rec.procedure;
       }
