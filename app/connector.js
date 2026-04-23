@@ -7,8 +7,14 @@
     'estimate':     { next: 'plan',        back: 'documents' },
     'plan':         { next: 'before-sign', back: 'estimate' },
     'before-sign':  { next: 'agreement',   back: 'plan' },
-    'agreement':    { next: 'payment',     back: 'before-sign' },
-    'payment':      { next: 'submission-confirmed', back: 'agreement' }
+    'agreement':    { next: 'payment',     back: 'before-sign' }
+    /* payment is intentionally OMITTED from the flow map — the Stripe confirm
+       flow is the sole owner of navigation away from payment.html. On success
+       Stripe redirects to /app/submission-confirmed.html?paid=1 via return_url.
+       On failure Stripe keeps the user on the page with an error. Having a
+       connector rule here would fire submission-confirmed navigation on every
+       btn-primary click, including failed/cancelled Apple Pay sessions,
+       making the app appear to succeed when no charge was made. */
   };
 
   function currentScreen() {
