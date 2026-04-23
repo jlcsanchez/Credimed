@@ -624,23 +624,28 @@ html, body { margin: 0; padding: 0; background: #f0eee9; font-family: "DM Sans",
         var name = (cu && cu.attributes && cu.attributes.given_name) || '';
         var email = (cu && cu.attributes && cu.attributes.email) || '';
 
-        /* Replace the card with a welcome interstitial */
+        /* Replace the card with a welcome interstitial. User must click
+           Continue to advance — no auto-redirect, so they have time to read
+           and the option to sign out is always reachable. */
         var card = document.querySelector('.card');
         if (card) {
           card.innerHTML =
-            '<div style="text-align:center;padding:20px 0">' +
+            '<div style="text-align:center;padding:12px 0 4px">' +
               '<div style="font-size:22px;font-weight:700;color:var(--slate-900);margin-bottom:6px;font-family:\'Playfair Display\',Georgia,serif">' +
                 'Welcome back' + (name ? ', ' + name : '') + ' 👋' +
               '</div>' +
-              (email ? '<div style="font-size:13px;color:var(--slate-500);margin-bottom:20px">Signed in as ' + email + '</div>' : '') +
-              '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--slate-500);margin-bottom:24px">' +
-                '<div class="spinner" style="display:inline-block;width:14px;height:14px;border:2px solid var(--slate-200);border-top-color:var(--teal-600);border-radius:50%;animation:spin 700ms linear infinite"></div>' +
-                'Redirecting to your documents...' +
-              '</div>' +
-              '<a href="/app/login.html?logout=1" style="font-size:12.5px;color:var(--teal-700);text-decoration:underline;font-weight:500">Not you? Sign out and use a different account</a>' +
+              (email ? '<div style="font-size:13px;color:var(--slate-500);margin-bottom:24px">Signed in as ' + email + '</div>' : '<div style="margin-bottom:24px"></div>') +
+              '<button id="welcome-continue" class="btn-primary" style="width:100%;margin-bottom:10px">Continue to my claim →</button>' +
+              '<button id="welcome-signout" style="width:100%;height:52px;background:transparent;color:var(--slate-700);border:1px solid var(--slate-300);border-radius:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit">Sign out</button>' +
             '</div>';
+          var cont = document.getElementById('welcome-continue');
+          if (cont) cont.addEventListener('click', function () { window.location.href = POST_AUTH_URL; });
+          var so = document.getElementById('welcome-signout');
+          if (so) so.addEventListener('click', function () {
+            try { window.cognitoSignOut(); } catch (e) {}
+            window.location.href = '/app/login.html?logout=1';
+          });
         }
-        setTimeout(function () { window.location.href = POST_AUTH_URL; }, 1500);
         return;
       }
     } catch (e) { /* not logged in, stay on page */ }

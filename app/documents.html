@@ -1530,5 +1530,22 @@ setInterval(() => {
 })();
 </script>
 
+<script>
+/* Small "Sign out" link in the top-right so the user can always reset the
+   flow and start the cycle over from a clean login. */
+(function () {
+  var a = document.createElement('a');
+  a.textContent = 'Sign out';
+  a.href = '/app/login.html?logout=1';
+  a.style.cssText = 'position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:9999;font-size:12px;color:#64748b;background:rgba(255,255,255,.85);padding:6px 10px;border-radius:8px;border:1px solid #e2e8f0;text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:500;backdrop-filter:blur(4px)';
+  a.addEventListener('click', function (e) {
+    e.preventDefault();
+    try { if (window.cognitoSignOut) window.cognitoSignOut(); } catch (err) {}
+    window.location.href = '/app/login.html?logout=1';
+  });
+  document.body.appendChild(a);
+})();
+</script>
+
 </body>
 </html>
