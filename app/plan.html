@@ -1122,6 +1122,85 @@ document.querySelectorAll('.tab').forEach(t => {
 mount();
 </script>
 
+<script>
+/* ---- Pricing overlay (spec: one tier, one price, one button) ----
+   documents.html writes credimed_plan / credimed_price / credimed_explanation
+   to sessionStorage after the real OCR + engine run. This overlay waits
+   for the Claude Design mount() to finish rendering the Basic/Plus
+   mockup, then replaces #screen-mobile and #screen-desktop with a
+   single-card layout for the engine-computed tier. If sessionStorage
+   is empty (standalone design review), the mockup stays untouched. */
+(function () {
+  var plan, price, bullets;
+  try {
+    plan = sessionStorage.getItem('credimed_plan');
+    price = parseInt(sessionStorage.getItem('credimed_price'), 10);
+    var rawExp = sessionStorage.getItem('credimed_explanation');
+    bullets = rawExp ? (JSON.parse(rawExp) || []) : [];
+  } catch (e) { return; }
+  if (!plan || !(price > 0)) return;
+
+  var tierTitle = plan.charAt(0).toUpperCase() + plan.slice(1);
+  var checkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var backSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+
+  var bulletsHtml = (bullets.slice(0, 3)).map(function (b) {
+    return '<div class="feature-item">' +
+             '<div class="check-circle">' + checkSvg + '</div>' +
+             '<span>' + b + '</span>' +
+           '</div>';
+  }).join('');
+
+  function singleCardHtml() {
+    return (
+      '<div class="hero">' +
+        '<div class="hero-top"><button class="back-btn" aria-label="Back">' + backSvg + '</button></div>' +
+        '<div class="hero-eyebrow">Your recommended plan</div>' +
+        '<h1 class="hero-title">' + tierTitle + ' is the right fit for your claim</h1>' +
+        '<p class="hero-sub">One-time fee · your insurer pays you directly · we never take a cut of your refund.</p>' +
+      '</div>' +
+      '<div style="padding:0 16px">' +
+        '<div class="plan-card plus selected" style="margin-top:8px">' +
+          '<div class="plan-title">' + tierTitle + '</div>' +
+          '<div class="plan-subtitle">Recommended for your claim</div>' +
+          '<div class="plan-price">' +
+            '<span class="currency">$</span>' +
+            '<span class="amount">' + price + '</span>' +
+            '<span class="dot">·</span>' +
+            '<span class="one-time">one-time</span>' +
+          '</div>' +
+          '<div class="features">' + bulletsHtml + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="footer-cta">' +
+        '<button class="btn-primary">' +
+          '<span>Recover my refund — $' + price + '</span>' +
+          '<span class="arrow">→</span>' +
+        '</button>' +
+      '</div>'
+    );
+  }
+
+  function apply() {
+    var mob = document.getElementById('screen-mobile');
+    var desk = document.getElementById('screen-desktop');
+    var html = singleCardHtml();
+    if (mob) mob.innerHTML = html;
+    if (desk) desk.innerHTML = html;
+    /* Kill the variant tabs — no choice UI per spec. */
+    document.querySelectorAll('.tab').forEach(function (t) { t.style.display = 'none'; });
+    /* Persist selection so payment.html reads the right tier from state. */
+    if (window.CredimedState) window.CredimedState.set('plan.selected', plan);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', apply);
+  } else {
+    apply();
+  }
+})();
+</script>
+
 <script src="connector.js"></script>
 <script src="state.js"></script>
 <script src="ana.js"></script>

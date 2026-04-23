@@ -971,7 +971,17 @@ const PAYMENT_TABS = [
 ];
 
 function planInfo(variant) {
-  // variant: 'default' | 'basic' | 'ready' | 'processing' | 'declined' | 'success'
+  // Prefer engine-computed tier/price from sessionStorage (written by
+  // documents.html after OCR). Fall back to Claude Design defaults if
+  // sessionStorage is empty — keeps the mockup renderable standalone.
+  try {
+    var ssPlan = sessionStorage.getItem('credimed_plan');
+    var ssPrice = parseInt(sessionStorage.getItem('credimed_price'), 10);
+    if (ssPlan && ssPrice > 0) {
+      var name = ssPlan.charAt(0).toUpperCase() + ssPlan.slice(1) + ' Plan';
+      return { name: name, price: ssPrice, priceStr: '$' + ssPrice + '.00', ctaPrice: '$' + ssPrice };
+    }
+  } catch (e) { /* fall through */ }
   const isBasic = variant === 'basic';
   return isBasic
     ? { name: 'Basic Plan', price: 29, priceStr: '$29.00', ctaPrice: '$29' }
@@ -1367,9 +1377,18 @@ mountScope('desktop');
       if (p.dataset.panel !== 'card') p.classList.add('hidden');
     });
 
-    /* Figure out plan + amount from state */
-    var plan   = (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard';
-    var amount = plan === 'premium' ? 3900 : 2900;
+    /* Figure out plan + amount. credimed_price from sessionStorage (set
+       by the engine after OCR) is the source of truth. The tier-based
+       fallback below only fires if sessionStorage is empty — that path
+       preserves legacy pricing in case a user lands on payment.html
+       without having gone through documents.html. */
+    var plan = (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard';
+    var amount;
+    try {
+      var ssPrice = parseInt(sessionStorage.getItem('credimed_price'), 10);
+      amount = (ssPrice > 0) ? ssPrice * 100 : null;
+    } catch (e) { amount = null; }
+    if (amount == null) amount = plan === 'premium' ? 3900 : 2900;
 
     var user = {};
     try {
