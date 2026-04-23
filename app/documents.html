@@ -1505,10 +1505,20 @@ setInterval(() => {
             estimated_refund_min: estimatedRefundMin
           };
           var pricing = window.calculatePricing(pricingInput);
+          var pricingRecord = {
+            plan: String(pricing.tier).toLowerCase(),
+            price: pricing.price,
+            explanation: pricing.explanation
+          };
+          /* Persist to CredimedState (localStorage) — survives tab close,
+             Safari background cleanup, and cross-tab navigation that
+             would wipe sessionStorage. sessionStorage is also written
+             for backward compat with any early consumers. */
+          if (window.CredimedState) window.CredimedState.set('pricing', pricingRecord);
           try {
-            sessionStorage.setItem('credimed_plan', String(pricing.tier).toLowerCase());
-            sessionStorage.setItem('credimed_price', String(pricing.price));
-            sessionStorage.setItem('credimed_explanation', JSON.stringify(pricing.explanation));
+            sessionStorage.setItem('credimed_plan', pricingRecord.plan);
+            sessionStorage.setItem('credimed_price', String(pricingRecord.price));
+            sessionStorage.setItem('credimed_explanation', JSON.stringify(pricingRecord.explanation));
           } catch (ssErr) { /* Safari private mode etc. — non-fatal */ }
           console.log('[pricing]', pricing.tier, '$' + pricing.price, 'input:', pricingInput);
         }

@@ -1132,12 +1132,21 @@ mount();
    is empty (standalone design review), the mockup stays untouched. */
 (function () {
   var plan, price, bullets;
-  try {
-    plan = sessionStorage.getItem('credimed_plan');
-    price = parseInt(sessionStorage.getItem('credimed_price'), 10);
-    var rawExp = sessionStorage.getItem('credimed_explanation');
-    bullets = rawExp ? (JSON.parse(rawExp) || []) : [];
-  } catch (e) { return; }
+  /* Prefer CredimedState (localStorage, persistent). Fall back to
+     sessionStorage only if CredimedState doesn't have it yet. */
+  var cs = (window.CredimedState && window.CredimedState.get('pricing', null)) || null;
+  if (cs && cs.plan && cs.price > 0) {
+    plan = cs.plan;
+    price = cs.price;
+    bullets = Array.isArray(cs.explanation) ? cs.explanation : [];
+  } else {
+    try {
+      plan = sessionStorage.getItem('credimed_plan');
+      price = parseInt(sessionStorage.getItem('credimed_price'), 10);
+      var rawExp = sessionStorage.getItem('credimed_explanation');
+      bullets = rawExp ? (JSON.parse(rawExp) || []) : [];
+    } catch (e) { return; }
+  }
   if (!plan || !(price > 0)) return;
 
   var tierTitle = plan.charAt(0).toUpperCase() + plan.slice(1);
