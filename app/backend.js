@@ -221,20 +221,30 @@ window.authFetch = async function (url, opts) {
      Returns { clientSecret } */
   window.createPaymentIntent = function (opts) {
     opts = opts || {};
+    /* Fallback amounts aligned with the pricing engine tiers
+       (standard=49, plus=79, premium=99) — NOT the Claude Design
+       mockup prices (29/39). Caller should always pass `amount`
+       explicitly; this only exists as a safety net. */
+    var fallbackAmount =
+      opts.plan === 'premium' ? 9900 :
+      opts.plan === 'plus'    ? 7900 :
+                                4900;
     var body = {
       action:   'create_payment_intent',
       plan:     opts.plan     || 'standard',
-      amount:   opts.amount   || (opts.plan === 'premium' ? 3900 : 2900),
+      amount:   opts.amount   || fallbackAmount,
       currency: opts.currency || 'usd',
       email:    opts.email    || null,
       claimId:  opts.claimId  || null
     };
+    console.log('[createPaymentIntent] sending to Lambda:', body);
     return fetch(window.CREDIMED_LAMBDA, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(body)
     }).then(function (r) { return r.json(); })
       .then(function (data) {
+        console.log('[createPaymentIntent] Lambda response:', data);
         var cs = data.clientSecret || data.client_secret || data.paymentIntentClientSecret;
         if (!cs) throw new Error('No clientSecret in Lambda response: ' + JSON.stringify(data));
         return { clientSecret: cs };
