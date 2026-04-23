@@ -943,27 +943,38 @@ mount();
              '</div>';
     }
 
-    function sectionBlock(title, rowsHtml) {
+    function sectionBlock(title, rowsHtml, footerHtml) {
       return '<div style="margin:14px 16px;padding:14px 16px;background:var(--teal-50,#F0FDFA);border:1px solid var(--teal-200,#99F6E4);border-radius:12px">' +
                '<div style="color:var(--teal-800,#0A7A70);text-transform:uppercase;font-size:10.5px;letter-spacing:.6px;font-weight:700;margin-bottom:8px">' +
                  title +
                '</div>' +
                rowsHtml +
+               (footerHtml || '') +
              '</div>';
     }
 
+    /* Small eligibility note under the procedures list — softens the
+       language without claiming any procedure is definitely covered. */
+    var foundFooter = '<div style="margin-top:8px;font-size:11.5px;color:var(--slate-500,#64748b);line-height:1.5">These treatments may be eligible for reimbursement under your PPO plan.</div>';
     var foundHtml = procedures.length
-      ? sectionBlock('What we found in your receipt', procedures.map(checkRow).join(''))
+      ? sectionBlock('What we found in your receipt', procedures.map(checkRow).join(''), foundFooter)
       : '';
 
+    /* 'Reimbursement goes directly to you' is the highest-trust bullet —
+       it answers 'will Credimed touch my money?' — so it leads the list
+       to address that objection before the service-detail bullets. */
     var doHtml = sectionBlock("What we'll do", [
+      'Reimbursement goes directly to you — we never touch your money',
       'Translate your receipt to English',
       'Map each treatment to its CDT code',
       'Bundle everything into one claim package',
       'Submit electronically to ' + insurerDisplay,
-      'Follow up if denied (1 free resubmission)',
-      'Reimbursement goes directly to you — we never touch your money'
+      'Follow up if denied (1 free resubmission)'
     ].map(checkRow).join(''));
+
+    /* Social-proof reassurance placed immediately above the footer CTA
+       so it's the last thing the user reads before deciding to continue. */
+    var reassuranceHtml = '<div style="text-align:center;font-size:12.5px;color:var(--slate-500,#64748b);padding:14px 20px 8px;line-height:1.5">Most patients like you recover $150–$250.</div>';
 
     ['screen-mobile', 'screen-desktop'].forEach(function (id) {
       var host = document.getElementById(id);
@@ -972,6 +983,8 @@ mount();
       if (!bodyWrap) return;
       if (foundHtml) bodyWrap.insertAdjacentHTML('afterbegin', foundHtml);
       bodyWrap.insertAdjacentHTML('beforeend', doHtml);
+      var footerCta = host.querySelector('.footer-cta');
+      if (footerCta) footerCta.insertAdjacentHTML('beforebegin', reassuranceHtml);
     });
   }
 
