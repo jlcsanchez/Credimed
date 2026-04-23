@@ -7,7 +7,7 @@
 
 const express = require('express');
 const cors = require('cors');
-const { calculatePricing } = require('../app/pricingEngine');
+const { calculatePricing } = require('./pricingEngine');
 
 const app = express();
 

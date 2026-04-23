@@ -63,6 +63,22 @@ function calculatePricing(input = {}) {
     i++;
   }
 
+  /* Downgrade protection: if the estimated refund is below $300, drop
+     one tier so the fee never represents an unreasonable fraction of
+     the refund. PLUS check runs before PREMIUM so a PREMIUM downgraded
+     to PLUS is NOT cascaded down to STANDARD in the same call. */
+  if (input.estimated_refund_min &&
+      input.estimated_refund_min < 300) {
+    if (tier === "PLUS") {
+      tier = "STANDARD";
+      price = 49;
+    }
+    if (tier === "PREMIUM") {
+      tier = "PLUS";
+      price = 79;
+    }
+  }
+
   return {
     tier,
     price,

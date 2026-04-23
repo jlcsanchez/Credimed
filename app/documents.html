@@ -1439,15 +1439,45 @@ setInterval(() => {
         fileType:    file.type
       };
 
-      /* ---- Pricing engine (client-side, runs before state merge) ----
+      window.CredimedState && window.CredimedState.merge('receipt', rec);
+      var shownR = {};
+      if (rec.dentist) shownR.dentist = rec.dentist;
+      if (rec.procedure) shownR.procedure = rec.procedure;
+      if (rec.amountPaid != null) shownR.amount = '$' + rec.amountPaid + ' ' + (currency || 'USD');
+      if (rec.city) shownR.city = rec.city;
+      if (rec.treatmentDate) shownR.date = rec.treatmentDate;
+      updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Extracted', Object.keys(shownR).length ? shownR : null);
+
+      /* Auto-fill the visible "Amount paid (USD)" input so the user doesn't have to
+         type it again. If currency is MXN, convert at ~18:1 (conservative). */
+      var paidUSD = null;
+      if (amtNum != null) {
+        var MXN_TO_USD = 1 / 18;
+        paidUSD = currency === 'MXN' ? Math.round(amtNum * MXN_TO_USD) : Math.round(amtNum);
+        /* Store USD value in state for estimate.html to read later */
+        window.CredimedState && window.CredimedState.merge('receipt', { amountPaidUSD: paidUSD });
+
+        var amountInput = document.querySelector('.amount-input');
+        if (amountInput) {
+          amountInput.value = paidUSD;
+          /* Fire input event so any Claude Design listeners (enabling CTA, etc.) react */
+          amountInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+
+      /* ---- Pricing engine (client-side, runs AFTER amountPaidUSD) ----
          Mapping per spec:
-           num_procedures      = procedures.length | (procedure ? 1 : 0)
-           num_documents       = supporting docs count (insurance+receipt excluded)
-           ocr_confidence      = extracted / 5 over [dentist, procedure,
-                                 amountPaid, treatmentDate, patientName]
-           has_missing_fields  = !amountPaid || !procedure || !treatmentDate
-           has_code_ambiguity  = cdtCode exists AND !/^D\d{4}$/
-         Output (tier/price/explanation) is stashed in sessionStorage for
+           num_procedures       = procedures.length | (procedure ? 1 : 0)
+           num_documents        = supporting docs count (insurance+receipt excluded)
+           ocr_confidence       = extracted / 5 over [dentist, procedure,
+                                  amountPaid, treatmentDate, patientName]
+           has_missing_fields   = !amountPaid || !procedure || !treatmentDate
+           has_code_ambiguity   = cdtCode exists AND !/^D\d{4}$/
+           estimated_refund_min = Math.round(paidUSD * 0.60)
+         Position: AFTER the amountPaidUSD computation so the downgrade-
+         protection rule can see the refund floor and drop one tier when
+         refund < $300 (protects users from paying a large fraction of
+         their refund as fee). Output stashed in sessionStorage for
          plan.html and payment.html. No throw — a pricing failure must
          never block the upload flow. */
       try {
@@ -1462,13 +1492,17 @@ setInterval(() => {
           var confidence = extractedCount / expectedFields.length;
           var hasMissing = !rec.amountPaid || !rec.procedure || !rec.treatmentDate;
           var hasAmbiguity = !!(rec.cdtCode && !/^D\d{4}$/.test(String(rec.cdtCode)));
+          var estimatedRefundMin = (paidUSD != null && paidUSD > 0)
+            ? Math.round(paidUSD * 0.60)
+            : null;
 
           var pricingInput = {
             num_procedures: numProcedures,
             num_documents: supportingCount,
             ocr_confidence: confidence,
             has_missing_fields: hasMissing,
-            has_code_ambiguity: hasAmbiguity
+            has_code_ambiguity: hasAmbiguity,
+            estimated_refund_min: estimatedRefundMin
           };
           var pricing = window.calculatePricing(pricingInput);
           try {
@@ -1480,31 +1514,6 @@ setInterval(() => {
         }
       } catch (priceErr) {
         console.warn('[pricing] compute failed:', priceErr);
-      }
-
-      window.CredimedState && window.CredimedState.merge('receipt', rec);
-      var shownR = {};
-      if (rec.dentist) shownR.dentist = rec.dentist;
-      if (rec.procedure) shownR.procedure = rec.procedure;
-      if (rec.amountPaid != null) shownR.amount = '$' + rec.amountPaid + ' ' + (currency || 'USD');
-      if (rec.city) shownR.city = rec.city;
-      if (rec.treatmentDate) shownR.date = rec.treatmentDate;
-      updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Extracted', Object.keys(shownR).length ? shownR : null);
-
-      /* Auto-fill the visible "Amount paid (USD)" input so the user doesn't have to
-         type it again. If currency is MXN, convert at ~18:1 (conservative). */
-      if (amtNum != null) {
-        var MXN_TO_USD = 1 / 18;
-        var usd = currency === 'MXN' ? Math.round(amtNum * MXN_TO_USD) : Math.round(amtNum);
-        /* Store USD value in state for estimate.html to read later */
-        window.CredimedState && window.CredimedState.merge('receipt', { amountPaidUSD: usd });
-
-        var amountInput = document.querySelector('.amount-input');
-        if (amountInput) {
-          amountInput.value = usd;
-          /* Fire input event so any Claude Design listeners (enabling CTA, etc.) react */
-          amountInput.dispatchEvent(new Event('input', { bubbles: true }));
-        }
       }
     }
   }

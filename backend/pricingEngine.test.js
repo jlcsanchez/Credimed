@@ -96,6 +96,30 @@ const tests = [
              ocr_confidence: 0.90, has_missing_fields: false,
              has_code_ambiguity: false },
     expect: { tier: "STANDARD", price: 49, exact_bullets: 3 }
+  },
+  {
+    name: "R — refund bajo $300 + PLUS → downgrade STANDARD",
+    input: { num_procedures: 2, num_documents: 1,
+             ocr_confidence: 0.90, has_missing_fields: false,
+             has_code_ambiguity: false,
+             estimated_refund_min: 167 },
+    expect: { tier: "STANDARD", price: 49 }
+  },
+  {
+    name: "S — refund bajo $300 + PREMIUM → downgrade PLUS",
+    input: { num_procedures: 4, num_documents: 1,
+             ocr_confidence: 0.90, has_missing_fields: false,
+             has_code_ambiguity: false,
+             estimated_refund_min: 210 },
+    expect: { tier: "PLUS", price: 79 }
+  },
+  {
+    name: "T — refund $300+ no hace downgrade",
+    input: { num_procedures: 2, num_documents: 1,
+             ocr_confidence: 0.90, has_missing_fields: false,
+             has_code_ambiguity: false,
+             estimated_refund_min: 350 },
+    expect: { tier: "PLUS", price: 79 }
   }
 ];
 
@@ -125,4 +149,4 @@ tests.forEach(test => {
   }
 });
 
-console.log(`\n${passed}/14 passed · ${failed} failed`);
+console.log(`\n${passed}/${tests.length} passed · ${failed} failed`);
