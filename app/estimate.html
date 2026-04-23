@@ -921,7 +921,60 @@ mount();
         if (host) host.innerHTML = window.renderScreen('default');
       });
     }
+
+    /* Inject the value-reinforcing sections around the estimate card.
+       - WHAT WE FOUND (above estimate): concrete list of detected
+         procedures so the estimate feels sourced from real data.
+       - WHAT WE'LL DO (below estimate, above CTA): static list of the
+         services bundled in the fee, re-framing the $49 decision from
+         "is this fair vs my refund?" to "is this fair vs this work?".
+       Both are pure DOM injections — no VARIANTS changes, no CSS edits. */
+    injectValueBlocks();
   }
+
+  function injectValueBlocks() {
+    var procedures = Array.isArray(r.procedures) ? r.procedures : [];
+    var insurerDisplay = insurerName || 'your insurer';
+
+    function checkRow(text) {
+      return '<div style="display:flex;align-items:flex-start;gap:8px;margin:5px 0;font-size:13.5px;line-height:1.45;color:var(--slate-800,#1e293b)">' +
+               '<span style="color:var(--teal-600,#0D9488);font-weight:700;flex-shrink:0">✓</span>' +
+               '<span>' + text + '</span>' +
+             '</div>';
+    }
+
+    function sectionBlock(title, rowsHtml) {
+      return '<div style="margin:14px 16px;padding:14px 16px;background:var(--teal-50,#F0FDFA);border:1px solid var(--teal-200,#99F6E4);border-radius:12px">' +
+               '<div style="color:var(--teal-800,#0A7A70);text-transform:uppercase;font-size:10.5px;letter-spacing:.6px;font-weight:700;margin-bottom:8px">' +
+                 title +
+               '</div>' +
+               rowsHtml +
+             '</div>';
+    }
+
+    var foundHtml = procedures.length
+      ? sectionBlock('What we found in your receipt', procedures.map(checkRow).join(''))
+      : '';
+
+    var doHtml = sectionBlock("What we'll do", [
+      'Translate your receipt to English',
+      'Map each treatment to its CDT code',
+      'Bundle everything into one claim package',
+      'Submit electronically to ' + insurerDisplay,
+      'Follow up if denied (1 free resubmission)',
+      'Reimbursement goes directly to you — we never touch your money'
+    ].map(checkRow).join(''));
+
+    ['screen-mobile', 'screen-desktop'].forEach(function (id) {
+      var host = document.getElementById(id);
+      if (!host) return;
+      var bodyWrap = host.querySelector('.body-wrap');
+      if (!bodyWrap) return;
+      if (foundHtml) bodyWrap.insertAdjacentHTML('afterbegin', foundHtml);
+      bodyWrap.insertAdjacentHTML('beforeend', doHtml);
+    });
+  }
+
   applyOverride();
 })();
 </script>
