@@ -26,6 +26,21 @@
     location.href = '/app/' + screen + '.html';
   }
 
+  /* Tap the CREDIMED header logo on any app screen to return to the landing
+     page. Bound before the FLOW early-return so it works on every screen
+     that loads this script (including ones not in the flow map). Only the
+     page-header .brand is treated as a nav affordance — clones inside cards
+     or previews are skipped. */
+  document.addEventListener('click', function (e) {
+    const brand = e.target.closest('.brand');
+    if (!brand) return;
+    if (brand.closest('.hero, header, .page-header, section.hero, .app-header')) {
+      e.preventDefault();
+      e.stopPropagation();
+      location.href = '/';
+    }
+  }, true);
+
   const current = currentScreen();
   if (!current || !FLOW[current]) return;
 
