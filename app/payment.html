@@ -1373,9 +1373,12 @@ mountScope('desktop');
         '<div class="stripe-placeholder"><div class="spin"></div><div>Loading secure payment form...</div></div>' +
       '</div>';
 
-    /* Hide the "other" payment tabs (apple/google/link) since Stripe Payment Element already includes them */
+    /* Hide ALL Claude Design mock payment tabs. Stripe Payment Element
+       renders its own tabs (Card / Apple Pay / Google Pay / Bank / etc.)
+       so leaving any of the mockup tabs visible creates a duplicated
+       "Card" chip above the real Stripe UI. */
     document.querySelectorAll('[data-stripe-tab][data-scope="' + scope + '"]').forEach(function (t) {
-      if (t.dataset.stripeTab !== 'card') t.style.display = 'none';
+      t.style.display = 'none';
     });
     document.querySelectorAll('[data-panel][data-scope="' + scope + '"]').forEach(function (p) {
       if (p.dataset.panel !== 'card') p.classList.add('hidden');
