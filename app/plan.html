@@ -1150,26 +1150,54 @@ mount();
   if (!plan || !(price > 0)) return;
 
   /* Refund range from the estimate screen (persisted by estimate.html
-     into CredimedState.estimate — NOT sessionStorage). Used for the
-     value-anchored price label and CTA. Both fall back to generic
-     copy when the range is missing (direct-link edge case). */
+     into CredimedState.estimate — that's where the value actually lives
+     even though the spec said sessionStorage). Used for the value-
+     anchored price label. Falls back to generic copy when missing. */
   var est = (window.CredimedState && window.CredimedState.get('estimate', null)) || null;
   var refundMin = (est && est.rangeMin > 0) ? est.rangeMin : null;
   var refundMax = (est && est.rangeMax > 0) ? est.rangeMax : null;
   var hasRange = refundMin && refundMax;
 
   var priceLabelText = hasRange
-    ? 'One-time fee to recover your $' + refundMin + '–$' + refundMax
-    : 'One-time fee to recover your refund';
+    ? 'Pay once to recover your $' + refundMin + '–$' + refundMax
+    : 'Pay once to recover your refund';
 
-  var ctaHtml = hasRange
-    ? '<button class="btn-primary">' +
-        '<span>Get my $' + refundMin + '–$' + refundMax + ' refund → $' + price + '</span>' +
-      '</button>'
-    : '<button class="btn-primary">' +
-        '<span>Recover my refund — $' + price + '</span>' +
-        '<span class="arrow">→</span>' +
-      '</button>';
+  /* CTA: single copy regardless of whether the refund range is present.
+     Keeps the conversion message stable and legally softer (no claimed
+     dollar amount in the action button itself). */
+  var ctaHtml =
+    '<button class="btn-primary">' +
+      '<span>Start my claim — $' + price + '</span>' +
+      '<span class="arrow">→</span>' +
+    '</button>';
+
+  /* Pre-CTA reassurance block: social proof + small insurer disclaimer.
+     Post-CTA: no-charge-before-work guarantee, then trust strip. All
+     rendered inside the existing .footer-cta container so the sticky
+     bottom area holds the full decision context in one place. */
+  var preCtaHtml =
+    '<div style="text-align:center;padding:0 4px">' +
+      '<div style="font-size:13px;color:var(--slate-700,#334155);font-weight:500;line-height:1.4">' +
+        'Most patients like you recover $150–$250' +
+      '</div>' +
+      '<div style="font-size:11.5px;color:var(--slate-500,#64748b);margin-top:2px;line-height:1.4">' +
+        'Final amount confirmed by your insurer' +
+      '</div>' +
+    '</div>';
+
+  var guaranteeHtml =
+    '<div style="font-size:11.5px;color:var(--slate-500,#64748b);text-align:center;line-height:1.45;padding:0 8px">' +
+      'We only charge once your claim is prepared and submitted.' +
+    '</div>';
+
+  var trustStripHtml =
+    '<div class="trust-row">' +
+      '<span>HIPAA-ready</span>' +
+      '<span class="dot-sep">·</span>' +
+      '<span>Secure</span>' +
+      '<span class="dot-sep">·</span>' +
+      '<span>US-based company</span>' +
+    '</div>';
 
   var tierTitle = plan.charAt(0).toUpperCase() + plan.slice(1);
   var checkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
@@ -1228,7 +1256,10 @@ mount();
       '</div>' +
       proceduresBlock +
       '<div class="footer-cta">' +
+        preCtaHtml +
         ctaHtml +
+        guaranteeHtml +
+        trustStripHtml +
       '</div>'
     );
   }
