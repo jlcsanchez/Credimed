@@ -218,20 +218,26 @@ window.authFetch = async function (url, opts) {
   };
 
   /* Calls the payment Lambda to create a PaymentIntent.
-     Returns { clientSecret } */
+     Returns { clientSecret }
+
+     Amount is computed from `plan` using the AMOUNTS that the live
+     credimed-payment Lambda currently accepts in AWS. The Lambda's
+     internal price table is authoritative — sending a different
+     amount makes it reject the request (no clientSecret) and Stripe
+     never mounts. This restores the state from commit 68a508f which
+     was verified working. Whatever opts.amount the caller passes is
+     intentionally ignored.
+
+     When the Lambda's price table is updated in AWS to the engine
+     values (standard=4900, plus=7900, premium=9900), update the
+     numbers here to match. */
   window.createPaymentIntent = function (opts) {
     opts = opts || {};
-    /* amount is intentionally sent as null. The Lambda
-       (credimed-payment) is the source of truth for pricing and
-       computes the PaymentIntent amount from `plan` using its own
-       internal price table. Sending an amount that doesn't match the
-       Lambda's table causes the Lambda to reject the request (no
-       clientSecret returned), which breaks the Stripe Element mount.
-       Update the Lambda's price table in AWS to change prices. */
+    var plan = opts.plan || 'standard';
     var body = {
       action:   'create_payment_intent',
-      plan:     opts.plan     || 'standard',
-      amount:   null,
+      plan:     plan,
+      amount:   plan === 'premium' ? 3900 : 2900,
       currency: opts.currency || 'usd',
       email:    opts.email    || null,
       claimId:  opts.claimId  || null
