@@ -1066,6 +1066,7 @@ setInterval(() => {
 <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
 <script src="backend.js"></script>
 <script src="state.js"></script>
+<script src="/backend/pricingEngine.js"></script>
 <script>
 (function () {
   'use strict';
@@ -1437,6 +1438,50 @@ setInterval(() => {
         fileSize:    file.size,
         fileType:    file.type
       };
+
+      /* ---- Pricing engine (client-side, runs before state merge) ----
+         Mapping per spec:
+           num_procedures      = procedures.length | (procedure ? 1 : 0)
+           num_documents       = supporting docs count (insurance+receipt excluded)
+           ocr_confidence      = extracted / 5 over [dentist, procedure,
+                                 amountPaid, treatmentDate, patientName]
+           has_missing_fields  = !amountPaid || !procedure || !treatmentDate
+           has_code_ambiguity  = cdtCode exists AND !/^D\d{4}$/
+         Output (tier/price/explanation) is stashed in sessionStorage for
+         plan.html and payment.html. No throw — a pricing failure must
+         never block the upload flow. */
+      try {
+        if (typeof window.calculatePricing === 'function') {
+          var numProcedures = Array.isArray(rec.procedures)
+            ? rec.procedures.length
+            : (rec.procedure ? 1 : 0);
+          var supportingCount = (window.CredimedState &&
+            (window.CredimedState.get('supportingDocs', []) || []).length) || 0;
+          var expectedFields = ['dentist', 'procedure', 'amountPaid', 'treatmentDate', 'patientName'];
+          var extractedCount = expectedFields.reduce(function (n, f) { return n + (rec[f] ? 1 : 0); }, 0);
+          var confidence = extractedCount / expectedFields.length;
+          var hasMissing = !rec.amountPaid || !rec.procedure || !rec.treatmentDate;
+          var hasAmbiguity = !!(rec.cdtCode && !/^D\d{4}$/.test(String(rec.cdtCode)));
+
+          var pricingInput = {
+            num_procedures: numProcedures,
+            num_documents: supportingCount,
+            ocr_confidence: confidence,
+            has_missing_fields: hasMissing,
+            has_code_ambiguity: hasAmbiguity
+          };
+          var pricing = window.calculatePricing(pricingInput);
+          try {
+            sessionStorage.setItem('credimed_plan', String(pricing.tier).toLowerCase());
+            sessionStorage.setItem('credimed_price', String(pricing.price));
+            sessionStorage.setItem('credimed_explanation', JSON.stringify(pricing.explanation));
+          } catch (ssErr) { /* Safari private mode etc. — non-fatal */ }
+          console.log('[pricing]', pricing.tier, '$' + pricing.price, 'input:', pricingInput);
+        }
+      } catch (priceErr) {
+        console.warn('[pricing] compute failed:', priceErr);
+      }
+
       window.CredimedState && window.CredimedState.merge('receipt', rec);
       var shownR = {};
       if (rec.dentist) shownR.dentist = rec.dentist;

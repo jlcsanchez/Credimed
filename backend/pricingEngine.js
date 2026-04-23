@@ -70,4 +70,13 @@ function calculatePricing(input = {}) {
   };
 }
 
-module.exports = { calculatePricing };
+/* Dual-environment shim: same file works in Node (require) and in the
+   browser (<script src> → window.calculatePricing). An un-guarded
+   `module.exports = ...` would throw ReferenceError in the browser
+   because `module` is not a global, so both sides are guarded. */
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { calculatePricing };
+}
+if (typeof window !== 'undefined') {
+  window.calculatePricing = calculatePricing;
+}
