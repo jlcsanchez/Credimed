@@ -1151,34 +1151,33 @@ mount();
 
   /* Refund range from the estimate screen (persisted by estimate.html
      into CredimedState.estimate — that's where the value actually lives
-     even though the spec said sessionStorage). Used for the value-
-     anchored price label. Falls back to generic copy when missing. */
+     even though the spec said sessionStorage). Only refundMax is used
+     now, in the CTA's 'up to $X' framing. */
   var est = (window.CredimedState && window.CredimedState.get('estimate', null)) || null;
-  var refundMin = (est && est.rangeMin > 0) ? est.rangeMin : null;
   var refundMax = (est && est.rangeMax > 0) ? est.rangeMax : null;
-  var hasRange = refundMin && refundMax;
 
-  var priceLabelText = hasRange
-    ? 'Pay once to recover your $' + refundMin + '–$' + refundMax
-    : 'Pay once to recover your refund';
-
-  /* CTA: single copy regardless of whether the refund range is present.
-     Keeps the conversion message stable and legally softer (no claimed
-     dollar amount in the action button itself). */
-  var ctaHtml =
-    '<button class="btn-primary">' +
-      '<span>Start my claim — $' + price + '</span>' +
-      '<span class="arrow">→</span>' +
-    '</button>';
+  /* CTA varies only on whether we have a refundMax anchor. With the
+     range present we bake the 'up to $X' callout into the button text
+     and drop the separate arrow span since → is already in the copy.
+     Without it, we fall back to the simpler 'Start my claim — $X' with
+     the standalone arrow. */
+  var ctaHtml = refundMax
+    ? '<button class="btn-primary">' +
+        '<span>Start my refund (up to $' + refundMax + ') → $' + price + '</span>' +
+      '</button>'
+    : '<button class="btn-primary">' +
+        '<span>Start my claim — $' + price + '</span>' +
+        '<span class="arrow">→</span>' +
+      '</button>';
 
   /* Pre-CTA reassurance block: social proof + small insurer disclaimer.
-     Post-CTA: no-charge-before-work guarantee, then trust strip. All
-     rendered inside the existing .footer-cta container so the sticky
-     bottom area holds the full decision context in one place. */
+     Post-CTA: short 'no submission = no charge' guarantee, then trust
+     strip. All rendered inside the existing .footer-cta container so
+     the sticky bottom area holds the full decision context. */
   var preCtaHtml =
     '<div style="text-align:center;padding:0 4px">' +
       '<div style="font-size:13px;color:var(--slate-700,#334155);font-weight:500;line-height:1.4">' +
-        'Most patients like you recover $150–$250' +
+        'Most patients like you recover $150–$250 — without dealing with insurance' +
       '</div>' +
       '<div style="font-size:11.5px;color:var(--slate-500,#64748b);margin-top:2px;line-height:1.4">' +
         'Final amount confirmed by your insurer' +
@@ -1187,7 +1186,7 @@ mount();
 
   var guaranteeHtml =
     '<div style="font-size:11.5px;color:var(--slate-500,#64748b);text-align:center;line-height:1.45;padding:0 8px">' +
-      'We only charge once your claim is prepared and submitted.' +
+      'No submission = no charge' +
     '</div>';
 
   var trustStripHtml =
@@ -1238,13 +1237,12 @@ mount();
         '<div class="hero-top"><button class="back-btn" aria-label="Back">' + backSvg + '</button></div>' +
         '<div class="hero-eyebrow">Your recommended plan</div>' +
         '<h1 class="hero-title">' + tierTitle + ' is the right fit for your claim</h1>' +
-        '<p class="hero-sub">One-time fee · your insurer pays you directly · we never take a cut of your refund.</p>' +
+        '<p class="hero-sub">Pay once to recover your refund<br>Your insurer pays you directly · we never take a cut</p>' +
       '</div>' +
       '<div style="padding:0 16px">' +
         '<div class="plan-card plus selected" style="margin-top:8px">' +
           '<div class="plan-title">' + tierTitle + '</div>' +
           '<div class="plan-subtitle">Recommended for your claim</div>' +
-          '<div class="plan-price-label">' + priceLabelText + '</div>' +
           '<div class="plan-price">' +
             '<span class="currency">$</span>' +
             '<span class="amount">' + price + '</span>' +
