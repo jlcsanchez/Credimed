@@ -1356,7 +1356,11 @@ mountScope('desktop');
     '#credimed-stripe-mount{min-height:260px}' +
     '#credimed-stripe-mount .stripe-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--slate-500);font-size:13px;gap:8px}' +
     '#credimed-stripe-mount .stripe-placeholder .spin{width:22px;height:22px;border:2.5px solid #e2e8f0;border-top-color:#0D9488;border-radius:50%;animation:cm-spin 700ms linear infinite}' +
-    '@keyframes cm-spin{to{transform:rotate(360deg)}}';
+    '@keyframes cm-spin{to{transform:rotate(360deg)}}' +
+    '#stripe-skeleton{padding:8px 2px}' +
+    '#stripe-skeleton .skeleton-line{height:20px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:cm-shimmer 1.5s infinite;border-radius:4px;margin-bottom:12px}' +
+    '#stripe-skeleton .skeleton-line.short{width:60%}' +
+    '@keyframes cm-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}';
   document.head.appendChild(devStyle);
 
   function $(sel, root) { return (root || document).querySelector(sel); }
@@ -1380,7 +1384,12 @@ mountScope('desktop');
 
     cardPanel.innerHTML =
       '<div id="credimed-stripe-mount">' +
-        '<div class="stripe-placeholder"><div class="spin"></div><div>Loading secure payment form...</div></div>' +
+        '<div id="stripe-skeleton">' +
+          '<div class="skeleton-line"></div>' +
+          '<div class="skeleton-line"></div>' +
+          '<div class="skeleton-line short"></div>' +
+        '</div>' +
+        '<div id="payment-element" style="display:none"></div>' +
       '</div>';
 
     /* Hide ALL Claude Design mock payment tabs. Stripe Payment Element
@@ -1472,9 +1481,37 @@ mountScope('desktop');
       }
       state.clientSecret = pi.clientSecret;
 
-      $('#credimed-stripe-mount').innerHTML = '<div id="stripe-payment-element"></div>';
-      await window.mountStripePaymentElement(pi.clientSecret, 'stripe-payment-element');
+      /* Mount directly into the pre-existing #payment-element div
+         (already in the DOM from the skeleton structure). Stripe will
+         inject its iframe there; we keep it display:none until the
+         element fires its own 'ready' event. */
+      var paymentEl = await window.mountStripePaymentElement(pi.clientSecret, 'payment-element');
       state.mounted = true;
+
+      /* Swap skeleton → real form the moment Stripe's iframe signals
+         it has finished rendering. IMPORTANT: this listener goes on
+         the payment Element instance, NOT on the Elements factory —
+         `elements.on('ready')` doesn't exist and would silently fail. */
+      if (paymentEl && typeof paymentEl.on === 'function') {
+        paymentEl.on('ready', function () {
+          var skeleton = document.getElementById('stripe-skeleton');
+          var el = document.getElementById('payment-element');
+          if (skeleton) skeleton.style.display = 'none';
+          if (el) el.style.display = 'block';
+        });
+      }
+
+      /* Reliability fallback: if 'ready' never fires within 3s (rare,
+         but Stripe iframe can hang in corner-case networks), swap
+         anyway so the user never sees a permanent skeleton. */
+      setTimeout(function () {
+        var skeleton = document.getElementById('stripe-skeleton');
+        var el = document.getElementById('payment-element');
+        if (el && el.style.display === 'none') {
+          if (skeleton) skeleton.style.display = 'none';
+          el.style.display = 'block';
+        }
+      }, 3000);
 
       /* Enable CTA once Stripe is ready */
       var cta = document.querySelector('[data-cta][data-scope="' + scope + '"]');
