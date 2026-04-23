@@ -262,6 +262,10 @@ window.authFetch = async function (url, opts) {
     var stripe = await window.loadStripe();
     var elements = stripe.elements({
       clientSecret: clientSecret,
+      /* loader:'auto' makes Stripe render its own skeleton UI while the
+         element iframe loads — so the payment form feels intentional and
+         styled rather than empty space with a spinner. */
+      loader: 'auto',
       appearance:   { theme: 'stripe', variables: { colorPrimary: '#0D9488' } }
     });
     stripeElements = elements;

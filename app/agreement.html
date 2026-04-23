@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Preconnect to Stripe so TLS handshake to its CDN is warm by the time
-     payment.html loads and actually fetches js.stripe.com + api iframes.
-     Saves ~200-400ms from the visible Stripe load on the next screen. -->
+<!-- Preconnect + prefetch Stripe.js so it's fully parsed and in memory
+     by the time payment.html loads. Combined with the PaymentIntent
+     prefetch below (createPaymentIntent fires on agreement load),
+     this lets payment.html mount Stripe without any extra network
+     round-trips — only the Stripe Elements iframe has to load. -->
 <link rel="preconnect" href="https://js.stripe.com" crossorigin>
 <link rel="preconnect" href="https://api.stripe.com" crossorigin>
 <link rel="dns-prefetch" href="https://js.stripe.com">
+<script async src="https://js.stripe.com/v3/"></script>
 <style id="credimed-prod-overrides">
 /* Credimed production mode: hide Claude Design dev chrome.
    Add ?dev=1 to URL to reveal it (see script below). */
