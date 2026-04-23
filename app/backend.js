@@ -221,18 +221,17 @@ window.authFetch = async function (url, opts) {
      Returns { clientSecret } */
   window.createPaymentIntent = function (opts) {
     opts = opts || {};
-    /* Fallback amounts aligned with the pricing engine tiers
-       (standard=49, plus=79, premium=99) — NOT the Claude Design
-       mockup prices (29/39). Caller should always pass `amount`
-       explicitly; this only exists as a safety net. */
-    var fallbackAmount =
-      opts.plan === 'premium' ? 9900 :
-      opts.plan === 'plus'    ? 7900 :
-                                4900;
+    /* amount is intentionally sent as null. The Lambda
+       (credimed-payment) is the source of truth for pricing and
+       computes the PaymentIntent amount from `plan` using its own
+       internal price table. Sending an amount that doesn't match the
+       Lambda's table causes the Lambda to reject the request (no
+       clientSecret returned), which breaks the Stripe Element mount.
+       Update the Lambda's price table in AWS to change prices. */
     var body = {
       action:   'create_payment_intent',
       plan:     opts.plan     || 'standard',
-      amount:   opts.amount   || fallbackAmount,
+      amount:   null,
       currency: opts.currency || 'usd',
       email:    opts.email    || null,
       claimId:  opts.claimId  || null
