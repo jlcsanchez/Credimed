@@ -253,7 +253,15 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
 (function () {
   'use strict';
 
-  var POST_AUTH_URL = '/app/documents.html';
+  /* Post-auth destination. Returning users with a submitted claim go to
+     the dashboard; first-time users start the upload flow. */
+  function getPostAuthUrl() {
+    try {
+      var claim = window.CredimedState && window.CredimedState.get('claim', null);
+      if (claim && claim.id) return '/app/dashboard.html';
+    } catch (e) {}
+    return '/app/documents.html';
+  }
 
   /* ---------- helpers ---------- */
   function $(id) { return document.getElementById(id); }
@@ -448,7 +456,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
         try {
           await window.cognitoSignIn(pendingEmail, pw);
           showSuccess('Account verified. Redirecting...');
-          setTimeout(function () { window.location.href = POST_AUTH_URL; }, 800);
+          setTimeout(function () { window.location.href = getPostAuthUrl(); }, 800);
           return;
         } catch (e) {
           // Fall through to login screen
@@ -543,7 +551,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
       try {
         await window.cognitoSignIn(fpEmail, newPw);
         showSuccess('Password updated. Redirecting...');
-        setTimeout(function () { window.location.href = POST_AUTH_URL; }, 600);
+        setTimeout(function () { window.location.href = getPostAuthUrl(); }, 600);
         return;
       } catch (e) {}
       showSuccess('Password updated. Please sign in with your new password.');
@@ -592,7 +600,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
         }
       } catch (e) {}
       showSuccess('Signed in. Redirecting...');
-      setTimeout(function () { window.location.href = POST_AUTH_URL; }, 500);
+      setTimeout(function () { window.location.href = getPostAuthUrl(); }, 500);
     } catch (err) {
       showError(friendlyCognitoErr(err));
     } finally {
@@ -639,7 +647,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
               '<button id="welcome-signout" style="width:100%;height:52px;background:transparent;color:var(--slate-700);border:1px solid var(--slate-300);border-radius:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit">Sign out</button>' +
             '</div>';
           var cont = document.getElementById('welcome-continue');
-          if (cont) cont.addEventListener('click', function () { window.location.href = POST_AUTH_URL; });
+          if (cont) cont.addEventListener('click', function () { window.location.href = getPostAuthUrl(); });
           var so = document.getElementById('welcome-signout');
           if (so) so.addEventListener('click', function () {
             try { window.cognitoSignOut(); } catch (e) {}
