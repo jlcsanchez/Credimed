@@ -585,6 +585,12 @@ html,body{
   For denied: denial_reason_label + resubmission_eligible: true
 -->
 
+<!-- Load Cognito + shared backend + state before the dashboard script runs
+     so hydrateClaimFromState() + cognitoSignOut() are available on first paint. -->
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script src="state.js"></script>
+
 <script>
 const ICONS = {
   back:   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
@@ -607,7 +613,8 @@ const ICONS = {
   sparkle:'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.5L19 9l-5.2 1.5L12 16l-1.8-5.5L5 9l5.2-1.5z"/></svg>',
 };
 
-// ---- Claim data (static mock) ----
+// ---- Claim data ----
+// Starts as static mock; overridden with real data from CredimedState on load.
 const CLAIM = {
   id: 'CMX-2026-0A4B29',
   plan: { tier: 'Standard', price: 49 },
@@ -618,6 +625,53 @@ const CLAIM = {
   submitted: 'Apr 23, 2026',
   updated:   'Apr 24, 2026',
 };
+
+// Pull real data from CredimedState (populated during the claim flow) and
+// overwrite the mock. Missing fields keep the mock fallback so the UI still
+// renders something reasonable during design reviews / empty sessions.
+function hydrateClaimFromState() {
+  var S = window.CredimedState;
+  if (!S) return;
+  var claim = S.get('claim', null);
+  var receipt = S.get('receipt', {}) || {};
+  var estimate = S.get('estimate', {}) || {};
+  var pricing = S.get('pricing', null);
+
+  if (claim && claim.id) CLAIM.id = claim.id;
+
+  // Plan tier + price — prefer the pricing engine's actual pick over the
+  // legacy string stored in claim.plan
+  var planMap = { standard: { tier: 'Standard', price: 49 }, plus: { tier: 'Plus', price: 79 }, premium: { tier: 'Premium', price: 99 } };
+  var planKey = (pricing && pricing.tier) || (claim && claim.plan) || 'standard';
+  if (planMap[planKey]) CLAIM.plan = planMap[planKey];
+
+  // Paid amount at clinic (USD after conversion from MXN if needed — the
+  // documents screen already normalized to USD when it stored this)
+  var paid = (claim && claim.paidAmount) || receipt.amountPaid;
+  if (paid) CLAIM.paid_at_clinic = Math.round(Number(paid));
+
+  // Estimate range
+  var low = (claim && claim.estimateMin) || estimate.rangeMin;
+  var high = (claim && claim.estimateMax) || estimate.rangeMax;
+  if (low) CLAIM.refund_low = Math.round(Number(low));
+  if (high) CLAIM.refund_high = Math.round(Number(high));
+
+  // Procedures — receipt.procedures is the OCR'd array. Fall back to single
+  // receipt.procedure if only that is present (older sessions).
+  var procs = receipt.procedures;
+  if (Array.isArray(procs) && procs.length) {
+    CLAIM.procedures = procs;
+  } else if (receipt.procedure) {
+    CLAIM.procedures = [receipt.procedure];
+  }
+
+  // Submitted / updated dates
+  if (claim && claim.submittedAt) {
+    var d = new Date(claim.submittedAt);
+    CLAIM.submitted = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    CLAIM.updated = CLAIM.submitted;
+  }
+}
 
 // ---- Variant config ----
 const VARIANTS = {
@@ -784,12 +838,12 @@ function renderScreen(variant, scope){
   return `
     <div class="hero ${v.heroTone}">
       <div class="hero-top">
-        <button class="icon-btn" aria-label="Back">${ICONS.back}</button>
+        <button class="icon-btn" data-back data-scope="${scope}" aria-label="Back">${ICONS.back}</button>
         <div class="logo-badge">
           <span class="circle">${ICONS.mark}</span>
           <span class="text">CREDIMED</span>
         </div>
-        <button class="icon-btn" aria-label="Sign out">${ICONS.signOut}</button>
+        <button class="icon-btn" data-signout data-scope="${scope}" aria-label="Sign out">${ICONS.signOut}</button>
       </div>
       <div class="eyebrow">Claim status</div>
       <div class="claim-id">${c.id}</div>
@@ -859,11 +913,40 @@ function mountScope(scope){
 
 function wireScope(scope){
   const container = document.getElementById(`screen-${scope}`);
+
   const refreshBtn = container.querySelector(`[data-refresh][data-scope="${scope}"]`);
   if (refreshBtn){
     refreshBtn.addEventListener('click', () => {
       refreshBtn.classList.add('spinning');
-      setTimeout(() => refreshBtn.classList.remove('spinning'), 700);
+      // Re-hydrate from CredimedState in case something updated
+      setTimeout(() => {
+        refreshBtn.classList.remove('spinning');
+        if (typeof hydrateClaimFromState === 'function') hydrateClaimFromState();
+        mountScope(scope);
+      }, 700);
+    });
+  }
+
+  const backBtn = container.querySelector(`[data-back][data-scope="${scope}"]`);
+  if (backBtn){
+    backBtn.addEventListener('click', () => {
+      // Go to the confirmation screen if we came from there, else landing
+      if (document.referrer && document.referrer.indexOf('submission-confirmed') >= 0) {
+        history.back();
+      } else {
+        window.location.href = '/';
+      }
+    });
+  }
+
+  const signOutBtn = container.querySelector(`[data-signout][data-scope="${scope}"]`);
+  if (signOutBtn){
+    signOutBtn.addEventListener('click', () => {
+      if (!confirm('Sign out of Credimed?')) return;
+      try { if (window.cognitoSignOut) window.cognitoSignOut(); } catch (e) {}
+      // Don't clear claim state on sign-out so the user can still see their
+      // tracker after signing back in. Just drop the auth session.
+      window.location.href = '/app/login.html';
     });
   }
 }
@@ -882,6 +965,12 @@ document.querySelectorAll('.tab').forEach(t => {
     setVariant(t.getAttribute('data-variant'));
   });
 });
+
+// Hydrate from CredimedState before first render so the user sees their
+// real claim (amount, procedures, plan) instead of the design mock.
+// state.js + backend.js are loaded immediately above this block, so
+// window.CredimedState + window.cognitoSignOut are already available.
+hydrateClaimFromState();
 
 mountScope('mobile');
 mountScope('desktop');
