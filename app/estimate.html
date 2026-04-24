@@ -646,7 +646,7 @@ const VARIANTS = {
     clinic: 'Cancún',
     plan: 'Delta Dental PPO',
     breakdown: [
-      { label: 'Your out-of-network benefit', value: '60%', highlight: true },
+      { label: 'Your out-of-network benefit', value: 'Typically 40–70%', highlight: true },
       { label: 'Annual max remaining',         value: '$1,200' },
       { label: 'Already used this year',       value: '$0' },
     ],
@@ -664,7 +664,7 @@ const VARIANTS = {
     clinic: 'Cancún',
     plan: 'Delta Dental PPO',
     breakdown: [
-      { label: 'Your out-of-network benefit', value: '60%', highlight: true },
+      { label: 'Your out-of-network benefit', value: 'Typically 40–70%', highlight: true },
       { label: 'Annual max remaining',         value: '$1,200' },
       { label: 'Already used this year',       value: '$0' },
     ],
@@ -682,7 +682,7 @@ const VARIANTS = {
     clinic: 'Tijuana',
     plan: 'Cigna PPO Premium',
     breakdown: [
-      { label: 'Your out-of-network benefit', value: '80%', highlight: true },
+      { label: 'Your out-of-network benefit', value: 'Typically 40–70%', highlight: true },
       { label: 'Annual max remaining',         value: '$3,500' },
       { label: 'Already used this year',       value: '$240' },
     ],
@@ -870,7 +870,7 @@ mount();
   ];
   if (ins.memberId) breakdown.push({ label: 'Member ID', value: ins.memberId });
   breakdown.push(
-    { label: 'Out-of-network benefit', value: '75%' },
+    { label: 'Out-of-network coverage', value: 'Typically 40–70%' },
     { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted from MXN)' : ' USD') },
     { label: 'Procedure',              value: r.procedure || '—' }
   );
@@ -885,7 +885,7 @@ mount();
     calc: [
       { label: 'Receipt total',          value: '$' + paidUSD.toLocaleString() },
       { label: 'Covered procedures',     value: '$' + covered.toLocaleString() },
-      { label: 'Out-of-network rate',    value: '× 75%' },
+      { label: 'Out-of-network rate',    value: '× 40–70% (plan-dependent)' },
       { label: 'Estimated refund (mid)', value: '$' + mid.toLocaleString(), final: true }
     ],
     expanded: false
