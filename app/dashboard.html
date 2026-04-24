@@ -644,6 +644,12 @@ const CLAIM = {
   updated:   'Apr 24, 2026',
 };
 
+// True when CredimedState has a real submitted claim. Dashboard uses this
+// to flip between 'live tracking' and 'empty state' (new user who signed
+// in but hasn't submitted yet — no more showing mock data as if it were
+// theirs).
+let HAS_REAL_CLAIM = false;
+
 // Pull real data from CredimedState (populated during the claim flow) and
 // overwrite the mock. Missing fields keep the mock fallback so the UI still
 // renders something reasonable during design reviews / empty sessions.
@@ -651,6 +657,7 @@ function hydrateClaimFromState() {
   var S = window.CredimedState;
   if (!S) return;
   var claim = S.get('claim', null);
+  HAS_REAL_CLAIM = !!(claim && claim.id);
   var receipt = S.get('receipt', {}) || {};
   var estimate = S.get('estimate', {}) || {};
   var pricing = S.get('pricing', null);
@@ -771,8 +778,74 @@ const VARIANTS = {
   },
 };
 
+// ---- Empty state (no claim in flight yet) ----
+function renderEmptyState() {
+  return `
+    <div class="hero teal" style="padding-bottom:32px">
+      <div class="hero-top">
+        <span style="width:36px"></span>
+        <div class="logo-badge">
+          <span class="circle">${ICONS.mark}</span>
+          <span class="text">CREDIMED</span>
+        </div>
+        <button class="icon-btn" data-signout aria-label="Sign out">${ICONS.signOut}</button>
+      </div>
+      <div class="eyebrow">Welcome</div>
+      <div class="claim-id" style="font-size:22px;line-height:1.2">Ready to recover your refund?</div>
+    </div>
+
+    <div class="body-wrap safe-bottom">
+      <div class="status-card" style="text-align:center;padding:28px 22px">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--teal-50);display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0A7A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="2"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div style="font-size:17px;font-weight:700;color:var(--slate-900);margin-bottom:6px;letter-spacing:-0.01em">You don't have a claim yet</div>
+        <div style="font-size:14px;color:var(--slate-600);line-height:1.5;margin-bottom:20px">Upload your US insurance card + Mexico dental receipt. We prepare and submit the claim for you — most members recover $600–$1,500.</div>
+        <a href="/app/documents.html" class="pricing-cta" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;background:var(--teal-600);color:#fff;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;width:100%">
+          Start my claim
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <div class="details-card" style="text-align:center">
+        <h3 style="margin-bottom:10px">What happens next</h3>
+        <div style="font-size:13.5px;color:var(--slate-600);line-height:1.55;text-align:left">
+          <p style="margin:0 0 8px"><b>1.</b> Upload receipt + insurance card (2 minutes)</p>
+          <p style="margin:0 0 8px"><b>2.</b> See your refund estimate + pay the one-time fee</p>
+          <p style="margin:0 0 8px"><b>3.</b> We file the claim within 24 hours</p>
+          <p style="margin:0"><b>4.</b> Your insurer pays you directly in 3–6 weeks</p>
+        </div>
+      </div>
+
+      <div class="support-row">
+        <a class="support-btn" href="mailto:support@credimed.us">
+          <span class="sb-icon">${ICONS.mail}</span>
+          <span>Email support</span>
+        </a>
+        <a class="support-btn wa" href="https://wa.me/15125550134">
+          <span class="sb-icon">${ICONS.whatsapp}</span>
+          <span>WhatsApp</span>
+        </a>
+      </div>
+
+      <div class="trust-row">
+        <span class="trust-chip">${ICONS.shield} HIPAA-aligned</span>
+        <span class="trust-chip">${ICONS.lock} 256-bit encrypted</span>
+      </div>
+    </div>
+  `;
+}
+
 // ---- Renderer ----
 function renderScreen(variant, scope){
+  // No real claim in state yet — user just signed up / signed in with no
+  // claim history on this device. Skip the tracker entirely and show an
+  // onboarding-style empty card that invites them to start a claim.
+  if (!HAS_REAL_CLAIM) return renderEmptyState();
+
   const v = VARIANTS[variant];
   const c = CLAIM;
 
