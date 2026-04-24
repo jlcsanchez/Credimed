@@ -1357,9 +1357,17 @@ mountScope('desktop');
     '#credimed-stripe-mount .stripe-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--slate-500);font-size:13px;gap:8px}' +
     '#credimed-stripe-mount .stripe-placeholder .spin{width:22px;height:22px;border:2.5px solid #e2e8f0;border-top-color:#0D9488;border-radius:50%;animation:cm-spin 700ms linear infinite}' +
     '@keyframes cm-spin{to{transform:rotate(360deg)}}' +
-    '#stripe-skeleton{padding:8px 2px}' +
-    '#stripe-skeleton .skeleton-line{height:20px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:cm-shimmer 1.5s infinite;border-radius:4px;margin-bottom:12px}' +
-    '#stripe-skeleton .skeleton-line.short{width:60%}' +
+    '#stripe-skeleton{padding:4px 0;display:flex;flex-direction:column;gap:10px;transition:opacity 220ms ease}' +
+    '#stripe-skeleton.fade-out{opacity:0;pointer-events:none}' +
+    '#stripe-skeleton .sk-tabs{display:flex;gap:8px;margin-bottom:4px}' +
+    '#stripe-skeleton .sk-tab{flex:1;height:40px;border:1px solid #E2E8F0;border-radius:6px;background:linear-gradient(90deg,#f5f5f5 25%,#eaeaea 50%,#f5f5f5 75%);background-size:200% 100%;animation:cm-shimmer 1.5s infinite}' +
+    '#stripe-skeleton .sk-tab.active{border-color:#0D9488;background:#F0FDFA}' +
+    '#stripe-skeleton .sk-label{height:11px;width:35%;border-radius:3px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:cm-shimmer 1.5s infinite;margin-top:8px}' +
+    '#stripe-skeleton .sk-field{height:44px;border:1px solid #E2E8F0;border-radius:6px;background:linear-gradient(90deg,#fafafa 25%,#f0f0f0 50%,#fafafa 75%);background-size:200% 100%;animation:cm-shimmer 1.5s infinite}' +
+    '#stripe-skeleton .sk-row{display:flex;gap:8px}' +
+    '#stripe-skeleton .sk-row > .sk-field{flex:1}' +
+    '#payment-element{transition:opacity 220ms ease}' +
+    '#payment-element.fade-in{opacity:1}' +
     '@keyframes cm-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}';
   document.head.appendChild(devStyle);
 
@@ -1382,14 +1390,26 @@ mountScope('desktop');
     if (cardPanel.dataset.stripeReady === '1') return;
     cardPanel.dataset.stripeReady = '1';
 
+    // Skeleton mimics Stripe's Payment Element layout (tabs → card number
+    // → expiry/CVC row) so the shape doesn't shift when the real iframe
+    // takes over. Fades out; real element fades in on 'ready'.
     cardPanel.innerHTML =
       '<div id="credimed-stripe-mount">' +
         '<div id="stripe-skeleton">' +
-          '<div class="skeleton-line"></div>' +
-          '<div class="skeleton-line"></div>' +
-          '<div class="skeleton-line short"></div>' +
+          '<div class="sk-tabs">' +
+            '<div class="sk-tab active"></div>' +
+            '<div class="sk-tab"></div>' +
+            '<div class="sk-tab"></div>' +
+          '</div>' +
+          '<div class="sk-label"></div>' +
+          '<div class="sk-field"></div>' +
+          '<div class="sk-label"></div>' +
+          '<div class="sk-row">' +
+            '<div class="sk-field"></div>' +
+            '<div class="sk-field"></div>' +
+          '</div>' +
         '</div>' +
-        '<div id="payment-element" style="display:none"></div>' +
+        '<div id="payment-element" style="opacity:0"></div>' +
       '</div>';
 
     /* Hide ALL Claude Design mock payment tabs. Stripe Payment Element
@@ -1489,27 +1509,33 @@ mountScope('desktop');
       state.mounted = true;
 
       /* Swap skeleton → real form the moment Stripe's iframe signals
-         it has finished rendering. IMPORTANT: this listener goes on
-         the payment Element instance, NOT on the Elements factory —
-         `elements.on('ready')` doesn't exist and would silently fail. */
+         it has finished rendering. Cross-fade (not hard display:none)
+         so the hand-off feels continuous instead of popping in. */
       if (paymentEl && typeof paymentEl.on === 'function') {
         paymentEl.on('ready', function () {
           var skeleton = document.getElementById('stripe-skeleton');
           var el = document.getElementById('payment-element');
-          if (skeleton) skeleton.style.display = 'none';
-          if (el) el.style.display = 'block';
+          if (el) el.style.opacity = '1';
+          if (skeleton) {
+            skeleton.classList.add('fade-out');
+            setTimeout(function () { skeleton.style.display = 'none'; }, 240);
+          }
         });
       }
 
       /* Reliability fallback: if 'ready' never fires within 3s (rare,
          but Stripe iframe can hang in corner-case networks), swap
-         anyway so the user never sees a permanent skeleton. */
+         anyway so the user never sees a permanent skeleton. Uses the
+         same cross-fade so the transition isn't jarring. */
       setTimeout(function () {
         var skeleton = document.getElementById('stripe-skeleton');
         var el = document.getElementById('payment-element');
-        if (el && el.style.display === 'none') {
-          if (skeleton) skeleton.style.display = 'none';
-          el.style.display = 'block';
+        if (el && el.style.opacity !== '1') {
+          el.style.opacity = '1';
+          if (skeleton) {
+            skeleton.classList.add('fade-out');
+            setTimeout(function () { skeleton.style.display = 'none'; }, 240);
+          }
         }
       }, 3000);
 

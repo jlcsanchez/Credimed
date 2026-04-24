@@ -197,17 +197,49 @@ window.authFetch = async function (url, opts) {
   var stripeElements = null;
   var stripePaymentElement = null;
 
+  /* Memoized load. Prior version created a fresh Promise every call, which
+     meant a warm-up call (fire-and-forget at script parse time) and the
+     real call (inside mountStripePaymentElement) could both race to append
+     a <script src="https://js.stripe.com/v3/">, and whichever onload fired
+     second would re-initialize stripeInstance. That race added 200-500ms
+     of visible pause before the Payment Element appeared. Cache the
+     promise on first call so all subsequent calls reuse it. */
+  var stripeLoadPromise = null;
   window.loadStripe = function () {
-    return new Promise(function (resolve, reject) {
+    if (stripeLoadPromise) return stripeLoadPromise;
+
+    stripeLoadPromise = new Promise(function (resolve, reject) {
       if (stripeInstance) return resolve(stripeInstance);
 
+      // The page preloads https://js.stripe.com/v3/ via an <script async> in
+      // the <head>. If that has already finished, Stripe is in the global
+      // scope — skip the extra fetch entirely.
       if (typeof Stripe !== 'undefined') {
         stripeInstance = Stripe(window.CREDIMED_STRIPE_PK);
         return resolve(stripeInstance);
       }
 
+      // If there's already an async Stripe script in flight (the one in
+      // the page's <head>), hook into its load event instead of appending
+      // a second copy.
+      var existing = document.querySelector('script[src="https://js.stripe.com/v3/"]');
+      if (existing) {
+        existing.addEventListener('load', function () {
+          stripeInstance = Stripe(window.CREDIMED_STRIPE_PK);
+          resolve(stripeInstance);
+        });
+        existing.addEventListener('error', function () { reject(new Error('Failed to load Stripe.js')); });
+        // Safety: if by some oddity Stripe already defined itself, fall through
+        if (typeof Stripe !== 'undefined') {
+          stripeInstance = Stripe(window.CREDIMED_STRIPE_PK);
+          resolve(stripeInstance);
+        }
+        return;
+      }
+
       var s = document.createElement('script');
       s.src = 'https://js.stripe.com/v3/';
+      s.async = true;
       s.onload = function () {
         stripeInstance = Stripe(window.CREDIMED_STRIPE_PK);
         resolve(stripeInstance);
@@ -215,6 +247,7 @@ window.authFetch = async function (url, opts) {
       s.onerror = function () { reject(new Error('Failed to load Stripe.js')); };
       document.head.appendChild(s);
     });
+    return stripeLoadPromise;
   };
 
   /* Calls the payment Lambda to create a PaymentIntent.
