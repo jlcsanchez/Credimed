@@ -933,7 +933,7 @@ function renderEmptyState() {
           <span class="circle">${ICONS.mark}</span>
           <span class="text">CREDIMED</span>
         </div>
-        <button class="signout-pill" data-signout>${ICONS.signOut}<span>Sign out</span></button>
+        <button class="signout-pill" data-signout data-scope="empty">${ICONS.signOut}<span>Sign out</span></button>
       </div>
       <div class="eyebrow">Welcome</div>
       <div class="claim-id" style="font-size:22px;line-height:1.2">Ready to recover your refund?</div>
@@ -1188,8 +1188,12 @@ function wireScope(scope){
     });
   }
 
-  const signOutBtn = container.querySelector(`[data-signout][data-scope="${scope}"]`);
-  if (signOutBtn){
+  // Match EVERY sign-out button inside this scope's container. The real-
+  // claim hero puts data-scope="${scope}", the empty-state hero uses
+  // data-scope="empty" — either way, wire up all of them so the click
+  // always works regardless of which view is rendered.
+  const signOutBtns = container.querySelectorAll('[data-signout]');
+  signOutBtns.forEach((signOutBtn) => {
     signOutBtn.addEventListener('click', () => {
       if (!confirm('Sign out of Credimed?')) return;
       try { if (window.cognitoSignOut) window.cognitoSignOut(); } catch (e) {}
@@ -1197,7 +1201,7 @@ function wireScope(scope){
       // tracker after signing back in. Just drop the auth session.
       window.location.href = '/app/login.html';
     });
-  }
+  });
 
   const newClaimBtn = container.querySelector(`[data-new-claim][data-scope="${scope}"]`);
   if (newClaimBtn){
