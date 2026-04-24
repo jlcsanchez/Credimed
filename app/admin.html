@@ -155,6 +155,48 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 .claim-row-link { cursor:pointer; }
 .claim-row-link:hover { background:var(--slate-50); }
 
+/* ---- Insurers tab ---- */
+.ins-toolbar { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+.ins-table-header, .ins-row {
+  display:grid; grid-template-columns: 1.5fr 1fr 90px 90px 110px 60px;
+  gap:12px; padding:10px 16px; align-items:center; font-size:13px;
+}
+@media (max-width: 800px) {
+  .ins-table-header, .ins-row { grid-template-columns: 1fr auto; row-gap:4px; }
+  .ins-table-header .hide-mobile, .ins-row .hide-mobile { display:none; }
+}
+.ins-table-header { background:var(--slate-50); border-bottom:1px solid var(--slate-200); font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--slate-500); }
+.ins-row { border-bottom:1px solid var(--slate-100); cursor:pointer; transition:background 120ms; }
+.ins-row:hover { background:var(--slate-50); }
+.ins-row .ins-name { font-weight:600; color:var(--slate-900); }
+.ins-row .ins-key  { font-size:11px; color:var(--slate-500); margin-top:1px; font-family:"SF Mono",Menlo,monospace; }
+.ins-row .ins-pill {
+  display:inline-block; padding:2px 8px; border-radius:99px; font-size:11px; font-weight:700;
+  background:var(--slate-100); color:var(--slate-700);
+}
+.ins-row .ins-pill.A { background:var(--success-bg); color:var(--success-fg); }
+.ins-row .ins-pill.B { background:var(--info-bg); color:var(--info-fg); }
+.ins-row .ins-pill.C { background:var(--amber-bg); color:var(--amber-fg); }
+.ins-row .ins-pill.D { background:var(--danger-bg); color:var(--danger-fg); }
+.ins-row .ins-overridden {
+  display:inline-block; margin-left:6px; padding:1px 6px; border-radius:99px;
+  background:var(--teal-50); color:var(--teal-800); font-size:9.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.5px;
+}
+.ins-field { display:flex; flex-direction:column; gap:4px; margin-bottom:10px; }
+.ins-field .k { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--slate-500); }
+.ins-field input, .ins-field select, .ins-field textarea {
+  padding:8px 10px; border:1px solid var(--slate-200); border-radius:8px;
+  font-size:13.5px; font-family:inherit; outline:none; background:#fff; color:var(--slate-900);
+}
+.ins-field input:focus, .ins-field select:focus, .ins-field textarea:focus {
+  border-color:var(--teal-600); box-shadow:0 0 0 3px rgba(13,148,136,.12);
+}
+.ins-field textarea { resize:vertical; min-height:60px; }
+.ins-inline { display:flex; gap:10px; }
+.ins-inline .ins-field { flex:1; }
+.ins-help { font-size:11.5px; color:var(--slate-500); font-style:italic; margin:0; line-height:1.5; }
+
 .claims-table { background:#fff; border:1px solid var(--slate-200); border-radius:14px; overflow:hidden; }
 .claims-table-header, .claims-row { display: grid; grid-template-columns: 120px 1fr 100px 110px 130px 110px; gap: 12px; padding: 12px 16px; align-items:center; font-size: 13px; }
 @media (max-width: 800px) {
@@ -233,6 +275,7 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     <button class="admin-nav-tab active" data-sec="overview">Overview</button>
     <button class="admin-nav-tab" data-sec="claims">Claims</button>
     <button class="admin-nav-tab" data-sec="patients">Patients</button>
+    <button class="admin-nav-tab" data-sec="insurers">Insurers</button>
   </nav>
 
   <div class="admin-body">
@@ -332,11 +375,106 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
         <div class="empty-table"><strong>Patients view coming soon</strong>Lists patients from Cognito + their claims.</div>
       </div>
     </section>
+
+    <!-- INSURERS -->
+    <section class="sec" id="sec-insurers">
+      <h1 class="page-title">Insurers</h1>
+      <p class="page-sub">
+        Typical out-of-network coverage ranges per carrier. Used by the
+        public estimator (<code>estimate.html</code>) and seeds the
+        underwriting risk score for the future advance/credit product.
+        Edits below are saved locally on this device and override the
+        baseline values in <code>app/insurers.js</code>. Push the file
+        to the repo to make changes permanent for everyone.
+      </p>
+      <div class="ins-toolbar">
+        <button class="filter-export" id="insAdd">+ Add insurer</button>
+        <button class="filter-clear" id="insExport">Export overrides as JSON</button>
+        <button class="filter-clear" id="insReset">Reset all overrides</button>
+      </div>
+      <div class="claims-table" id="insTable">
+        <div class="loading"><div class="spin"></div>Loading insurers…</div>
+      </div>
+    </section>
   </div>
+
+  <!-- INSURER EDIT DRAWER -->
+  <aside class="claim-drawer" id="insDrawer" aria-hidden="true">
+    <header class="cd-head">
+      <div>
+        <div class="cd-id" id="insDrawerKey">—</div>
+        <div class="cd-name" id="insDrawerName">Insurer</div>
+      </div>
+      <button class="cd-close" id="insDrawerClose" aria-label="Close">×</button>
+    </header>
+    <div class="cd-body">
+      <div class="cd-section">
+        <h3>Display</h3>
+        <label class="ins-field"><span class="k">Display name</span>
+          <input id="insDrawerDisplay" type="text" placeholder="e.g. Delta Dental PPO" />
+        </label>
+      </div>
+      <div class="cd-section">
+        <h3>Out-of-network coverage (%)</h3>
+        <div class="ins-inline">
+          <label class="ins-field"><span class="k">Typical low</span>
+            <input id="insDrawerOonLow" type="number" min="0" max="100" />
+          </label>
+          <label class="ins-field"><span class="k">Typical high</span>
+            <input id="insDrawerOonHigh" type="number" min="0" max="100" />
+          </label>
+        </div>
+      </div>
+      <div class="cd-section">
+        <h3>Annual maximum (USD)</h3>
+        <div class="ins-inline">
+          <label class="ins-field"><span class="k">Floor</span>
+            <input id="insDrawerMaxLow" type="number" min="0" />
+          </label>
+          <label class="ins-field"><span class="k">Ceiling</span>
+            <input id="insDrawerMaxHigh" type="number" min="0" />
+          </label>
+        </div>
+      </div>
+      <div class="cd-section">
+        <h3>Underwriting (advance/credit)</h3>
+        <label class="ins-field"><span class="k">Risk score</span>
+          <select id="insDrawerRisk">
+            <option value="">— (not enough data)</option>
+            <option value="A">A — fast + reliable</option>
+            <option value="B">B — slow but pays</option>
+            <option value="C">C — frequent denials</option>
+            <option value="D">D — avoid</option>
+          </select>
+        </label>
+        <div class="ins-inline">
+          <label class="ins-field"><span class="k">Avg payout days</span>
+            <input id="insDrawerDays" type="number" min="0" placeholder="—" />
+          </label>
+          <label class="ins-field"><span class="k">Confirmed claims</span>
+            <input id="insDrawerCount" type="number" min="0" />
+          </label>
+        </div>
+        <p class="ins-help">Leave risk + days blank until you have ≥10 confirmed payouts with this carrier. Brochure data is too unreliable to underwrite from.</p>
+      </div>
+      <div class="cd-section">
+        <h3>Notes (operational)</h3>
+        <label class="ins-field"><span class="k">Internal notes</span>
+          <textarea id="insDrawerNotes" rows="3" placeholder="One-liner about turnaround, common issues, etc."></textarea>
+        </label>
+      </div>
+      <div class="cd-actions">
+        <button class="cd-action primary" id="insDrawerSave">Save</button>
+        <button class="cd-action danger" id="insDrawerDelete">Delete override</button>
+      </div>
+    </div>
+  </aside>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
 <script src="backend.js"></script>
+<script src="state.js"></script>
+<script src="insurers.js"></script>
 <script>
 (function () {
   'use strict';
@@ -472,6 +610,7 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       $('sec-' + secId).classList.add('active');
       if (secId === 'overview') loadOverview();
       if (secId === 'claims')   loadClaims();
+      if (secId === 'insurers') loadInsurers();
     });
   });
 
@@ -807,6 +946,209 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     } else {
       loadOverview(); loadClaims();
     }
+  });
+
+  /* ────────────────────────────────────────────────────────────────────
+     INSURERS PANEL
+     Reads the baseline INSURERS table from app/insurers.js and merges it
+     with locally-saved overrides from CredimedState. Admin can edit any
+     row — the override is stored client-side. To make changes permanent
+     (apply to all users, not just this device), use 'Export overrides
+     as JSON' → paste into app/insurers.js → commit.
+
+     When the backend gets a /insurers admin endpoint, swap the
+     CredimedState read/write with authFetch and the same UI works.
+     ──────────────────────────────────────────────────────────────────── */
+  var STATE_KEY = 'admin.insurerOverrides';
+
+  function getOverrides() {
+    var s = window.CredimedState;
+    if (!s) return {};
+    return s.get(STATE_KEY, {}) || {};
+  }
+  function saveOverrides(map) {
+    if (!window.CredimedState) return;
+    window.CredimedState.set(STATE_KEY, map);
+  }
+
+  function effectiveInsurer(key) {
+    // Merge the baseline row from insurers.js with any local override.
+    var base = (window.CredimedInsurers && window.CredimedInsurers.INSURERS[key]) || null;
+    var ov = getOverrides()[key] || null;
+    if (!base && !ov) return null;
+    return Object.assign({}, base || {}, ov || {});
+  }
+
+  function listKeys() {
+    // Union of baseline + override keys, alphabetized.
+    var base = (window.CredimedInsurers && window.CredimedInsurers.INSURERS) || {};
+    var ov = getOverrides();
+    var keys = Object.keys(Object.assign({}, base, ov));
+    return keys.sort();
+  }
+
+  function isOverridden(key) {
+    return Object.prototype.hasOwnProperty.call(getOverrides(), key);
+  }
+
+  function loadInsurers() {
+    var keys = listKeys();
+    var rows = keys.map(function (k) {
+      var ins = effectiveInsurer(k);
+      var risk = ins.riskScore || '';
+      var pillClass = risk ? 'ins-pill ' + risk : 'ins-pill';
+      var oonRange = (ins.oonLow != null && ins.oonHigh != null)
+        ? ins.oonLow + '–' + ins.oonHigh + '%' : '—';
+      var maxRange = (ins.annualMaxLow != null && ins.annualMaxHigh != null)
+        ? '$' + ins.annualMaxLow + '–$' + ins.annualMaxHigh : '—';
+      var overrideBadge = isOverridden(k) ? '<span class="ins-overridden">override</span>' : '';
+      return ''
+        + '<div class="ins-row" data-ins-key="' + k + '">'
+        +   '<div>'
+        +     '<div class="ins-name">' + (ins.name || k) + overrideBadge + '</div>'
+        +     '<div class="ins-key">key: ' + k + '</div>'
+        +   '</div>'
+        +   '<div class="hide-mobile">' + (ins.notes || '—') + '</div>'
+        +   '<div class="hide-mobile">' + oonRange + '</div>'
+        +   '<div class="hide-mobile">' + maxRange + '</div>'
+        +   '<div><span class="' + pillClass + '">' + (risk || '—') + '</span></div>'
+        +   '<div style="text-align:right;font-size:18px;color:var(--slate-400)">›</div>'
+        + '</div>';
+    }).join('');
+    $('insTable').innerHTML =
+      '<div class="ins-table-header">'
+      +   '<div>Carrier</div><div class="hide-mobile">Notes</div>'
+      +   '<div class="hide-mobile">OON %</div><div class="hide-mobile">Annual max</div>'
+      +   '<div>Risk</div><div></div>'
+      + '</div>' + rows;
+  }
+
+  // Open the edit drawer for a specific insurer (or for a brand-new row).
+  var EDITING_KEY = null;
+  function openInsurerDrawer(key) {
+    EDITING_KEY = key;
+    var ins = effectiveInsurer(key) || {};
+    $('insDrawerKey').textContent = 'key: ' + key;
+    $('insDrawerName').textContent = ins.name || key;
+    $('insDrawerDisplay').value = ins.name || '';
+    $('insDrawerOonLow').value = ins.oonLow != null ? ins.oonLow : '';
+    $('insDrawerOonHigh').value = ins.oonHigh != null ? ins.oonHigh : '';
+    $('insDrawerMaxLow').value = ins.annualMaxLow != null ? ins.annualMaxLow : '';
+    $('insDrawerMaxHigh').value = ins.annualMaxHigh != null ? ins.annualMaxHigh : '';
+    $('insDrawerRisk').value = ins.riskScore || '';
+    $('insDrawerDays').value = ins.avgPayoutDays != null ? ins.avgPayoutDays : '';
+    $('insDrawerCount').value = ins.confirmedClaimsCount != null ? ins.confirmedClaimsCount : 0;
+    $('insDrawerNotes').value = ins.notes || '';
+    $('insDrawerDelete').style.display = isOverridden(key) ? '' : 'none';
+    $('drawerBackdrop').classList.add('open');
+    $('insDrawer').classList.add('open');
+    $('insDrawer').setAttribute('aria-hidden', 'false');
+  }
+  function closeInsurerDrawer() {
+    EDITING_KEY = null;
+    $('drawerBackdrop').classList.remove('open');
+    $('insDrawer').classList.remove('open');
+    $('insDrawer').setAttribute('aria-hidden', 'true');
+  }
+
+  function num(id) {
+    var v = $(id).value;
+    if (v === '') return null;
+    var n = Number(v);
+    return isNaN(n) ? null : n;
+  }
+
+  $('insDrawerClose').addEventListener('click', closeInsurerDrawer);
+
+  // Save: write the current form values as an override (delta vs the
+  // baseline row in insurers.js, but the override carries the full
+  // record so it round-trips cleanly).
+  $('insDrawerSave').addEventListener('click', function () {
+    if (!EDITING_KEY) return;
+    var override = {
+      name: $('insDrawerDisplay').value.trim() || null,
+      oonLow:  num('insDrawerOonLow'),
+      oonHigh: num('insDrawerOonHigh'),
+      annualMaxLow:  num('insDrawerMaxLow'),
+      annualMaxHigh: num('insDrawerMaxHigh'),
+      riskScore: $('insDrawerRisk').value || null,
+      avgPayoutDays: num('insDrawerDays'),
+      confirmedClaimsCount: num('insDrawerCount') || 0,
+      notes: $('insDrawerNotes').value.trim() || null,
+    };
+    var map = getOverrides();
+    map[EDITING_KEY] = override;
+    saveOverrides(map);
+    loadInsurers();
+    closeInsurerDrawer();
+  });
+
+  $('insDrawerDelete').addEventListener('click', function () {
+    if (!EDITING_KEY) return;
+    if (!confirm('Remove the local override for ' + EDITING_KEY + '? The baseline value from app/insurers.js will be used instead.')) return;
+    var map = getOverrides();
+    delete map[EDITING_KEY];
+    saveOverrides(map);
+    loadInsurers();
+    closeInsurerDrawer();
+  });
+
+  // Add a brand-new insurer (not yet in insurers.js). Prompts for the
+  // canonical key; the rest of the fields fill in the drawer.
+  $('insAdd').addEventListener('click', function () {
+    var raw = prompt('New insurer key (lowercase, no PPO/HMO/Inc suffix). Examples: "delta dental", "new york dental":');
+    if (!raw) return;
+    var key = raw.toLowerCase().trim();
+    if (!key) return;
+    var existing = (window.CredimedInsurers && window.CredimedInsurers.INSURERS[key]) || getOverrides()[key];
+    if (existing) {
+      alert('That key already exists. Click the row in the table to edit it.');
+      return;
+    }
+    // Seed with conservative defaults so the form isn't empty.
+    var map = getOverrides();
+    map[key] = {
+      name: raw + ' PPO',
+      oonLow: 40, oonHigh: 70,
+      annualMaxLow: 1000, annualMaxHigh: 2000,
+      riskScore: null, avgPayoutDays: null, confirmedClaimsCount: 0,
+      notes: 'New carrier — using public defaults until we have claim history.',
+    };
+    saveOverrides(map);
+    loadInsurers();
+    openInsurerDrawer(key);
+  });
+
+  // Export all current overrides as a JSON snippet ready to paste back
+  // into app/insurers.js.
+  $('insExport').addEventListener('click', function () {
+    var map = getOverrides();
+    var keys = Object.keys(map).sort();
+    if (keys.length === 0) { alert('No local overrides to export.'); return; }
+    var lines = ["/* Paste these into app/insurers.js inside INSURERS = { ... } */"];
+    keys.forEach(function (k) {
+      lines.push('  ' + JSON.stringify(k) + ': ' + JSON.stringify(map[k], null, 2).replace(/\n/g, '\n  ') + ',');
+    });
+    var text = lines.join('\n');
+    // Show in a new tab as plain text so the team can copy it.
+    var blob = new Blob([text], { type: 'text/plain' });
+    var url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+  });
+
+  $('insReset').addEventListener('click', function () {
+    if (!confirm('Reset ALL local insurer overrides? Each carrier reverts to its baseline value from app/insurers.js.')) return;
+    saveOverrides({});
+    loadInsurers();
+  });
+
+  // Click any insurer row to open the edit drawer.
+  document.addEventListener('click', function (e) {
+    var row = e.target.closest('.ins-row');
+    if (!row) return;
+    var key = row.getAttribute('data-ins-key');
+    if (key) openInsurerDrawer(key);
   });
 })();
 </script>
