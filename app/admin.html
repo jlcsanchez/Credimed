@@ -80,6 +80,81 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 .stat-trend.dn { color: var(--danger-fg); }
 
 /* ---- Table ---- */
+/* ---- Filters bar (claims tab) ---- */
+.filters-row { display:flex; gap:10px; margin-bottom:8px; align-items:flex-end; flex-wrap:wrap; }
+.filter-group { display:flex; flex-direction:column; gap:4px; min-width:140px; }
+.filter-group.filter-search { flex:1; min-width:200px; }
+.filter-group label { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--slate-500); }
+.filter-group select, .filter-group input {
+  height:36px; padding:0 12px; border:1px solid var(--slate-200);
+  border-radius:8px; font-size:13px; font-family:inherit; outline:none;
+  background:#fff; color:var(--slate-900);
+}
+.filter-group select:focus, .filter-group input:focus { border-color:var(--teal-600); box-shadow:0 0 0 3px rgba(13,148,136,.12); }
+.filter-clear, .filter-export {
+  height:36px; padding:0 14px; border:1px solid var(--slate-300);
+  background:#fff; color:var(--slate-700); border-radius:8px;
+  font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+}
+.filter-clear:hover { background:var(--slate-100); }
+.filter-export { background:var(--teal-600); color:#fff; border-color:var(--teal-600); }
+.filter-export:hover { background:var(--teal-700); }
+.filter-summary { font-size:12px; color:var(--slate-500); margin-bottom:14px; padding:0 4px; }
+
+/* ---- Claim detail drawer ---- */
+.claim-drawer-backdrop {
+  position:fixed; inset:0; background:rgba(15,23,42,.45);
+  backdrop-filter:blur(2px); opacity:0; pointer-events:none;
+  transition:opacity 220ms ease; z-index:80;
+}
+.claim-drawer-backdrop.open { opacity:1; pointer-events:auto; }
+.claim-drawer {
+  position:fixed; top:0; right:0; bottom:0;
+  width:min(540px, 100vw);
+  background:#fff; box-shadow:-12px 0 32px rgba(15,23,42,.18);
+  transform:translateX(100%); transition:transform 280ms cubic-bezier(.2,.8,.2,1);
+  z-index:90; display:flex; flex-direction:column; overflow:hidden;
+}
+.claim-drawer.open { transform:translateX(0); }
+.cd-head {
+  padding:18px 20px; border-bottom:1px solid var(--slate-200);
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  background:linear-gradient(135deg, #0f172a, #134e4a); color:#fff;
+}
+.cd-head .cd-id { font-family:"SF Mono", Menlo, monospace; font-size:13px; opacity:.75; letter-spacing:.04em; }
+.cd-head .cd-name { font-size:18px; font-weight:700; margin-top:2px; letter-spacing:-.01em; }
+.cd-close {
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+  color:#fff; width:32px; height:32px; border-radius:999px;
+  font-size:20px; cursor:pointer; line-height:1; flex-shrink:0;
+}
+.cd-close:hover { background:rgba(255,255,255,.2); }
+.cd-body { flex:1; overflow-y:auto; padding:18px 20px; -webkit-overflow-scrolling:touch; }
+.cd-section { margin-bottom:20px; }
+.cd-section h3 {
+  font-size:11px; font-weight:800; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--slate-500);
+  margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid var(--slate-200);
+}
+.cd-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13.5px; }
+.cd-row .k { color:var(--slate-500); font-weight:500; }
+.cd-row .v { color:var(--slate-900); font-weight:600; text-align:right; }
+.cd-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.cd-action {
+  flex:1; padding:10px 12px; border:1px solid var(--slate-300);
+  background:#fff; color:var(--slate-700); border-radius:8px;
+  font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+  text-align:center;
+}
+.cd-action:hover { background:var(--slate-50); border-color:var(--slate-400); }
+.cd-action.primary { background:var(--teal-600); color:#fff; border-color:var(--teal-600); }
+.cd-action.primary:hover { background:var(--teal-700); }
+.cd-action.danger { background:var(--danger-bg); color:var(--danger-fg); border-color:var(--danger-bg); }
+.cd-empty { color:var(--slate-400); font-style:italic; font-size:13px; text-align:center; padding:24px; }
+
+.claim-row-link { cursor:pointer; }
+.claim-row-link:hover { background:var(--slate-50); }
+
 .claims-table { background:#fff; border:1px solid var(--slate-200); border-radius:14px; overflow:hidden; }
 .claims-table-header, .claims-row { display: grid; grid-template-columns: 120px 1fr 100px 110px 130px 110px; gap: 12px; padding: 12px 16px; align-items:center; font-size: 13px; }
 @media (max-width: 800px) {
@@ -197,10 +272,57 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     <section class="sec" id="sec-claims">
       <h1 class="page-title">Claims</h1>
       <p class="page-sub">All submitted claims. Change status to trigger the user's dashboard + email updates.</p>
+
+      <!-- Filters bar -->
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>Status</label>
+          <select id="filterStatus">
+            <option value="">All</option>
+            <option value="submitted">Submitted</option>
+            <option value="in-review">In review</option>
+            <option value="approved">Approved</option>
+            <option value="paid">Paid</option>
+            <option value="denied">Denied</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Date</label>
+          <select id="filterDate">
+            <option value="">All time</option>
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+        </div>
+        <div class="filter-group filter-search">
+          <label>Search</label>
+          <input id="filterQuery" type="search" placeholder="Claim ID, name, email, insurer…" />
+        </div>
+        <button class="filter-clear" id="filterClear">Clear</button>
+        <button class="filter-export" id="filterExport">Export CSV</button>
+      </div>
+      <div class="filter-summary" id="filterSummary">—</div>
+
       <div class="claims-table" id="claimsTable">
         <div class="loading"><div class="spin"></div>Loading...</div>
       </div>
     </section>
+
+    <!-- CLAIM DETAIL DRAWER (slides in from the right when admin clicks a row) -->
+    <div class="claim-drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="claim-drawer" id="claimDrawer" aria-hidden="true">
+      <header class="cd-head">
+        <div>
+          <div class="cd-id" id="cdId">—</div>
+          <div class="cd-name" id="cdName">—</div>
+        </div>
+        <button class="cd-close" id="cdClose" aria-label="Close">×</button>
+      </header>
+      <div class="cd-body" id="cdBody">
+        <div class="loading"><div class="spin"></div>Loading...</div>
+      </div>
+    </aside>
 
     <!-- PATIENTS -->
     <section class="sec" id="sec-patients">
@@ -465,6 +587,10 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     }
   }
 
+  /* In-memory cache of the latest claim list, used by filtering, CSV
+     export, and the detail drawer so we don't refetch on every UI tick. */
+  var ALL_CLAIMS = [];
+
   async function loadClaims() {
     $('claimsTable').innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
     var claims = await fetchClaims();
@@ -472,17 +598,196 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       $('claimsTable').innerHTML = '<div class="empty-table"><strong>Could not reach the backend.</strong>Check that /claims endpoint is deployed.</div>';
       return;
     }
-    if (claims.length === 0) {
-      $('claimsTable').innerHTML = '<div class="empty-table"><strong>No claims yet.</strong></div>';
+    ALL_CLAIMS = claims;
+    applyFilters();
+  }
+
+  /* Apply current filter form values to ALL_CLAIMS and re-render the
+     table. Pure UI filter — no network call. */
+  function applyFilters() {
+    var status = $('filterStatus').value;
+    var dateDays = parseInt($('filterDate').value, 10);
+    var query = ($('filterQuery').value || '').toLowerCase().trim();
+    var cutoff = dateDays > 0 ? Date.now() - dateDays * 86400000 : 0;
+
+    var filtered = ALL_CLAIMS.filter(function (c) {
+      if (status && c.status !== status) return false;
+      if (cutoff && c.submittedAt && new Date(c.submittedAt).getTime() < cutoff) return false;
+      if (query) {
+        var name = ((c.firstName || '') + ' ' + (c.lastName || '')).toLowerCase();
+        var hay = [c.id, name, c.email, c.insurer, c.city, c.procedure].filter(Boolean).join(' ').toLowerCase();
+        if (hay.indexOf(query) === -1) return false;
+      }
+      return true;
+    });
+
+    var summary = filtered.length + ' of ' + ALL_CLAIMS.length + ' claims';
+    if (status || cutoff || query) summary += ' (filters active)';
+    $('filterSummary').textContent = summary;
+
+    if (filtered.length === 0) {
+      $('claimsTable').innerHTML = '<div class="empty-table"><strong>No claims match these filters.</strong></div>';
       return;
     }
     $('claimsTable').innerHTML =
       '<div class="claims-table-header">' +
         '<div class="hide-mobile">Claim ID</div><div>Patient</div><div class="hide-mobile">Amount</div><div class="hide-mobile">Submitted</div><div>Status</div><div>Pill</div>' +
-      '</div>' + claims.map(renderClaimRow).join('');
+      '</div>' + filtered.map(renderClaimRow).join('');
   }
 
-  /* Status change handler */
+  /* Wire the filter inputs. Real-time filter (no submit button) feels
+     more responsive — typing in the search box updates the table on
+     every keystroke. */
+  ['filterStatus', 'filterDate', 'filterQuery'].forEach(function (id) {
+    var el = $(id);
+    if (el) el.addEventListener('input', applyFilters);
+  });
+  $('filterClear').addEventListener('click', function () {
+    $('filterStatus').value = '';
+    $('filterDate').value = '';
+    $('filterQuery').value = '';
+    applyFilters();
+  });
+
+  /* Export current (filtered) view as CSV — same shape the team would
+     paste into a spreadsheet for batch processing or insurer outreach. */
+  $('filterExport').addEventListener('click', function () {
+    var status = $('filterStatus').value;
+    var dateDays = parseInt($('filterDate').value, 10);
+    var query = ($('filterQuery').value || '').toLowerCase().trim();
+    var cutoff = dateDays > 0 ? Date.now() - dateDays * 86400000 : 0;
+    var rows = ALL_CLAIMS.filter(function (c) {
+      if (status && c.status !== status) return false;
+      if (cutoff && c.submittedAt && new Date(c.submittedAt).getTime() < cutoff) return false;
+      if (query) {
+        var name = ((c.firstName || '') + ' ' + (c.lastName || '')).toLowerCase();
+        var hay = [c.id, name, c.email, c.insurer, c.city, c.procedure].filter(Boolean).join(' ').toLowerCase();
+        if (hay.indexOf(query) === -1) return false;
+      }
+      return true;
+    });
+    var headers = ['claim_id','submitted_at','status','first_name','last_name','email','insurer','member_id','city','paid_amount','paid_currency','paid_amount_usd','plan','procedure'];
+    var esc = function (v) {
+      if (v == null) return '';
+      var s = String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    var csv = headers.join(',') + '\n' + rows.map(function (c) {
+      return [c.id, c.submittedAt, c.status, c.firstName, c.lastName, c.email,
+              c.insurer, c.memberId, c.city, c.paidAmount, c.paidCurrency,
+              c.paidAmountUSD, c.plan, c.procedure].map(esc).join(',');
+    }).join('\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'credimed-claims-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 0);
+  });
+
+  /* --- Claim detail drawer --- */
+  function openDrawer(claimId) {
+    var c = ALL_CLAIMS.find(function (x) { return x && x.id === claimId; });
+    if (!c) return;
+    $('cdId').textContent = c.id || '—';
+    $('cdName').textContent = ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || '—';
+    $('cdBody').innerHTML = renderDetail(c);
+    $('drawerBackdrop').classList.add('open');
+    $('claimDrawer').classList.add('open');
+    $('claimDrawer').setAttribute('aria-hidden', 'false');
+  }
+  function closeDrawer() {
+    $('drawerBackdrop').classList.remove('open');
+    $('claimDrawer').classList.remove('open');
+    $('claimDrawer').setAttribute('aria-hidden', 'true');
+  }
+  $('cdClose').addEventListener('click', closeDrawer);
+  $('drawerBackdrop').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  function renderDetail(c) {
+    var paidLine = c.paidAmount
+      ? (c.paidCurrency === 'MXN'
+          ? 'MX$' + Number(c.paidAmount).toLocaleString() + ' MXN ('
+            + (c.paidAmountUSD ? '≈ $' + Number(c.paidAmountUSD).toLocaleString() + ' USD)' : 'unconverted)')
+          : '$' + Number(c.paidAmount).toLocaleString() + ' ' + (c.paidCurrency || 'USD'))
+      : '—';
+    var refundLine = (c.estimateMin && c.estimateMax)
+      ? '$' + c.estimateMin + '–$' + c.estimateMax + ' USD'
+      : '—';
+    var procs = Array.isArray(c.procedures) ? c.procedures.join(', ')
+              : (c.procedure || '—');
+    var subDate = c.submittedAt ? new Date(c.submittedAt).toLocaleString() : '—';
+    return ''
+      + '<div class="cd-section">'
+      +   '<h3>Claim</h3>'
+      +   '<div class="cd-row"><span class="k">Status</span><span class="v">' + (STATUS_LABELS[c.status] || '—') + '</span></div>'
+      +   '<div class="cd-row"><span class="k">Submitted</span><span class="v">' + subDate + '</span></div>'
+      +   '<div class="cd-row"><span class="k">Plan tier</span><span class="v">' + (c.plan || '—') + '</span></div>'
+      + '</div>'
+      + '<div class="cd-section">'
+      +   '<h3>Patient</h3>'
+      +   '<div class="cd-row"><span class="k">Email</span><span class="v">' + (c.email || '—') + '</span></div>'
+      +   '<div class="cd-row"><span class="k">Insurer</span><span class="v">' + (c.insurer || '—') + '</span></div>'
+      +   '<div class="cd-row"><span class="k">Member ID</span><span class="v">' + (c.memberId || '—') + '</span></div>'
+      + '</div>'
+      + '<div class="cd-section">'
+      +   '<h3>Financials</h3>'
+      +   '<div class="cd-row"><span class="k">Paid at clinic</span><span class="v">' + paidLine + '</span></div>'
+      +   '<div class="cd-row"><span class="k">Estimated refund</span><span class="v">' + refundLine + '</span></div>'
+      +   '<div class="cd-row"><span class="k">City</span><span class="v">' + (c.city || '—') + '</span></div>'
+      +   '<div class="cd-row"><span class="k">Procedures</span><span class="v">' + procs + '</span></div>'
+      + '</div>'
+      + '<div class="cd-section">'
+      +   '<h3>Actions</h3>'
+      +   '<div class="cd-actions">'
+      +     '<button class="cd-action primary" data-cd-mark="approved" data-cd-claim="' + c.id + '">Mark approved</button>'
+      +     '<button class="cd-action" data-cd-mark="paid" data-cd-claim="' + c.id + '">Mark paid</button>'
+      +     '<button class="cd-action danger" data-cd-mark="denied" data-cd-claim="' + c.id + '">Mark denied</button>'
+      +   '</div>'
+      +   '<div class="cd-actions" style="margin-top:6px">'
+      +     (c.email
+          ? '<a class="cd-action" href="mailto:' + c.email + '">Email patient</a>'
+          : '')
+      +   '</div>'
+      + '</div>';
+  }
+
+  /* Open drawer on row click (the click handler is delegated so it works
+     for rows rendered after page load). Status select clicks don't bubble
+     up because the click target won't match .claim-row-link. */
+  document.addEventListener('click', function (e) {
+    var row = e.target.closest('.claims-row');
+    if (!row) return;
+    if (e.target.closest('select') || e.target.closest('button')) return;
+    var id = row.getAttribute('data-claim-id');
+    if (id) openDrawer(id);
+  });
+
+  /* Drawer-action buttons (Mark approved / paid / denied) */
+  document.addEventListener('click', async function (e) {
+    var btn = e.target.closest('[data-cd-mark]');
+    if (!btn) return;
+    var newStatus = btn.getAttribute('data-cd-mark');
+    var claimId = btn.getAttribute('data-cd-claim');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    var ok = await updateStatus(claimId, newStatus);
+    if (ok) {
+      var c = ALL_CLAIMS.find(function (x) { return x && x.id === claimId; });
+      if (c) c.status = newStatus;
+      applyFilters();
+      $('cdBody').innerHTML = renderDetail(c);
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Failed — retry';
+    }
+  });
+
+  /* Status change handler (inline select on the row) */
   document.addEventListener('change', async function (e) {
     var sel = e.target.closest('[data-status-for]');
     if (!sel) return;
@@ -490,15 +795,16 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     var newStatus = sel.value;
     var ok = await updateStatus(claimId, newStatus);
     if (ok) {
-      /* Update the pill inline */
       var row = sel.closest('.claims-row');
       var pill = row && row.querySelector('.status-pill');
       if (pill) {
         pill.className = 'status-pill status-' + newStatus;
         pill.textContent = STATUS_LABELS[newStatus];
       }
+      // Update the in-memory cache too so filters / drawer stay correct.
+      var c = ALL_CLAIMS.find(function (x) { return x && x.id === claimId; });
+      if (c) c.status = newStatus;
     } else {
-      /* Revert the select */
       loadOverview(); loadClaims();
     }
   });
