@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Keep Stripe.js warm across before-sign so the JS bundle sits in
+     the browser cache before the user reaches payment.html. Plan.html
+     already kicked off the Stripe preload + PaymentIntent prefetch; this
+     page just keeps the connection primed. -->
+<link rel="preconnect" href="https://js.stripe.com" crossorigin>
+<link rel="dns-prefetch" href="https://js.stripe.com">
+<script async src="https://js.stripe.com/v3/"></script>
 <style id="credimed-prod-overrides">
 /* Credimed production mode: hide Claude Design dev chrome.
    Add ?dev=1 to URL to reveal it (see script below). */

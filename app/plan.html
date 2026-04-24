@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Stripe preload — starts downloading Stripe.js and warming the
+     connection to api.stripe.com the moment the user hits the plan
+     screen. By the time they walk through before-sign + agreement +
+     signature (~30-60 seconds of reading), both the JS and the
+     PaymentIntent (see prefetch script at the bottom of this file)
+     are fully cached — payment.html mounts the Payment Element with
+     zero extra network delay. -->
+<link rel="preconnect" href="https://js.stripe.com" crossorigin>
+<link rel="preconnect" href="https://api.stripe.com" crossorigin>
+<link rel="dns-prefetch" href="https://js.stripe.com">
+<script async src="https://js.stripe.com/v3/"></script>
 <style id="credimed-prod-overrides">
 /* Credimed production mode: hide Claude Design dev chrome.
    Add ?dev=1 to URL to reveal it (see script below). */
@@ -1285,5 +1296,94 @@ mount();
 <script src="connector.js"></script>
 <script src="state.js"></script>
 <script src="ana.js"></script>
+
+<script>
+/* ---- EARLY Stripe PaymentIntent prefetch ----
+   Fires the moment the user lands on the plan screen (pricing engine has
+   already run, plan is in CredimedState). Runs Lambda → Stripe round-trip
+   while the user reads the plan card, before-sign warnings, the agreement
+   drawer, and captures their signature (~30-60 seconds of runway). By the
+   time they click 'Pay', pendingPaymentIntent.clientSecret is already
+   cached — payment.html uses it synchronously.
+
+   If this fails (Lambda down, no plan state yet, etc.), agreement.html
+   has a second prefetch attempt as a safety net. Payment.html falls back
+   to its own createPaymentIntent if neither prefetch landed. Silent
+   failure — user never sees an error. */
+(function () {
+  try {
+    if (!window.CredimedState) return;
+    var pricing = window.CredimedState.get('pricing', null);
+    if (!pricing || !pricing.plan) return;
+
+    // Don't double-fetch if agreement.html already did it this session and
+    // the cached intent is still fresh.
+    var pending = window.CredimedState.get('pendingPaymentIntent', null);
+    var TEN_MIN = 10 * 60 * 1000;
+    if (pending && pending.clientSecret
+        && pending.plan === pricing.plan
+        && typeof pending.createdAt === 'number'
+        && (Date.now() - pending.createdAt) < TEN_MIN) {
+      console.log('[prefetch:plan] already cached, skipping');
+      return;
+    }
+
+    // Decode the Cognito ID token to get the user's email without loading
+    // the Cognito SDK on this page.
+    var email = null;
+    try {
+      var keys = Object.keys(localStorage);
+      var idKey = keys.find(function (k) {
+        return /CognitoIdentityServiceProvider\..+\..+\.idToken$/.test(k);
+      });
+      if (idKey) {
+        var payload = JSON.parse(atob(localStorage.getItem(idKey).split('.')[1]));
+        email = payload.email;
+      }
+    } catch (e) { /* can't read token */ }
+    if (!email) return;
+
+    var claimId = window.CredimedState.get('claim.id');
+    if (!claimId && window.CredimedState.generateClaimId) {
+      claimId = window.CredimedState.generateClaimId();
+    }
+    if (!claimId) return;
+
+    var LAMBDA = 'https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/';
+    var amountForPlan =
+      pricing.plan === 'premium' ? 9900 :
+      pricing.plan === 'plus'    ? 7900 :
+                                   4900;
+
+    console.log('[prefetch:plan] triggering PaymentIntent for', pricing.plan, amountForPlan);
+    var t0 = Date.now();
+    fetch(LAMBDA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'create_payment_intent',
+        plan: pricing.plan,
+        amount: amountForPlan,
+        currency: 'usd',
+        email: email,
+        claimId: claimId
+      })
+    }).then(function (r) { return r.json(); })
+      .then(function (data) {
+        var cs = data.clientSecret || data.client_secret || data.paymentIntentClientSecret;
+        if (!cs) return;
+        window.CredimedState.set('pendingPaymentIntent', {
+          clientSecret: cs,
+          plan: pricing.plan,
+          amount: data.amount || amountForPlan,
+          claimId: claimId,
+          createdAt: Date.now()
+        });
+        console.log('[prefetch:plan] PaymentIntent cached in', Date.now() - t0, 'ms');
+      })
+      .catch(function (e) { console.warn('[prefetch:plan] failed (non-fatal):', e); });
+  } catch (e) { /* non-fatal */ }
+})();
+</script>
 </body>
 </html>
