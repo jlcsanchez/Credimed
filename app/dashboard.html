@@ -681,19 +681,19 @@ const VARIANTS = {
   denied: {
     heroTone: 'slate',
     pillClass: 'pill-amber',
-    pillLabel: 'Needs attention',
+    pillLabel: 'Under review',
     accent: 'amber',
     pct: 40,
     lineFillPct: 50,
     timeline: [
       { label: 'Submitted',    date: 'Apr 23', state: 'done' },
       { label: 'Under review', date: 'Apr 24', state: 'done' },
-      { label: 'Decision',     date: 'Apr 29', state: 'current' },  // current-amber = flagged
+      { label: 'Decision',     date: 'Apr 29', state: 'current' },
     ],
     next: {
-      title: "Denial received — resubmission available",
-      p1: "Your insurer flagged a <b>coding mismatch</b> on procedure D2740 (crown). This is routine and often resolvable with the correct documentation.",
-      p2: "Our specialists can prepare a corrected resubmission. Most resubmissions succeed on the second try."
+      title: "Our team is resubmitting this claim",
+      p1: "Your insurer flagged an issue on this claim. <b>Our specialists are reviewing it and preparing a corrected resubmission</b> — at no extra cost to you.",
+      p2: "No action needed from you. We'll email you the moment the resubmission is filed and again when the insurer responds. Most resubmissions succeed on the second try."
     },
     nextClass: 'denied',
   },
@@ -775,14 +775,11 @@ function renderScreen(variant, scope){
     </div>
   `;
 
-  // Resubmission CTA (denied only)
-  const resubCta = variant === 'denied' ? `
-    <button class="resub-btn" data-resub data-scope="${scope}">
-      ${ICONS.sparkle}
-      <span>Request resubmission</span>
-      <span class="price">$19</span>
-    </button>
-  ` : '';
+  // No CTA on denied — resubmission is handled automatically by our team,
+  // there's nothing the user needs to click. The "What's next" card tells
+  // them exactly that. Kept the slot so future "automatic resubmission in
+  // progress" badges can live here without rewiring the return template.
+  const resubCta = '';
 
   return `
     <div class="hero ${v.heroTone}">
