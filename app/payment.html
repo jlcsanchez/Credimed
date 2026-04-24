@@ -996,8 +996,8 @@ function planInfo(variant) {
   } catch (e) { /* fall through */ }
   const isBasic = variant === 'basic';
   return isBasic
-    ? { name: 'Basic Plan', price: 29, priceStr: '$29.00', ctaPrice: '$29' }
-    : { name: 'Plus Plan', price: 39, priceStr: '$39.00', ctaPrice: '$39' };
+    ? { name: 'Standard', price: 49, priceStr: '$49.00', ctaPrice: '$49' }
+    : { name: 'Premium',  price: 99, priceStr: '$99.00', ctaPrice: '$99' };
 }
 
 function variantFlags(variant) {

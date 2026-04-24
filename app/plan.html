@@ -780,7 +780,7 @@ const PLANS = {
       { text: 'Up-front written refund estimate' },
       { text: 'Spanish receipt translation' },
       { text: 'Insurer pays you directly' },
-      { text: 'If resubmission needed: <b>$19 each</b>', muted: true, icon: 'minus' },
+      { text: 'Resubmissions handled manually by our team', muted: true, icon: 'minus' },
     ],
     bestIf: "You have all your docs — receipt, itemized procedures, x-rays if any.",
     cta: 'Choose Basic',
@@ -808,7 +808,7 @@ const COMPARISON_ROWS = [
   { feat: 'Up-front refund estimate',      basic: 'check', plus: 'check' },
   { feat: 'Spanish receipt translation',   basic: 'check', plus: 'check' },
   { feat: 'Direct insurer payment',        basic: 'check', plus: 'check' },
-  { feat: 'Resubmission if denied',        basic: '$19 each', plus: 'Included' },
+  { feat: 'Resubmission if denied',        basic: 'One included', plus: 'Unlimited' },
   { feat: 'Missing-document support',      basic: 'dash',  plus: 'check' },
   { feat: 'HIPAA-compliant handling',      basic: 'check', plus: 'check' },
   { feat: 'Priority claim handling',       basic: 'dash',  plus: 'check' },
@@ -894,8 +894,8 @@ function compareTableHtml() {
       <thead>
         <tr>
           <th class="feat-col">Feature</th>
-          <th class="basic-col">Basic · $29</th>
-          <th class="plus-col">Plus · $39</th>
+          <th class="basic-col">Standard · $49</th>
+          <th class="plus-col">Premium · $99</th>
         </tr>
       </thead>
       <tbody>

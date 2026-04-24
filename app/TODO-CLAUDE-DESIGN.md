@@ -35,7 +35,7 @@ el flow de claim submission.
 
 **Contenido:**
 - Avatar + nombre completo + email
-- Plan actual (Standard $29 / Premium $39)
+- Plan actual (Standard $49 / Plus $79 / Premium $99)
 - Payment method on file (last 4 tarjeta)
 - Past claims (lista compacta con status)
 - Settings: notifications, language, HIPAA data export request, delete account
