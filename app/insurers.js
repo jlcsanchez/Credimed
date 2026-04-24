@@ -1,0 +1,184 @@
+/* =========================================================================
+   Credimed insurer database
+   Public-data typical out-of-network dental coverage ranges per major US PPO
+   carrier. Used for personalized estimates ("Typically 50–80% for Delta
+   Dental PPO"). Built to also serve as the seed table for the future
+   advance / credit product:
+     - riskScore (A/B/C/D) → manual underwriting hint
+     - avgPayoutDays      → cash-flow estimation
+     - confirmedClaimsCount → real-world payout sample once we have history
+
+   When the EDI 271 benefit lookup ships through the clearinghouse, the
+   benefit fields here will be replaced per claim by the user's actual
+   plan rates. The riskScore + avgPayoutDays fields stay aggregated.
+
+   Match strategy (see lookupInsurer below):
+     1. Exact key match (case-insensitive)
+     2. Token startsWith for OCR'd names that include extra words
+        (e.g. 'Delta Dental of California' → 'Delta Dental')
+     3. Fall back to DEFAULT (the generic 40–70% range)
+
+   Source for ranges: public 2024-2025 plan brochures, NADP claims data,
+   our own claim history (when populated). Verify before quoting in
+   marketing materials.
+   ========================================================================= */
+
+(function (global) {
+  'use strict';
+
+  // Conservative ranges — when in doubt, lean low. Better to under-promise.
+  const DEFAULT_INSURER = {
+    name: 'your PPO plan',
+    oonLow: 40,
+    oonHigh: 70,
+    annualMaxLow: 1000,
+    annualMaxHigh: 2000,
+    riskScore: null,
+    avgPayoutDays: null,
+    confirmedClaimsCount: 0,
+    notes: 'Generic typical PPO out-of-network range.',
+  };
+
+  const INSURERS = {
+    'delta dental': {
+      name: 'Delta Dental PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2500,
+      riskScore: 'A', avgPayoutDays: 14, confirmedClaimsCount: 0,
+      notes: 'Largest US dental insurer. Generous OON benefit, fast paper claims.',
+    },
+    'cigna': {
+      name: 'Cigna PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 18, confirmedClaimsCount: 0,
+      notes: 'Common employer plan, accepts standard OON CDT submissions.',
+    },
+    'aetna': {
+      name: 'Aetna PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2500,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Mid-tier turnaround, occasionally requests EOB.',
+    },
+    'metlife': {
+      name: 'MetLife PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 3000,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Higher annual max ceilings, slow but reliable.',
+    },
+    'guardian': {
+      name: 'Guardian PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1500, annualMaxHigh: 2500,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Strong OON benefit, common employer plan.',
+    },
+    'unitedhealthcare': {
+      name: 'UnitedHealthcare PPO',
+      oonLow: 50, oonHigh: 70,
+      annualMaxLow: 1000, annualMaxHigh: 1500,
+      riskScore: 'B', avgPayoutDays: 28, confirmedClaimsCount: 0,
+      notes: 'Lower annual max than competitors, slower turnaround.',
+    },
+    'humana': {
+      name: 'Humana PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 1500,
+      riskScore: 'B', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Common Medicare Advantage rider for retirees.',
+    },
+    'blue cross blue shield': {
+      name: 'BCBS PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Regional plans vary widely — verify by state.',
+    },
+    'principal': {
+      name: 'Principal Financial PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1500, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Solid mid-market employer plan.',
+    },
+    'ameritas': {
+      name: 'Ameritas PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 18, confirmedClaimsCount: 0,
+      notes: 'Fast paper claim processing.',
+    },
+    'sun life': {
+      name: 'Sun Life PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Good employer plan, standard OON benefit.',
+    },
+    'lincoln financial': {
+      name: 'Lincoln Financial PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Mid-market employer plan.',
+    },
+    'mutual of omaha': {
+      name: 'Mutual of Omaha PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1500, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Higher floor on annual max.',
+    },
+    'tricare': {
+      name: 'TRICARE Dental',
+      oonLow: 50, oonHigh: 100,
+      annualMaxLow: 1500, annualMaxHigh: 1500,
+      riskScore: 'B', avgPayoutDays: 30, confirmedClaimsCount: 0,
+      notes: 'Military / dependents plan. Different rules, slow claims.',
+    },
+    'renaissance dental': {
+      name: 'Renaissance Dental PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Employer plan, standard OON treatment.',
+    },
+    // Massachusetts-specific carriers we've seen on receipts — extend
+    // as we get more.
+    'massachusetts medical': {
+      name: 'Massachusetts Medical PPO',
+      oonLow: 50, oonHigh: 80,
+      annualMaxLow: 1000, annualMaxHigh: 2000,
+      riskScore: 'A', avgPayoutDays: 21, confirmedClaimsCount: 0,
+      notes: 'Regional carrier; treat as standard PPO until we have more samples.',
+    },
+  };
+
+  /* Resolve a free-text insurer name (typed in the InsuranceSearch box or
+     OCR'd from the insurance card) to a known entry. Forgiving by design:
+     normalizes whitespace, lowercases, ignores 'PPO'/'HMO' suffixes, and
+     falls back to a startsWith match so 'Delta Dental of California Inc.'
+     still resolves to the Delta Dental row. */
+  function lookupInsurer(input) {
+    if (!input || typeof input !== 'string') return DEFAULT_INSURER;
+    const q = input.toLowerCase()
+                   .replace(/\b(ppo|hmo|epo|dental|inc|llc|corp|group|of [a-z]+)\b/gi, '')
+                   .replace(/\s+/g, ' ')
+                   .trim();
+    if (!q) return DEFAULT_INSURER;
+    if (INSURERS[q]) return INSURERS[q];
+    // Token-prefix match — useful when the OCR'd name has extra words.
+    const keys = Object.keys(INSURERS);
+    const hit = keys.find((k) => q.startsWith(k) || k.startsWith(q));
+    if (hit) return INSURERS[hit];
+    return DEFAULT_INSURER;
+  }
+
+  global.CredimedInsurers = {
+    INSURERS: INSURERS,
+    DEFAULT_INSURER: DEFAULT_INSURER,
+    lookup: lookupInsurer,
+  };
+})(window);

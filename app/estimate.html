@@ -824,6 +824,7 @@ mount();
      Refund % = 75% of paid amount (single most common US PPO out-of-network rate).
      Low/high range = 60%-75% for UI credibility. Persists to state for payment + dashboard. -->
 <script src="state.js"></script>
+<script src="insurers.js"></script>
 <script>
 (function () {
   'use strict';
@@ -865,12 +866,23 @@ mount();
     insurer: insurerName || null, planLabel: planLabel
   });
 
+  /* Per-insurer typical OON range. Falls back to the generic 40–70% if
+     we can't match the user's carrier. See app/insurers.js for the
+     dataset and lookup logic. */
+  var insurerInfo = (window.CredimedInsurers && window.CredimedInsurers.lookup(insurerName)) || null;
+  var oonLabel = insurerInfo
+    ? 'Typically ' + insurerInfo.oonLow + '–' + insurerInfo.oonHigh + '%'
+        + (insurerInfo.name && insurerInfo.name !== 'your PPO plan'
+            ? ' for ' + insurerInfo.name
+            : '')
+    : 'Typically 40–70%';
+
   var breakdown = [
     { label: 'Insurer',                value: insurerName || '—', highlight: !!insurerName }
   ];
   if (ins.memberId) breakdown.push({ label: 'Member ID', value: ins.memberId });
   breakdown.push(
-    { label: 'Out-of-network coverage', value: 'Typically 40–70%' },
+    { label: 'Out-of-network coverage', value: oonLabel },
     { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted from MXN)' : ' USD') },
     { label: 'Procedure',              value: r.procedure || '—' }
   );
