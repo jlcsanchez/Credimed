@@ -73,11 +73,27 @@
   }
 
   function generateClaimId() {
-    var existing = get('claim.id');
-    if (existing) return existing;
+    // Reuse the in-flight id if one exists (so the same id flows through
+    // documents → plan → agreement → payment during a single claim).
+    var pendingId = get('pendingClaimId');
+    if (pendingId) return pendingId;
+
+    // Backward-compat: older sessions stored the in-flight id on claim.id.
+    // If there's a claim object that hasn't been submitted yet (no
+    // submittedAt), adopt its id so we don't accidentally mint two.
+    var active = get('claim', null);
+    if (active && active.id && !active.submittedAt) {
+      set('pendingClaimId', active.id);
+      return active.id;
+    }
+
+    // Fresh claim (no in-flight id, previous claim was already submitted
+    // or there never was one). Mint a new id and stash it so subsequent
+    // pages in this flow reuse it.
     var year = new Date().getFullYear();
     var hex = Math.random().toString(16).slice(2, 8).toUpperCase();
     var id = 'CMX-' + year + '-' + hex;
+    set('pendingClaimId', id);
     return id;
   }
 
