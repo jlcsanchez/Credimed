@@ -94,10 +94,13 @@
       expectedByMax: expectedMax.toISOString(),
       tracker: { submitted: true, inReview: true, approved: false, paid: false },
       plan: get('plan.selected', 'premium'),
-      paidAmount: get('receipt.amountPaid', null),
+      paidAmount:     get('receipt.amountPaid', null),
+      paidAmountUSD:  get('receipt.amountPaidUSD', null),
+      paidCurrency:   get('receipt.currency', null),
       estimateMin: get('estimate.rangeMin', null),
       estimateMax: get('estimate.rangeMax', null),
       city: get('receipt.city', null),
+      procedures: get('receipt.procedures', null),
       procedure: get('receipt.procedure', null)
     };
     set('claim', claim);

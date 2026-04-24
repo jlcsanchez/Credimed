@@ -752,7 +752,24 @@ function hydrateClaimFromState() {
   // actually sees on their receipt.
   var rawPaid   = (claim && claim.paidAmount)    || receipt.amountPaid;
   var paidUSD   = (claim && claim.paidAmountUSD) || receipt.amountPaidUSD;
-  var currency  = (claim && claim.paidCurrency)  || receipt.currency || 'USD';
+  var currency  = (claim && claim.paidCurrency)  || receipt.currency;
+
+  // Heuristic fallback for legacy sessions written before paidCurrency
+  // started being saved. A Mexican dental bill in USD over \$1,500 is
+  // genuinely unusual (most US PPO reimbursements cap out around there).
+  // If the raw amount is well above that AND the patient didn't explicitly
+  // confirm USD, treat as MXN so the display doesn't read 'MX\$5,000 USD'
+  // for what's obviously 5,000 pesos. Apply a ~18:1 conversion so the USD
+  // subline is roughly accurate.
+  var USD_SANITY_CEILING = 2500;  // any receipt higher than this and no
+                                  // explicit USD marker → assume pesos
+  if (!currency && rawPaid > USD_SANITY_CEILING) {
+    currency = 'MXN';
+    if (!paidUSD) paidUSD = Math.round(Number(rawPaid) / 18);
+  } else if (!currency) {
+    currency = 'USD';
+  }
+
   if (rawPaid)  CLAIM.paid_at_clinic     = Math.round(Number(rawPaid));
   if (paidUSD)  CLAIM.paid_at_clinic_usd = Math.round(Number(paidUSD));
   CLAIM.paid_currency = currency;
