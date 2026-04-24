@@ -747,26 +747,34 @@ function drawerHtml() {
         <button class="drawer-close" data-drawer-close aria-label="Close">${ICONS.close}</button>
       </div>
       <div class="drawer-body">
-        <h4>1. What Credimed does</h4>
-        <p>Credimed Inc. ("Credimed", "we") prepares and submits out-of-network dental insurance reimbursement claims on your behalf. We translate Spanish-language receipts, itemize procedures using standard CDT codes, and mail the completed claim package to your insurance carrier via USPS Certified Mail within 24 hours of receiving your signed authorization.</p>
+        <p style="font-size:11px;color:var(--slate-500);margin:0 0 14px;padding:8px 12px;background:var(--slate-50);border-radius:8px;line-height:1.5"><b>Quick summary</b> of the full Service Agreement v1.8. The complete 12-section contract is what you sign on the next screen.</p>
 
-        <h4>2. What Credimed does not do</h4>
-        <p>We do not receive payments from your insurer. All reimbursement checks are mailed directly to you at the mailing address you provide. <b>Credimed never touches your refund.</b> We are not your insurance carrier and cannot guarantee any specific reimbursement amount.</p>
+        <h4>1. What Credimed Does</h4>
+        <p>Credimed Inc. ("Credimed", "we") provides document preparation and administrative support for out-of-network dental insurance reimbursement claims. We translate Spanish-language receipts, organize documentation, and prepare claim forms using standard CDT codes. Upon your authorization, we submit the completed claim package to your insurance carrier — sometimes through third-party clearinghouses. We use automated tools including OCR to process your documents; you are responsible for reviewing the final claim information before submission.</p>
 
-        <h4>3. Fees</h4>
-        <p>The fee is a one-time charge based on claim complexity (simple claims $49, multiple procedures $79, complex cases $99). There are no subscriptions and no percentage cuts of your refund.</p>
+        <h4>2. What Credimed Does Not Do</h4>
+        <p>We do not receive payments from your insurer. All reimbursement is issued directly to you. <b>Credimed never touches your refund.</b> We do not negotiate claims, dispute determinations, or guarantee any reimbursement amount. We are not an insurance company, TPA, or licensed adjuster.</p>
 
-        <h4>4. Your responsibilities</h4>
-        <p>You agree that the documents you upload are authentic and belong to you. You authorize Credimed to submit the claim on your behalf and to communicate with your insurer's claims department on matters specific to this submission.</p>
+        <h4>3. Fees &amp; Pricing</h4>
+        <p>One-time flat fee based on claim complexity: <b>Simple $49 · Standard $79 · Complex $99</b>. The final tier is determined by automated analysis of your documents and confirmed before you pay. No subscriptions, no percentage cuts. Any reimbursement greater than $0 counts as a successful claim; fees are non-refundable once services are performed (see Section 6).</p>
 
-        <h4>5. Privacy &amp; data handling</h4>
-        <p>All documents are stored encrypted at rest and in transit. We follow HIPAA-grade handling for your PHI. You can request deletion of your records at any time after your claim has been resolved.</p>
+        <h4>4. Your Responsibilities</h4>
+        <p>You represent that submitted documents are authentic and belong to you; the services were actually received and paid by you; you haven't already been reimbursed; and you are the patient or a legally authorized representative. You indemnify Credimed against claims arising from inaccurate or fraudulent information.</p>
 
-        <h4>6. Cancellation &amp; refunds</h4>
-        <p>You may cancel at any time before your claim is mailed for a full refund. After the claim has been mailed, fees are non-refundable because the work has been performed.</p>
+        <h4>5. HIPAA &amp; Data Handling</h4>
+        <p>Your Protected Health Information (PHI) is encrypted at rest (AES-256) and in transit (TLS 1.3). Access is limited to authorized personnel on a minimum-necessary basis. Third-party providers (including clearinghouses) operate under Business Associate Agreements where required. You may request deletion of your data after the claim is processed.</p>
 
-        <h4>7. Contact</h4>
-        <p>Questions? Email <b>hello@credimed.us</b> or message Ana on WhatsApp (+1 512-555-0134).</p>
+        <h4>6. Cancellation &amp; Refunds</h4>
+        <p>You may cancel <b>at any time before submission of your claim for a full refund</b> of the fee paid. Once the claim has been submitted to your insurer, the fee is non-refundable as the service has been performed.</p>
+
+        <h4>7. Electronic Authorization &amp; Communications</h4>
+        <p>By using our service you authorize Credimed to prepare and submit your claim, use your electronic signature under the E-SIGN Act, and send you communications about your claim via email, SMS, or WhatsApp. You may opt out of SMS any time by replying STOP.</p>
+
+        <h4>8. Liability &amp; Arbitration</h4>
+        <p>Credimed does not guarantee reimbursement outcomes — all determinations are made by your insurer. Our total liability is capped at fees paid in the last 12 months. Disputes are resolved through binding individual arbitration (AAA Consumer Rules); you waive class-action rights. <b>You can opt out of arbitration within 30 days</b> of first accepting these terms by emailing <b>legal@credimed.us</b> with subject "Arbitration Opt-Out". Governed by Delaware law.</p>
+
+        <h4>9. Contact</h4>
+        <p>Legal inquiries: <b>legal@credimed.us</b>. Questions about your claim: email <b>hello@credimed.us</b> or message <b>Ana</b> on WhatsApp (+1 512-555-0134).</p>
       </div>
       <div class="drawer-footer">
         <button class="btn-primary" data-drawer-close>
@@ -875,7 +883,12 @@ function wire() {
     btn.addEventListener('click', () => {
       activeVariant = 'default';
       document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-      document.querySelector('[data-variant="default"]').classList.add('active');
+      // In production mode the Claude Design dev tabs are hidden, so the
+      // [data-variant="default"] button may not exist. Guard against null
+      // so the handler reaches applyDrawerState() and the drawer actually
+      // closes.
+      const defTab = document.querySelector('[data-variant="default"]');
+      if (defTab) defTab.classList.add('active');
       applyDrawerState();
     });
   });
