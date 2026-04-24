@@ -636,7 +636,9 @@ const ICONS = {
 const CLAIM = {
   id: 'CMX-2026-0A4B29',
   plan: { tier: 'Standard', price: 49 },
-  paid_at_clinic: 790,
+  paid_at_clinic: 14000,         // raw original amount on receipt
+  paid_at_clinic_usd: 790,       // USD equivalent (for the '≈ \$X USD' sub-line)
+  paid_currency: 'MXN',          // currency on receipt
   refund_low: 450,
   refund_high: 610,
   procedures: ['Crown (zirconia)', 'Root canal'],
@@ -649,6 +651,22 @@ const CLAIM = {
 // in but hasn't submitted yet — no more showing mock data as if it were
 // theirs).
 let HAS_REAL_CLAIM = false;
+
+// Format the "Paid at clinic" row: show the receipt's original currency
+// as the headline (respects what the patient actually saw at the clinic)
+// and the USD equivalent as a muted sub-line when the currency isn't
+// already USD.
+function formatPaid(c) {
+  const orig = c.paid_at_clinic ? c.paid_at_clinic.toLocaleString() : '—';
+  const cur = (c.paid_currency || 'USD').toUpperCase();
+  const prefix = cur === 'MXN' ? 'MX$' : '$';
+  const head = `${prefix}${orig} ${cur}`;
+  if (cur !== 'USD' && c.paid_at_clinic_usd) {
+    const sub = `<span class="sub" style="font-size:11px;font-weight:500;color:var(--slate-500);display:block;margin-top:2px;letter-spacing:0">≈ $${c.paid_at_clinic_usd.toLocaleString()} USD</span>`;
+    return head + sub;
+  }
+  return head;
+}
 
 // Translate common Mexican dental procedure names to English. The OCR
 // reads the receipt verbatim ('Endodoncia pieza 14', 'Corona temporal'),
@@ -727,18 +745,17 @@ function hydrateClaimFromState() {
   var planKey = (pricing && pricing.tier) || (claim && claim.plan) || 'standard';
   if (planMap[planKey]) CLAIM.plan = planMap[planKey];
 
-  // Paid amount at clinic — always display in USD. documents.html stores
-  // BOTH the original (receipt.amountPaid, possibly in MXN) and the
-  // normalized USD value (receipt.amountPaidUSD, after ~18:1 conversion).
-  // The earlier version read receipt.amountPaid, which showed Mexican
-  // pesos as if they were dollars ('$5,000 USD' for a MX\$5,000 receipt).
-  // Prefer amountPaidUSD; fall back to amountPaid only if the converted
-  // value isn't stored (older sessions).
-  var paid = (claim && claim.paidAmountUSD)
-          || receipt.amountPaidUSD
-          || (claim && claim.paidAmount)
-          || receipt.amountPaid;
-  if (paid) CLAIM.paid_at_clinic = Math.round(Number(paid));
+  // Paid amount at clinic — show the ORIGINAL receipt amount + currency
+  // (e.g. 'MX\$5,000 MXN' for a Mexican receipt), with an optional USD
+  // equivalent sub-line. The refund column stays in USD (insurer pays
+  // USD), but anchoring 'paid' to the original matches what the patient
+  // actually sees on their receipt.
+  var rawPaid   = (claim && claim.paidAmount)    || receipt.amountPaid;
+  var paidUSD   = (claim && claim.paidAmountUSD) || receipt.amountPaidUSD;
+  var currency  = (claim && claim.paidCurrency)  || receipt.currency || 'USD';
+  if (rawPaid)  CLAIM.paid_at_clinic     = Math.round(Number(rawPaid));
+  if (paidUSD)  CLAIM.paid_at_clinic_usd = Math.round(Number(paidUSD));
+  CLAIM.paid_currency = currency;
 
   // Estimate range
   var low = (claim && claim.estimateMin) || estimate.rangeMin;
@@ -968,7 +985,7 @@ function renderScreen(variant, scope){
       </div>
       <div class="d-row">
         <span class="dk">Paid at clinic</span>
-        <span class="dv">$${c.paid_at_clinic.toLocaleString()} USD</span>
+        <span class="dv">${formatPaid(c)}</span>
       </div>
       <div class="d-row">
         <span class="dk">Estimated refund</span>
