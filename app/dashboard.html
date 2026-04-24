@@ -772,11 +772,42 @@ function hydrateClaimFromState() {
     CLAIM.procedures = [translateProcedure(receipt.procedure)];
   }
 
-  // Submitted / updated dates
+  // Submitted / updated dates. CLAIM.submitted is the long form
+  // ('Apr 24, 2026') shown in the top 'Submitted / Updated' row;
+  // CLAIM.submittedShort is the compact form ('Apr 24') used by the
+  // timeline + 'What's next' copy. Without the short form those
+  // sections kept the hard-coded 'Apr 23' from the design mock and
+  // contradicted the real submission date at the top of the page.
   if (claim && claim.submittedAt) {
     var d = new Date(claim.submittedAt);
     CLAIM.submitted = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     CLAIM.updated = CLAIM.submitted;
+    CLAIM.submittedShort = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    // Patch the VARIANTS blueprint in place so every state (submitted,
+    // under_review, approved, denied) uses the real submitted date
+    // instead of the 'Apr 23' mock. Under-review / approved / denied
+    // also have later steps — those we leave as '—' or mock dates until
+    // we have real insurer-side timestamps from the backend.
+    var sd = CLAIM.submittedShort;
+    if (window.VARIANTS_PATCHED !== true && typeof VARIANTS !== 'undefined') {
+      Object.keys(VARIANTS).forEach(function (k) {
+        var v = VARIANTS[k];
+        if (v && v.timeline && v.timeline[0]) v.timeline[0].date = sd;
+        // under_review/approved/denied also have a real-dated 'under review'
+        // step. Without backend data, assume it happened ~1 day after submit
+        // for display purposes. TODO: replace with real updatedAt from API.
+        if (v && v.timeline && v.timeline[1] && v.timeline[1].state === 'done') {
+          var d1 = new Date(d.getTime() + 24*60*60*1000);
+          v.timeline[1].date = d1.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+        // Inject the date into the 'What's next' copy for the submitted state
+        if (v && v.next && v.next.p1) {
+          v.next.p1 = v.next.p1.replace(/\bApr 23\b/g, sd);
+        }
+      });
+      window.VARIANTS_PATCHED = true;
+    }
   }
 }
 
