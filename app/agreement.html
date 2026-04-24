@@ -1795,6 +1795,19 @@ mountScope('desktop');
     S.set('banking', bank);
   }
 
+  /* Persist the mailing-address form to state. Critical: the insurer
+     mails the reimbursement check to this address, so it must round-
+     trip to the profile screen for later edits. */
+  function syncAddressToState() {
+    var keys = ['name', 'street', 'apt', 'city', 'state', 'zip'];
+    var addr = {};
+    keys.forEach(function (key) {
+      var el = document.querySelector('[data-addr-input][data-scope="' + SCOPE + '"][data-key="' + key + '"]');
+      if (el) addr[key] = (el.value || '').trim();
+    });
+    S.set('mailingAddress', addr);
+  }
+
   function updateCtaState() {
     var cta = document.querySelector('[data-cta][data-scope="' + SCOPE + '"]');
     if (!cta) return;
@@ -1836,6 +1849,7 @@ mountScope('desktop');
     }
 
     syncBankingToState();
+    syncAddressToState();
 
     S.set('agreement', {
       version: 'v1.8',

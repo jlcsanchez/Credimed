@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credimed — Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root {
+  --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-300:#5EEAD4; --teal-500:#14B8A6;
+  --teal-600:#0D9488; --teal-700:#0B8278; --teal-800:#0A7A70; --teal-900:#134E4A;
+  --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
+  --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1E293B; --slate-900:#0F172A;
+  --amber-bg:#FEF3C7; --amber-fg:#92400E;
+  --success-bg:#ECFDF5; --success-fg:#047857; --success-border:#A7F3D0;
+  --danger-bg:#FEF2F2; --danger-fg:#B91C1C;
+  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, "Menlo", monospace;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0; font-family:var(--font-ui); color:var(--slate-900);
+  background:#FAF6EF; -webkit-font-smoothing:antialiased;
+  overflow-x:hidden; max-width:100vw;
+}
+
+.page { max-width:480px; margin:0 auto; min-height:100vh; background:#FAF6EF; display:flex; flex-direction:column; }
+@media (min-width:768px) {
+  html, body {
+    background:
+      radial-gradient(ellipse at top left, rgba(13,148,136,0.04), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(94,234,212,0.05), transparent 50%),
+      #FAF6EF !important;
+  }
+  .page { max-width:520px; margin:40px auto; border-radius:24px; min-height:auto; box-shadow:0 24px 64px rgba(15,23,42,0.14), 0 4px 16px rgba(15,23,42,0.06); overflow:hidden; }
+}
+
+/* ---- Hero ---- */
+.hero {
+  position:relative; color:#fff;
+  padding:calc(22px + env(safe-area-inset-top)) 24px 28px;
+  background:var(--hero-gradient); overflow:hidden;
+}
+.hero::before {
+  content:""; position:absolute; inset:-40%;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(94,234,212,0.22), transparent 50%),
+    radial-gradient(ellipse at 85% 30%, rgba(13,148,136,0.30), transparent 55%);
+  pointer-events:none;
+}
+.hero-top {
+  position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:24px;
+}
+.icon-btn {
+  width:36px; height:36px; border-radius:999px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.08); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; backdrop-filter:blur(6px);
+}
+.logo-badge {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:8px 14px 8px 10px; border-radius:999px;
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);
+  backdrop-filter:blur(12px);
+}
+.logo-badge .circle { width:28px; height:28px; border-radius:999px; background:#fff; display:flex; align-items:center; justify-content:center; }
+.logo-badge .text { font-weight:700; font-size:12px; letter-spacing:0.14em; color:#fff; }
+
+.hero h1 {
+  position:relative; font-size:28px; font-weight:700; letter-spacing:-0.01em;
+  margin:0 0 4px;
+}
+.hero .sub {
+  position:relative; font-size:14px; color:rgba(255,255,255,0.75); margin:0;
+}
+
+/* ---- Body ---- */
+.body-wrap { padding:0 20px 40px; display:flex; flex-direction:column; gap:16px; margin-top:-12px; position:relative; z-index:2; }
+
+.profile-avatar {
+  display:flex; align-items:center; gap:14px;
+  background:#fff; border:1px solid rgba(15,23,42,0.06);
+  border-radius:18px; padding:18px 20px;
+  box-shadow:0 10px 30px -10px rgba(15,23,42,0.12);
+}
+.profile-avatar .avatar-circle {
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg, var(--teal-500), var(--teal-800));
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:22px; flex-shrink:0;
+}
+.profile-avatar .name { font-size:17px; font-weight:700; color:var(--slate-900); letter-spacing:-0.01em; }
+.profile-avatar .email { font-size:13px; color:var(--slate-500); margin-top:2px; }
+
+.section-card {
+  background:#fff; border:1px solid rgba(15,23,42,0.06); border-radius:16px; padding:18px 20px;
+}
+.section-card h2 {
+  font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--slate-500);
+  margin:0 0 12px;
+}
+.section-card h2 .critical {
+  margin-left:8px; padding:2px 8px; background:var(--amber-bg); color:var(--amber-fg);
+  border-radius:99px; font-size:9.5px; font-weight:800; letter-spacing:0.04em;
+}
+.section-card .critical-note {
+  background:var(--amber-bg); color:var(--amber-fg); border-radius:10px;
+  padding:10px 12px; font-size:12.5px; line-height:1.5; margin-bottom:14px;
+  border:1px solid #FDE68A;
+}
+
+.field { margin-bottom:12px; }
+.field:last-child { margin-bottom:0; }
+.field label {
+  display:block; font-size:11px; font-weight:700; color:var(--slate-500);
+  text-transform:uppercase; letter-spacing:0.04em; margin-bottom:5px;
+}
+.field input, .field select {
+  width:100%; height:44px; padding:0 14px;
+  border:1px solid var(--slate-200); border-radius:10px;
+  font-size:14.5px; font-family:inherit; color:var(--slate-900);
+  background:#fff; outline:none; transition:border-color 150ms, box-shadow 150ms;
+}
+.field input:focus, .field select:focus { border-color:var(--teal-600); box-shadow:0 0 0 3px rgba(13,148,136,0.12); }
+.field input:disabled { background:var(--slate-50); color:var(--slate-500); cursor:not-allowed; }
+.field .helper { font-size:11.5px; color:var(--slate-500); margin-top:4px; }
+
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.field-row.three { grid-template-columns:2fr 1fr 1fr; }
+
+.section-card .save-row {
+  display:flex; gap:10px; margin-top:14px; padding-top:14px; border-top:1px dashed var(--slate-200); align-items:center;
+}
+.btn-save {
+  flex:1; height:44px; padding:0 18px;
+  background:var(--teal-600); color:#fff; border:0; border-radius:10px;
+  font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;
+}
+.btn-save:hover { background:var(--teal-700); }
+.btn-save:disabled { background:var(--slate-300); cursor:not-allowed; }
+.save-status { font-size:12px; font-weight:600; color:var(--success-fg); opacity:0; transition:opacity 220ms; }
+.save-status.show { opacity:1; }
+
+/* ---- Claims history ---- */
+.claim-list { display:flex; flex-direction:column; gap:8px; }
+.claim-link {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 14px; background:var(--slate-50); border:1px solid var(--slate-200);
+  border-radius:12px; text-decoration:none; color:var(--slate-900);
+  transition:border-color 140ms, background 140ms;
+}
+.claim-link:hover { border-color:var(--teal-600); background:#fff; }
+.claim-link .cl-id { font-family:var(--font-mono); font-size:12.5px; color:var(--slate-700); font-weight:600; letter-spacing:0.02em; }
+.claim-link .cl-meta { font-size:11.5px; color:var(--slate-500); margin-top:2px; }
+.claim-link .cl-status {
+  padding:3px 9px; border-radius:99px; font-size:10.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.06em; flex-shrink:0;
+}
+.claim-link .cl-status.submitted { background:var(--teal-50); color:var(--teal-800); }
+.claim-link .cl-status.in-review { background:#EFF6FF; color:#1E40AF; }
+.claim-link .cl-status.approved, .claim-link .cl-status.paid { background:var(--success-bg); color:var(--success-fg); }
+.claim-link .cl-status.denied { background:var(--danger-bg); color:var(--danger-fg); }
+.claim-empty { color:var(--slate-500); font-size:13px; text-align:center; padding:16px; font-style:italic; }
+
+/* ---- Sign out / danger ---- */
+.danger-row {
+  display:flex; flex-direction:column; gap:10px;
+  background:#fff; border:1px solid var(--slate-200); border-radius:16px; padding:18px 20px;
+}
+.btn-secondary {
+  width:100%; height:48px;
+  background:transparent; color:var(--slate-700);
+  border:1px solid var(--slate-300); border-radius:12px;
+  font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;
+}
+.btn-secondary:hover { background:var(--slate-50); border-color:var(--slate-400); }
+.btn-signout { color:var(--danger-fg); border-color:#FCA5A5; }
+.btn-signout:hover { background:var(--danger-bg); border-color:#F87171; }
+
+.footnote { text-align:center; font-size:11px; color:var(--slate-400); padding:16px 0 24px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <section class="hero">
+    <div class="hero-top">
+      <button class="icon-btn" id="backBtn" aria-label="Back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="logo-badge">
+        <span class="circle">
+          <svg width="18" height="18" viewBox="0 0 32 32">
+            <path d="M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="16" cy="15" r="2.5" fill="#0D9488"/>
+          </svg>
+        </span>
+        <span class="text">CREDIMED</span>
+      </div>
+      <span style="width:36px"></span>
+    </div>
+    <h1>Your profile</h1>
+    <p class="sub">Review the info we have on file for your claims.</p>
+  </section>
+
+  <div class="body-wrap">
+
+    <!-- Avatar + basic identity (view-only) -->
+    <div class="profile-avatar">
+      <div class="avatar-circle" id="avatarInitials">A</div>
+      <div>
+        <div class="name" id="displayName">—</div>
+        <div class="email" id="displayEmail">—</div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="section-card">
+      <h2>Contact</h2>
+      <div class="field">
+        <label>First name</label>
+        <input type="text" id="firstName" autocomplete="given-name" />
+      </div>
+      <div class="field">
+        <label>Last name</label>
+        <input type="text" id="lastName" autocomplete="family-name" />
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" disabled />
+        <div class="helper">Email is tied to your Credimed account and can't be changed here.</div>
+      </div>
+      <div class="field">
+        <label>Phone (for claim status updates)</label>
+        <input type="tel" id="phone" autocomplete="tel" placeholder="+1 555 555 5555" />
+      </div>
+      <div class="save-row">
+        <button class="btn-save" id="saveContact">Save contact</button>
+        <span class="save-status" id="statusContact">Saved ✓</span>
+      </div>
+    </div>
+
+    <!-- Mailing address -->
+    <div class="section-card">
+      <h2>Mailing address<span class="critical">Critical</span></h2>
+      <div class="critical-note">
+        Your insurer mails the reimbursement check to this address. Make sure it's the address where you can receive physical mail.
+      </div>
+      <div class="field">
+        <label>Full name on mail</label>
+        <input type="text" id="addrName" autocomplete="name" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Street</label>
+          <input type="text" id="addrStreet" autocomplete="street-address" />
+        </div>
+        <div class="field">
+          <label>Apt / Suite (optional)</label>
+          <input type="text" id="addrApt" autocomplete="address-line2" />
+        </div>
+      </div>
+      <div class="field-row three">
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="addrCity" autocomplete="address-level2" />
+        </div>
+        <div class="field">
+          <label>State</label>
+          <input type="text" id="addrState" maxlength="2" autocomplete="address-level1" />
+        </div>
+        <div class="field">
+          <label>ZIP</label>
+          <input type="text" id="addrZip" maxlength="5" inputmode="numeric" autocomplete="postal-code" />
+        </div>
+      </div>
+      <div class="save-row">
+        <button class="btn-save" id="saveAddr">Save address</button>
+        <span class="save-status" id="statusAddr">Saved ✓</span>
+      </div>
+    </div>
+
+    <!-- Banking (optional, for direct deposit if carrier supports it) -->
+    <div class="section-card">
+      <h2>Direct deposit (optional)</h2>
+      <div class="field">
+        <label>Account holder name</label>
+        <input type="text" id="bankHolder" />
+      </div>
+      <div class="field">
+        <label>Bank name</label>
+        <input type="text" id="bankName" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Routing #</label>
+          <input type="text" id="bankRouting" inputmode="numeric" maxlength="9" />
+        </div>
+        <div class="field">
+          <label>Account #</label>
+          <input type="text" id="bankAccount" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Account type</label>
+        <select id="bankType">
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+        </select>
+      </div>
+      <div class="save-row">
+        <button class="btn-save" id="saveBank">Save banking</button>
+        <span class="save-status" id="statusBank">Saved ✓</span>
+      </div>
+    </div>
+
+    <!-- Claims history -->
+    <div class="section-card">
+      <h2>Your claims</h2>
+      <div class="claim-list" id="claimList">
+        <div class="claim-empty">No claims yet.</div>
+      </div>
+    </div>
+
+    <!-- Sign out + account -->
+    <div class="danger-row">
+      <button class="btn-secondary" id="backToDashboard">Back to dashboard</button>
+      <button class="btn-secondary btn-signout" id="signoutBtn">Sign out</button>
+    </div>
+
+    <div class="footnote">
+      Need help? Email <a href="mailto:support@credimed.us" style="color:var(--slate-500)">support@credimed.us</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script src="state.js"></script>
+<script>
+(function () {
+  'use strict';
+  var S = window.CredimedState;
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* Transient flash 'Saved ✓' next to a section's Save button. */
+  function flash(statusId) {
+    var el = $(statusId);
+    if (!el) return;
+    el.classList.add('show');
+    setTimeout(function () { el.classList.remove('show'); }, 1800);
+  }
+
+  /* ────── Hydrate form from Cognito + CredimedState ────── */
+  async function hydrate() {
+    // Identity from Cognito (source of truth for email/name).
+    var cu = null;
+    try { cu = await window.cognitoGetCurrentUser(); } catch (e) {}
+    if (!cu) {
+      // Not signed in — bounce to login. Profile is a logged-in-only screen.
+      window.location.href = '/app/login.html';
+      return;
+    }
+
+    var attrs = (cu && cu.attributes) || {};
+    var firstName = attrs.given_name || S.get('user.firstName', '') || '';
+    var lastName  = attrs.family_name || S.get('user.lastName', '')  || '';
+    var email     = attrs.email || S.get('user.email', '') || '';
+    var phone     = S.get('user.phone', '') || '';
+
+    $('firstName').value = firstName;
+    $('lastName').value  = lastName;
+    $('email').value     = email;
+    $('phone').value     = phone;
+
+    $('displayName').textContent  = (firstName + ' ' + lastName).trim() || email || 'You';
+    $('displayEmail').textContent = email || '—';
+    $('avatarInitials').textContent = ((firstName[0] || '') + (lastName[0] || '')).toUpperCase() || (email[0] || 'A').toUpperCase();
+
+    // Mailing address — populated by agreement.html's syncAddressToState.
+    var addr = S.get('mailingAddress', {}) || {};
+    $('addrName').value   = addr.name   || (firstName + ' ' + lastName).trim();
+    $('addrStreet').value = addr.street || '';
+    $('addrApt').value    = addr.apt    || '';
+    $('addrCity').value   = addr.city   || '';
+    $('addrState').value  = addr.state  || '';
+    $('addrZip').value    = addr.zip    || '';
+
+    // Banking
+    var bank = S.get('banking', {}) || {};
+    $('bankHolder').value  = bank.holderName || (firstName + ' ' + lastName).trim();
+    $('bankName').value    = bank.bankName   || '';
+    $('bankRouting').value = bank.routing    || '';
+    $('bankAccount').value = bank.account    || '';
+    $('bankType').value    = bank.accountType || 'checking';
+
+    renderClaims();
+  }
+
+  /* ────── Claims history ────── */
+  function renderClaims() {
+    var all = (S.getAllClaims && S.getAllClaims()) || [];
+    // Back-compat: some sessions only have the single `claim` field.
+    if (all.length === 0) {
+      var single = S.get('claim', null);
+      if (single && single.id) all = [single];
+    }
+    var container = $('claimList');
+    if (all.length === 0) {
+      container.innerHTML = '<div class="claim-empty">No claims yet. <a href="/app/documents.html" style="color:var(--teal-600);font-weight:600">Start your first claim →</a></div>';
+      return;
+    }
+    container.innerHTML = all.map(function (c) {
+      var date = c.submittedAt ? new Date(c.submittedAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '—';
+      var amt  = c.paidAmount ? ((c.paidCurrency === 'MXN' ? 'MX$' : '$') + Number(c.paidAmount).toLocaleString() + ' ' + (c.paidCurrency || 'USD')) : '—';
+      var statusLabel = { 'submitted':'Submitted','in-review':'In review','approved':'Approved','paid':'Paid','denied':'Denied' }[c.status] || c.status || '—';
+      return (
+        '<a class="claim-link" href="/app/dashboard.html?id=' + encodeURIComponent(c.id) + '">' +
+          '<div>' +
+            '<div class="cl-id">' + c.id + '</div>' +
+            '<div class="cl-meta">' + date + ' · ' + amt + '</div>' +
+          '</div>' +
+          '<div class="cl-status ' + (c.status || 'submitted') + '">' + statusLabel + '</div>' +
+        '</a>'
+      );
+    }).join('');
+  }
+
+  /* ────── Save handlers ────── */
+  $('saveContact').addEventListener('click', function () {
+    S.merge('user', {
+      firstName: $('firstName').value.trim(),
+      lastName:  $('lastName').value.trim(),
+      phone:     $('phone').value.trim(),
+    });
+    // Optional: push to Cognito attributes. Requires cognitoUpdateAttributes
+    // helper — leave as a TODO until we add it to backend.js.
+    flash('statusContact');
+    // Refresh avatar + display
+    hydrate();
+  });
+
+  $('saveAddr').addEventListener('click', function () {
+    S.set('mailingAddress', {
+      name:   $('addrName').value.trim(),
+      street: $('addrStreet').value.trim(),
+      apt:    $('addrApt').value.trim(),
+      city:   $('addrCity').value.trim(),
+      state:  $('addrState').value.trim().toUpperCase(),
+      zip:    $('addrZip').value.trim(),
+    });
+    flash('statusAddr');
+  });
+
+  $('saveBank').addEventListener('click', function () {
+    var holder  = $('bankHolder').value.trim();
+    var bankNm  = $('bankName').value.trim();
+    var routing = $('bankRouting').value.replace(/\D/g, '');
+    var account = $('bankAccount').value.replace(/\D/g, '');
+    if (routing && routing.length !== 9) {
+      alert('Routing number must be 9 digits.');
+      return;
+    }
+    S.set('banking', {
+      holderName: holder,
+      bankName: bankNm,
+      routing: routing,
+      account: account,
+      accountType: $('bankType').value,
+    });
+    flash('statusBank');
+  });
+
+  /* ────── Nav buttons ────── */
+  $('backBtn').addEventListener('click', function () {
+    if (document.referrer && document.referrer.indexOf('/app/') !== -1) history.back();
+    else window.location.href = '/app/dashboard.html';
+  });
+  $('backToDashboard').addEventListener('click', function () {
+    window.location.href = '/app/dashboard.html';
+  });
+  $('signoutBtn').addEventListener('click', function () {
+    if (!confirm('Sign out of Credimed?')) return;
+    try { if (window.cognitoSignOut) window.cognitoSignOut(); } catch (e) {}
+    window.location.href = '/app/login.html';
+  });
+
+  hydrate();
+})();
+</script>
+</body>
+</html>
