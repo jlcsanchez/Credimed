@@ -103,10 +103,30 @@
       procedures: get('receipt.procedures', null),
       procedure: get('receipt.procedure', null)
     };
+
+    // Persist this claim as the ACTIVE one (what the dashboard shows by
+    // default) AND append it to the historical `claims` array so prior
+    // claims don't get wiped every time the user starts a new flow.
+    // Order: most-recent-first so `claims[0]` is always the active one.
+    var history = get('claims', []) || [];
+    if (!Array.isArray(history)) history = [];
+    // De-dupe: if for some reason this id is already in history (same
+    // session calling submitClaim twice), replace in place.
+    history = history.filter(function (c) { return c && c.id !== claim.id; });
+    history.unshift(claim);
+    set('claims', history);
     set('claim', claim);
     set('payment.status', 'paid');
     set('payment.paidAt', now.toISOString());
     return claim;
+  }
+
+  // Return the full historical claims array (most-recent first). Dashboard
+  // can show a 'Previous claims' list; admin queue can iterate. The single
+  // active `claim` object stays as the default the dashboard renders.
+  function getAllClaims() {
+    var history = get('claims', []) || [];
+    return Array.isArray(history) ? history : [];
   }
 
   function formatMoney(n) {
@@ -142,6 +162,7 @@
     on: on,
     generateClaimId: generateClaimId,
     submitClaim: submitClaim,
+    getAllClaims: getAllClaims,
     formatMoney: formatMoney,
     formatDateRange: formatDateRange,
     getInitials: getInitials,
