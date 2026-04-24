@@ -1,0 +1,11 @@
+{
+  "name": "credimed-claims",
+  "version": "1.0.0",
+  "description": "AWS Lambda for GET /claims/:id (user) + GET /admin/claims and PATCH /admin/claims/:id (admin), gated by Cognito groups.",
+  "main": "credimed-claims.lambda.js",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.700.0",
+    "@aws-sdk/lib-dynamodb":    "^3.700.0"
+  }
+}
