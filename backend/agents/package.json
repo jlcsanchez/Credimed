@@ -1,0 +1,10 @@
+{
+  "name": "credimed-agents",
+  "version": "1.0.0",
+  "description": "AWS Lambda that proxies Credimed chat widgets (Sofia, Ana, Elena, Marco) to Anthropic's Claude API.",
+  "main": "credimed-agents.lambda.js",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.40.0"
+  }
+}
