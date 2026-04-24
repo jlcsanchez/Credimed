@@ -594,10 +594,14 @@ html, body {
 .drawer-body {
   padding: 18px 22px 22px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   font-size: 13px;
   line-height: 1.6;
   color: var(--slate-600);
   flex: 1;
+  min-height: 0;
 }
 .drawer-body h4 {
   font-size: 12px;
@@ -762,7 +766,7 @@ function drawerHtml() {
         <p>You may cancel at any time before your claim is mailed for a full refund. After the claim has been mailed, fees are non-refundable because the work has been performed.</p>
 
         <h4>7. Contact</h4>
-        <p>Questions? Email <b>hello@credimed.us</b> or message Sofia on WhatsApp (+1 512-555-0134).</p>
+        <p>Questions? Email <b>hello@credimed.us</b> or message Ana on WhatsApp (+1 512-555-0134).</p>
       </div>
       <div class="drawer-footer">
         <button class="btn-primary" data-drawer-close>
