@@ -402,14 +402,23 @@ html, body {
   var justPaid = params.get('paid') === '1' || params.has('payment_intent_client_secret');
   if (justPaid) {
     try {
+      /* receipt.amountPaidUSD is the documents-screen-normalized USD value
+         (~18:1 from MXN). Always send USD to the backend so downstream
+         consumers (dashboard, admin queue, insurer portal) don't have to
+         re-detect currency. Also forward the original amount + currency
+         as a secondary record for audit / reconciliation. */
+      var S = window.CredimedState || { get: function(){ return null; } };
       var body = {
         claimId: claimId,
-        plan: (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard',
-        paidAmount: (window.CredimedState && window.CredimedState.get('receipt.amountPaid')) || null,
-        estimateMin: (window.CredimedState && window.CredimedState.get('estimate.rangeMin')) || null,
-        estimateMax: (window.CredimedState && window.CredimedState.get('estimate.rangeMax')) || null,
-        city: (window.CredimedState && window.CredimedState.get('receipt.city')) || null,
-        procedure: (window.CredimedState && window.CredimedState.get('receipt.procedure')) || null,
+        plan: S.get('plan.selected') || 'standard',
+        paidAmountUSD: S.get('receipt.amountPaidUSD') || null,
+        paidAmountOriginal: S.get('receipt.amountPaid') || null,
+        paidCurrency: S.get('receipt.currency') || null,
+        estimateMin: S.get('estimate.rangeMin') || null,
+        estimateMax: S.get('estimate.rangeMax') || null,
+        city: S.get('receipt.city') || null,
+        procedures: S.get('receipt.procedures') || null,
+        procedure: S.get('receipt.procedure') || null,
         submittedAt: new Date().toISOString()
       };
       if (window.authFetch && window.CREDIMED_API) {

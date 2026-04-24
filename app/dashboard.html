@@ -650,6 +650,63 @@ const CLAIM = {
 // theirs).
 let HAS_REAL_CLAIM = false;
 
+// Translate common Mexican dental procedure names to English. The OCR
+// reads the receipt verbatim ('Endodoncia pieza 14', 'Corona temporal'),
+// which is intimidating for a US patient. This dictionary handles the
+// ~90% of cases without needing a translation API. Unknown terms pass
+// through unchanged.
+function translateProcedure(raw) {
+  if (!raw || typeof raw !== 'string') return raw;
+  let s = raw;
+  const map = [
+    // Endodontic
+    [/\bendodoncias?\b/gi,                'Root canal'],
+    [/\bpulpotom[ií]a\b/gi,               'Pulpotomy'],
+    // Crowns & prosthetics
+    [/\bcorona\s+de\s+zirconia\b/gi,      'Zirconia crown'],
+    [/\bcorona\s+de\s+porcelana\b/gi,     'Porcelain crown'],
+    [/\bcorona\s+metal[- ]?porcelana\b/gi,'Porcelain-fused-to-metal crown'],
+    [/\bcorona\s+definitiva\b/gi,         'Permanent crown'],
+    [/\bcorona\s+temporal\b/gi,           'Temporary crown'],
+    [/\bcorona(?:s)?\b/gi,                'Crown'],
+    [/\bcarillas?\b/gi,                   'Veneer'],
+    [/\bpuente\s+dental\b/gi,             'Dental bridge'],
+    [/\bpuente\b/gi,                      'Bridge'],
+    // Fillings / restorations
+    [/\breconstrucci[oó]n\s+dental\b/gi,  'Dental filling'],
+    [/\breconstrucci[oó]n\b/gi,           'Filling'],
+    [/\bresinas?\b/gi,                    'Composite filling'],
+    [/\bamalgamas?\b/gi,                  'Amalgam filling'],
+    [/\bincrustaci[oó]n\b/gi,             'Inlay/Onlay'],
+    // Hygiene
+    [/\blimpieza\s+profunda\b/gi,         'Deep cleaning'],
+    [/\blimpieza\s+dental\b/gi,           'Dental cleaning'],
+    [/\bprofilaxis\b/gi,                  'Cleaning (prophylaxis)'],
+    [/\bblanqueamiento\b/gi,              'Teeth whitening'],
+    // Surgical
+    [/\bextracci[oó]n\s+simple\b/gi,      'Simple extraction'],
+    [/\bextracci[oó]n\s+quir[uú]rgica\b/gi,'Surgical extraction'],
+    [/\bextracciones?\b/gi,               'Extraction'],
+    [/\bimplantes?\s+dentales?\b/gi,      'Dental implant'],
+    [/\bimplantes?\b/gi,                  'Implant'],
+    // Orthodontic / other
+    [/\bortodoncia\b/gi,                  'Orthodontics'],
+    [/\bbrackets?\b/gi,                   'Braces'],
+    [/\bf[eé]rula\s+dental\b/gi,          'Dental splint / night guard'],
+    [/\bradiograf[ií]as?\b/gi,            'X-ray'],
+    [/\bconsulta\b/gi,                    'Consultation'],
+    [/\bcirug[ií]a\s+oral\b/gi,           'Oral surgery'],
+    // Positional qualifiers
+    [/\bpieza\s+(\d+)\b/gi,               'tooth #$1'],
+    [/\bmolar\b/gi,                       'molar'],
+    [/\bmaxilar\s+superior\b/gi,          'upper jaw'],
+    [/\bmaxilar\s+inferior\b/gi,          'lower jaw'],
+  ];
+  for (const [re, en] of map) s = s.replace(re, en);
+  // Capitalize first letter
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 // Pull real data from CredimedState (populated during the claim flow) and
 // overwrite the mock. Missing fields keep the mock fallback so the UI still
 // renders something reasonable during design reviews / empty sessions.
@@ -670,9 +727,17 @@ function hydrateClaimFromState() {
   var planKey = (pricing && pricing.tier) || (claim && claim.plan) || 'standard';
   if (planMap[planKey]) CLAIM.plan = planMap[planKey];
 
-  // Paid amount at clinic (USD after conversion from MXN if needed — the
-  // documents screen already normalized to USD when it stored this)
-  var paid = (claim && claim.paidAmount) || receipt.amountPaid;
+  // Paid amount at clinic — always display in USD. documents.html stores
+  // BOTH the original (receipt.amountPaid, possibly in MXN) and the
+  // normalized USD value (receipt.amountPaidUSD, after ~18:1 conversion).
+  // The earlier version read receipt.amountPaid, which showed Mexican
+  // pesos as if they were dollars ('$5,000 USD' for a MX\$5,000 receipt).
+  // Prefer amountPaidUSD; fall back to amountPaid only if the converted
+  // value isn't stored (older sessions).
+  var paid = (claim && claim.paidAmountUSD)
+          || receipt.amountPaidUSD
+          || (claim && claim.paidAmount)
+          || receipt.amountPaid;
   if (paid) CLAIM.paid_at_clinic = Math.round(Number(paid));
 
   // Estimate range
@@ -685,9 +750,9 @@ function hydrateClaimFromState() {
   // receipt.procedure if only that is present (older sessions).
   var procs = receipt.procedures;
   if (Array.isArray(procs) && procs.length) {
-    CLAIM.procedures = procs;
+    CLAIM.procedures = procs.map(translateProcedure);
   } else if (receipt.procedure) {
-    CLAIM.procedures = [receipt.procedure];
+    CLAIM.procedures = [translateProcedure(receipt.procedure)];
   }
 
   // Submitted / updated dates
