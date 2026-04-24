@@ -3,7 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <title>Credimed — Dashboard (Track your claim)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style id="credimed-prod-overrides">
+/* Production mode: hide Claude Design dev chrome.
+   Add ?dev=1 to URL to reveal it. */
+.topbar,
+.device-label { display: none !important; }
+
+/* Mobile (<768px): show the mobile iphone-wrap, hide the desktop preview */
+@media (max-width: 767px) {
+  .stage .device-wrap:nth-of-type(2) { display: none !important; }
+  .stage { padding: 0 !important; min-height: 100vh !important; gap: 0 !important; background: #FAF6EF !important; }
+  .stage .device-wrap:nth-of-type(1) { width: 100% !important; max-width: 480px !important; margin: 0 auto !important; }
+}
+/* Desktop (>=768px): hide mobile, keep desktop preview as centered card */
+@media (min-width: 768px) {
+  .stage .device-wrap:nth-of-type(1) { display: none !important; }
+  .stage { padding: 40px 20px !important; background: #FAF6EF !important; }
+}
+
+/* Strip iPhone frame chrome in prod */
+.iphone {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 480px !important;
+  min-height: 100vh !important;
+  height: auto !important;
+}
+.iphone::before { display: none !important; }
+.iphone .screen {
+  border-radius: 0 !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  background: #FAF6EF !important;
+  overflow: visible !important;
+}
+
+/* Strip desktop browser chrome in prod */
+.desktop .chrome { display: none !important; }
+.desktop {
+  border-radius: 20px !important;
+  box-shadow: 0 24px 64px rgba(15,23,42,0.14), 0 4px 16px rgba(15,23,42,0.06) !important;
+  width: auto !important;
+  max-width: 520px !important;
+  overflow: hidden !important;
+}
+.desktop .body {
+  height: auto !important;
+  padding: 0 !important;
+  background: #FAF6EF !important;
+}
+.desktop-inner {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+html, body { background: #FAF6EF !important; margin: 0 !important; padding: 0 !important; }
+</style>
+<script>
+/* Reveal dev chrome with ?dev=1 for design reviews */
+if (location.search.indexOf("dev=1") >= 0) {
+  document.addEventListener("DOMContentLoaded", function () {
+    var s = document.getElementById("credimed-prod-overrides");
+    if (s) s.disabled = true;
+  });
+}
+</script>
 <style>
 :root {
   --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-200:#99F6E4; --teal-300:#5EEAD4;
