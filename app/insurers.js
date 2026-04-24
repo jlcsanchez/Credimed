@@ -21,6 +21,50 @@
    Source for ranges: public 2024-2025 plan brochures, NADP claims data,
    our own claim history (when populated). Verify before quoting in
    marketing materials.
+
+   ─────────────────────────────────────────────────────────────────────
+   HOW TO ADD A NEW INSURER
+   ─────────────────────────────────────────────────────────────────────
+   When you process a claim with a carrier not yet in the table:
+
+   1. Open this file. Add a new entry inside `INSURERS`. The KEY is the
+      lower-case carrier name with NO 'PPO/HMO/Inc/of [State]' suffix.
+      'Delta Dental of California' → key 'delta dental'.
+      'Aetna Dental PPO Plus'      → key 'aetna'.
+
+   2. Fill the fields. For unknown values, use the DEFAULT_INSURER's:
+        oonLow:  40    (conservative — under-promise)
+        oonHigh: 70
+        annualMaxLow:  1000
+        annualMaxHigh: 2000
+        riskScore: null              (do NOT guess — leave null until ≥10 claims)
+        avgPayoutDays: null          (same)
+        confirmedClaimsCount: 0
+        notes: 'New carrier — using public defaults until we have claim history.'
+
+   3. Once you process 5–10 claims with this carrier, replace the public
+      defaults with REAL data from your claim history:
+        oonLow / oonHigh   → actual lowest/highest payout %
+        avgPayoutDays      → median days from filing to check
+        confirmedClaimsCount → bump on every confirmed payout
+        riskScore          → A (fast + reliable), B (slow but pays),
+                              C (frequent denials), D (avoid)
+
+   4. Update the `notes` field with a one-liner. Future you will thank you.
+
+   5. Commit with message: "data(insurers): add {carrier name}".
+
+   ─────────────────────────────────────────────────────────────────────
+   WHEN TO MOVE THIS TO A BACKEND TABLE
+   ─────────────────────────────────────────────────────────────────────
+   Stay in this JS file while the dataset is small (<50 carriers) and
+   updates are infrequent. Migrate to DynamoDB + admin UI when:
+
+     - You need per-state plan variants (Delta Dental varies by state)
+     - You need historical rate tracking (last year vs this year)
+     - You start advance/credit underwriting and need queries like
+       'all claims with carrier X in last 90 days'
+     - Multiple admins need to update without git access
    ========================================================================= */
 
 (function (global) {
