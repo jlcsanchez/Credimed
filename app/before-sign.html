@@ -521,37 +521,54 @@ html, body {
 .trust-row .dot-sep { color: var(--slate-300); }
 .trust-row svg { flex-shrink: 0; }
 
-/* ---- Agreement drawer ---- */
+/* ---- Agreement drawer ----
+   position:fixed (not absolute) so the sheet is anchored to the viewport,
+   not to .iphone .screen. Scrolling inside a .drawer that lives inside a
+   scrollable ancestor is where the iOS scroll-chain got stuck — when the
+   user hit the bottom of drawer-body, momentum bled into .screen behind
+   and they couldn't scroll back. Fixed + body.drawer-open lock below. */
 .drawer-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: rgba(15,23,42,0.45);
   backdrop-filter: blur(3px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 220ms ease;
-  z-index: 10;
-  border-radius: inherit;
+  z-index: 1000;
+  touch-action: none;
 }
-.iphone .screen .drawer-backdrop { border-radius: 42px; }
 .drawer-backdrop.open {
   opacity: 1;
   pointer-events: auto;
 }
 .drawer {
-  position: absolute;
+  position: fixed;
   left: 0; right: 0; bottom: 0;
+  margin: 0 auto;
+  max-width: 480px;  /* match the page container on mobile */
   background: white;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   box-shadow: 0 -20px 60px rgba(0,0,0,0.25);
   transform: translateY(100%);
   transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  z-index: 11;
+  z-index: 1001;
   display: flex; flex-direction: column;
-  max-height: 82%;
+  max-height: 82dvh;  /* dvh avoids iOS Safari's address bar making the drawer
+                         over-tall and creating the 'can't scroll back up' feel */
+  max-height: 82vh;   /* fallback */
+  overscroll-behavior: contain;
 }
 .drawer.open { transform: translateY(0); }
+@media (min-width: 768px) {
+  .drawer { max-width: 520px; }
+}
+/* When drawer is open, lock the page behind it so only the drawer body
+   scrolls — iOS used to bleed momentum through the drawer into .screen. */
+body.drawer-open,
+body.drawer-open .iphone .screen,
+body.drawer-open .desktop-inner { overflow: hidden !important; }
 
 .drawer-handle {
   width: 44px; height: 5px;
@@ -866,6 +883,8 @@ function mount() {
 
 function applyDrawerState() {
   const open = activeVariant === 'drawer';
+  // Lock the page scroll behind the sheet so momentum doesn't leak through.
+  document.body.classList.toggle('drawer-open', open);
   document.querySelectorAll('[data-drawer]').forEach(el => el.classList.toggle('open', open));
   document.querySelectorAll('[data-drawer-backdrop]').forEach(el => el.classList.toggle('open', open));
 }
