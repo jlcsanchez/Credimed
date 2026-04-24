@@ -253,6 +253,48 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
 (function () {
   'use strict';
 
+  /* Render the 'Welcome back' interstitial card (name + Continue + Sign out).
+     Called both when the page loads with an active Cognito session, AND
+     after a fresh email+password sign-in. The user always clicks Continue
+     to navigate — no auto-redirect — so they have a moment to orient and
+     the sign-out escape hatch is always reachable (important if they're
+     on someone else's device). */
+  async function renderWelcomeBack() {
+    var name = '';
+    var email = '';
+    try {
+      var cu = await window.cognitoGetCurrentUser();
+      if (cu && cu.attributes) {
+        name = cu.attributes.given_name || '';
+        email = cu.attributes.email || '';
+      }
+    } catch (e) {}
+    var card = document.querySelector('.card');
+    if (!card) {
+      // If the card was already replaced or the DOM changed, just route.
+      window.location.href = getPostAuthUrl('login');
+      return;
+    }
+    card.innerHTML =
+      '<div style="text-align:center;padding:12px 0 4px">' +
+        '<div style="font-size:22px;font-weight:700;color:var(--slate-900);margin-bottom:6px;font-family:\'Playfair Display\',Georgia,serif">' +
+          'Welcome back' + (name ? ', ' + name : '') + ' 👋' +
+        '</div>' +
+        (email
+          ? '<div style="font-size:13px;color:var(--slate-500);margin-bottom:24px">Signed in as ' + email + '</div>'
+          : '<div style="margin-bottom:24px"></div>') +
+        '<button id="welcome-continue" class="btn-primary" style="width:100%;margin-bottom:10px">Continue to my claim →</button>' +
+        '<button id="welcome-signout" style="width:100%;height:52px;background:transparent;color:var(--slate-700);border:1px solid var(--slate-300);border-radius:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit">Sign out</button>' +
+      '</div>';
+    var cont = document.getElementById('welcome-continue');
+    if (cont) cont.addEventListener('click', function () { window.location.href = getPostAuthUrl('login'); });
+    var so = document.getElementById('welcome-signout');
+    if (so) so.addEventListener('click', function () {
+      try { window.cognitoSignOut(); } catch (e) {}
+      window.location.href = '/app/login.html?logout=1';
+    });
+  }
+
   /* Post-auth destination.
      - 'signup'  → documents.html (brand-new user, start the flow)
      - 'login'   → dashboard.html (returning user, show tracker; dashboard
@@ -606,8 +648,11 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
           });
         }
       } catch (e) {}
-      showSuccess('Signed in. Redirecting...');
-      setTimeout(function () { window.location.href = getPostAuthUrl('login'); }, 500);
+      // Fresh sign-in: show the Welcome back interstitial before routing
+      // to the dashboard (same card the already-logged-in path uses). Gives
+      // the user a moment to orient + offers a 'Sign out' escape hatch in
+      // case they signed in on someone else's device.
+      renderWelcomeBack();
     } catch (err) {
       showError(friendlyCognitoErr(err));
     } finally {
@@ -632,35 +677,8 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     try {
       var token = await window.cognitoGetIdToken();
       if (token) {
-        /* Already authenticated. Show a brief "Welcome back" interstitial with
-           a way to switch accounts, then auto-advance to documents. */
-        var cu = null;
-        try { cu = await window.cognitoGetCurrentUser(); } catch (e) {}
-        var name = (cu && cu.attributes && cu.attributes.given_name) || '';
-        var email = (cu && cu.attributes && cu.attributes.email) || '';
-
-        /* Replace the card with a welcome interstitial. User must click
-           Continue to advance — no auto-redirect, so they have time to read
-           and the option to sign out is always reachable. */
-        var card = document.querySelector('.card');
-        if (card) {
-          card.innerHTML =
-            '<div style="text-align:center;padding:12px 0 4px">' +
-              '<div style="font-size:22px;font-weight:700;color:var(--slate-900);margin-bottom:6px;font-family:\'Playfair Display\',Georgia,serif">' +
-                'Welcome back' + (name ? ', ' + name : '') + ' 👋' +
-              '</div>' +
-              (email ? '<div style="font-size:13px;color:var(--slate-500);margin-bottom:24px">Signed in as ' + email + '</div>' : '<div style="margin-bottom:24px"></div>') +
-              '<button id="welcome-continue" class="btn-primary" style="width:100%;margin-bottom:10px">Continue to my claim →</button>' +
-              '<button id="welcome-signout" style="width:100%;height:52px;background:transparent;color:var(--slate-700);border:1px solid var(--slate-300);border-radius:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit">Sign out</button>' +
-            '</div>';
-          var cont = document.getElementById('welcome-continue');
-          if (cont) cont.addEventListener('click', function () { window.location.href = getPostAuthUrl('login'); });
-          var so = document.getElementById('welcome-signout');
-          if (so) so.addEventListener('click', function () {
-            try { window.cognitoSignOut(); } catch (e) {}
-            window.location.href = '/app/login.html?logout=1';
-          });
-        }
+        // Already authenticated entry — show the Welcome back card.
+        await renderWelcomeBack();
         return;
       }
     } catch (e) { /* not logged in, stay on page */ }
