@@ -796,11 +796,18 @@ function hydrateClaimFromState() {
   if (low) CLAIM.refund_low = Math.round(Number(low));
   if (high) CLAIM.refund_high = Math.round(Number(high));
 
-  // Procedures — receipt.procedures is the OCR'd array. Fall back to single
-  // receipt.procedure if only that is present (older sessions).
+  // Procedures — receipt.procedures is the OCR'd array. Fall back to
+  // claim.procedures (saved by submission) when receipt is missing,
+  // and finally to the single receipt.procedure string for older
+  // sessions. Without the claim fallback, demo / returning users with
+  // no in-flight receipt see stale data from a previous session.
   var procs = receipt.procedures;
   if (Array.isArray(procs) && procs.length) {
     CLAIM.procedures = procs.map(translateProcedure);
+  } else if (claim && Array.isArray(claim.procedures) && claim.procedures.length) {
+    CLAIM.procedures = claim.procedures.map(translateProcedure);
+  } else if (claim && claim.procedure) {
+    CLAIM.procedures = [translateProcedure(claim.procedure)];
   } else if (receipt.procedure) {
     CLAIM.procedures = [translateProcedure(receipt.procedure)];
   }
