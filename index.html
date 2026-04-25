@@ -321,7 +321,18 @@ document.addEventListener('DOMContentLoaded', async function() {
       + '.v12-badge-chip{padding:6px 13px;background:#fff;border:1px solid #E2E8F0;border-radius:99px;font-size:12.5px;font-weight:600;color:#475569}'
       + '.v12-badge-chip strong{color:#0D9488}'
       + '.v12-fineprint{font-size:12px;color:#94A3B8;margin-top:18px;line-height:1.5}'
-      + '.v12-fineprint a{color:#0D9488;text-decoration:underline}';
+      + '.v12-fineprint a{color:#0D9488;text-decoration:underline}'
+      /* Hero trust strip — injected just below the estimator card */
+      + '#credimed-v12-trust{margin:18px auto 0;max-width:520px;padding:0 24px}'
+      + '#credimed-v12-trust .v12-trust-card{background:linear-gradient(135deg,#F0FDFA 0%,#FFFFFF 100%);border:1px solid #CCFBF1;border-radius:18px;padding:18px 20px;text-align:center;box-shadow:0 4px 14px -8px rgba(13,148,136,.12)}'
+      + '#credimed-v12-trust .v12-trust-headline{font-family:Inter,-apple-system,sans-serif;font-size:17px;font-weight:600;color:#134E4A;line-height:1.35;margin:0 0 4px;letter-spacing:-0.01em}'
+      + '#credimed-v12-trust .v12-trust-headline strong{color:#0D9488;font-weight:700}'
+      + '#credimed-v12-trust .v12-trust-sub{font-size:12.5px;color:#475569;line-height:1.5;margin:0 0 12px}'
+      + '#credimed-v12-trust .v12-trust-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}'
+      + '#credimed-v12-trust .v12-trust-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;background:#fff;border:1px solid #E2E8F0;border-radius:99px;font-size:11.5px;font-weight:600;color:#475569;white-space:nowrap}'
+      + '#credimed-v12-trust .v12-trust-pill svg{width:12px;height:12px;color:#0D9488;flex-shrink:0}'
+      + '#credimed-v12-trust .v12-trust-pill strong{color:#0D9488;font-weight:700}'
+      + '@media (min-width:760px){#credimed-v12-trust{max-width:680px}#credimed-v12-trust .v12-trust-card{padding:22px 28px}#credimed-v12-trust .v12-trust-headline{font-size:19px}}';
     document.head.appendChild(s);
   }
 
@@ -449,6 +460,79 @@ document.addEventListener('DOMContentLoaded', async function() {
     return document.querySelector('footer') || document.querySelector('[role="contentinfo"]');
   }
 
+  /* Build a small trust strip with the v1.2 money-back messaging.
+     Designed to sit just below the hero estimator so the guarantee
+     is visible in the first scroll without competing with the
+     hero's primary CTA. */
+  function buildTrustStrip() {
+    var wrap = document.createElement('div');
+    wrap.id = 'credimed-v12-trust';
+    wrap.innerHTML = ''
+      + '<div class="v12-trust-card">'
+      + '  <div class="v12-trust-headline"><strong>100% money-back</strong> if your insurance covers it and it&#39;s not paid.</div>'
+      + '  <p class="v12-trust-sub">Pay only if your claim is eligible. We never take a cut of your reimbursement.</p>'
+      + '  <div class="v12-trust-row">'
+      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>100%</strong> refund</span>'
+      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>0%</strong> commission</span>'
+      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No subscriptions</span>'
+      + '  </div>'
+      + '</div>';
+    return wrap;
+  }
+
+  /* Find the hero estimator card so we can drop the trust strip right
+     under it. The estimator has very recognizable copy ("Estimate my
+     refund" CTA + "$49" fineprint) that we can match against. */
+  function findHeroEstimator() {
+    /* Strategy: find any element containing both 'Estimate my refund'
+       and a '$' price reference. Prefer smallest matching element. */
+    var matches = [];
+    var all = document.querySelectorAll('button, a, div, section, article');
+    for (var i = 0; i < all.length; i++) {
+      var t = (all[i].textContent || '');
+      if (/estimate my refund/i.test(t) && /\$\s*49/.test(t)) {
+        matches.push(all[i]);
+      }
+    }
+    if (!matches.length) return null;
+    matches.sort(function (a, b) {
+      return a.querySelectorAll('*').length - b.querySelectorAll('*').length;
+    });
+    /* The estimator is a CARD wrapper — pick the smallest match that
+       still has a structural feel (>= 3 child elements). */
+    for (var j = 0; j < matches.length; j++) {
+      var el = matches[j];
+      if (el.children.length >= 2 && el.querySelector('button, a')) {
+        return el;
+      }
+    }
+    return matches[0];
+  }
+
+  function applyTrustStrip() {
+    if (document.getElementById('credimed-v12-trust')) return false;
+    var estimator = findHeroEstimator();
+    if (!estimator || !estimator.parentNode) return false;
+
+    /* Walk up to find a sensible insertion point — the estimator's
+       direct parent is usually the card wrapper, so insert AFTER
+       the wrapper at the same level. */
+    var anchor = estimator;
+    /* Walk up at most 3 levels to find an element that has siblings,
+       so insertBefore(node, anchor.nextSibling) lands cleanly. */
+    for (var i = 0; i < 3 && anchor.parentNode && !anchor.nextSibling; i++) {
+      anchor = anchor.parentNode;
+    }
+    var trust = buildTrustStrip();
+    if (anchor.nextSibling) {
+      anchor.parentNode.insertBefore(trust, anchor.nextSibling);
+    } else {
+      anchor.parentNode.appendChild(trust);
+    }
+    console.info('[credimed-v12] trust strip injected after hero estimator');
+    return true;
+  }
+
   function applyPatch() {
     /* Don't double-inject. */
     if (document.getElementById('credimed-v12-pricing')) return true;
@@ -481,34 +565,45 @@ document.addEventListener('DOMContentLoaded', async function() {
      a MutationObserver to react to DOM changes (Babel transforms the
      <script type="text/babel"> tags AFTER DOMContentLoaded, so the
      React tree may not exist when we first run). Falls back to a
-     timeout in case the observer never sees a meaningful change. */
-  var applied = false;
+     timeout in case the observer never sees a meaningful change.
+
+     Two independent injections: (1) the v1.2 Pricing replacement
+     deeper in the page, and (2) the hero trust strip just below
+     the estimator. They share the observer so we don't double-fire. */
+  var pricingApplied = false;
+  var trustApplied = false;
   function tryApply(reason) {
-    if (applied) return;
-    /* Need a footer or original pricing to anchor — otherwise we'd
-       inject too early, before React finishes. */
-    if (findOriginalPricing() || findFooter()) {
+    if (!pricingApplied && (findOriginalPricing() || findFooter())) {
       applyPatch();
-      applied = true;
-      console.info('[credimed-v12] patch applied via:', reason);
+      pricingApplied = true;
+      console.info('[credimed-v12] pricing patch applied via:', reason);
+    }
+    if (!trustApplied) {
+      if (applyTrustStrip()) {
+        trustApplied = true;
+      }
     }
   }
 
   function startObserver() {
     var observer = new MutationObserver(function () {
       tryApply('mutation');
-      if (applied) observer.disconnect();
+      if (pricingApplied && trustApplied) observer.disconnect();
     });
     observer.observe(document.body, { childList: true, subtree: true });
     /* Hard timeout: 10s — if neither pricing nor footer ever appear,
        still inject so the patch is at least visible on the page. */
     setTimeout(function () {
-      if (!applied) {
+      if (!pricingApplied) {
         applyPatch();
-        applied = true;
-        console.warn('[credimed-v12] timeout — forced injection after 10s');
-        observer.disconnect();
+        pricingApplied = true;
+        console.warn('[credimed-v12] pricing patch — forced injection after 10s');
       }
+      if (!trustApplied) {
+        applyTrustStrip();
+        trustApplied = true;
+      }
+      observer.disconnect();
     }, 10000);
     /* Also try right away in case content is already there. */
     tryApply('initial');
