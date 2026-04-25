@@ -413,55 +413,100 @@ document.addEventListener('DOMContentLoaded', async function() {
     return section;
   }
 
-  /* Detect the original Pricing section by scanning for ANY element
-     (not just <section>) whose text contains the legacy 2-tier pricing
-     ($49 + $99) and one of the tier names. Bundled React apps often
-     render Pricing as <div> not <section>, so we widen the search.
-     Returns the SMALLEST matching element to avoid hiding the entire
-     <main> when the prices live deep inside.
+  /* Detect the original Pricing section using the *strongest* signal
+     available: the Pricing CTAs ("Choose Standard", "Choose Premium",
+     etc.). Those button labels are unique to the Pricing component —
+     they don't appear in the hero, calculator, FAQ, or footer.
 
-     Falls back to inserting before the footer if the original section
-     can't be located. */
+     We find every CTA whose text matches a Pricing-only label, then
+     compute the smallest common ancestor of all of them. That ancestor
+     IS the Pricing section.
+
+     Multiple safety guards before returning:
+       (a) need at least 2 Pricing CTAs (otherwise we matched a stray
+           button somewhere else)
+       (b) common ancestor must have <250 descendants (anything bigger
+           would be the React #root or a section wrapper that includes
+           the hero)
+       (c) common ancestor must NOT contain the hero's "$1,000–$2,000"
+           or "Mexico" copy — if it does, we're matching too high
+       (d) common ancestor must NOT be <body>, <main>, or #root
+     If any guard fails, return null and let applyPatch() fall through
+     to the safe additive-only mode. */
+  var PRICING_CTA_PATTERNS = [
+    /\bchoose\s+(standard|plus|premium|basic)\b/i,
+    /\bstart\s+(standard|plus|premium|basic)\b/i,
+    /\bget\s+(standard|plus|premium|basic)\b/i,
+    /\bselect\s+(standard|plus|premium|basic)\b/i
+  ];
+
   function findOriginalPricing() {
-    var candidates = document.querySelectorAll('section, [class*="pricing" i], [class*="Pricing"], [data-section*="pricing" i], div[id*="pricing" i]');
-    /* If no class/id-based match, walk the whole tree to find any
-       element that contains the legacy pricing text. */
-    var matches = [];
-    function collect(el) {
-      var t = (el.textContent || '');
-      var hasPrices = /\$49/.test(t) && /\$99/.test(t);
-      if (!hasPrices) return false;
-      var hasTiers = /Standard/i.test(t) && /Premium/i.test(t);
-      if (!hasTiers) return false;
-      matches.push(el);
-      return true;
-    }
-    candidates.forEach(collect);
-    if (!matches.length) {
-      /* Fallback: scan all siblings of body — the bundle's app likely
-         renders into #root with deep nesting, but a top-level pass is
-         cheap. */
-      var all = document.querySelectorAll('div, section, article, main');
-      for (var i = 0; i < all.length; i++) collect(all[i]);
-    }
-    if (!matches.length) return null;
-
-    /* Prefer the smallest matching element so we don't hide the entire
-       app shell. We approximate "smallest" by descendant count. */
-    matches.sort(function (a, b) {
-      return a.querySelectorAll('*').length - b.querySelectorAll('*').length;
-    });
-    /* But not absurdly small — must contain at least one heading or
-       button to be a real Pricing section. */
-    for (var j = 0; j < matches.length; j++) {
-      var el = matches[j];
-      var hasHeadingOrCta = el.querySelector('h1, h2, h3, button, a');
-      if (hasHeadingOrCta) {
-        console.info('[credimed-v12] detected original Pricing section:', el);
-        return el;
+    /* Step 1: collect all Pricing-style CTAs. */
+    var ctas = [];
+    var buttons = document.querySelectorAll('button, a, [role="button"]');
+    for (var i = 0; i < buttons.length; i++) {
+      var text = (buttons[i].textContent || '').trim();
+      for (var p = 0; p < PRICING_CTA_PATTERNS.length; p++) {
+        if (PRICING_CTA_PATTERNS[p].test(text)) {
+          ctas.push(buttons[i]);
+          break;
+        }
       }
     }
-    return matches[0];
+    /* Skip our own injected v12 section's CTAs (they say "Start my claim",
+       which doesn't match any pattern above — but defense in depth). */
+    ctas = ctas.filter(function (el) {
+      return !el.closest('#credimed-v12-pricing') &&
+             !el.closest('#credimed-v12-trust');
+    });
+    if (ctas.length < 2) return null;
+
+    /* Step 2: walk up from the first CTA until we find an ancestor
+       that contains all the others. */
+    function ancestors(el) {
+      var arr = [];
+      var cur = el;
+      while (cur && cur !== document.body) {
+        arr.push(cur);
+        cur = cur.parentNode;
+      }
+      return arr;
+    }
+    var firstAncestors = ancestors(ctas[0]);
+    var common = null;
+    for (var k = 0; k < firstAncestors.length; k++) {
+      var anc = firstAncestors[k];
+      var allInside = true;
+      for (var m = 1; m < ctas.length; m++) {
+        if (!anc.contains(ctas[m])) { allInside = false; break; }
+      }
+      if (allInside) { common = anc; break; }
+    }
+    if (!common) return null;
+
+    /* Step 3: safety guards. */
+    var tag = (common.tagName || '').toLowerCase();
+    if (tag === 'body' || tag === 'main' || tag === 'html') return null;
+    if (common.id === 'root' || common.id === 'app') return null;
+
+    var descendants = common.querySelectorAll('*').length;
+    if (descendants > 250) {
+      console.warn('[credimed-v12] candidate Pricing ancestor too large (' + descendants + ' descendants) — skipping hide');
+      return null;
+    }
+
+    var heroText = common.textContent || '';
+    var containsHero = /\$1,000\s*[–-]\s*\$2,000/.test(heroText) ||
+                       /Paid \$1,000/.test(heroText) ||
+                       /quick estimate/i.test(heroText) ||
+                       /should be paid/i.test(heroText);
+    if (containsHero) {
+      console.warn('[credimed-v12] candidate Pricing ancestor includes hero text — skipping hide to avoid breaking the page');
+      return null;
+    }
+
+    console.info('[credimed-v12] safe Pricing ancestor detected (' + descendants + ' descendants):', common);
+    return common;
   }
 
   function findFooter() {
@@ -602,19 +647,44 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     injectStyles();
     var newSection = buildSection();
+    var original = findOriginalPricing();
 
-    /* IMPORTANT: never hide the detected element. Earlier versions
-       called `original.style.display = 'none'` to replace the legacy
-       2-tier Pricing section, but the detector sometimes matched a
-       too-broad container (the React #root or an app-level wrapper),
-       hiding the entire hero. Now we ALWAYS append the new section
-       before the footer (or to body as last resort) — purely
-       additive, can't break the existing layout. The legacy Pricing
-       section, if any, simply lives above ours. */
+    /* Strict path: the detector found a high-confidence match (passed
+       all safety guards in findOriginalPricing). Insert new section
+       in place of the original and hide the original. */
+    if (original && original.parentNode) {
+      try {
+        original.parentNode.insertBefore(newSection, original);
+        original.style.display = 'none';
+        original.setAttribute('data-credimed-v12-hidden', '1');
+        console.info('[credimed-v12] replaced original Pricing — original hidden, new section inserted in its place');
+
+        /* Sanity check after the fact: did we accidentally break the
+           hero? Verify hero text is still visible somewhere on the
+           page. If not, undo. */
+        setTimeout(function () {
+          var bodyText = document.body.innerText || '';
+          if (!/Paid \$1,000/.test(bodyText) && !/Mexico/.test(bodyText.slice(0, 2000))) {
+            console.error('[credimed-v12] post-hide sanity check failed — restoring original Pricing');
+            original.style.display = '';
+            original.removeAttribute('data-credimed-v12-hidden');
+          }
+        }, 50);
+
+        return true;
+      } catch (e) {
+        console.error('[credimed-v12] hide path errored:', e);
+      }
+    }
+
+    /* Safe additive path: detector wasn't confident. Just insert the
+       new section before the footer — the legacy 2-tier section
+       (if any) stays visible above ours. Doesn't touch any existing
+       markup, so it can't break the page. */
     var footer = findFooter();
     if (footer && footer.parentNode) {
       footer.parentNode.insertBefore(newSection, footer);
-      console.info('[credimed-v12] new Pricing section inserted before <footer>');
+      console.info('[credimed-v12] (additive mode) new Pricing inserted before <footer>');
       return true;
     }
 
