@@ -370,11 +370,47 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     <!-- PATIENTS -->
     <section class="sec" id="sec-patients">
       <h1 class="page-title">Patients</h1>
-      <p class="page-sub">All Credimed members. Tap to see their claim history.</p>
+      <p class="page-sub">Derived from claim submissions — one row per unique email. Tap a row to see all of their claims.</p>
+
+      <!-- Filters bar (mirrors the Claims tab layout) -->
+      <div class="filters-row">
+        <div class="filter-group filter-search">
+          <label>Search</label>
+          <input id="patientQuery" type="search" placeholder="Name, email, insurer, member ID…" />
+        </div>
+        <div class="filter-group">
+          <label>Plan</label>
+          <select id="patientPlan">
+            <option value="">All plans</option>
+            <option value="standard">Standard</option>
+            <option value="plus">Plus</option>
+            <option value="premium">Premium</option>
+          </select>
+        </div>
+        <button class="filter-clear" id="patientClear">Clear</button>
+        <button class="filter-export" id="patientExport">Export CSV</button>
+      </div>
+      <div class="filter-summary" id="patientSummary">—</div>
+
       <div class="claims-table" id="patientsTable">
-        <div class="empty-table"><strong>Patients view coming soon</strong>Lists patients from Cognito + their claims.</div>
+        <div class="loading"><div class="spin"></div>Loading…</div>
       </div>
     </section>
+
+    <!-- PATIENT DETAIL DRAWER -->
+    <div class="claim-drawer-backdrop" id="patientBackdrop"></div>
+    <aside class="claim-drawer" id="patientDrawer" aria-hidden="true">
+      <header class="cd-head">
+        <div>
+          <div class="cd-id" id="pdName">—</div>
+          <div class="cd-name" id="pdEmail">—</div>
+        </div>
+        <button class="cd-close" id="pdClose" aria-label="Close">×</button>
+      </header>
+      <div class="cd-body" id="pdBody">
+        <div class="loading"><div class="spin"></div>Loading…</div>
+      </div>
+    </aside>
 
     <!-- INSURERS -->
     <section class="sec" id="sec-insurers">
@@ -610,6 +646,7 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       $('sec-' + secId).classList.add('active');
       if (secId === 'overview') loadOverview();
       if (secId === 'claims')   loadClaims();
+      if (secId === 'patients') loadPatients();
       if (secId === 'insurers') loadInsurers();
     });
   });
@@ -636,14 +673,30 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     catch (e) { return iso; }
   }
 
+  /* Try the new /admin/claims route first (deployed via the credimed-claims
+     Lambda + Cognito admin group). If it 404s or 403s, fall back to the
+     legacy /claims?admin=1 path so the UI still works during the AWS
+     migration window. Once the new route is verified live, the legacy
+     branch can be removed. */
   async function fetchClaims() {
+    var API = window.CREDIMED_API;
     try {
-      var resp = await window.authFetch(window.CREDIMED_API + '/claims?admin=1');
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      var data = await resp.json();
-      return data.claims || [];
+      var resp = await window.authFetch(API + '/admin/claims');
+      if (resp.ok) {
+        var data = await resp.json();
+        return data.claims || [];
+      }
+      if (resp.status !== 404 && resp.status !== 403) throw new Error('HTTP ' + resp.status);
     } catch (e) {
-      console.warn('[admin] fetchClaims failed:', e);
+      console.info('[admin] /admin/claims unavailable, trying legacy route:', e.message || e);
+    }
+    try {
+      var legacy = await window.authFetch(API + '/claims?admin=1');
+      if (!legacy.ok) throw new Error('HTTP ' + legacy.status);
+      var legacyData = await legacy.json();
+      return legacyData.claims || [];
+    } catch (e2) {
+      console.warn('[admin] fetchClaims failed on both routes:', e2);
       return null;
     }
   }
@@ -672,16 +725,32 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     );
   }
 
+  /* Prefer the new PATCH /admin/claims/:id route. Fall back to the legacy
+     POST /claims action='update_status' contract while the new Lambda is
+     being deployed. */
   async function updateStatus(claimId, newStatus) {
+    var API = window.CREDIMED_API;
     try {
-      var resp = await window.authFetch(window.CREDIMED_API + '/claims', {
+      var resp = await window.authFetch(API + '/admin/claims/' + encodeURIComponent(claimId), {
+        method: 'PATCH',
+        body: { status: newStatus }
+      });
+      if (resp.ok) return true;
+      if (resp.status !== 404 && resp.status !== 405) {
+        throw new Error('HTTP ' + resp.status);
+      }
+    } catch (e) {
+      console.info('[admin] PATCH /admin/claims unavailable, trying legacy POST:', e.message || e);
+    }
+    try {
+      var legacy = await window.authFetch(API + '/claims', {
         method: 'POST',
         body: { action: 'update_status', claimId: claimId, status: newStatus, admin: true }
       });
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      if (!legacy.ok) throw new Error('HTTP ' + legacy.status);
       return true;
-    } catch (e) {
-      alert('Failed to update status: ' + (e.message || 'unknown'));
+    } catch (e2) {
+      alert('Failed to update status: ' + (e2.message || 'unknown'));
       return false;
     }
   }
@@ -946,6 +1015,235 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     } else {
       loadOverview(); loadClaims();
     }
+  });
+
+  /* ────────────────────────────────────────────────────────────────────
+     PATIENTS PANEL
+     Derives a list of unique members from the claims feed (one row per
+     unique email). Each row shows claim count, total revenue from that
+     patient, last activity date, current plan tier, and a tap-to-open
+     drawer with their claim history. No new endpoint needed — works
+     against /admin/claims today.
+     ──────────────────────────────────────────────────────────────────── */
+  var ALL_PATIENTS = [];
+
+  function buildPatients(claims) {
+    var byEmail = {};
+    claims.forEach(function (c) {
+      var key = (c.email || c.userSub || '').toLowerCase();
+      if (!key) return;
+      if (!byEmail[key]) {
+        byEmail[key] = {
+          email: c.email || '—',
+          firstName: c.firstName || '',
+          lastName: c.lastName || '',
+          city: c.city || '',
+          insurer: c.insurer || '',
+          memberId: c.memberId || '',
+          plan: c.plan || '',
+          claims: [],
+          revenue: 0,
+          lastActivity: null
+        };
+      }
+      var p = byEmail[key];
+      p.claims.push(c);
+      // Last non-empty value wins for soft fields
+      if (c.firstName) p.firstName = c.firstName;
+      if (c.lastName)  p.lastName = c.lastName;
+      if (c.city)      p.city = c.city;
+      if (c.insurer)   p.insurer = c.insurer;
+      if (c.memberId)  p.memberId = c.memberId;
+      if (c.plan)      p.plan = c.plan;
+      var fee = c.plan === 'premium' ? 39 : (c.plan === 'plus' ? 79 : 29);
+      p.revenue += fee;
+      var t = c.submittedAt ? new Date(c.submittedAt).getTime() : 0;
+      if (!p.lastActivity || t > p.lastActivity) p.lastActivity = t;
+    });
+    return Object.values(byEmail).sort(function (a, b) {
+      return (b.lastActivity || 0) - (a.lastActivity || 0);
+    });
+  }
+
+  function planLabel(p) {
+    if (p === 'premium') return 'Premium';
+    if (p === 'plus')    return 'Plus';
+    if (p === 'standard')return 'Standard';
+    return '—';
+  }
+
+  function renderPatientRow(p) {
+    var name = ((p.firstName || '') + ' ' + (p.lastName || '')).trim() || p.email;
+    var sub = [p.city, p.insurer].filter(Boolean).join(' · ') || p.email;
+    var lastDate = p.lastActivity ? shortDate(new Date(p.lastActivity).toISOString()) : '—';
+    var statusCounts = p.claims.reduce(function (acc, c) {
+      var s = c.status || 'submitted';
+      acc[s] = (acc[s] || 0) + 1;
+      return acc;
+    }, {});
+    var pillText = (statusCounts.paid ? statusCounts.paid + ' paid · ' : '') +
+                   (statusCounts.approved ? statusCounts.approved + ' approved · ' : '') +
+                   (statusCounts['in-review'] ? statusCounts['in-review'] + ' in review · ' : '') +
+                   (statusCounts.submitted ? statusCounts.submitted + ' submitted · ' : '') +
+                   (statusCounts.denied ? statusCounts.denied + ' denied' : '');
+    pillText = pillText.replace(/ · $/, '') || '—';
+
+    return (
+      '<div class="claims-row" data-patient-email="' + (p.email || '').replace(/"/g, '&quot;') + '">' +
+        '<div class="claim-id hide-mobile">' + planLabel(p.plan) + '</div>' +
+        '<div>' +
+          '<div class="claim-name">' + name + '</div>' +
+          '<div class="claim-sub">' + sub + '</div>' +
+        '</div>' +
+        '<div class="claim-amount hide-mobile">' + p.claims.length + ' claim' + (p.claims.length === 1 ? '' : 's') + '</div>' +
+        '<div class="claim-date hide-mobile">' + lastDate + '</div>' +
+        '<div class="hide-mobile">' + money(p.revenue) + '</div>' +
+        '<div class="claim-sub" style="font-size:11px">' + pillText + '</div>' +
+      '</div>'
+    );
+  }
+
+  function applyPatientFilters() {
+    var query = ($('patientQuery').value || '').toLowerCase().trim();
+    var plan = $('patientPlan').value;
+    var filtered = ALL_PATIENTS.filter(function (p) {
+      if (plan && p.plan !== plan) return false;
+      if (query) {
+        var hay = [p.email, p.firstName, p.lastName, p.city, p.insurer, p.memberId]
+          .filter(Boolean).join(' ').toLowerCase();
+        if (hay.indexOf(query) === -1) return false;
+      }
+      return true;
+    });
+    var summary = filtered.length + ' of ' + ALL_PATIENTS.length + ' patients';
+    if (query || plan) summary += ' (filters active)';
+    $('patientSummary').textContent = summary;
+
+    if (filtered.length === 0) {
+      $('patientsTable').innerHTML = '<div class="empty-table"><strong>No patients match these filters.</strong></div>';
+      return;
+    }
+    $('patientsTable').innerHTML =
+      '<div class="claims-table-header">' +
+        '<div class="hide-mobile">Plan</div>' +
+        '<div>Patient</div>' +
+        '<div class="hide-mobile">Claims</div>' +
+        '<div class="hide-mobile">Last activity</div>' +
+        '<div class="hide-mobile">Revenue</div>' +
+        '<div>Status mix</div>' +
+      '</div>' + filtered.map(renderPatientRow).join('');
+  }
+
+  async function loadPatients() {
+    $('patientsTable').innerHTML = '<div class="loading"><div class="spin"></div>Loading…</div>';
+    var claims = ALL_CLAIMS.length ? ALL_CLAIMS : await fetchClaims();
+    if (claims === null) {
+      $('patientsTable').innerHTML = '<div class="empty-table"><strong>Could not reach the backend.</strong>The Patients tab derives from the claims feed.</div>';
+      return;
+    }
+    if (!ALL_CLAIMS.length) ALL_CLAIMS = claims;
+    ALL_PATIENTS = buildPatients(claims);
+    applyPatientFilters();
+  }
+
+  ['patientQuery', 'patientPlan'].forEach(function (id) {
+    var el = $(id);
+    if (el) el.addEventListener('input', applyPatientFilters);
+  });
+  $('patientClear').addEventListener('click', function () {
+    $('patientQuery').value = '';
+    $('patientPlan').value = '';
+    applyPatientFilters();
+  });
+  $('patientExport').addEventListener('click', function () {
+    var query = ($('patientQuery').value || '').toLowerCase().trim();
+    var plan = $('patientPlan').value;
+    var rows = ALL_PATIENTS.filter(function (p) {
+      if (plan && p.plan !== plan) return false;
+      if (query) {
+        var hay = [p.email, p.firstName, p.lastName, p.city, p.insurer, p.memberId]
+          .filter(Boolean).join(' ').toLowerCase();
+        if (hay.indexOf(query) === -1) return false;
+      }
+      return true;
+    });
+    var headers = ['email','first_name','last_name','city','insurer','member_id','plan','claims_count','revenue_usd','last_activity'];
+    var esc = function (v) {
+      if (v == null) return '';
+      var s = String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    var csv = headers.join(',') + '\n' + rows.map(function (p) {
+      return [p.email, p.firstName, p.lastName, p.city, p.insurer, p.memberId, p.plan,
+              p.claims.length, p.revenue,
+              p.lastActivity ? new Date(p.lastActivity).toISOString() : ''
+             ].map(esc).join(',');
+    }).join('\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'credimed-patients-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  });
+
+  /* Tap a patient row → open the drawer with their full claim history */
+  $('patientsTable').addEventListener('click', function (e) {
+    var row = e.target.closest('[data-patient-email]');
+    if (!row) return;
+    var email = row.getAttribute('data-patient-email');
+    var p = ALL_PATIENTS.find(function (x) { return x.email === email; });
+    if (!p) return;
+    openPatientDrawer(p);
+  });
+
+  function openPatientDrawer(p) {
+    var name = ((p.firstName || '') + ' ' + (p.lastName || '')).trim() || p.email;
+    $('pdName').textContent = name;
+    $('pdEmail').textContent = p.email;
+
+    var meta =
+      '<div class="cd-section"><h3>Member</h3>' +
+      '<div class="cd-row"><span class="k">Plan</span><span class="v">' + planLabel(p.plan) + '</span></div>' +
+      '<div class="cd-row"><span class="k">City</span><span class="v">' + (p.city || '—') + '</span></div>' +
+      '<div class="cd-row"><span class="k">Insurer</span><span class="v">' + (p.insurer || '—') + '</span></div>' +
+      '<div class="cd-row"><span class="k">Member ID</span><span class="v">' + (p.memberId || '—') + '</span></div>' +
+      '<div class="cd-row"><span class="k">Total claims</span><span class="v">' + p.claims.length + '</span></div>' +
+      '<div class="cd-row"><span class="k">Total revenue</span><span class="v">' + money(p.revenue) + '</span></div>' +
+      '</div>';
+
+    var claimsHtml = '<div class="cd-section"><h3>Claim history</h3>' +
+      p.claims.sort(function (a, b) {
+        return new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0);
+      }).map(function (c) {
+        var statusClass = 'status-' + (c.status || 'in-review');
+        return '<div class="cd-row"><span class="k">' + (c.id || '—') +
+               ' · ' + shortDate(c.submittedAt) +
+               '</span><span class="v"><span class="status-pill ' + statusClass + '">' +
+               (STATUS_LABELS[c.status] || '—') + '</span></span></div>';
+      }).join('') + '</div>';
+
+    var actions = '<div class="cd-section"><h3>Actions</h3>' +
+      '<div class="cd-actions">' +
+      (p.email ? '<a class="cd-action primary" href="mailto:' + p.email + '">Email patient</a>' : '') +
+      '</div></div>';
+
+    $('pdBody').innerHTML = meta + claimsHtml + actions;
+    $('patientDrawer').classList.add('open');
+    $('patientBackdrop').classList.add('open');
+    $('patientDrawer').setAttribute('aria-hidden', 'false');
+  }
+
+  function closePatientDrawer() {
+    $('patientDrawer').classList.remove('open');
+    $('patientBackdrop').classList.remove('open');
+    $('patientDrawer').setAttribute('aria-hidden', 'true');
+  }
+  $('pdClose').addEventListener('click', closePatientDrawer);
+  $('patientBackdrop').addEventListener('click', closePatientDrawer);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closePatientDrawer();
   });
 
   /* ────────────────────────────────────────────────────────────────────

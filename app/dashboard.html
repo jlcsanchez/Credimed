@@ -970,14 +970,17 @@ function renderEmptyState() {
       </div>
 
       <div class="support-row">
-        <a class="support-btn" href="mailto:support@credimed.us">
+        <a class="support-btn" href="/app/support.html">
           <span class="sb-icon">${ICONS.mail}</span>
-          <span>Email support</span>
+          <span>Chat with Ana</span>
         </a>
         <a class="support-btn wa" href="https://wa.me/15125550134">
           <span class="sb-icon">${ICONS.whatsapp}</span>
           <span>WhatsApp</span>
         </a>
+      </div>
+      <div style="text-align:center;margin-top:14px">
+        <a href="/app/claims.html" style="color:var(--slate-500);font-size:12.5px;text-decoration:underline;text-decoration-color:var(--slate-300);text-underline-offset:3px">See all my claims</a>
       </div>
 
       <div class="trust-row">
@@ -1117,14 +1120,17 @@ function renderScreen(variant, scope){
       </div>
 
       <div class="support-row">
-        <a class="support-btn" href="mailto:support@credimed.us">
+        <a class="support-btn" href="/app/support.html">
           <span class="sb-icon">${ICONS.mail}</span>
-          <span>Email support</span>
+          <span>Chat with Ana</span>
         </a>
-        <a class="support-btn wa" href="https://wa.me/15555550100">
+        <a class="support-btn wa" href="https://wa.me/15125550134">
           <span class="sb-icon">${ICONS.whatsapp}</span>
           <span>WhatsApp</span>
         </a>
+      </div>
+      <div style="text-align:center;margin-top:14px">
+        <a href="/app/claims.html" style="color:var(--slate-500);font-size:12.5px;text-decoration:underline;text-decoration-color:var(--slate-300);text-underline-offset:3px">See all my claims</a>
       </div>
 
       ${resubCta}
@@ -1263,6 +1269,55 @@ hydrateClaimFromState();
 
 mountScope('mobile');
 mountScope('desktop');
+
+/* Fetch the authoritative claim record from the backend (the local
+   CredimedState is filled during the flow, but if the user comes back
+   later — different device, browser cleared, etc. — it can be empty
+   or stale. The Lambda response wins).
+
+   Cached in localStorage for 30s so a refresh-button mash doesn't hit
+   the API every click. Silently no-ops if /claims/:id 404s or the
+   backend isn't reachable yet; the local hydrated render stays put.
+
+   Runs after first paint so the UI doesn't block on the network. */
+(async function hydrateFromBackend() {
+  try {
+    if (!window.authFetch || !window.CREDIMED_API) return;
+    var S = window.CredimedState;
+    var localClaim = S ? S.get('claim', null) : null;
+    var id = (localClaim && localClaim.id) || CLAIM.id;
+    if (!id) return;
+
+    var cacheKey = 'dashboard.claim.' + id;
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem(cacheKey) || 'null'); } catch (e) {}
+    if (cached && cached.ts && Date.now() - cached.ts < 30000) {
+      applyBackendClaim(cached.data);
+      return;
+    }
+
+    var resp = await window.authFetch(window.CREDIMED_API + '/claims/' + encodeURIComponent(id));
+    if (!resp || !resp.ok) return;
+    var data = await resp.json();
+    var c = (data && data.claim) || data;
+    if (!c || !c.id) return;
+    try { localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: c })); } catch (e) {}
+    applyBackendClaim(c);
+  } catch (e) {
+    console.info('[dashboard] backend hydrate skipped:', e.message || e);
+  }
+})();
+
+function applyBackendClaim(c) {
+  // Update CredimedState so a re-hydrate would pick the same data.
+  if (window.CredimedState) window.CredimedState.set('claim', c);
+  // Re-run the synchronous hydrator and re-render the dashboard.
+  hydrateClaimFromState();
+  if (typeof mountScope === 'function') {
+    mountScope('mobile');
+    mountScope('desktop');
+  }
+}
 </script>
 
 </body>

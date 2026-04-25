@@ -252,5 +252,19 @@ document.addEventListener('DOMContentLoaded', async function() {
   }, true); // capture so we beat React handlers
 })();
 </script>
+
+<!-- Sofia, the public landing chat agent. Loads after first paint so it
+     never blocks the hero. The widget itself renders a friendly fallback
+     if the agents Lambda isn't live yet, so it's safe to ship before AWS
+     deployment. -->
+<script>
+(function () {
+  var s = document.createElement('script');
+  s.src = '/app/widgets/agent-chat.js';
+  s.async = true;
+  s.setAttribute('data-agent', 'sofia');
+  document.body.appendChild(s);
+})();
+</script>
 </body>
 </html>
