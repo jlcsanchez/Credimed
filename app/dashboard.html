@@ -234,7 +234,14 @@ html,body{
   background:rgba(255,255,255,0.08); color:white;
   display:flex; align-items:center; justify-content:center;
   cursor:pointer; backdrop-filter:blur(6px);
+  -webkit-tap-highlight-color: rgba(255,255,255,0.18);
+  touch-action: manipulation;
+  text-decoration: none;
 }
+/* On iOS, taps land on the inner SVG instead of the <a> wrapper, which
+   sometimes drops the click. Make the SVG ignore pointer events so the
+   parent button/link always sees the tap. */
+.icon-btn svg { pointer-events: none; }
 /* Pill with icon + 'Sign out' text. Replaces the ambiguous icon-only
    button in the hero top-bar — a mystery glyph in the corner isn't
    obvious to most users. */
@@ -1274,6 +1281,17 @@ document.querySelectorAll('.tab').forEach(t => {
 // state.js + backend.js are loaded immediately above this block, so
 // window.CredimedState + window.cognitoSignOut are already available.
 hydrateClaimFromState();
+
+/* Belt-and-suspenders profile navigation: the <a href="/app/profile.html">
+   wrapper sometimes drops taps on iOS (the SVG inside eats the gesture).
+   A delegated listener guarantees the tap navigates, even if the link
+   itself misfires. */
+document.addEventListener('click', function (e) {
+  var profile = e.target.closest('a.icon-btn[href="/app/profile.html"]');
+  if (!profile) return;
+  e.preventDefault();
+  window.location.href = '/app/profile.html';
+}, true);
 
 mountScope('mobile');
 mountScope('desktop');
