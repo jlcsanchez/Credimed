@@ -69,7 +69,21 @@
       .cac-foot a{color:#64748B;text-decoration:none}
       .cac-foot a:hover{text-decoration:underline}
       @media (max-width:520px){
-        .cac-panel{bottom:0;right:0;left:0;width:100%;max-width:100%;height:100vh;max-height:100vh;border-radius:20px 20px 0 0;animation:cac-in-mobile .22s cubic-bezier(.2,.8,.2,1)}
+        /* iOS Safari note: 100vh INCLUDES the URL bar area, so a panel sized
+           with height:100vh would have its top (header with close button)
+           rendered behind the chrome. Use 100dvh (dynamic viewport, modern
+           browsers) and fall back to absolute top/bottom on older Safari.
+           Also reserve env(safe-area-inset-top) so the header is fully
+           visible when the URL bar shrinks during scroll. */
+        .cac-panel{
+          top:0; bottom:0; right:0; left:0;
+          width:100%; max-width:100%;
+          height:100dvh; max-height:100dvh;
+          border-radius:0;
+          animation:cac-in-mobile .22s cubic-bezier(.2,.8,.2,1);
+          padding-top:env(safe-area-inset-top);
+          padding-bottom:env(safe-area-inset-bottom);
+        }
         @keyframes cac-in-mobile{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
       }
     `.replace(/\n\s+/g, '\n');
