@@ -430,20 +430,52 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   function tryApply() {
-    injectStyles();
-    injectMicroTrust();
-    applyTrustStrip();
-    updateCtaFineprint();
+    try { injectStyles(); }       catch (e) { console.error('[credimed-v12] injectStyles error:', e); }
+    try { injectMicroTrust(); }   catch (e) { console.error('[credimed-v12] injectMicroTrust error:', e); }
+    try { applyTrustStrip(); }    catch (e) { console.error('[credimed-v12] applyTrustStrip error:', e); }
+    try { updateCtaFineprint(); } catch (e) { console.error('[credimed-v12] updateCtaFineprint error:', e); }
   }
 
+  /* Polling-based retry (more reliable than MutationObserver in iOS
+     Safari, which can disconnect observers prematurely on background
+     tabs / repaint events). Runs every 250ms for up to 90s; stops
+     early once all three patches are applied.
+
+     Also exposes a __credimedV12Status getter so we can verify from
+     the address bar / DevTools whether the script ever ran. */
   function start() {
-    var observer = new MutationObserver(function () {
+    console.info('[credimed-v12] patch start — polling for hero / estimator / fineprint');
+    var attempts = 0;
+    var MAX_ATTEMPTS = 360; /* 360 × 250ms = 90s */
+    var iv = setInterval(function () {
+      attempts++;
       tryApply();
-      if (microApplied && trustApplied && ctaDone) observer.disconnect();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { observer.disconnect(); }, 12000);
+      if (microApplied && trustApplied && ctaDone) {
+        clearInterval(iv);
+        console.info('[credimed-v12] all patches applied after ' + attempts + ' attempts');
+      } else if (attempts >= MAX_ATTEMPTS) {
+        clearInterval(iv);
+        console.warn('[credimed-v12] timeout after ' + attempts + ' attempts. State:',
+          { microApplied: microApplied, trustApplied: trustApplied, ctaDone: ctaDone });
+      }
+    }, 250);
+
+    /* Also try once synchronously in case DOM is already ready. */
     tryApply();
+
+    /* Debug accessor — paste in console: window.__credimedV12Status() */
+    window.__credimedV12Status = function () {
+      return {
+        microApplied: microApplied,
+        trustApplied: trustApplied,
+        ctaDone: ctaDone,
+        attempts: attempts,
+        microInDom: !!document.getElementById('credimed-v12-microtrust'),
+        trustInDom: !!document.getElementById('credimed-v12-trust'),
+        headlineFound: !!findHeroHeadline(),
+        estimatorFound: !!findHeroEstimator()
+      };
+    };
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
