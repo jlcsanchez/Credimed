@@ -394,19 +394,55 @@ document.addEventListener('DOMContentLoaded', async function() {
     return section;
   }
 
-  /* Detect the original Pricing section by scanning for the combination
-     of '$49' + '$99' + 'Standard'/'Premium' text. Falls back to inserting
-     before the footer if the original section can't be located (e.g.,
-     Claude Design re-bundles with different markup later). */
+  /* Detect the original Pricing section by scanning for ANY element
+     (not just <section>) whose text contains the legacy 2-tier pricing
+     ($49 + $99) and one of the tier names. Bundled React apps often
+     render Pricing as <div> not <section>, so we widen the search.
+     Returns the SMALLEST matching element to avoid hiding the entire
+     <main> when the prices live deep inside.
+
+     Falls back to inserting before the footer if the original section
+     can't be located. */
   function findOriginalPricing() {
-    var sections = document.querySelectorAll('section');
-    for (var i = 0; i < sections.length; i++) {
-      var t = sections[i].textContent || '';
+    var candidates = document.querySelectorAll('section, [class*="pricing" i], [class*="Pricing"], [data-section*="pricing" i], div[id*="pricing" i]');
+    /* If no class/id-based match, walk the whole tree to find any
+       element that contains the legacy pricing text. */
+    var matches = [];
+    function collect(el) {
+      var t = (el.textContent || '');
       var hasPrices = /\$49/.test(t) && /\$99/.test(t);
-      var hasTiers  = /(Standard|Basic).*(Premium|Plus)/i.test(t) || /(Premium|Plus).*(Standard|Basic)/i.test(t);
-      if (hasPrices && hasTiers) return sections[i];
+      if (!hasPrices) return false;
+      var hasTiers = /Standard/i.test(t) && /Premium/i.test(t);
+      if (!hasTiers) return false;
+      matches.push(el);
+      return true;
     }
-    return null;
+    candidates.forEach(collect);
+    if (!matches.length) {
+      /* Fallback: scan all siblings of body — the bundle's app likely
+         renders into #root with deep nesting, but a top-level pass is
+         cheap. */
+      var all = document.querySelectorAll('div, section, article, main');
+      for (var i = 0; i < all.length; i++) collect(all[i]);
+    }
+    if (!matches.length) return null;
+
+    /* Prefer the smallest matching element so we don't hide the entire
+       app shell. We approximate "smallest" by descendant count. */
+    matches.sort(function (a, b) {
+      return a.querySelectorAll('*').length - b.querySelectorAll('*').length;
+    });
+    /* But not absurdly small — must contain at least one heading or
+       button to be a real Pricing section. */
+    for (var j = 0; j < matches.length; j++) {
+      var el = matches[j];
+      var hasHeadingOrCta = el.querySelector('h1, h2, h3, button, a');
+      if (hasHeadingOrCta) {
+        console.info('[credimed-v12] detected original Pricing section:', el);
+        return el;
+      }
+    }
+    return matches[0];
   }
 
   function findFooter() {
@@ -424,38 +460,64 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (original && original.parentNode) {
       original.parentNode.insertBefore(newSection, original);
       original.style.display = 'none';
+      console.info('[credimed-v12] replaced original Pricing — new section is #credimed-v12-pricing');
       return true;
     }
 
     var footer = findFooter();
     if (footer && footer.parentNode) {
       footer.parentNode.insertBefore(newSection, footer);
+      console.info('[credimed-v12] original Pricing not found — inserted new section before <footer>');
       return true;
     }
 
     /* Last resort — append to body. */
     document.body.appendChild(newSection);
+    console.warn('[credimed-v12] no Pricing section and no <footer> — appended to <body> end');
     return true;
   }
 
-  /* Poll until either (a) the original section appears in the DOM, or
-     (b) we hit the timeout — at which point we still inject before the
-     footer so the user sees the v1.2 messaging regardless. */
-  var attempts = 0;
-  var maxAttempts = 60; /* 60 × 100ms = 6s */
-  function poll() {
-    attempts++;
-    if (findOriginalPricing() || attempts >= maxAttempts) {
+  /* Wait for React to finish rendering, then apply the patch. We use
+     a MutationObserver to react to DOM changes (Babel transforms the
+     <script type="text/babel"> tags AFTER DOMContentLoaded, so the
+     React tree may not exist when we first run). Falls back to a
+     timeout in case the observer never sees a meaningful change. */
+  var applied = false;
+  function tryApply(reason) {
+    if (applied) return;
+    /* Need a footer or original pricing to anchor — otherwise we'd
+       inject too early, before React finishes. */
+    if (findOriginalPricing() || findFooter()) {
       applyPatch();
-      return;
+      applied = true;
+      console.info('[credimed-v12] patch applied via:', reason);
     }
-    setTimeout(poll, 100);
+  }
+
+  function startObserver() {
+    var observer = new MutationObserver(function () {
+      tryApply('mutation');
+      if (applied) observer.disconnect();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    /* Hard timeout: 10s — if neither pricing nor footer ever appear,
+       still inject so the patch is at least visible on the page. */
+    setTimeout(function () {
+      if (!applied) {
+        applyPatch();
+        applied = true;
+        console.warn('[credimed-v12] timeout — forced injection after 10s');
+        observer.disconnect();
+      }
+    }, 10000);
+    /* Also try right away in case content is already there. */
+    tryApply('initial');
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    poll();
+    startObserver();
   } else {
-    document.addEventListener('DOMContentLoaded', poll);
+    document.addEventListener('DOMContentLoaded', startObserver);
   }
 })();
 </script>
