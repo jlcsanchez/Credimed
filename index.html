@@ -413,100 +413,43 @@ document.addEventListener('DOMContentLoaded', async function() {
     return section;
   }
 
-  /* Detect the original Pricing section using the *strongest* signal
-     available: the Pricing CTAs ("Choose Standard", "Choose Premium",
-     etc.). Those button labels are unique to the Pricing component —
-     they don't appear in the hero, calculator, FAQ, or footer.
+  /* Detect the original Pricing section.
 
-     We find every CTA whose text matches a Pricing-only label, then
-     compute the smallest common ancestor of all of them. That ancestor
-     IS the Pricing section.
+     The Claude Design landing renders Pricing as a <section> with
+     id="pricing" and className "v3pr" (verified by decoding the
+     bundle manifest). We target that EXACT element — no fuzzy text
+     matching, no walking up to common ancestors, no risk of hitting
+     a wrapper that includes the hero.
 
-     Multiple safety guards before returning:
-       (a) need at least 2 Pricing CTAs (otherwise we matched a stray
-           button somewhere else)
-       (b) common ancestor must have <250 descendants (anything bigger
-           would be the React #root or a section wrapper that includes
-           the hero)
-       (c) common ancestor must NOT contain the hero's "$1,000–$2,000"
-           or "Mexico" copy — if it does, we're matching too high
-       (d) common ancestor must NOT be <body>, <main>, or #root
-     If any guard fails, return null and let applyPatch() fall through
-     to the safe additive-only mode. */
-  var PRICING_CTA_PATTERNS = [
-    /\bchoose\s+(standard|plus|premium|basic)\b/i,
-    /\bstart\s+(standard|plus|premium|basic)\b/i,
-    /\bget\s+(standard|plus|premium|basic)\b/i,
-    /\bselect\s+(standard|plus|premium|basic)\b/i
-  ];
-
+     If the markup ever changes, the function returns null and we
+     fall back to additive-only mode. */
   function findOriginalPricing() {
-    /* Step 1: collect all Pricing-style CTAs. */
-    var ctas = [];
-    var buttons = document.querySelectorAll('button, a, [role="button"]');
-    for (var i = 0; i < buttons.length; i++) {
-      var text = (buttons[i].textContent || '').trim();
-      for (var p = 0; p < PRICING_CTA_PATTERNS.length; p++) {
-        if (PRICING_CTA_PATTERNS[p].test(text)) {
-          ctas.push(buttons[i]);
-          break;
-        }
+    /* Primary: id selector — the bundle uses id="pricing" on the
+       Pricing section. */
+    var byId = document.getElementById('pricing');
+    if (byId && byId !== document.body && byId.tagName !== 'HTML') {
+      /* Defensive check: must NOT contain the hero text. If a future
+         bundle change accidentally moves id="pricing" to a wrapper
+         that includes the hero, we bail out. */
+      var t = byId.textContent || '';
+      if (/Paid \$1,000/.test(t) || /quick estimate/i.test(t)) {
+        console.warn('[credimed-v12] #pricing element unexpectedly contains hero text — skipping hide');
+        return null;
       }
-    }
-    /* Skip our own injected v12 section's CTAs (they say "Start my claim",
-       which doesn't match any pattern above — but defense in depth). */
-    ctas = ctas.filter(function (el) {
-      return !el.closest('#credimed-v12-pricing') &&
-             !el.closest('#credimed-v12-trust');
-    });
-    if (ctas.length < 2) return null;
-
-    /* Step 2: walk up from the first CTA until we find an ancestor
-       that contains all the others. */
-    function ancestors(el) {
-      var arr = [];
-      var cur = el;
-      while (cur && cur !== document.body) {
-        arr.push(cur);
-        cur = cur.parentNode;
-      }
-      return arr;
-    }
-    var firstAncestors = ancestors(ctas[0]);
-    var common = null;
-    for (var k = 0; k < firstAncestors.length; k++) {
-      var anc = firstAncestors[k];
-      var allInside = true;
-      for (var m = 1; m < ctas.length; m++) {
-        if (!anc.contains(ctas[m])) { allInside = false; break; }
-      }
-      if (allInside) { common = anc; break; }
-    }
-    if (!common) return null;
-
-    /* Step 3: safety guards. */
-    var tag = (common.tagName || '').toLowerCase();
-    if (tag === 'body' || tag === 'main' || tag === 'html') return null;
-    if (common.id === 'root' || common.id === 'app') return null;
-
-    var descendants = common.querySelectorAll('*').length;
-    if (descendants > 250) {
-      console.warn('[credimed-v12] candidate Pricing ancestor too large (' + descendants + ' descendants) — skipping hide');
-      return null;
+      console.info('[credimed-v12] found original Pricing by #pricing id');
+      return byId;
     }
 
-    var heroText = common.textContent || '';
-    var containsHero = /\$1,000\s*[–-]\s*\$2,000/.test(heroText) ||
-                       /Paid \$1,000/.test(heroText) ||
-                       /quick estimate/i.test(heroText) ||
-                       /should be paid/i.test(heroText);
-    if (containsHero) {
-      console.warn('[credimed-v12] candidate Pricing ancestor includes hero text — skipping hide to avoid breaking the page');
-      return null;
+    /* Secondary: class selector — the Pricing section has class v3pr. */
+    var byClass = document.querySelector('section.v3pr');
+    if (byClass) {
+      var t2 = byClass.textContent || '';
+      if (/Paid \$1,000/.test(t2) || /quick estimate/i.test(t2)) return null;
+      console.info('[credimed-v12] found original Pricing by .v3pr class');
+      return byClass;
     }
 
-    console.info('[credimed-v12] safe Pricing ancestor detected (' + descendants + ' descendants):', common);
-    return common;
+    return null;
   }
 
   function findFooter() {
