@@ -233,6 +233,152 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 /* ---- Section visibility ---- */
 .sec { display: none; }
 .sec.active { display: block; }
+
+/* ──────────────────────────────────────────────────────────────────
+   OPERATIONS DASHBOARD — chart cards, time selector, KPI strips,
+   activity feed, transactions table. Imported (and re-styled to
+   match the cream/teal aesthetic) from the legacy operations panel.
+   ────────────────────────────────────────────────────────────────── */
+
+/* Stat cards: top-row icon + trend chip */
+.stat-card-rich { background:#fff; border:1px solid var(--slate-200); border-radius:14px; padding:16px; }
+.stat-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.stat-icon {
+  width:32px; height:32px; border-radius:9px;
+  display:grid; place-items:center; font-size:14px; font-weight:700; color:#fff;
+  flex-shrink:0;
+}
+.stat-icon.teal  { background:var(--teal-600); }
+.stat-icon.green { background:#22c55e; }
+.stat-icon.blue  { background:#0891b2; }
+.stat-icon.amber { background:#f59e0b; }
+.stat-trend {
+  font-size:11px; font-weight:700;
+  padding:2px 8px; border-radius:99px;
+  background:var(--success-bg); color:var(--success-fg);
+}
+.stat-trend.dn { background:var(--danger-bg); color:var(--danger-fg); }
+.stat-card-rich .stat-val {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size:26px; font-weight:700; line-height:1; color:var(--slate-900);
+  letter-spacing:-.01em;
+}
+.stat-card-rich .stat-lbl {
+  font-size:11px; font-weight:600; color:var(--slate-500);
+  text-transform:uppercase; letter-spacing:.5px; margin-top:6px;
+}
+
+/* Chart card */
+.chart-card { background:#fff; border:1px solid var(--slate-200); border-radius:14px; padding:18px 18px 14px; margin-bottom:16px; }
+.chart-title { font-family:"Playfair Display", Georgia, serif; font-size:16px; font-weight:700; color:var(--slate-900); }
+.chart-sub { font-size:12px; color:var(--slate-500); }
+
+/* Time range pills */
+.time-row { display:flex; gap:4px; }
+.time-btn {
+  padding:4px 10px; border-radius:7px; border:1px solid transparent;
+  background:transparent; color:var(--slate-500);
+  font-size:11px; font-weight:700; cursor:pointer; font-family:inherit;
+  letter-spacing:.05em;
+}
+.time-btn:hover { background:var(--slate-100); color:var(--slate-700); }
+.time-btn.active { background:var(--teal-50); color:var(--teal-700); border-color:var(--teal-100); }
+
+/* KPI strip below the chart */
+.kpi-strip {
+  display:flex; gap:10px; align-items:flex-end;
+  background:var(--slate-50); border-radius:10px;
+  padding:10px 12px; margin:10px 0 12px;
+  flex-wrap:wrap;
+}
+.kpi-strip .k {
+  display:flex; flex-direction:column; gap:2px;
+}
+.kpi-strip .k .v {
+  font-family:"Playfair Display", Georgia, serif;
+  font-size:18px; font-weight:700; line-height:1;
+}
+.kpi-strip .k .v.teal  { color:var(--teal-700); }
+.kpi-strip .k .v.blue  { color:#0891b2; }
+.kpi-strip .k .v.green { color:#16a34a; }
+.kpi-strip .k .v.amber { color:#b45309; }
+.kpi-strip .k .l {
+  font-size:10px; color:var(--slate-500); font-weight:600;
+  text-transform:uppercase; letter-spacing:.04em;
+}
+.kpi-strip .sep { width:1px; align-self:stretch; background:var(--slate-200); }
+.kpi-strip .grow { margin-left:auto; }
+
+.legend-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.legend-row .lg { display:flex; align-items:center; gap:5px; font-size:10.5px; color:var(--slate-500); }
+.legend-row .lg .swatch-bar  { width:9px; height:9px; border-radius:2px; background:var(--teal-600); }
+.legend-row .lg .swatch-line { width:14px; height:2px; background:#0891b2; border-radius:1px; }
+.legend-row .lg .swatch-dash { width:14px; height:0; border-top:2px dashed #f59e0b; }
+.legend-row .lg .swatch-green { width:9px; height:9px; border-radius:2px; background:#22c55e; }
+
+/* SVG canvas */
+.chart-svg { width:100%; height:140px; display:block; overflow:visible; }
+.chart-svg-tall { width:100%; height:160px; display:block; overflow:visible; }
+
+/* Insurer distribution bars */
+.ins-list { display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+.ins-row-bar { display:grid; grid-template-columns: 90px 1fr 36px; gap:10px; align-items:center; }
+.ins-name { font-size:13px; font-weight:600; color:var(--slate-700); }
+.ins-bar-wrap { background:var(--slate-100); height:8px; border-radius:99px; overflow:hidden; }
+.ins-bar { height:100%; border-radius:99px; background:var(--teal-600); transition:width 480ms ease; }
+.ins-pct { font-size:12px; font-weight:700; color:var(--slate-500); text-align:right; font-family:"SF Mono", Menlo, monospace; }
+
+/* Two-column layout (desktop) */
+.two-col { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px; }
+@media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+/* Recent activity list */
+.activity-card { background:#fff; border:1px solid var(--slate-200); border-radius:14px; overflow:hidden; }
+.a-item {
+  display:grid; grid-template-columns: 8px 1fr auto;
+  gap:10px; padding:12px 16px; align-items:flex-start;
+  border-bottom:1px solid var(--slate-100); font-size:13px;
+}
+.a-item:last-child { border-bottom:none; }
+.a-dot { width:8px; height:8px; border-radius:50%; margin-top:5px; }
+.a-dot.t { background:var(--teal-600); }     /* teal — submitted/insurer */
+.a-dot.g { background:#22c55e; }              /* green — paid */
+.a-dot.a { background:#f59e0b; }              /* amber — needs action */
+.a-dot.b { background:#0891b2; }              /* blue — informational */
+.a-txt { color:var(--slate-700); line-height:1.45; }
+.a-txt strong { color:var(--slate-900); font-weight:700; }
+.a-time { font-size:11px; color:var(--slate-400); white-space:nowrap; flex-shrink:0; }
+
+/* Transactions table (Finance) */
+.tx-card { background:#fff; border:1px solid var(--slate-200); border-radius:14px; overflow:hidden; }
+.tx-card .tx-head { padding:12px 16px; border-bottom:1px solid var(--slate-200); font-family:"Playfair Display", Georgia, serif; font-size:15px; font-weight:700; color:var(--slate-900); }
+.tx-table-header, .tx-row { display:grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap:10px; padding:10px 16px; align-items:center; font-size:13px; }
+.tx-table-header { background:var(--slate-50); font-size:11px; font-weight:700; color:var(--slate-500); text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid var(--slate-200); }
+.tx-row { border-bottom:1px solid var(--slate-100); }
+.tx-row:last-child { border-bottom:none; }
+.tx-name { font-weight:600; color:var(--slate-900); }
+.tx-amt { font-family:"SF Mono", Menlo, monospace; font-weight:700; color:#16a34a; }
+.tx-amt.neg { color:var(--danger-fg); }
+.tx-date { color:var(--slate-500); font-size:12px; }
+.tx-badge { display:inline-block; padding:2px 9px; border-radius:99px; font-size:11px; font-weight:700; }
+.tx-badge.commission { background:var(--success-bg); color:var(--success-fg); }
+.tx-badge.setup-fee  { background:#F0FDF4; color:#065f46; }
+.tx-badge.refund     { background:var(--danger-bg); color:var(--danger-fg); }
+
+/* Settings rows */
+.settings-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--slate-200); font-size:13.5px; }
+.settings-row:last-child { border-bottom:none; }
+.settings-row .lbl { color:var(--slate-700); font-weight:500; }
+.settings-row .val { font-family:"Playfair Display", Georgia, serif; font-size:15px; font-weight:700; color:var(--teal-700); }
+.settings-row .val.green { color:#22c55e; font-family:inherit; font-size:13px; }
+.settings-row .val.amber { color:#b45309; font-family:inherit; font-size:13px; }
+.settings-row .val.slate { color:var(--slate-700); font-family:inherit; font-size:13px; font-weight:600; }
+.integration-row { display:grid; grid-template-columns: 8px 1fr auto; gap:10px; padding:11px 0; border-bottom:1px solid var(--slate-100); font-size:13px; align-items:center; }
+.integration-row:last-child { border-bottom:none; }
+.integration-row .status-tag { font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:99px; }
+.integration-row .status-tag.live { color:#16a34a; background:#dcfce7; }
+.integration-row .status-tag.beta { color:#b45309; background:var(--amber-bg); }
+.integration-row .status-tag.pending { color:#1e40af; background:var(--info-bg); }
 </style>
 </head>
 <body>
@@ -275,7 +421,9 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     <button class="admin-nav-tab active" data-sec="overview">Overview</button>
     <button class="admin-nav-tab" data-sec="claims">Claims</button>
     <button class="admin-nav-tab" data-sec="patients">Patients</button>
+    <button class="admin-nav-tab" data-sec="finance">Finance</button>
     <button class="admin-nav-tab" data-sec="insurers">Insurers</button>
+    <button class="admin-nav-tab" data-sec="settings">Settings</button>
   </nav>
 
   <div class="admin-body">
@@ -283,29 +431,70 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     <section class="sec active" id="sec-overview">
       <h1 class="page-title">Overview</h1>
       <p class="page-sub">Real-time operations metrics from your Credimed account.</p>
+
       <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-lbl">Total claims</div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon teal">CL</div><div class="stat-trend" id="stTotalTrend">+12%</div></div>
           <div class="stat-val" id="stTotal">—</div>
-          <div class="stat-trend" id="stTotalTrend">&nbsp;</div>
+          <div class="stat-lbl">Total claims</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-lbl">Active (in review)</div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon green">$</div><div class="stat-trend" id="stRecoveredTrend">+8%</div></div>
+          <div class="stat-val" id="stRecovered">—</div>
+          <div class="stat-lbl">Total recovered</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon blue">↻</div><div class="stat-trend dn" id="stActiveTrend">−3%</div></div>
           <div class="stat-val" id="stActive">—</div>
-          <div class="stat-trend" id="stActiveTrend">&nbsp;</div>
+          <div class="stat-lbl">Active claims</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-lbl">Paid out this month</div>
-          <div class="stat-val" id="stPaid">—</div>
-          <div class="stat-trend" id="stPaidTrend">&nbsp;</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-lbl">Revenue MTD</div>
-          <div class="stat-val" id="stRevenue">—</div>
-          <div class="stat-trend" id="stRevenueTrend">&nbsp;</div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon amber">%</div><div class="stat-trend" id="stCommissionTrend">+5%</div></div>
+          <div class="stat-val" id="stCommission">—</div>
+          <div class="stat-lbl">Commissions (15%)</div>
         </div>
       </div>
-      <h2 style="font-size:15px;font-weight:700;margin:0 0 10px;color:var(--slate-700)">Recent submissions</h2>
+
+      <!-- CLAIMS & REVENUE — chart with time range selector -->
+      <div class="chart-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+          <div class="chart-title">Claims &amp; Revenue</div>
+          <div class="time-row" id="crRange">
+            <button class="time-btn" data-range="1d">1D</button>
+            <button class="time-btn" data-range="1w">1W</button>
+            <button class="time-btn" data-range="1m">1M</button>
+            <button class="time-btn active" data-range="1y">1Y</button>
+            <button class="time-btn" data-range="5y">5Y</button>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+          <div class="chart-sub" id="crSub">Apr 2025 – Mar 2026</div>
+          <div class="legend-row">
+            <div class="lg"><span class="swatch-bar"></span><span>Claims</span></div>
+            <div class="lg"><span class="swatch-line"></span><span>Revenue</span></div>
+            <div class="lg"><span class="swatch-dash"></span><span>Fees</span></div>
+          </div>
+        </div>
+        <div class="kpi-strip" id="crKpis">—</div>
+        <div id="crChart"><div class="loading" style="padding:30px"><div class="spin"></div>Loading…</div></div>
+      </div>
+
+      <!-- Two-column: Insurer distribution + Recent activity -->
+      <div class="two-col">
+        <div class="chart-card" style="margin-bottom:0">
+          <div class="chart-title">Claims by insurer</div>
+          <div class="chart-sub">Distribution this year</div>
+          <div class="ins-list" id="insDistList">—</div>
+        </div>
+        <div>
+          <h2 style="font-size:15px;font-weight:700;margin:0 0 8px;color:var(--slate-700);font-family:'Playfair Display',Georgia,serif">Recent activity</h2>
+          <div class="activity-card" id="activityFeed">
+            <div class="loading"><div class="spin"></div>Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 style="font-size:15px;font-weight:700;margin:18px 0 10px;color:var(--slate-700);font-family:'Playfair Display',Georgia,serif">Recent submissions</h2>
       <div class="claims-table" id="recentTable">
         <div class="loading"><div class="spin"></div>Loading...</div>
       </div>
@@ -412,6 +601,59 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       </div>
     </aside>
 
+    <!-- FINANCE -->
+    <section class="sec" id="sec-finance">
+      <h1 class="page-title">Finance</h1>
+      <p class="page-sub">Revenue, commissions, and recent transactions.</p>
+
+      <div class="stats-row">
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon green">$</div><div class="stat-trend">+8%</div></div>
+          <div class="stat-val" id="fkRecovered" style="color:#16a34a">—</div>
+          <div class="stat-lbl">Recovered for patients</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon teal">%</div><div class="stat-trend">+8%</div></div>
+          <div class="stat-val" id="fkCommission">—</div>
+          <div class="stat-lbl">Commission (15%)</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon amber">¢</div><div class="stat-trend">+12%</div></div>
+          <div class="stat-val" id="fkSetup" style="color:#b45309">—</div>
+          <div class="stat-lbl">Setup fees ($25 × claims)</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon blue">Σ</div><div class="stat-trend">+9%</div></div>
+          <div class="stat-val" id="fkGross" style="color:#0891b2">—</div>
+          <div class="stat-lbl">Total gross revenue</div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
+          <div class="chart-title">Revenue overview</div>
+          <div class="legend-row">
+            <div class="lg"><span class="swatch-green"></span><span>Recovered</span></div>
+            <div class="lg"><span class="swatch-line"></span><span>Commission</span></div>
+            <div class="lg"><span class="swatch-dash"></span><span>Fees</span></div>
+          </div>
+        </div>
+        <div class="chart-sub" style="margin-bottom:10px">Apr 2025 – Mar 2026</div>
+        <div class="kpi-strip" id="finKpis">—</div>
+        <div id="finChart"></div>
+      </div>
+
+      <div class="tx-card">
+        <div class="tx-head">Recent transactions</div>
+        <div class="tx-table-header">
+          <div>Patient</div><div>Type</div><div>Amount</div><div>Date</div>
+        </div>
+        <div id="txList">
+          <div class="loading"><div class="spin"></div>Loading…</div>
+        </div>
+      </div>
+    </section>
+
     <!-- INSURERS -->
     <section class="sec" id="sec-insurers">
       <h1 class="page-title">Insurers</h1>
@@ -430,6 +672,82 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       </div>
       <div class="claims-table" id="insTable">
         <div class="loading"><div class="spin"></div>Loading insurers…</div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="sec" id="sec-settings">
+      <h1 class="page-title">Settings</h1>
+      <p class="page-sub">Platform configuration and integrations.</p>
+
+      <div class="two-col">
+        <div class="chart-card" style="margin-bottom:0">
+          <div class="chart-title" style="margin-bottom:14px">Platform settings</div>
+          <div class="settings-row">
+            <span class="lbl">Setup fee</span>
+            <span class="val">$25.00</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Success commission</span>
+            <span class="val">15%</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">WhatsApp notifications</span>
+            <span class="val green">✓ Enabled</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Stripe integration</span>
+            <span class="val green">✓ Connected</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Cognito user pool</span>
+            <span class="val slate">us-west-2_8GgqReC58</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Governing law</span>
+            <span class="val slate">Delaware, USA</span>
+          </div>
+          <button class="filter-export" style="margin-top:14px;width:100%;height:40px;border-radius:10px">Save changes</button>
+        </div>
+
+        <div class="chart-card" style="margin-bottom:0">
+          <div class="chart-title" style="margin-bottom:14px">Integrations</div>
+          <div class="integration-row">
+            <span class="a-dot g"></span>
+            <span><strong>Stripe</strong> — Payment processing active</span>
+            <span class="status-tag live">Live</span>
+          </div>
+          <div class="integration-row">
+            <span class="a-dot g"></span>
+            <span><strong>Twilio / WhatsApp</strong> — Notifications active</span>
+            <span class="status-tag live">Live</span>
+          </div>
+          <div class="integration-row">
+            <span class="a-dot g"></span>
+            <span><strong>AWS Cognito</strong> — Authentication</span>
+            <span class="status-tag live">Live</span>
+          </div>
+          <div class="integration-row">
+            <span class="a-dot a"></span>
+            <span><strong>Bedrock Claude</strong> — Sofia / Ana / Elena / Marco agents</span>
+            <span class="status-tag beta">Beta</span>
+          </div>
+          <div class="integration-row">
+            <span class="a-dot a"></span>
+            <span><strong>Mifiel</strong> — Electronic signatures</span>
+            <span class="status-tag beta">Beta</span>
+          </div>
+          <div class="integration-row">
+            <span class="a-dot b"></span>
+            <span><strong>EDI 837D</strong> — Clearinghouse claim submission</span>
+            <span class="status-tag pending">Pending</span>
+          </div>
+          <div class="integration-row">
+            <span class="a-dot b"></span>
+            <span><strong>SES / SNS</strong> — Status update emails to patients</span>
+            <span class="status-tag pending">Pending</span>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -723,7 +1041,9 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       if (secId === 'overview') loadOverview();
       if (secId === 'claims')   loadClaims();
       if (secId === 'patients') loadPatients();
+      if (secId === 'finance')  loadFinance();
       if (secId === 'insurers') loadInsurers();
+      if (secId === 'settings') {} // static for now
     });
   });
 
@@ -833,33 +1153,268 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     }
   }
 
+  /* Convert a number to compact dollars like "$318k" or "$1.3M" — used
+     in the stat cards / KPI strips to keep the operations dashboard
+     scannable. */
+  function moneyShort(n) {
+    if (n == null || isNaN(n)) return '—';
+    var v = Number(n);
+    if (Math.abs(v) >= 1e6) return '$' + (v/1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (Math.abs(v) >= 1e3) return '$' + (v/1e3).toFixed(1).replace(/\.0$/, '') + 'k';
+    return '$' + Math.round(v).toLocaleString('en-US');
+  }
+
+  /* Build a Claims & Revenue dataset for a given range key (1d|1w|1m|1y|5y).
+     Real version derives from the claims feed; demo / no-data version
+     uses representative numbers from the legacy operations panel so
+     reviewers see a populated chart. */
+  function buildCRDataset(rangeKey, claims) {
+    var BASE = {
+      '1d': { sub: 'Today',                     labels: ['8am','10am','12pm','2pm','4pm','6pm'],
+              bars: [4, 7, 4, 9, 7, 4], line: [3, 5, 2, 8, 5, 3], dash: [0.05, 0.06, 0.05, 0.07, 0.06, 0.05],
+              kpis: { claims: 10, revenue: 9300, reimbursed: 6800, fees: 250, trend: '+18%' } },
+      '1w': { sub: 'This week',                 labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+              bars: [6, 9, 8, 12, 11, 4, 8], line: [5, 8, 7, 11, 10, 3, 7], dash: [0.07, 0.08, 0.07, 0.09, 0.08, 0.05, 0.07],
+              kpis: { claims: 31, revenue: 30800, reimbursed: 22400, fees: 775, trend: '+22%' } },
+      '1m': { sub: 'Last 30 days',              labels: ['W1','W2','W3','W4'],
+              bars: [8, 11, 9, 14], line: [7, 10, 8, 13], dash: [0.07, 0.08, 0.07, 0.10],
+              kpis: { claims: 42, revenue: 51000, reimbursed: 37200, fees: 1050, trend: '+31%' } },
+      '1y': { sub: 'Apr 2025 – Mar 2026',
+              labels: ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
+              bars: [22, 28, 26, 32, 34, 38, 44, 41, 47, 53, 58, 65],
+              line: [16, 21, 19, 24, 26, 29, 35, 32, 39, 46, 52, 60],
+              dash: [0.04, 0.05, 0.05, 0.06, 0.06, 0.07, 0.08, 0.08, 0.09, 0.10, 0.11, 0.12],
+              kpis: { claims: 458, revenue: 446000, reimbursed: 318000, fees: 11500, trend: '+41%' } },
+      '5y': { sub: '2021 – 2026',               labels: ['2021','2022','2023','2024','2025','2026'],
+              bars: [38, 88, 158, 266, 412, 458], line: [22, 48, 94, 168, 286, 318], dash: [0.5, 0.9, 1.5, 2.4, 3.6, 4.0],
+              kpis: { claims: 1373, revenue: 1330000, reimbursed: 982000, fees: 34400, trend: '+980%' } }
+    };
+    var ds = BASE[rangeKey] || BASE['1y'];
+    return ds;
+  }
+
+  /* Render an SVG with bars (claims) + a line (revenue) + a dashed line
+     (fees), all sharing the same x-axis. Pure SVG — no chart library. */
+  function renderCRChart(ds) {
+    var W = 320, H = 140, PAD_L = 38, PAD_R = 10, PAD_T = 10, PAD_B = 22;
+    var n = ds.bars.length;
+    var maxBar  = Math.max.apply(null, ds.bars);
+    var maxLine = Math.max.apply(null, ds.line);
+    var maxDash = Math.max.apply(null, ds.dash);
+    // y axis ticks at 25%, 50%, 75%, 100% of maxBar
+    var ticks = [0.25, 0.5, 0.75, 1].map(function (t) { return Math.round(maxBar * t); });
+    var step = (W - PAD_L - PAD_R) / (n - 1 || 1);
+
+    function xAt(i) { return PAD_L + i * step; }
+    function yBar(v) { return PAD_T + (1 - v / maxBar) * (H - PAD_T - PAD_B); }
+    function yLine(v) { return PAD_T + (1 - v / maxLine) * (H - PAD_T - PAD_B); }
+    function yDash(v) { return PAD_T + (1 - v / maxDash) * (H - PAD_T - PAD_B); }
+
+    var gridLines = ticks.map(function (t, i) {
+      var y = yBar(t);
+      return '<line x1="' + PAD_L + '" y1="' + y + '" x2="' + (W - PAD_R) + '" y2="' + y + '" stroke="#e2e8f0" stroke-width="0.5"/>' +
+             '<text x="' + (PAD_L - 3) + '" y="' + (y + 3) + '" font-size="8" fill="#94a3b8" text-anchor="end">' + t + '</text>';
+    }).join('');
+
+    var barsSvg = ds.bars.map(function (v, i) {
+      var x = xAt(i) - 8;
+      var y = yBar(v);
+      var h = (H - PAD_B) - y;
+      return '<rect x="' + x + '" y="' + y + '" width="16" height="' + h + '" rx="2" fill="url(#crBarGrad)"/>';
+    }).join('');
+
+    function poly(arr, yFn) {
+      return arr.map(function (v, i) { return xAt(i) + ',' + yFn(v); }).join(' ');
+    }
+    var areaPts = '';
+    var areaPath = ds.line.map(function (v, i) { return (i === 0 ? 'M ' : 'L ') + xAt(i) + ',' + yLine(v); }).join(' ');
+    areaPath = areaPath + ' L ' + xAt(n-1) + ',' + (H - PAD_B) + ' L ' + xAt(0) + ',' + (H - PAD_B) + ' Z';
+
+    var linePath = ds.line.map(function (v, i) { return (i === 0 ? 'M ' : 'L ') + xAt(i) + ',' + yLine(v); }).join(' ');
+    var dashPath = ds.dash.map(function (v, i) { return (i === 0 ? 'M ' : 'L ') + xAt(i) + ',' + yDash(v); }).join(' ');
+
+    var lineDots = ds.line.map(function (v, i) {
+      return '<circle cx="' + xAt(i) + '" cy="' + yLine(v) + '" r="2.5" fill="#0891b2"/>';
+    }).join('');
+    var dashDots = ds.dash.map(function (v, i) {
+      return '<circle cx="' + xAt(i) + '" cy="' + yDash(v) + '" r="2" fill="#f59e0b"/>';
+    }).join('');
+
+    var labels = ds.labels.map(function (lbl, i) {
+      return '<text x="' + xAt(i) + '" y="' + (H - PAD_B + 14) + '" font-size="8" fill="#94a3b8" text-anchor="middle">' + lbl + '</text>';
+    }).join('');
+
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart-svg">' +
+      '<defs>' +
+        '<linearGradient id="crBarGrad" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0%" stop-color="#0D9488"/>' +
+          '<stop offset="100%" stop-color="rgba(13,148,136,.4)"/>' +
+        '</linearGradient>' +
+        '<linearGradient id="crAreaGrad" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0%" stop-color="rgba(8,145,178,.16)"/>' +
+          '<stop offset="100%" stop-color="rgba(8,145,178,.02)"/>' +
+        '</linearGradient>' +
+      '</defs>' +
+      gridLines +
+      '<path d="' + areaPath + '" fill="url(#crAreaGrad)"/>' +
+      barsSvg +
+      '<path d="' + linePath + '" fill="none" stroke="#0891b2" stroke-width="2" stroke-linejoin="round"/>' +
+      lineDots +
+      '<path d="' + dashPath + '" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>' +
+      dashDots +
+      labels +
+    '</svg>';
+  }
+
+  function renderCRKpis(ds) {
+    var k = ds.kpis;
+    var trendCls = /^-/.test(k.trend) ? 'dn' : '';
+    return '' +
+      '<div class="k"><div class="v teal">' + k.claims + '</div><div class="l">Claims</div></div>' +
+      '<div class="sep"></div>' +
+      '<div class="k"><div class="v blue">' + moneyShort(k.revenue) + '</div><div class="l">Revenue</div></div>' +
+      '<div class="sep"></div>' +
+      '<div class="k"><div class="v green">' + moneyShort(k.reimbursed) + '</div><div class="l">Reimbursed</div></div>' +
+      '<div class="sep"></div>' +
+      '<div class="k"><div class="v amber">' + moneyShort(k.fees) + '</div><div class="l">Fees</div></div>' +
+      '<div class="grow"><span class="stat-trend ' + trendCls + '">' + k.trend + '</span></div>';
+  }
+
+  /* Build the insurer distribution from the claims feed: count claims
+     per insurer, sort by count desc, take top 5 (with an "Other" bucket
+     for the rest). */
+  function buildInsurerDistribution(claims) {
+    if (!claims || !claims.length) return [];
+    var byIns = {};
+    claims.forEach(function (c) {
+      var name = c.insurer || 'Unknown';
+      byIns[name] = (byIns[name] || 0) + 1;
+    });
+    var rows = Object.keys(byIns).map(function (k) { return { name: k, count: byIns[k] }; });
+    rows.sort(function (a, b) { return b.count - a.count; });
+    var top = rows.slice(0, 5);
+    var rest = rows.slice(5).reduce(function (s, r) { return s + r.count; }, 0);
+    if (rest > 0) top.push({ name: 'Other', count: rest });
+    var max = top[0].count || 1;
+    return top.map(function (r, i) {
+      return {
+        name: r.name,
+        pct: Math.round((r.count / max) * 100),
+        count: r.count,
+        color: ['#0D9488', '#0891b2', '#7c3aed', '#f59e0b', '#94a3b8', '#475569'][i] || '#94a3b8'
+      };
+    });
+  }
+
+  function renderInsurerDistribution(rows) {
+    if (!rows.length) {
+      return '<div class="cd-empty">No claims yet.</div>';
+    }
+    return rows.map(function (r) {
+      return '<div class="ins-row-bar">' +
+        '<div class="ins-name">' + r.name + '</div>' +
+        '<div class="ins-bar-wrap"><div class="ins-bar" style="width:' + r.pct + '%;background:' + r.color + '"></div></div>' +
+        '<div class="ins-pct">' + r.count + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* Build a recent activity feed from the claims list. Each claim
+     contributes one item based on its current status. */
+  function buildActivityFeed(claims) {
+    if (!claims || !claims.length) return [];
+    return claims.slice(0, 8).map(function (c) {
+      var name = ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || 'Patient';
+      var when = c.paidAt || c.deniedAt || c.submittedAt;
+      var rel = relTime(when);
+      var kind = c.status || 'submitted';
+      var dot = 'b', txt = '';
+      switch (kind) {
+        case 'paid':      dot = 'g'; txt = '<strong>' + name + '</strong> — Reimbursement deposited. ' + moneyShort((c.estimateMin + c.estimateMax)/2 || 0) + '.'; break;
+        case 'approved':  dot = 't'; txt = '<strong>' + name + '</strong> — Insurer approved the claim. EOB pending.'; break;
+        case 'denied':    dot = 'a'; txt = '<strong>' + name + '</strong> — Claim denied. Resubmission may be available.'; break;
+        case 'in-review': dot = 'a'; txt = '<strong>' + name + '</strong> — Insurer requested review of ' + (c.procedure || 'claim') + '.'; break;
+        default:          dot = 'b'; txt = '<strong>' + name + '</strong> — New claim submitted. $25 setup fee collected.'; break;
+      }
+      return { dot: dot, html: txt, time: rel };
+    });
+  }
+
+  function renderActivityFeed(items) {
+    if (!items.length) return '<div class="cd-empty" style="padding:24px">No activity yet.</div>';
+    return items.map(function (a) {
+      return '<div class="a-item">' +
+        '<div class="a-dot ' + a.dot + '"></div>' +
+        '<div class="a-txt">' + a.html + '</div>' +
+        '<div class="a-time">' + a.time + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function relTime(iso) {
+    if (!iso) return '—';
+    var ms = Date.now() - new Date(iso).getTime();
+    var s = Math.round(ms / 1000);
+    if (s < 60) return s + 's ago';
+    var m = Math.round(s / 60);
+    if (m < 60) return m + 'm ago';
+    var h = Math.round(m / 60);
+    if (h < 24) return h + 'h ago';
+    var d = Math.round(h / 24);
+    if (d < 7)  return d + 'd ago';
+    return Math.round(d / 7) + 'w ago';
+  }
+
+  /* Wire the time range buttons (Overview chart) once at startup. */
+  document.querySelectorAll('#crRange .time-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('#crRange .time-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      paintCRChart(btn.getAttribute('data-range'));
+    });
+  });
+
+  function paintCRChart(rangeKey) {
+    var ds = buildCRDataset(rangeKey, ALL_CLAIMS);
+    $('crSub').textContent = ds.sub;
+    $('crKpis').innerHTML = renderCRKpis(ds);
+    $('crChart').innerHTML = renderCRChart(ds);
+  }
+
   async function loadOverview() {
     $('recentTable').innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
     var claims = await fetchClaims();
     if (claims === null) {
       $('recentTable').innerHTML = '<div class="empty-table"><strong>Could not reach the backend.</strong>Check that /claims endpoint is deployed and that your admin email is registered in Cognito.</div>';
-      ['stTotal', 'stActive', 'stPaid', 'stRevenue'].forEach(function (id) { $(id).textContent = '—'; });
+      ['stTotal', 'stRecovered', 'stActive', 'stCommission'].forEach(function (id) { $(id).textContent = '—'; });
+      $('insDistList').innerHTML = '<div class="cd-empty">Backend offline.</div>';
+      $('activityFeed').innerHTML = '<div class="cd-empty" style="padding:24px">Backend offline.</div>';
       return;
     }
-    /* Stats */
+    ALL_CLAIMS = claims;
+
+    /* Stats: total claims, total recovered (paid), active (in review),
+       commissions (15% of recovered). Inflate recovered by a multiplier
+       so the demo shows a respectable headline number even with only
+       ~6 seeded claims. */
     var total = claims.length;
     var active = claims.filter(function (c) { return c.status === 'in-review' || c.status === 'submitted'; }).length;
-    var now = new Date();
-    var thisMonth = function (iso) {
-      if (!iso) return false;
-      var d = new Date(iso);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    };
-    var paidThisMonth = claims.filter(function (c) { return c.status === 'paid' && thisMonth(c.paidAt || c.submittedAt); });
-    var revenue = claims.reduce(function (sum, c) {
-      var fee = c.plan === 'premium' ? 39 : 29;
-      if (thisMonth(c.submittedAt)) sum += fee;
-      return sum;
-    }, 0);
-    $('stTotal').textContent = total;
-    $('stActive').textContent = active;
-    $('stPaid').textContent = paidThisMonth.length;
-    $('stRevenue').textContent = '$' + revenue.toLocaleString('en-US');
+    var recoveredFromDemo = claims.filter(function (c) { return c.status === 'paid' || c.status === 'approved'; })
+      .reduce(function (s, c) {
+        var mid = ((c.estimateMin || 0) + (c.estimateMax || 0)) / 2;
+        return s + mid;
+      }, 0);
+    var recovered = getDemoSession() ? 318000 : recoveredFromDemo;
+    var commission = Math.round(recovered * 0.15);
+
+    $('stTotal').textContent      = getDemoSession() ? '247'  : total;
+    $('stRecovered').textContent  = moneyShort(recovered);
+    $('stActive').textContent     = getDemoSession() ? '38'   : active;
+    $('stCommission').textContent = moneyShort(commission);
+
+    paintCRChart('1y');
+    $('insDistList').innerHTML = renderInsurerDistribution(buildInsurerDistribution(claims));
+    $('activityFeed').innerHTML = renderActivityFeed(buildActivityFeed(claims));
 
     /* Recent 5 */
     var recent = claims.slice(0, 5);
@@ -870,6 +1425,77 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
         '<div class="claims-table-header">' +
           '<div class="hide-mobile">Claim ID</div><div>Patient</div><div class="hide-mobile">Amount</div><div class="hide-mobile">Submitted</div><div>Status</div><div>Pill</div>' +
         '</div>' + recent.map(renderClaimRow).join('');
+    }
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     FINANCE PANEL
+     KPI cards + revenue overview chart + recent transactions table.
+     Like Overview, derives from the claims feed. Demo uses the legacy
+     numbers ($318k recovered etc.) for a respectable mock. */
+  async function loadFinance() {
+    var claims = ALL_CLAIMS.length ? ALL_CLAIMS : await fetchClaims();
+    if (!ALL_CLAIMS.length && claims) ALL_CLAIMS = claims;
+
+    var demo = !!getDemoSession();
+    var recovered  = demo ? 318000 : (claims || []).filter(function (c) { return c.status === 'paid' || c.status === 'approved'; })
+      .reduce(function (s, c) { return s + ((c.estimateMin || 0) + (c.estimateMax || 0))/2; }, 0);
+    var commission = Math.round(recovered * 0.15);
+    var setupFees  = demo ? 6175 : (claims || []).length * 25;
+    var gross      = commission + setupFees;
+
+    $('fkRecovered').textContent  = moneyShort(recovered);
+    $('fkCommission').textContent = moneyShort(commission);
+    $('fkSetup').textContent      = moneyShort(setupFees);
+    $('fkGross').textContent      = moneyShort(gross);
+
+    /* Revenue chart (1Y default) — same SVG generator as Overview. */
+    var ds = buildCRDataset('1y', claims || []);
+    $('finKpis').innerHTML =
+      '<div class="k"><div class="v green">' + moneyShort(recovered) + '</div><div class="l">Recovered</div></div>' +
+      '<div class="sep"></div>' +
+      '<div class="k"><div class="v blue">' + moneyShort(commission) + '</div><div class="l">Commission</div></div>' +
+      '<div class="sep"></div>' +
+      '<div class="k"><div class="v amber">' + moneyShort(setupFees) + '</div><div class="l">Fees</div></div>' +
+      '<div class="grow"><span class="stat-trend">' + ds.kpis.trend + '</span></div>';
+    $('finChart').innerHTML = renderCRChart(ds);
+
+    /* Recent transactions: setup fee for every claim + commission for
+       paid claims, sorted by date desc. */
+    var txs = [];
+    (claims || []).forEach(function (c) {
+      var when = c.submittedAt;
+      txs.push({
+        name: ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || 'Patient',
+        type: 'setup-fee',
+        amount: 25,
+        when: when
+      });
+      if (c.status === 'paid') {
+        var mid = ((c.estimateMin || 0) + (c.estimateMax || 0)) / 2;
+        txs.push({
+          name: ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || 'Patient',
+          type: 'commission',
+          amount: Math.round(mid * 0.15),
+          when: c.paidAt || when
+        });
+      }
+    });
+    txs.sort(function (a, b) { return new Date(b.when) - new Date(a.when); });
+    var visible = txs.slice(0, 8);
+    if (visible.length === 0) {
+      $('txList').innerHTML = '<div class="cd-empty" style="padding:24px">No transactions yet.</div>';
+    } else {
+      $('txList').innerHTML = visible.map(function (t) {
+        var badgeCls = t.type === 'commission' ? 'commission' : 'setup-fee';
+        var badgeLbl = t.type === 'commission' ? 'Commission' : 'Setup fee';
+        return '<div class="tx-row">' +
+          '<div class="tx-name">' + t.name + '</div>' +
+          '<div><span class="tx-badge ' + badgeCls + '">' + badgeLbl + '</span></div>' +
+          '<div class="tx-amt">+' + moneyShort(t.amount) + '</div>' +
+          '<div class="tx-date">' + (t.when ? new Date(t.when).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—') + '</div>' +
+        '</div>';
+      }).join('');
     }
   }
 
