@@ -949,7 +949,7 @@ function renderEmptyState() {
           <span class="text">CREDIMED</span>
         </div>
         <div style="display:flex; gap:8px; align-items:center">
-          <a class="icon-btn" href="/app/profile.html" aria-label="Profile" style="text-decoration:none">${ICONS.user}</a>
+          <a class="icon-btn" href="/app/profile.html" data-profile-link aria-label="Profile" style="text-decoration:none" onclick="window.location.href='/app/profile.html'; return false;">${ICONS.user}</a>
           <button class="signout-pill" data-signout data-scope="empty">${ICONS.signOut}<span>Sign out</span></button>
         </div>
       </div>
@@ -1101,7 +1101,7 @@ function renderScreen(variant, scope){
           <span class="text">CREDIMED</span>
         </div>
         <div style="display:flex; gap:8px; align-items:center">
-          <a class="icon-btn" href="/app/profile.html" aria-label="Profile" style="text-decoration:none">${ICONS.user}</a>
+          <a class="icon-btn" href="/app/profile.html" data-profile-link aria-label="Profile" style="text-decoration:none" onclick="window.location.href='/app/profile.html'; return false;">${ICONS.user}</a>
           <button class="signout-pill" data-signout data-scope="${scope}">${ICONS.signOut}<span>Sign out</span></button>
         </div>
       </div>
@@ -1282,15 +1282,26 @@ document.querySelectorAll('.tab').forEach(t => {
 // window.CredimedState + window.cognitoSignOut are already available.
 hydrateClaimFromState();
 
-/* Belt-and-suspenders profile navigation: the <a href="/app/profile.html">
-   wrapper sometimes drops taps on iOS (the SVG inside eats the gesture).
-   A delegated listener guarantees the tap navigates, even if the link
-   itself misfires. */
-document.addEventListener('click', function (e) {
-  var profile = e.target.closest('a.icon-btn[href="/app/profile.html"]');
-  if (!profile) return;
-  e.preventDefault();
+/* Belt-and-suspenders profile navigation — three layers so the tap can't
+   miss on iOS Safari:
+     1. Inline onclick on the <a> tag (highest priority, parse-time bound)
+     2. Delegated click listener on the document
+     3. touchend listener for iOS-specific gesture quirks
+   The CSS rule .icon-btn svg{pointer-events:none} above ensures the SVG
+   never swallows the gesture. */
+function __credimedNavProfile(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   window.location.href = '/app/profile.html';
+}
+document.addEventListener('click', function (e) {
+  if (e.target.closest('a[data-profile-link], a.icon-btn[href="/app/profile.html"]')) {
+    __credimedNavProfile(e);
+  }
+}, true);
+document.addEventListener('touchend', function (e) {
+  if (e.target.closest('a[data-profile-link], a.icon-btn[href="/app/profile.html"]')) {
+    __credimedNavProfile(e);
+  }
 }, true);
 
 mountScope('mobile');
