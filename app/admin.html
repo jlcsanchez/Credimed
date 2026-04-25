@@ -441,7 +441,7 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
         <div class="stat-card-rich">
           <div class="stat-top"><div class="stat-icon green">$</div><div class="stat-trend" id="stRecoveredTrend">+8%</div></div>
           <div class="stat-val" id="stRecovered">—</div>
-          <div class="stat-lbl">Total recovered</div>
+          <div class="stat-lbl">Recovered for patients</div>
         </div>
         <div class="stat-card-rich">
           <div class="stat-top"><div class="stat-icon blue">↻</div><div class="stat-trend dn" id="stActiveTrend">−3%</div></div>
@@ -449,9 +449,9 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
           <div class="stat-lbl">Active claims</div>
         </div>
         <div class="stat-card-rich">
-          <div class="stat-top"><div class="stat-icon amber">%</div><div class="stat-trend" id="stCommissionTrend">+5%</div></div>
-          <div class="stat-val" id="stCommission">—</div>
-          <div class="stat-lbl">Commissions (15%)</div>
+          <div class="stat-top"><div class="stat-icon amber">$</div><div class="stat-trend" id="stPlanTrend">+5%</div></div>
+          <div class="stat-val" id="stPlanRev">—</div>
+          <div class="stat-lbl">Plan revenue</div>
         </div>
       </div>
 
@@ -613,19 +613,24 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
           <div class="stat-lbl">Recovered for patients</div>
         </div>
         <div class="stat-card-rich">
-          <div class="stat-top"><div class="stat-icon teal">%</div><div class="stat-trend">+8%</div></div>
-          <div class="stat-val" id="fkCommission">—</div>
-          <div class="stat-lbl">Commission (15%)</div>
+          <div class="stat-top"><div class="stat-icon teal">S</div><div class="stat-trend">+9%</div></div>
+          <div class="stat-val" id="fkStandard">—</div>
+          <div class="stat-lbl">Standard $49 · 1 proc</div>
         </div>
         <div class="stat-card-rich">
-          <div class="stat-top"><div class="stat-icon amber">¢</div><div class="stat-trend">+12%</div></div>
-          <div class="stat-val" id="fkSetup" style="color:#b45309">—</div>
-          <div class="stat-lbl">Setup fees ($25 × claims)</div>
+          <div class="stat-top"><div class="stat-icon blue">+</div><div class="stat-trend">+11%</div></div>
+          <div class="stat-val" id="fkPlus" style="color:#0891b2">—</div>
+          <div class="stat-lbl">Plus $79 · 2–3 procs</div>
         </div>
         <div class="stat-card-rich">
-          <div class="stat-top"><div class="stat-icon blue">Σ</div><div class="stat-trend">+9%</div></div>
-          <div class="stat-val" id="fkGross" style="color:#0891b2">—</div>
-          <div class="stat-lbl">Total gross revenue</div>
+          <div class="stat-top"><div class="stat-icon blue">P</div><div class="stat-trend">+14%</div></div>
+          <div class="stat-val" id="fkPremium" style="color:#7c3aed">—</div>
+          <div class="stat-lbl">Premium $99 · 4+ procs</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon amber">↻</div><div class="stat-trend">+5%</div></div>
+          <div class="stat-val" id="fkResub" style="color:#b45309">—</div>
+          <div class="stat-lbl">Resubmissions ($19)</div>
         </div>
       </div>
 
@@ -633,12 +638,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
           <div class="chart-title">Revenue overview</div>
           <div class="legend-row">
-            <div class="lg"><span class="swatch-green"></span><span>Recovered</span></div>
-            <div class="lg"><span class="swatch-line"></span><span>Commission</span></div>
-            <div class="lg"><span class="swatch-dash"></span><span>Fees</span></div>
+            <div class="lg"><span class="swatch-green"></span><span>Recovered (patients)</span></div>
+            <div class="lg"><span class="swatch-line"></span><span>Plan fees</span></div>
+            <div class="lg"><span class="swatch-dash"></span><span>Resubmission fees</span></div>
           </div>
         </div>
-        <div class="chart-sub" style="margin-bottom:10px">Apr 2025 – Mar 2026</div>
+        <div class="chart-sub" style="margin-bottom:10px">Apr 2025 – Mar 2026 · No commission charged on reimbursement</div>
         <div class="kpi-strip" id="finKpis">—</div>
         <div id="finChart"></div>
       </div>
@@ -682,14 +687,34 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
       <div class="two-col">
         <div class="chart-card" style="margin-bottom:0">
-          <div class="chart-title" style="margin-bottom:14px">Platform settings</div>
+          <div class="chart-title" style="margin-bottom:14px">Pricing &amp; platform</div>
           <div class="settings-row">
-            <span class="lbl">Setup fee</span>
-            <span class="val">$25.00</span>
+            <span class="lbl">Standard fee · 1 procedure</span>
+            <span class="val">$49.00</span>
           </div>
           <div class="settings-row">
-            <span class="lbl">Success commission</span>
-            <span class="val">15%</span>
+            <span class="lbl">Plus fee · 2–3 procedures</span>
+            <span class="val">$79.00</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Premium fee · 4+ procedures</span>
+            <span class="val">$99.00</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Additional resubmission (Standard / Plus)</span>
+            <span class="val">$19.00</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Premium resubmissions</span>
+            <span class="val slate">Unlimited (12 months)</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Commission on reimbursement</span>
+            <span class="val slate">0% — never charged</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Active Service Agreement</span>
+            <span class="val slate">v1.1</span>
           </div>
           <div class="settings-row">
             <span class="lbl">WhatsApp notifications</span>
@@ -1334,7 +1359,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
         case 'approved':  dot = 't'; txt = '<strong>' + name + '</strong> — Insurer approved the claim. EOB pending.'; break;
         case 'denied':    dot = 'a'; txt = '<strong>' + name + '</strong> — Claim denied. Resubmission may be available.'; break;
         case 'in-review': dot = 'a'; txt = '<strong>' + name + '</strong> — Insurer requested review of ' + (c.procedure || 'claim') + '.'; break;
-        default:          dot = 'b'; txt = '<strong>' + name + '</strong> — New claim submitted. $25 setup fee collected.'; break;
+        default:
+          dot = 'b';
+          var planFee = c.plan === 'premium' ? 99 : (c.plan === 'plus' ? 79 : 49);
+          var planTag = c.plan === 'premium' ? 'Premium' : (c.plan === 'plus' ? 'Plus' : 'Standard');
+          txt = '<strong>' + name + '</strong> — New claim submitted. ' + planTag + ' plan fee $' + planFee + ' collected.';
+          break;
       }
       return { dot: dot, html: txt, time: rel };
     });
@@ -1405,12 +1435,21 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
         return s + mid;
       }, 0);
     var recovered = getDemoSession() ? 318000 : recoveredFromDemo;
-    var commission = Math.round(recovered * 0.15);
 
-    $('stTotal').textContent      = getDemoSession() ? '247'  : total;
-    $('stRecovered').textContent  = moneyShort(recovered);
-    $('stActive').textContent     = getDemoSession() ? '38'   : active;
-    $('stCommission').textContent = moneyShort(commission);
+    /* Plan revenue = sum of $49 (Standard) + $79 (Plus) + $99 (Premium)
+       fees from every claim. Complexity-based, no commission. Demo
+       split: 50/30/20% on 458 annual claims. */
+    var TIER_PRICE = { standard: 49, plus: 79, premium: 99 };
+    var planRevenueDemo = Math.round(458 * 0.50 * 49 + 458 * 0.30 * 79 + 458 * 0.20 * 99);
+    var planRevenueReal = (claims || []).reduce(function (s, c) {
+      return s + (TIER_PRICE[c.plan] || TIER_PRICE.standard);
+    }, 0);
+    var planRevenue = getDemoSession() ? planRevenueDemo : planRevenueReal;
+
+    $('stTotal').textContent     = getDemoSession() ? '247'  : total;
+    $('stRecovered').textContent = moneyShort(recovered);
+    $('stActive').textContent    = getDemoSession() ? '38'   : active;
+    $('stPlanRev').textContent   = moneyShort(planRevenue);
 
     paintCRChart('1y');
     $('insDistList').innerHTML = renderInsurerDistribution(buildInsurerDistribution(claims));
@@ -1440,44 +1479,69 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     var demo = !!getDemoSession();
     var recovered  = demo ? 318000 : (claims || []).filter(function (c) { return c.status === 'paid' || c.status === 'approved'; })
       .reduce(function (s, c) { return s + ((c.estimateMin || 0) + (c.estimateMax || 0))/2; }, 0);
-    var commission = Math.round(recovered * 0.15);
-    var setupFees  = demo ? 6175 : (claims || []).length * 25;
-    var gross      = commission + setupFees;
 
-    $('fkRecovered').textContent  = moneyShort(recovered);
-    $('fkCommission').textContent = moneyShort(commission);
-    $('fkSetup').textContent      = moneyShort(setupFees);
-    $('fkGross').textContent      = moneyShort(gross);
+    /* Complexity-based pricing model (set by app/payment.html and the
+       pricingEngine):
+       - Standard $49 — 1 procedure
+       - Plus     $79 — 2–3 procedures
+       - Premium  $99 — 4+ procedures (or any claim flagged for code review)
+       - Additional resubmissions: $19 (Standard/Plus only — Premium gets unlimited)
+       - 0% commission on reimbursement (never charged) */
+    var standardFees, plusFees, premiumFees, resubFees;
+    if (demo) {
+      // 50% Standard / 30% Plus / 20% Premium on 458 annual claims;
+      // ~5% of non-Premium pay one extra resub.
+      var sClaims = Math.round(458 * 0.50);
+      var lClaims = Math.round(458 * 0.30);
+      var pClaims = Math.round(458 * 0.20);
+      var paidResubs = Math.round((sClaims + lClaims) * 0.05);
+      standardFees = sClaims * 49;
+      plusFees     = lClaims * 79;
+      premiumFees  = pClaims * 99;
+      resubFees    = paidResubs * 19;
+    } else {
+      standardFees = (claims || []).filter(function (c) { return c.plan === 'standard'; }).length * 49;
+      plusFees     = (claims || []).filter(function (c) { return c.plan === 'plus'; }).length * 79;
+      premiumFees  = (claims || []).filter(function (c) { return c.plan === 'premium'; }).length * 99;
+      resubFees    = (claims || []).reduce(function (s, c) { return s + ((c.paidResubs || 0) * 19); }, 0);
+    }
+    var planFees = standardFees + plusFees + premiumFees;
+    var grossRev = planFees + resubFees;
+
+    $('fkRecovered').textContent = moneyShort(recovered);
+    $('fkStandard').textContent  = moneyShort(standardFees);
+    $('fkPlus').textContent      = moneyShort(plusFees);
+    $('fkPremium').textContent   = moneyShort(premiumFees);
+    $('fkResub').textContent     = moneyShort(resubFees);
 
     /* Revenue chart (1Y default) — same SVG generator as Overview. */
     var ds = buildCRDataset('1y', claims || []);
     $('finKpis').innerHTML =
       '<div class="k"><div class="v green">' + moneyShort(recovered) + '</div><div class="l">Recovered</div></div>' +
       '<div class="sep"></div>' +
-      '<div class="k"><div class="v blue">' + moneyShort(commission) + '</div><div class="l">Commission</div></div>' +
+      '<div class="k"><div class="v blue">' + moneyShort(planFees) + '</div><div class="l">Plan fees</div></div>' +
       '<div class="sep"></div>' +
-      '<div class="k"><div class="v amber">' + moneyShort(setupFees) + '</div><div class="l">Fees</div></div>' +
+      '<div class="k"><div class="v amber">' + moneyShort(resubFees) + '</div><div class="l">Resubs</div></div>' +
+      '<div class="sep"></div>' +
+      '<div class="k"><div class="v teal">' + moneyShort(grossRev) + '</div><div class="l">Gross</div></div>' +
       '<div class="grow"><span class="stat-trend">' + ds.kpis.trend + '</span></div>';
     $('finChart').innerHTML = renderCRChart(ds);
 
-    /* Recent transactions: setup fee for every claim + commission for
-       paid claims, sorted by date desc. */
+    /* Recent transactions: one row per claim (plan fee paid at checkout)
+       + one row per paid resubmission. Sorted by date desc. */
+    var TIER_LABEL = { standard: 'Standard $49', plus: 'Plus $79', premium: 'Premium $99' };
+    var TIER_FEE   = { standard: 49, plus: 79, premium: 99 };
     var txs = [];
     (claims || []).forEach(function (c) {
-      var when = c.submittedAt;
-      txs.push({
-        name: ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || 'Patient',
-        type: 'setup-fee',
-        amount: 25,
-        when: when
-      });
-      if (c.status === 'paid') {
-        var mid = ((c.estimateMin || 0) + (c.estimateMax || 0)) / 2;
+      var name = ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || 'Patient';
+      var key  = c.plan || 'standard';
+      var fee  = TIER_FEE[key] || 49;
+      var lbl  = TIER_LABEL[key] || 'Plan fee';
+      txs.push({ name: name, type: 'plan', label: lbl, amount: fee, when: c.submittedAt });
+      if (c.paidResubs && c.paidResubs > 0) {
         txs.push({
-          name: ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || 'Patient',
-          type: 'commission',
-          amount: Math.round(mid * 0.15),
-          when: c.paidAt || when
+          name: name, type: 'resub', label: 'Resubmission ×' + c.paidResubs,
+          amount: c.paidResubs * 19, when: c.lastResubAt || c.submittedAt
         });
       }
     });
@@ -1487,11 +1551,9 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       $('txList').innerHTML = '<div class="cd-empty" style="padding:24px">No transactions yet.</div>';
     } else {
       $('txList').innerHTML = visible.map(function (t) {
-        var badgeCls = t.type === 'commission' ? 'commission' : 'setup-fee';
-        var badgeLbl = t.type === 'commission' ? 'Commission' : 'Setup fee';
         return '<div class="tx-row">' +
           '<div class="tx-name">' + t.name + '</div>' +
-          '<div><span class="tx-badge ' + badgeCls + '">' + badgeLbl + '</span></div>' +
+          '<div><span class="tx-badge ' + (t.type === 'resub' ? 'setup-fee' : 'commission') + '">' + t.label + '</span></div>' +
           '<div class="tx-amt">+' + moneyShort(t.amount) + '</div>' +
           '<div class="tx-date">' + (t.when ? new Date(t.when).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—') + '</div>' +
         '</div>';
