@@ -601,26 +601,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (document.getElementById('credimed-v12-pricing')) return true;
 
     injectStyles();
-    var original = findOriginalPricing();
     var newSection = buildSection();
 
-    if (original && original.parentNode) {
-      original.parentNode.insertBefore(newSection, original);
-      original.style.display = 'none';
-      console.info('[credimed-v12] replaced original Pricing — new section is #credimed-v12-pricing');
-      return true;
-    }
-
+    /* IMPORTANT: never hide the detected element. Earlier versions
+       called `original.style.display = 'none'` to replace the legacy
+       2-tier Pricing section, but the detector sometimes matched a
+       too-broad container (the React #root or an app-level wrapper),
+       hiding the entire hero. Now we ALWAYS append the new section
+       before the footer (or to body as last resort) — purely
+       additive, can't break the existing layout. The legacy Pricing
+       section, if any, simply lives above ours. */
     var footer = findFooter();
     if (footer && footer.parentNode) {
       footer.parentNode.insertBefore(newSection, footer);
-      console.info('[credimed-v12] original Pricing not found — inserted new section before <footer>');
+      console.info('[credimed-v12] new Pricing section inserted before <footer>');
       return true;
     }
 
     /* Last resort — append to body. */
     document.body.appendChild(newSection);
-    console.warn('[credimed-v12] no Pricing section and no <footer> — appended to <body> end');
+    console.warn('[credimed-v12] no <footer> found — appended new Pricing to <body> end');
     return true;
   }
 
@@ -637,7 +637,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   var trustApplied = false;
   var microApplied = false;
   function tryApply(reason) {
-    if (!pricingApplied && (findOriginalPricing() || findFooter())) {
+    if (!pricingApplied && findFooter()) {
       applyPatch();
       pricingApplied = true;
       console.info('[credimed-v12] pricing patch applied via:', reason);
