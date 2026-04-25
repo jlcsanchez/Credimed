@@ -352,12 +352,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     return matches[0];
   }
 
-  var trustApplied = false;
   function applyTrustStrip() {
-    if (trustApplied || document.getElementById('credimed-v12-trust')) {
-      trustApplied = true;
-      return false;
-    }
+    if (document.getElementById('credimed-v12-trust')) return false;
     var estimator = findHeroEstimator();
     if (!estimator || !estimator.parentNode) return false;
 
@@ -371,7 +367,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     } else {
       anchor.parentNode.appendChild(trust);
     }
-    trustApplied = true;
     console.info('[credimed-v12] trust strip injected after hero estimator');
     return true;
   }
@@ -394,34 +389,32 @@ document.addEventListener('DOMContentLoaded', async function() {
     return null;
   }
 
-  var microApplied = false;
+  /* Hero micro trust line — re-inject on every poll if React's
+     re-render removed our previous injection. The DOM check is the
+     source of truth, not an in-memory flag. */
   function injectMicroTrust() {
-    if (microApplied || document.getElementById('credimed-v12-microtrust')) {
-      microApplied = true;
-      return false;
-    }
+    if (document.getElementById('credimed-v12-microtrust')) return false;
     var headline = findHeroHeadline();
     if (!headline || !headline.parentNode) return false;
     var micro = document.createElement('div');
     micro.id = 'credimed-v12-microtrust';
     micro.textContent = 'Should be paid. Or your money back.';
     headline.parentNode.insertBefore(micro, headline);
-    microApplied = true;
     console.info('[credimed-v12] micro trust line injected above headline');
     return true;
   }
 
-  /* Replace the calculator's fineprint copy. Pure text-node mutation,
-     keeps the existing wrapper / styles. */
-  var ctaDone = false;
+  /* CTA fineprint — replace the legacy 'No credit card' copy with the
+     v1.2 'Free estimate' line. Idempotent: the regex only matches the
+     OLD copy, so re-running after a successful replacement does nothing.
+     If React re-renders and restores the old text, the next poll
+     catches it. */
   function updateCtaFineprint() {
-    if (ctaDone) return false;
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
     var node;
     while ((node = walker.nextNode())) {
       if (/No credit card[\s\S]*Starts at \$\s*49/i.test(node.nodeValue || '')) {
         node.nodeValue = 'Free estimate. Takes 30 seconds.';
-        ctaDone = true;
         console.info('[credimed-v12] CTA fineprint updated');
         return true;
       }
@@ -444,21 +437,17 @@ document.addEventListener('DOMContentLoaded', async function() {
      Also exposes a __credimedV12Status getter so we can verify from
      the address bar / DevTools whether the script ever ran. */
   function start() {
-    console.info('[credimed-v12] patch start — polling for hero / estimator / fineprint');
+    console.info('[credimed-v12] patch start — polling forever');
     var attempts = 0;
-    var MAX_ATTEMPTS = 360; /* 360 × 250ms = 90s */
-    var iv = setInterval(function () {
+    /* Polls for the lifetime of the page session. iOS Safari can
+       suspend timers in background tabs; on resume, polling continues.
+       Each tryApply() is idempotent — it checks the live DOM (not an
+       in-memory flag) so React re-renders that wipe our injections
+       will be recovered on the next tick. */
+    setInterval(function () {
       attempts++;
       tryApply();
-      if (microApplied && trustApplied && ctaDone) {
-        clearInterval(iv);
-        console.info('[credimed-v12] all patches applied after ' + attempts + ' attempts');
-      } else if (attempts >= MAX_ATTEMPTS) {
-        clearInterval(iv);
-        console.warn('[credimed-v12] timeout after ' + attempts + ' attempts. State:',
-          { microApplied: microApplied, trustApplied: trustApplied, ctaDone: ctaDone });
-      }
-    }, 250);
+    }, 300);
 
     /* Also try once synchronously in case DOM is already ready. */
     tryApply();
@@ -466,9 +455,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     /* Debug accessor — paste in console: window.__credimedV12Status() */
     window.__credimedV12Status = function () {
       return {
-        microApplied: microApplied,
-        trustApplied: trustApplied,
-        ctaDone: ctaDone,
         attempts: attempts,
         microInDom: !!document.getElementById('credimed-v12-microtrust'),
         trustInDom: !!document.getElementById('credimed-v12-trust'),
