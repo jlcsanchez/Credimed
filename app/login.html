@@ -625,6 +625,54 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     }
   });
 
+  /* Demo / preview accounts. Bypass Cognito entirely so reviewers can
+     poke at the dashboard / admin without an AWS round-trip. Each demo
+     seeds CredimedState with a representative claim so the variant
+     screens render with real-looking data.
+
+     Patient demo:  demo@credimed.us  / demo
+     Admin demo:    admin@credimed.us / demo  (also gates admin.html)
+
+     Remove this block once Cognito sign-up is wired into the live site
+     and you have real test users. */
+  var DEMO_USERS = {
+    'demo@credimed.us': {
+      pw: 'demo',
+      target: '/app/dashboard.html',
+      user: { firstName: 'Alex', lastName: 'Rivera', email: 'demo@credimed.us', sub: 'demo-user' },
+      claim: {
+        id: 'CMX-2026-DEMO9',
+        status: 'submitted',
+        submittedAt: new Date().toISOString(),
+        plan: 'standard',
+        paidAmount: 14000, paidAmountUSD: 790, paidCurrency: 'MXN',
+        estimateMin: 450, estimateMax: 610,
+        procedures: ['Crown (zirconia)', 'Root canal'],
+        firstName: 'Alex', lastName: 'Rivera', email: 'demo@credimed.us',
+        insurer: 'Aetna PPO', memberId: 'W123456789', city: 'Cancún'
+      }
+    },
+    'admin@credimed.us': {
+      pw: 'demo',
+      target: '/app/admin.html',
+      user: { firstName: 'Admin', lastName: 'Demo', email: 'admin@credimed.us', sub: 'demo-admin' },
+      isAdmin: true
+    }
+  };
+
+  function startDemoSession(account) {
+    if (window.CredimedState) {
+      window.CredimedState.set('user', account.user);
+      if (account.claim) window.CredimedState.set('claim', account.claim);
+    }
+    try { localStorage.setItem('credimed.demo', JSON.stringify({
+      email: account.user.email,
+      isAdmin: !!account.isAdmin,
+      ts: Date.now()
+    })); } catch (e) {}
+    window.location.href = account.target;
+  }
+
   /* ---------- login ---------- */
   $('btnLogin').addEventListener('click', async function () {
     var email = $('li-email').value.trim().toLowerCase();
@@ -632,6 +680,16 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
 
     if (!isValidEmail(email)) return showError('Please enter a valid email.');
     if (!pw) return showError('Please enter your password.');
+
+    /* Demo backdoor — must come before Cognito so reviewers can sign in
+       without an AWS account on the user pool. */
+    if (DEMO_USERS[email] && DEMO_USERS[email].pw === pw) {
+      setLoading('btnLogin', true);
+      clearBanners();
+      showSuccess('Demo mode — signing you in…');
+      setTimeout(function () { startDemoSession(DEMO_USERS[email]); }, 350);
+      return;
+    }
 
     setLoading('btnLogin', true);
     clearBanners();
@@ -667,12 +725,23 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     /* Explicit logout: sign out first, then show the signup/login form so the
        user can authenticate with a different account. */
     if (params.get('logout') === '1' || window.location.hash === '#logout') {
+      try { localStorage.removeItem('credimed.demo'); } catch (e) {}
       try { window.cognitoSignOut(); } catch (e) {}
       history.replaceState(null, '', '/app/login.html?mode=login');
       show('screen-login');
       showSuccess('Signed out. Enter your credentials to sign in again.');
       return;
     }
+
+    /* Demo session active — go straight to wherever the demo lands. */
+    try {
+      var demoRaw = localStorage.getItem('credimed.demo');
+      if (demoRaw) {
+        var demo = JSON.parse(demoRaw);
+        window.location.href = demo.isAdmin ? '/app/admin.html' : '/app/dashboard.html';
+        return;
+      }
+    } catch (e) {}
 
     try {
       var token = await window.cognitoGetIdToken();

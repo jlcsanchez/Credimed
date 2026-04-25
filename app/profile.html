@@ -488,6 +488,7 @@ html,body{
   });
   $('signoutBtn').addEventListener('click', function () {
     if (!confirm('Sign out of Credimed?')) return;
+    try { localStorage.removeItem('credimed.demo'); } catch (e) {}
     try { if (window.cognitoSignOut) window.cognitoSignOut(); } catch (e) {}
     window.location.href = '/app/login.html';
   });

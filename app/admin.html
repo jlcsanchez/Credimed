@@ -540,6 +540,56 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
   var $ = function (id) { return document.getElementById(id); };
 
+  /* Demo session — set by login.html when an account in DEMO_USERS signs
+     in. Bypasses Cognito entirely and uses a seeded fixture for the
+     claims feed so reviewers see a populated dashboard. Remove once the
+     real Cognito user pool has working test users. */
+  function getDemoSession() {
+    try {
+      var raw = localStorage.getItem('credimed.demo');
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (!d || !d.isAdmin) return null;
+      return d;
+    } catch (e) { return null; }
+  }
+
+  /* Demo claims fixture — used by admin demo to populate Overview /
+     Claims / Patients tabs without a backend. Hit anywhere fetchClaims()
+     would normally talk to the Lambda. */
+  var DEMO_CLAIMS = [
+    { id: 'CMX-2026-D001', userSub: 'demo-1', firstName: 'Alex',  lastName: 'Rivera',  email: 'demo@credimed.us',  status: 'submitted',
+      submittedAt: new Date(Date.now() - 1*86400000).toISOString(), plan: 'standard',
+      paidAmount: 14000, paidCurrency: 'MXN', paidAmountUSD: 790, estimateMin: 450, estimateMax: 610,
+      procedure: 'Crown (zirconia) + Root canal', procedures: ['Crown (zirconia)', 'Root canal'],
+      insurer: 'Aetna PPO', memberId: 'W123456789', city: 'Cancún' },
+    { id: 'CMX-2026-D002', userSub: 'demo-2', firstName: 'Maria', lastName: 'Hernández', email: 'maria.h@example.com', status: 'in-review',
+      submittedAt: new Date(Date.now() - 4*86400000).toISOString(), plan: 'premium',
+      paidAmount: 1180, paidCurrency: 'USD', paidAmountUSD: 1180, estimateMin: 620, estimateMax: 820,
+      procedure: 'Implant + Crown', procedures: ['Dental implant', 'Crown (zirconia)'],
+      insurer: 'Cigna Dental Premier', memberId: 'U998877665', city: 'Tijuana' },
+    { id: 'CMX-2026-D003', userSub: 'demo-3', firstName: 'Daniel', lastName: 'Park', email: 'd.park@example.com', status: 'approved',
+      submittedAt: new Date(Date.now() - 11*86400000).toISOString(), plan: 'standard',
+      paidAmount: 8200, paidCurrency: 'MXN', paidAmountUSD: 460, estimateMin: 240, estimateMax: 340,
+      procedure: 'Veneers (4)', procedures: ['Veneer ×4'],
+      insurer: 'Delta Dental PPO', memberId: 'D44558899', city: 'Playa del Carmen' },
+    { id: 'CMX-2026-D004', userSub: 'demo-4', firstName: 'Sofía', lastName: 'Velázquez', email: 'sofia.v@example.com', status: 'paid',
+      submittedAt: new Date(Date.now() - 32*86400000).toISOString(), paidAt: new Date(Date.now() - 5*86400000).toISOString(), plan: 'standard',
+      paidAmount: 22500, paidCurrency: 'MXN', paidAmountUSD: 1280, estimateMin: 720, estimateMax: 940,
+      procedure: 'Full mouth cleaning + Crown', procedures: ['Deep cleaning', 'Crown (porcelain)'],
+      insurer: 'MetLife PPO', memberId: 'M77665544', city: 'Mexico City' },
+    { id: 'CMX-2026-D005', userSub: 'demo-5', firstName: 'James', lastName: 'O\'Brien', email: 'james.o@example.com', status: 'denied',
+      submittedAt: new Date(Date.now() - 18*86400000).toISOString(), deniedAt: new Date(Date.now() - 3*86400000).toISOString(), plan: 'standard',
+      paidAmount: 6300, paidCurrency: 'MXN', paidAmountUSD: 350, estimateMin: 180, estimateMax: 240,
+      procedure: 'Composite filling', procedures: ['Composite filling ×3'],
+      insurer: 'United Healthcare', memberId: 'U22113344', city: 'Cabo San Lucas' },
+    { id: 'CMX-2026-D006', userSub: 'demo-2', firstName: 'Maria', lastName: 'Hernández', email: 'maria.h@example.com', status: 'submitted',
+      submittedAt: new Date(Date.now() - 0.5*86400000).toISOString(), plan: 'premium',
+      paidAmount: 980, paidCurrency: 'USD', paidAmountUSD: 980, estimateMin: 510, estimateMax: 680,
+      procedure: 'Root canal + temporary crown', procedures: ['Root canal', 'Crown (temporary)'],
+      insurer: 'Cigna Dental Premier', memberId: 'U998877665', city: 'Tijuana' }
+  ];
+
   /* Decode a JWT payload (no signature verification — Cognito SDK already
      validated it before storing). Used to read cognito:groups and other
      custom claims without round-tripping to Lambda. */
@@ -624,16 +674,42 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
   /* --- Sign out --- */
   $('signoutBtn').addEventListener('click', function () {
-    window.cognitoSignOut();
+    try { localStorage.removeItem('credimed.demo'); } catch (e) {}
+    try { window.cognitoSignOut(); } catch (e) {}
     location.reload();
   });
 
   /* --- Auto-enter if already signed in as admin --- */
   (async function () {
+    // Demo session wins — bypass Cognito for reviewers.
+    var demo = getDemoSession();
+    if (demo) {
+      enterShell({ attributes: { email: demo.email, given_name: 'Admin', family_name: 'Demo' } });
+      return;
+    }
     var check = await isAdmin();
     if (check.ok) enterShell(check.user);
     // else: stay on the gate — don't surface 'not-admin' yet, user might
     // just want to sign in with a different account.
+  })();
+
+  /* Also accept demo creds entered into the gate's email/password form
+     (in case the user lands on /app/admin.html directly without going
+     through /app/login.html). */
+  (function () {
+    var origBtn = $('gBtn');
+    if (!origBtn) return;
+    origBtn.addEventListener('click', function (e) {
+      var email = ($('gEmail').value || '').trim().toLowerCase();
+      var pass  = $('gPass').value;
+      if (email === 'admin@credimed.us' && pass === 'demo') {
+        e.stopImmediatePropagation();
+        try { localStorage.setItem('credimed.demo', JSON.stringify({
+          email: email, isAdmin: true, ts: Date.now()
+        })); } catch (err) {}
+        location.reload();
+      }
+    }, true);
   })();
 
   /* --- Tab switching --- */
@@ -679,6 +755,8 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
      migration window. Once the new route is verified live, the legacy
      branch can be removed. */
   async function fetchClaims() {
+    // Demo session: skip the network and serve the seeded fixture.
+    if (getDemoSession()) return DEMO_CLAIMS.slice();
     var API = window.CREDIMED_API;
     try {
       var resp = await window.authFetch(API + '/admin/claims');
