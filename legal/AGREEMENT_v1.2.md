@@ -10,7 +10,7 @@ Credimed Inc. ("Credimed", "we", "us") provides a document preparation and submi
 
 Credimed acts solely as an administrative support service. We are not a healthcare provider, insurance company, third-party administrator (TPA), licensed insurance adjuster, or billing company. We do not make coverage determinations, modify clinical information, or independently verify the accuracy of submitted materials.
 
-All claims are prepared using standard CDT codes and submitted to your insurer's claims portal within twenty-four (24) hours of receiving complete documentation and your signed authorization.
+All claims are prepared using standard CDT codes and submitted to your insurer's claims portal typically within twenty-four (24) hours of receiving complete documentation and your signed authorization.
 
 ## 2. Pricing, Resubmissions, and Money-Back Guarantee
 
@@ -18,9 +18,9 @@ All claims are prepared using standard CDT codes and submitted to your insurer's
 
 Credimed uses an automated pricing engine to analyze the Member's uploaded documentation and determine the complexity of the claim. Based on this analysis, the system assigns one of three pricing tiers:
 
-- **Standard Plan — $49 USD.** Typically applies to claims with a single procedure.
-- **Plus Plan — $79 USD.** Typically applies to claims with two (2) to three (3) procedures.
-- **Premium Plan — $99 USD.** Applies to claims with four (4) or more procedures, or where the system detects coding ambiguity that requires human specialist review prior to submission.
+- Standard Plan — $49 USD. Typically applies to claims with a single procedure.
+- Plus Plan — $79 USD. Typically applies to claims with two (2) to three (3) procedures.
+- Premium Plan — $99 USD. Applies to claims with four (4) or more procedures, or where the system detects coding ambiguity that requires human specialist review prior to submission.
 
 The assigned price is presented to the Member before payment. The Member must explicitly authorize the final price before any charge is made. The Member does not select a tier; pricing is determined solely based on claim characteristics.
 
@@ -32,23 +32,25 @@ Credimed does not charge any commission, percentage, or fee tied to the reimburs
 
 If a claim is denied or requires correction, Credimed may perform resubmissions on the Member's behalf:
 
-- **Standard Plan ($49):** includes one (1) resubmission. Additional resubmissions are available at a fee of nineteen US dollars ($19 USD) per attempt and require the Member's express authorization before being performed.
-- **Plus Plan ($79):** includes one (1) resubmission. Additional resubmissions are available at a fee of nineteen US dollars ($19 USD) per attempt and require the Member's express authorization before being performed.
-- **Premium Plan ($99):** includes unlimited resubmissions for the same claim within a twelve (12) month period from the original submission date, at no additional cost.
+- Standard Plan ($49): includes one (1) resubmission. Additional resubmissions are available at a fee of $19 USD per attempt and require the Member's express authorization.
+- Plus Plan ($79): includes one (1) resubmission. Additional resubmissions are available at a fee of $19 USD per attempt and require the Member's express authorization.
+- Premium Plan ($99): includes unlimited resubmissions for the same claim within a twelve (12) month period from the original submission date, at no additional cost.
 
 All resubmissions must relate to the same claim and are subject to insurer appeal deadlines, documentation requirements, and insurer-specific limitations.
 
 Additional resubmission fees ($19 USD per attempt) are non-refundable, as they correspond to services already rendered.
 
+Resubmissions are performed only when Credimed determines, in its reasonable judgment, that a viable correction or additional submission strategy exists.
+
 ### 2.3 Money-Back Guarantee (100% Conditional Refund)
 
-Credimed offers a conditional refund guarantee across all pricing tiers. If a claim is eligible for reimbursement under the Member's insurance policy but is not paid after all Credimed-supported resubmissions, Credimed will refund one hundred percent (100%) of the plan fee paid.
+Credimed offers a conditional refund guarantee across all pricing tiers. If a claim is eligible for reimbursement under the Member's insurance policy but is not paid after all Credimed-supported resubmissions, Credimed will refund 100% of the plan fee paid.
 
 This guarantee applies only to the original plan fee (Standard $49 USD / Plus $79 USD / Premium $99 USD) and does not include additional resubmission fees.
 
 #### Eligibility Conditions
 
-The refund applies only if **all** of the following conditions are met:
+The refund applies only if all of the following conditions are met:
 
 (a) the service is covered under the Member's insurance policy;
 (b) the service is not subject to an explicit plan exclusion;
@@ -73,8 +75,8 @@ The refund guarantee does not apply if the denial is due to any of the following
 
 A claim is considered finally denied when both of the following are true:
 
-(a) all resubmissions included in the Member's plan have been completed; **and**
-(b) either (i) Credimed determines, acting reasonably and in good faith, that no further viable resubmission strategy exists, **or** (ii) the Member declines additional resubmissions that are reasonably required.
+(a) all resubmissions included in the Member's plan have been completed; and
+(b) either (i) Credimed determines, acting reasonably and in good faith, that no further viable resubmission strategy exists, or (ii) the Member declines additional resubmissions that are reasonably required.
 
 If the Member declines further necessary resubmissions, the claim is considered voluntarily closed and is not eligible for refund.
 
@@ -141,6 +143,8 @@ You represent that you are either (i) the patient who received the services desc
 
 By providing your contact information, you consent to receive communications from Credimed via email, SMS, or messaging platforms (including WhatsApp) related to your claim, account activity, and service updates. Message and data rates may apply.
 
+You acknowledge that providing your phone number constitutes consent to receive automated or manual communications related to your claim, subject to applicable laws.
+
 You may opt out of SMS communications at any time by replying STOP. Opt-out instructions for other communication channels will be provided where applicable.
 
 ## 8. Limitation of Liability
@@ -149,7 +153,7 @@ Credimed does not guarantee any reimbursement outcome. All coverage and payment 
 
 To the maximum extent permitted by law, Credimed's total liability shall not exceed the total fees paid by you to Credimed in the preceding twelve (12) months.
 
-Credimed shall not be liable for any indirect, incidental, consequential, special, or punitive damages, including but not limited to loss of benefits, delays in payment, or claim denials.
+Credimed shall not be liable for any indirect, incidental, consequential, special, or punitive damages, including but not limited to loss of benefits, delays in payment, claim denials, or delays caused by insurers, third-party systems, or incomplete documentation.
 
 Some jurisdictions do not allow the exclusion or limitation of certain damages, so the above limitations may not fully apply to you.
 
@@ -161,8 +165,6 @@ To the extent required by applicable consumer protection laws, you may also have
 
 ## 10. Contact
 
-For legal or general inquiries, contact: legal@credimed.us
-
-For refund eligibility disputes, contact: disputes@credimed.us
-
-For support regarding your claim, you may contact your assigned claims specialist through the communication channel provided in your account dashboard.
+For legal or general inquiries: legal@credimed.us
+For refund eligibility disputes: disputes@credimed.us
+For claim support: contact your assigned claims specialist through your dashboard
