@@ -422,6 +422,7 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     <button class="admin-nav-tab" data-sec="claims">Claims</button>
     <button class="admin-nav-tab" data-sec="patients">Patients</button>
     <button class="admin-nav-tab" data-sec="finance">Finance</button>
+    <button class="admin-nav-tab" data-sec="refunds">Refunds</button>
     <button class="admin-nav-tab" data-sec="insurers">Insurers</button>
     <button class="admin-nav-tab" data-sec="settings">Settings</button>
   </nav>
@@ -452,6 +453,11 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
           <div class="stat-top"><div class="stat-icon amber">$</div><div class="stat-trend" id="stPlanTrend">+5%</div></div>
           <div class="stat-val" id="stPlanRev">—</div>
           <div class="stat-lbl">Plan revenue</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon" style="background:#94A3B8">↺</div><div class="stat-trend" id="stRefundTrend">—</div></div>
+          <div class="stat-val" id="stRefunds" style="color:#475569">—</div>
+          <div class="stat-lbl">Refunds issued</div>
         </div>
       </div>
 
@@ -659,6 +665,75 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       </div>
     </section>
 
+    <!-- REFUNDS -->
+    <section class="sec" id="sec-refunds">
+      <h1 class="page-title">Refunds</h1>
+      <p class="page-sub">Money-back guarantee workflow (Service Agreement v1.2 §2.3). Denied claims appear here for eligibility determination. Mark each as eligible (refund queued) or not eligible (per the exclusions list) — then issue refunds.</p>
+
+      <!-- KPI strip -->
+      <div class="stats-row">
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon amber">?</div><div class="stat-trend">action needed</div></div>
+          <div class="stat-val" id="rfPending" style="color:#b45309">—</div>
+          <div class="stat-lbl">Pending eligibility</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon green">✓</div><div class="stat-trend">queue refund</div></div>
+          <div class="stat-val" id="rfEligible" style="color:#16a34a">—</div>
+          <div class="stat-lbl">Eligible</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon" style="background:#94A3B8">↺</div><div class="stat-trend">paid out</div></div>
+          <div class="stat-val" id="rfRefunded">—</div>
+          <div class="stat-lbl">Refunded</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon" style="background:#475569">×</div><div class="stat-trend">excluded</div></div>
+          <div class="stat-val" id="rfNotEligible" style="color:#475569">—</div>
+          <div class="stat-lbl">Not eligible</div>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>Status</label>
+          <select id="rfFilter">
+            <option value="all">All</option>
+            <option value="pending" selected>Pending eligibility</option>
+            <option value="eligible">Eligible (queued)</option>
+            <option value="refunded">Refunded</option>
+            <option value="not_eligible">Not eligible</option>
+          </select>
+        </div>
+        <div class="filter-group filter-search">
+          <label>Search</label>
+          <input id="rfQuery" type="search" placeholder="Claim ID, name, email, insurer…" />
+        </div>
+        <button class="filter-clear" id="rfClear">Clear</button>
+      </div>
+      <div class="filter-summary" id="rfSummary">—</div>
+
+      <div class="claims-table" id="rfTable">
+        <div class="loading"><div class="spin"></div>Loading refunds…</div>
+      </div>
+    </section>
+
+    <!-- REFUND DETAIL DRAWER -->
+    <div class="claim-drawer-backdrop" id="rfBackdrop"></div>
+    <aside class="claim-drawer" id="rfDrawer" aria-hidden="true">
+      <header class="cd-head">
+        <div>
+          <div class="cd-id" id="rfId">—</div>
+          <div class="cd-name" id="rfName">—</div>
+        </div>
+        <button class="cd-close" id="rfClose" aria-label="Close">×</button>
+      </header>
+      <div class="cd-body" id="rfBody">
+        <div class="loading"><div class="spin"></div>Loading…</div>
+      </div>
+    </aside>
+
     <!-- INSURERS -->
     <section class="sec" id="sec-insurers">
       <h1 class="page-title">Insurers</h1>
@@ -713,8 +788,16 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
             <span class="val slate">0% — never charged</span>
           </div>
           <div class="settings-row">
+            <span class="lbl">Money-back guarantee</span>
+            <span class="val green">100% conditional refund</span>
+          </div>
+          <div class="settings-row">
+            <span class="lbl">Refund request window</span>
+            <span class="val slate">60 days from final denial</span>
+          </div>
+          <div class="settings-row">
             <span class="lbl">Active Service Agreement</span>
-            <span class="val slate">v1.1</span>
+            <span class="val slate">v1.2 · <a href="/legal/AGREEMENT_v1.2.md" target="_blank" style="color:var(--teal-700);text-decoration:underline">view</a></span>
           </div>
           <div class="settings-row">
             <span class="lbl">WhatsApp notifications</span>
@@ -925,12 +1008,30 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       submittedAt: new Date(Date.now() - 18*86400000).toISOString(), deniedAt: new Date(Date.now() - 3*86400000).toISOString(), plan: 'standard',
       paidAmount: 6300, paidCurrency: 'MXN', paidAmountUSD: 350, estimateMin: 180, estimateMax: 240,
       procedure: 'Composite filling', procedures: ['Composite filling ×3'],
-      insurer: 'United Healthcare', memberId: 'U22113344', city: 'Cabo San Lucas' },
+      insurer: 'United Healthcare', memberId: 'U22113344', city: 'Cabo San Lucas',
+      // Refund workflow (v1.2): pending eligibility determination — admin needs to review
+      refundStatus: 'pending', planFee: 49, paidResubs: 0 },
     { id: 'CMX-2026-D006', userSub: 'demo-2', firstName: 'Maria', lastName: 'Hernández', email: 'maria.h@example.com', status: 'submitted',
       submittedAt: new Date(Date.now() - 0.5*86400000).toISOString(), plan: 'premium',
       paidAmount: 980, paidCurrency: 'USD', paidAmountUSD: 980, estimateMin: 510, estimateMax: 680,
       procedure: 'Root canal + temporary crown', procedures: ['Root canal', 'Crown (temporary)'],
-      insurer: 'Cigna Dental Premier', memberId: 'U998877665', city: 'Tijuana' }
+      insurer: 'Cigna Dental Premier', memberId: 'U998877665', city: 'Tijuana' },
+    // Two more denied claims with different refund states for the Refunds tab demo:
+    { id: 'CMX-2026-D007', userSub: 'demo-7', firstName: 'Lucia', lastName: 'Romero', email: 'lucia.r@example.com', status: 'denied',
+      submittedAt: new Date(Date.now() - 45*86400000).toISOString(), deniedAt: new Date(Date.now() - 8*86400000).toISOString(),
+      refundedAt: new Date(Date.now() - 5*86400000).toISOString(),
+      plan: 'plus', paidAmount: 18500, paidCurrency: 'MXN', paidAmountUSD: 1040, estimateMin: 580, estimateMax: 760,
+      procedure: 'Inlay + cleaning + filling', procedures: ['Inlay/Onlay', 'Deep cleaning', 'Composite filling'],
+      insurer: 'Aetna PPO', memberId: 'A55667788', city: 'Mérida',
+      refundStatus: 'refunded', refundAmount: 79, planFee: 79, paidResubs: 1 },
+    { id: 'CMX-2026-D008', userSub: 'demo-8', firstName: 'Robert', lastName: 'Chen', email: 'robert.c@example.com', status: 'denied',
+      submittedAt: new Date(Date.now() - 60*86400000).toISOString(), deniedAt: new Date(Date.now() - 15*86400000).toISOString(),
+      plan: 'premium', paidAmount: 2400, paidCurrency: 'USD', paidAmountUSD: 2400, estimateMin: 1100, estimateMax: 1450,
+      procedure: 'Implant + crown + bridge', procedures: ['Dental implant', 'Crown (zirconia)', 'Bridge'],
+      insurer: 'Delta Dental PPO', memberId: 'D11223344', city: 'Cancún',
+      // Not eligible — denied for plan exclusion (cosmetic), per Section 2.3 exclusions list
+      refundStatus: 'not_eligible', refundDeclineReason: 'Plan exclusion: implant not covered under member\'s benefit schedule',
+      planFee: 99, paidResubs: 0 }
   ];
 
   /* Decode a JWT payload (no signature verification — Cognito SDK already
@@ -1067,6 +1168,7 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       if (secId === 'claims')   loadClaims();
       if (secId === 'patients') loadPatients();
       if (secId === 'finance')  loadFinance();
+      if (secId === 'refunds')  loadRefunds();
       if (secId === 'insurers') loadInsurers();
       if (secId === 'settings') {} // static for now
     });
@@ -1411,12 +1513,34 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     $('crChart').innerHTML = renderCRChart(ds);
   }
 
+  /* Sum the refund liability + actually-paid refunds across the claims
+     list. Used by Overview, Finance, and the Refunds tab. */
+  function computeRefundTotals(claims) {
+    var refunded = 0, refundedCount = 0;
+    var pending = 0, eligible = 0, notEligible = 0;
+    (claims || []).forEach(function (c) {
+      var fee = c.planFee || (c.plan === 'premium' ? 99 : c.plan === 'plus' ? 79 : 49);
+      var rs = c.refundStatus;
+      if (rs === 'refunded') {
+        refunded += (c.refundAmount || fee);
+        refundedCount++;
+      } else if (rs === 'pending') {
+        pending++;
+      } else if (rs === 'eligible') {
+        eligible++;
+      } else if (rs === 'not_eligible') {
+        notEligible++;
+      }
+    });
+    return { refunded: refunded, refundedCount: refundedCount, pending: pending, eligible: eligible, notEligible: notEligible };
+  }
+
   async function loadOverview() {
     $('recentTable').innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
     var claims = await fetchClaims();
     if (claims === null) {
       $('recentTable').innerHTML = '<div class="empty-table"><strong>Could not reach the backend.</strong>Check that /claims endpoint is deployed and that your admin email is registered in Cognito.</div>';
-      ['stTotal', 'stRecovered', 'stActive', 'stCommission'].forEach(function (id) { $(id).textContent = '—'; });
+      ['stTotal', 'stRecovered', 'stActive', 'stPlanRev', 'stRefunds'].forEach(function (id) { $(id).textContent = '—'; });
       $('insDistList').innerHTML = '<div class="cd-empty">Backend offline.</div>';
       $('activityFeed').innerHTML = '<div class="cd-empty" style="padding:24px">Backend offline.</div>';
       return;
@@ -1446,10 +1570,19 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     }, 0);
     var planRevenue = getDemoSession() ? planRevenueDemo : planRevenueReal;
 
+    /* Refunds totals — used in headline metric. Demo inflates to ~$1.4k
+       to look respectable across 458 annual claims (4-5% refund rate
+       at $79 average plan fee). */
+    var refundTotals = computeRefundTotals(claims);
+    var refundsTotal = getDemoSession() ? 1480 : refundTotals.refunded;
+    var refundsCount = getDemoSession() ? 23 : refundTotals.refundedCount;
+
     $('stTotal').textContent     = getDemoSession() ? '247'  : total;
     $('stRecovered').textContent = moneyShort(recovered);
     $('stActive').textContent    = getDemoSession() ? '38'   : active;
     $('stPlanRev').textContent   = moneyShort(planRevenue);
+    $('stRefunds').textContent   = moneyShort(refundsTotal);
+    $('stRefundTrend').textContent = refundsCount + ' issued';
 
     paintCRChart('1y');
     $('insDistList').innerHTML = renderInsurerDistribution(buildInsurerDistribution(claims));
@@ -1508,6 +1641,11 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     var planFees = standardFees + plusFees + premiumFees;
     var grossRev = planFees + resubFees;
 
+    /* Refunds — money out per v1.2 §2.3 money-back guarantee. */
+    var refundTotals = computeRefundTotals(claims);
+    var refundsOut = demo ? 1480 : refundTotals.refunded;
+    var netRev = grossRev - refundsOut;
+
     $('fkRecovered').textContent = moneyShort(recovered);
     $('fkStandard').textContent  = moneyShort(standardFees);
     $('fkPlus').textContent      = moneyShort(plusFees);
@@ -1517,13 +1655,15 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     /* Revenue chart (1Y default) — same SVG generator as Overview. */
     var ds = buildCRDataset('1y', claims || []);
     $('finKpis').innerHTML =
-      '<div class="k"><div class="v green">' + moneyShort(recovered) + '</div><div class="l">Recovered</div></div>' +
-      '<div class="sep"></div>' +
       '<div class="k"><div class="v blue">' + moneyShort(planFees) + '</div><div class="l">Plan fees</div></div>' +
       '<div class="sep"></div>' +
       '<div class="k"><div class="v amber">' + moneyShort(resubFees) + '</div><div class="l">Resubs</div></div>' +
       '<div class="sep"></div>' +
       '<div class="k"><div class="v teal">' + moneyShort(grossRev) + '</div><div class="l">Gross</div></div>' +
+      '<div class="sep"></div>' +
+      '<div class="k"><div class="v" style="color:#94A3B8">−' + moneyShort(refundsOut) + '</div><div class="l">Refunds</div></div>' +
+      '<div class="sep"></div>' +
+      '<div class="k"><div class="v green">' + moneyShort(netRev) + '</div><div class="l">Net</div></div>' +
       '<div class="grow"><span class="stat-trend">' + ds.kpis.trend + '</span></div>';
     $('finChart').innerHTML = renderCRChart(ds);
 
@@ -1537,24 +1677,33 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       var key  = c.plan || 'standard';
       var fee  = TIER_FEE[key] || 49;
       var lbl  = TIER_LABEL[key] || 'Plan fee';
-      txs.push({ name: name, type: 'plan', label: lbl, amount: fee, when: c.submittedAt });
+      txs.push({ name: name, type: 'plan', label: lbl, amount: fee, sign: '+', when: c.submittedAt });
       if (c.paidResubs && c.paidResubs > 0) {
         txs.push({
           name: name, type: 'resub', label: 'Resubmission ×' + c.paidResubs,
-          amount: c.paidResubs * 19, when: c.lastResubAt || c.submittedAt
+          amount: c.paidResubs * 19, sign: '+', when: c.lastResubAt || c.submittedAt
+        });
+      }
+      /* Refund rows — money out, shown red. v1.2 §2.3 money-back. */
+      if (c.refundStatus === 'refunded') {
+        txs.push({
+          name: name, type: 'refund', label: 'Refund (' + (TIER_LABEL[key] || 'Plan') + ')',
+          amount: c.refundAmount || fee, sign: '−', when: c.refundedAt || c.deniedAt
         });
       }
     });
     txs.sort(function (a, b) { return new Date(b.when) - new Date(a.when); });
-    var visible = txs.slice(0, 8);
+    var visible = txs.slice(0, 10);
     if (visible.length === 0) {
       $('txList').innerHTML = '<div class="cd-empty" style="padding:24px">No transactions yet.</div>';
     } else {
       $('txList').innerHTML = visible.map(function (t) {
+        var badgeCls = t.type === 'refund' ? 'refund' : (t.type === 'resub' ? 'setup-fee' : 'commission');
+        var amtCls = t.sign === '−' ? 'tx-amt neg' : 'tx-amt';
         return '<div class="tx-row">' +
           '<div class="tx-name">' + t.name + '</div>' +
-          '<div><span class="tx-badge ' + (t.type === 'resub' ? 'setup-fee' : 'commission') + '">' + t.label + '</span></div>' +
-          '<div class="tx-amt">+' + moneyShort(t.amount) + '</div>' +
+          '<div><span class="tx-badge ' + badgeCls + '">' + t.label + '</span></div>' +
+          '<div class="' + amtCls + '">' + t.sign + moneyShort(t.amount) + '</div>' +
           '<div class="tx-date">' + (t.when ? new Date(t.when).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—') + '</div>' +
         '</div>';
       }).join('');
@@ -2010,6 +2159,258 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   $('patientBackdrop').addEventListener('click', closePatientDrawer);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closePatientDrawer();
+  });
+
+  /* ────────────────────────────────────────────────────────────────────
+     REFUNDS PANEL
+     Implements the v1.2 §2.3 money-back guarantee workflow. Surfaces
+     every claim with status='denied' and walks the admin through
+     eligibility determination → refund issuance.
+
+     refundStatus values on a claim:
+       undefined / null   — claim not yet denied (or denied & not yet
+                            triaged — appears as 'pending' in the UI)
+       'pending'          — denied, awaiting eligibility determination
+       'eligible'         — eligible for refund, not yet paid out
+       'refunded'         — refund issued (refundedAt + refundAmount set)
+       'not_eligible'     — denied for an excluded reason (refundDeclineReason)
+     ──────────────────────────────────────────────────────────────────── */
+  var REFUND_STATUS_LABEL = {
+    pending:       { label: 'Pending eligibility', cls: 'status-in-review' },
+    eligible:      { label: 'Eligible — queue refund', cls: 'status-approved' },
+    refunded:      { label: 'Refunded', cls: 'status-paid' },
+    not_eligible:  { label: 'Not eligible', cls: 'status-denied' }
+  };
+
+  function planFeeFor(c) {
+    if (c.planFee) return c.planFee;
+    if (c.plan === 'premium') return 99;
+    if (c.plan === 'plus')    return 79;
+    return 49;
+  }
+
+  function refundsFromClaims(claims) {
+    return (claims || []).filter(function (c) {
+      // Show every denied claim — even those without explicit refundStatus
+      // get treated as 'pending' (admin needs to triage).
+      return c.status === 'denied' || c.refundStatus;
+    }).map(function (c) {
+      return Object.assign({}, c, {
+        refundStatus: c.refundStatus || 'pending'
+      });
+    });
+  }
+
+  function renderRefundRow(c) {
+    var name = ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || '—';
+    var pill = REFUND_STATUS_LABEL[c.refundStatus] || REFUND_STATUS_LABEL.pending;
+    var fee  = planFeeFor(c);
+    var planLbl = c.plan === 'premium' ? 'Premium $99' : c.plan === 'plus' ? 'Plus $79' : 'Standard $49';
+    var deniedAgo = c.deniedAt ? relTime(c.deniedAt) : '—';
+    return '' +
+      '<div class="claims-row" data-refund-id="' + (c.id || '') + '">' +
+        '<div class="claim-id hide-mobile">' + (c.id || '—') + '</div>' +
+        '<div>' +
+          '<div class="claim-name">' + name + '</div>' +
+          '<div class="claim-sub">' + planLbl + ' · denied ' + deniedAgo + '</div>' +
+        '</div>' +
+        '<div class="claim-amount hide-mobile">$' + fee + '</div>' +
+        '<div class="claim-date hide-mobile">' + (c.insurer || '—') + '</div>' +
+        '<div><span class="status-pill ' + pill.cls + '">' + pill.label + '</span></div>' +
+        '<div class="claim-sub" style="font-size:11px;text-align:right">' +
+          (c.refundStatus === 'refunded'
+            ? 'Refunded $' + (c.refundAmount || fee)
+            : c.refundStatus === 'not_eligible'
+              ? '—'
+              : '<span style="color:var(--teal-700);font-weight:600">Tap to triage →</span>') +
+        '</div>' +
+      '</div>';
+  }
+
+  var ALL_REFUNDS = [];
+
+  function applyRefundFilters() {
+    var status = $('rfFilter').value;
+    var query = ($('rfQuery').value || '').toLowerCase().trim();
+    var filtered = ALL_REFUNDS.filter(function (c) {
+      if (status !== 'all' && c.refundStatus !== status) return false;
+      if (query) {
+        var name = ((c.firstName || '') + ' ' + (c.lastName || '')).toLowerCase();
+        var hay = [c.id, name, c.email, c.insurer].filter(Boolean).join(' ').toLowerCase();
+        if (hay.indexOf(query) === -1) return false;
+      }
+      return true;
+    });
+    var summary = filtered.length + ' of ' + ALL_REFUNDS.length + ' denied claims';
+    if (status !== 'all' || query) summary += ' (filters active)';
+    $('rfSummary').textContent = summary;
+
+    if (filtered.length === 0) {
+      $('rfTable').innerHTML = '<div class="empty-table"><strong>No refund records match.</strong>Adjust filters or wait for new denials.</div>';
+      return;
+    }
+    $('rfTable').innerHTML =
+      '<div class="claims-table-header">' +
+        '<div class="hide-mobile">Claim ID</div>' +
+        '<div>Patient · plan</div>' +
+        '<div class="hide-mobile">Plan fee</div>' +
+        '<div class="hide-mobile">Insurer</div>' +
+        '<div>Status</div>' +
+        '<div></div>' +
+      '</div>' + filtered.map(renderRefundRow).join('');
+  }
+
+  async function loadRefunds() {
+    $('rfTable').innerHTML = '<div class="loading"><div class="spin"></div>Loading refunds…</div>';
+    var claims = ALL_CLAIMS.length ? ALL_CLAIMS : await fetchClaims();
+    if (claims === null) {
+      $('rfTable').innerHTML = '<div class="empty-table"><strong>Backend offline.</strong>Refund tracking requires the claims feed.</div>';
+      ['rfPending','rfEligible','rfRefunded','rfNotEligible'].forEach(function (id) { $(id).textContent = '—'; });
+      return;
+    }
+    if (!ALL_CLAIMS.length) ALL_CLAIMS = claims;
+    ALL_REFUNDS = refundsFromClaims(claims);
+
+    var totals = computeRefundTotals(ALL_REFUNDS);
+    $('rfPending').textContent     = totals.pending;
+    $('rfEligible').textContent    = totals.eligible;
+    $('rfRefunded').textContent    = totals.refundedCount;
+    $('rfNotEligible').textContent = totals.notEligible;
+
+    applyRefundFilters();
+  }
+
+  ['rfFilter', 'rfQuery'].forEach(function (id) {
+    var el = $(id);
+    if (el) el.addEventListener('input', applyRefundFilters);
+  });
+  $('rfClear').addEventListener('click', function () {
+    $('rfFilter').value = 'all';
+    $('rfQuery').value = '';
+    applyRefundFilters();
+  });
+
+  /* Click a refund row → open drawer with the claim's eligibility
+     workflow. Drawer body shows the v1.2 §2.3 eligibility criteria
+     + exclusions list + action buttons appropriate for the current
+     refund status. */
+  $('rfTable').addEventListener('click', function (e) {
+    var row = e.target.closest('[data-refund-id]');
+    if (!row) return;
+    var id = row.getAttribute('data-refund-id');
+    var c = ALL_REFUNDS.find(function (r) { return r.id === id; });
+    if (!c) return;
+    openRefundDrawer(c);
+  });
+
+  function openRefundDrawer(c) {
+    var name = ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || '—';
+    var fee = planFeeFor(c);
+    var planLbl = c.plan === 'premium' ? 'Premium $99' : c.plan === 'plus' ? 'Plus $79' : 'Standard $49';
+    $('rfId').textContent = c.id;
+    $('rfName').textContent = name + ' · ' + planLbl;
+
+    /* Build the action buttons based on current status */
+    var actions = '';
+    if (c.refundStatus === 'pending') {
+      actions =
+        '<div class="cd-actions">' +
+          '<button class="cd-action primary" data-rf-mark="eligible" data-rf-id="' + c.id + '">Mark eligible</button>' +
+          '<button class="cd-action danger" data-rf-mark="not_eligible" data-rf-id="' + c.id + '">Not eligible</button>' +
+        '</div>';
+    } else if (c.refundStatus === 'eligible') {
+      actions =
+        '<div class="cd-actions">' +
+          '<button class="cd-action primary" data-rf-mark="refunded" data-rf-id="' + c.id + '">Issue $' + fee + ' refund</button>' +
+          '<button class="cd-action" data-rf-mark="pending" data-rf-id="' + c.id + '">Send back to pending</button>' +
+        '</div>';
+    } else if (c.refundStatus === 'refunded') {
+      actions =
+        '<div class="cd-empty">Refund of $' + (c.refundAmount || fee) + ' issued ' +
+        (c.refundedAt ? relTime(c.refundedAt) : '—') + '. No further action.</div>';
+    } else if (c.refundStatus === 'not_eligible') {
+      actions =
+        '<div class="cd-actions">' +
+          '<button class="cd-action" data-rf-mark="pending" data-rf-id="' + c.id + '">Re-open as pending</button>' +
+        '</div>';
+    }
+
+    var declineReason = c.refundDeclineReason
+      ? '<div class="cd-row"><span class="k">Decline reason</span><span class="v" style="text-align:right;max-width:60%">' + c.refundDeclineReason + '</span></div>'
+      : '';
+
+    var procs = Array.isArray(c.procedures) ? c.procedures.join(', ') : (c.procedure || '—');
+
+    $('rfBody').innerHTML = '' +
+      '<div class="cd-section">' +
+        '<h3>Claim summary</h3>' +
+        '<div class="cd-row"><span class="k">Plan tier</span><span class="v">' + planLbl + '</span></div>' +
+        '<div class="cd-row"><span class="k">Insurer</span><span class="v">' + (c.insurer || '—') + '</span></div>' +
+        '<div class="cd-row"><span class="k">Procedures</span><span class="v">' + procs + '</span></div>' +
+        '<div class="cd-row"><span class="k">Submitted</span><span class="v">' + (c.submittedAt ? new Date(c.submittedAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '—') + '</span></div>' +
+        '<div class="cd-row"><span class="k">Denied</span><span class="v">' + (c.deniedAt ? new Date(c.deniedAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '—') + '</span></div>' +
+      '</div>' +
+      '<div class="cd-section">' +
+        '<h3>Refund status</h3>' +
+        '<div class="cd-row"><span class="k">Current status</span><span class="v"><span class="status-pill ' + (REFUND_STATUS_LABEL[c.refundStatus] || REFUND_STATUS_LABEL.pending).cls + '">' + (REFUND_STATUS_LABEL[c.refundStatus] || REFUND_STATUS_LABEL.pending).label + '</span></span></div>' +
+        '<div class="cd-row"><span class="k">Refund amount if eligible</span><span class="v">$' + fee + ' (plan fee)</span></div>' +
+        '<div class="cd-row"><span class="k">Paid resubmissions</span><span class="v">' + (c.paidResubs || 0) + (c.paidResubs ? ' (×$19 = $' + (c.paidResubs * 19) + ', non-refundable)' : '') + '</span></div>' +
+        declineReason +
+      '</div>' +
+      '<div class="cd-section">' +
+        '<h3>Eligibility checklist (§2.3)</h3>' +
+        '<div class="cd-row"><span class="k">Service covered under policy?</span><span class="v">—</span></div>' +
+        '<div class="cd-row"><span class="k">Not subject to exclusion?</span><span class="v">—</span></div>' +
+        '<div class="cd-row"><span class="k">Documentation complete & valid?</span><span class="v">—</span></div>' +
+        '<div class="cd-row"><span class="k">Coded with standard CDT?</span><span class="v">—</span></div>' +
+        '<div style="font-size:11.5px;color:var(--slate-500);margin-top:8px;font-style:italic">All four must be Yes for refund eligibility.</div>' +
+      '</div>' +
+      '<div class="cd-section">' +
+        '<h3>Action</h3>' +
+        actions +
+      '</div>';
+
+    $('rfDrawer').classList.add('open');
+    $('rfBackdrop').classList.add('open');
+    $('rfDrawer').setAttribute('aria-hidden', 'false');
+  }
+
+  function closeRefundDrawer() {
+    $('rfDrawer').classList.remove('open');
+    $('rfBackdrop').classList.remove('open');
+    $('rfDrawer').setAttribute('aria-hidden', 'true');
+  }
+  $('rfClose').addEventListener('click', closeRefundDrawer);
+  $('rfBackdrop').addEventListener('click', closeRefundDrawer);
+
+  /* Refund-action buttons are inside the drawer body — delegated handler
+     so we don't have to re-bind on every drawer open. */
+  $('rfBody').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-rf-mark]');
+    if (!btn) return;
+    var id = btn.getAttribute('data-rf-id');
+    var newStatus = btn.getAttribute('data-rf-mark');
+    var c = ALL_REFUNDS.find(function (r) { return r.id === id; });
+    if (!c) return;
+
+    /* Demo mode: just mutate the in-memory claim. Real backend wiring
+       would PATCH /admin/claims/:id with { refundStatus, refundedAt,
+       refundAmount } and re-fetch. */
+    c.refundStatus = newStatus;
+    if (newStatus === 'refunded') {
+      c.refundedAt = new Date().toISOString();
+      c.refundAmount = planFeeFor(c);
+    }
+    /* Mirror back to ALL_CLAIMS so other tabs see the change */
+    var src = ALL_CLAIMS.find(function (x) { return x.id === id; });
+    if (src) {
+      src.refundStatus = c.refundStatus;
+      if (c.refundedAt) src.refundedAt = c.refundedAt;
+      if (c.refundAmount) src.refundAmount = c.refundAmount;
+    }
+
+    closeRefundDrawer();
+    loadRefunds();
   });
 
   /* ────────────────────────────────────────────────────────────────────
