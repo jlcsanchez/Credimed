@@ -332,7 +332,15 @@ document.addEventListener('DOMContentLoaded', async function() {
       + '#credimed-v12-trust .v12-trust-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;background:#fff;border:1px solid #E2E8F0;border-radius:99px;font-size:11.5px;font-weight:600;color:#475569;white-space:nowrap}'
       + '#credimed-v12-trust .v12-trust-pill svg{width:12px;height:12px;color:#0D9488;flex-shrink:0}'
       + '#credimed-v12-trust .v12-trust-pill strong{color:#0D9488;font-weight:700}'
-      + '@media (min-width:760px){#credimed-v12-trust{max-width:680px}#credimed-v12-trust .v12-trust-card{padding:22px 28px}#credimed-v12-trust .v12-trust-headline{font-size:19px}}';
+      + '@media (min-width:760px){#credimed-v12-trust{max-width:680px}#credimed-v12-trust .v12-trust-card{padding:22px 28px}#credimed-v12-trust .v12-trust-headline{font-size:19px}}'
+      /* Hero micro trust line — sits above the main headline */
+      + '#credimed-v12-microtrust{font-family:Inter,-apple-system,sans-serif;font-size:13.5px;font-weight:500;color:#16A34A;text-align:center;margin:0 0 8px;letter-spacing:.01em;line-height:1.4}'
+      + '@media (min-width:760px){#credimed-v12-microtrust{font-size:15px;margin-bottom:12px}}'
+      /* Money-back block: bullet list (replaces pill row) + disclaimer */
+      + '#credimed-v12-trust .v12-trust-bullets{list-style:none;padding:0;margin:0 auto 12px;display:flex;flex-direction:column;gap:7px;text-align:left;max-width:340px}'
+      + '#credimed-v12-trust .v12-trust-bullets li{font-size:13.5px;color:#334155;display:flex;gap:10px;align-items:flex-start;line-height:1.45}'
+      + '#credimed-v12-trust .v12-check{color:#0D9488;font-weight:700;flex-shrink:0;font-size:14px;line-height:1.4}'
+      + '#credimed-v12-trust .v12-trust-disclaimer{font-size:11.5px;color:#94A3B8;margin:8px 0 0;font-style:italic}';
     document.head.appendChild(s);
   }
 
@@ -469,13 +477,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     wrap.id = 'credimed-v12-trust';
     wrap.innerHTML = ''
       + '<div class="v12-trust-card">'
-      + '  <div class="v12-trust-headline"><strong>100% money-back</strong> if your insurance covers it and it&#39;s not paid.</div>'
-      + '  <p class="v12-trust-sub">Pay only if your claim is eligible. We never take a cut of your reimbursement.</p>'
-      + '  <div class="v12-trust-row">'
-      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>100%</strong> refund</span>'
-      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>0%</strong> commission</span>'
-      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No subscriptions</span>'
-      + '  </div>'
+      + '  <div class="v12-trust-headline">If your insurance should cover it and it&#39;s not paid, <strong>you get a full refund</strong>.</div>'
+      + '  <p class="v12-trust-sub">If your treatment is eligible and our resubmissions don&#39;t recover your reimbursement, you get a full refund.</p>'
+      + '  <ul class="v12-trust-bullets">'
+      + '    <li><span class="v12-check">✓</span><span>0% commission — you keep everything</span></li>'
+      + '    <li><span class="v12-check">✓</span><span>100% refund if eligible</span></li>'
+      + '    <li><span class="v12-check">✓</span><span>No subscriptions. No hidden fees</span></li>'
+      + '  </ul>'
+      + '  <p class="v12-trust-disclaimer">Based on your insurance coverage and eligibility.</p>'
       + '</div>';
     return wrap;
   }
@@ -507,6 +516,60 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     }
     return matches[0];
+  }
+
+  /* Hero micro trust line — small green sentence above the main
+     headline. Detects the headline by looking for any heading
+     element whose text contains the legacy "$1,000" + "Mexico"
+     hero copy. */
+  function findHeroHeadline() {
+    var candidates = document.querySelectorAll('h1, h2, [class*="headline" i], [class*="hero-title" i]');
+    for (var i = 0; i < candidates.length; i++) {
+      var t = (candidates[i].textContent || '');
+      if (/\$1,000/.test(t) && /Mexico/i.test(t)) {
+        return candidates[i];
+      }
+    }
+    /* Fallback: scan all elements for the same text. */
+    var all = document.querySelectorAll('div, span, p');
+    for (var j = 0; j < all.length; j++) {
+      var t2 = (all[j].textContent || '');
+      if (/Paid \$1,000/.test(t2) && all[j].children.length <= 5) {
+        return all[j];
+      }
+    }
+    return null;
+  }
+
+  function injectMicroTrust() {
+    if (document.getElementById('credimed-v12-microtrust')) return false;
+    var headline = findHeroHeadline();
+    if (!headline || !headline.parentNode) return false;
+    var micro = document.createElement('div');
+    micro.id = 'credimed-v12-microtrust';
+    micro.textContent = 'Should be paid. Or your money back.';
+    headline.parentNode.insertBefore(micro, headline);
+    console.info('[credimed-v12] micro trust line injected above headline');
+    return true;
+  }
+
+  /* CTA fineprint — replace the "No credit card. No signup. Starts
+     at $49, one-time." text with a shorter, friendlier version. */
+  var ctaFineprintDone = false;
+  function updateCtaFineprint() {
+    if (ctaFineprintDone) return false;
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    var node;
+    while ((node = walker.nextNode())) {
+      var v = node.nodeValue || '';
+      if (/No credit card[\s\S]*Starts at \$\s*49/i.test(v)) {
+        node.nodeValue = 'Free estimate. Takes 30 seconds.';
+        ctaFineprintDone = true;
+        console.info('[credimed-v12] CTA fineprint updated');
+        return true;
+      }
+    }
+    return false;
   }
 
   function applyTrustStrip() {
@@ -572,6 +635,7 @@ document.addEventListener('DOMContentLoaded', async function() {
      the estimator. They share the observer so we don't double-fire. */
   var pricingApplied = false;
   var trustApplied = false;
+  var microApplied = false;
   function tryApply(reason) {
     if (!pricingApplied && (findOriginalPricing() || findFooter())) {
       applyPatch();
@@ -579,16 +643,22 @@ document.addEventListener('DOMContentLoaded', async function() {
       console.info('[credimed-v12] pricing patch applied via:', reason);
     }
     if (!trustApplied) {
-      if (applyTrustStrip()) {
-        trustApplied = true;
-      }
+      if (applyTrustStrip()) trustApplied = true;
     }
+    if (!microApplied) {
+      if (injectMicroTrust()) microApplied = true;
+    }
+    /* CTA fineprint update is idempotent — re-run on every mutation
+       until it succeeds. The walker is cheap so this is fine. */
+    updateCtaFineprint();
   }
 
   function startObserver() {
     var observer = new MutationObserver(function () {
       tryApply('mutation');
-      if (pricingApplied && trustApplied) observer.disconnect();
+      if (pricingApplied && trustApplied && microApplied && ctaFineprintDone) {
+        observer.disconnect();
+      }
     });
     observer.observe(document.body, { childList: true, subtree: true });
     /* Hard timeout: 10s — if neither pricing nor footer ever appear,
@@ -599,10 +669,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         pricingApplied = true;
         console.warn('[credimed-v12] pricing patch — forced injection after 10s');
       }
-      if (!trustApplied) {
-        applyTrustStrip();
-        trustApplied = true;
-      }
+      if (!trustApplied) { applyTrustStrip(); trustApplied = true; }
+      if (!microApplied) { injectMicroTrust(); microApplied = true; }
+      updateCtaFineprint();
       observer.disconnect();
     }, 10000);
     /* Also try right away in case content is already there. */
