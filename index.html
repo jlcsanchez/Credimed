@@ -267,6 +267,147 @@ document.addEventListener('DOMContentLoaded', async function() {
 })();
 </script>
 
+<!-- ────────────────────────────────────────────────────────────────────
+     v1.2 LANDING ADDITIONS — SAFE / ADDITIVE ONLY
+     This script ONLY adds new elements. It does NOT hide, modify, or
+     replace any existing markup from the Claude Design bundle. Touches:
+
+       1. Trust strip card just below the hero estimator
+          (100% money-back headline + 3 pills)
+       2. CTA fineprint text replacement (one TreeWalker text-node swap)
+
+     The v12 Pricing section replacement was removed because it required
+     hiding the original Pricing component, and the detector occasionally
+     matched a too-broad wrapper, breaking the hero. The original
+     Claude Design Pricing already shows 3 tiers ($49/$79/$99); the
+     money-back framing lives entirely in the trust strip below the
+     hero calculator.
+     ──────────────────────────────────────────────────────────────────── */
+<script>
+(function () {
+  'use strict';
+
+  function injectStyles() {
+    if (document.getElementById('credimed-v12-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'credimed-v12-styles';
+    s.textContent = ''
+      + '#credimed-v12-trust{margin:18px auto 0;max-width:520px;padding:0 24px}'
+      + '#credimed-v12-trust .v12-trust-card{background:linear-gradient(135deg,#F0FDFA 0%,#FFFFFF 100%);border:1px solid #CCFBF1;border-radius:18px;padding:18px 20px;text-align:center;box-shadow:0 4px 14px -8px rgba(13,148,136,.12)}'
+      + '#credimed-v12-trust .v12-trust-headline{font-family:Inter,-apple-system,sans-serif;font-size:17px;font-weight:600;color:#134E4A;line-height:1.35;margin:0 0 4px;letter-spacing:-0.01em}'
+      + '#credimed-v12-trust .v12-trust-headline strong{color:#0D9488;font-weight:700}'
+      + '#credimed-v12-trust .v12-trust-sub{font-size:12.5px;color:#475569;line-height:1.5;margin:0 0 12px}'
+      + '#credimed-v12-trust .v12-trust-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}'
+      + '#credimed-v12-trust .v12-trust-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;background:#fff;border:1px solid #E2E8F0;border-radius:99px;font-size:11.5px;font-weight:600;color:#475569;white-space:nowrap}'
+      + '#credimed-v12-trust .v12-trust-pill svg{width:12px;height:12px;color:#0D9488;flex-shrink:0}'
+      + '#credimed-v12-trust .v12-trust-pill strong{color:#0D9488;font-weight:700}'
+      + '@media (min-width:760px){#credimed-v12-trust{max-width:680px}#credimed-v12-trust .v12-trust-card{padding:22px 28px}#credimed-v12-trust .v12-trust-headline{font-size:19px}}';
+    document.head.appendChild(s);
+  }
+
+  function buildTrustStrip() {
+    var wrap = document.createElement('div');
+    wrap.id = 'credimed-v12-trust';
+    wrap.innerHTML = ''
+      + '<div class="v12-trust-card">'
+      + '  <div class="v12-trust-headline"><strong>100% money-back</strong> if your insurance covers it and it&#39;s not paid.</div>'
+      + '  <p class="v12-trust-sub">Pay only if your claim is eligible. We never take a cut of your reimbursement.</p>'
+      + '  <div class="v12-trust-row">'
+      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>100%</strong> refund</span>'
+      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>0%</strong> commission</span>'
+      + '    <span class="v12-trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No subscriptions</span>'
+      + '  </div>'
+      + '</div>';
+    return wrap;
+  }
+
+  /* Find the hero estimator card by its very recognizable copy:
+     the "Estimate my refund" CTA + a "$49" reference in fineprint. */
+  function findHeroEstimator() {
+    var matches = [];
+    var all = document.querySelectorAll('button, a, div, section, article');
+    for (var i = 0; i < all.length; i++) {
+      var t = (all[i].textContent || '');
+      if (/estimate my refund/i.test(t) && /\$\s*49/.test(t)) {
+        matches.push(all[i]);
+      }
+    }
+    if (!matches.length) return null;
+    matches.sort(function (a, b) {
+      return a.querySelectorAll('*').length - b.querySelectorAll('*').length;
+    });
+    for (var j = 0; j < matches.length; j++) {
+      var el = matches[j];
+      if (el.children.length >= 2 && el.querySelector('button, a')) return el;
+    }
+    return matches[0];
+  }
+
+  var trustApplied = false;
+  function applyTrustStrip() {
+    if (trustApplied || document.getElementById('credimed-v12-trust')) {
+      trustApplied = true;
+      return false;
+    }
+    var estimator = findHeroEstimator();
+    if (!estimator || !estimator.parentNode) return false;
+
+    var anchor = estimator;
+    for (var i = 0; i < 3 && anchor.parentNode && !anchor.nextSibling; i++) {
+      anchor = anchor.parentNode;
+    }
+    var trust = buildTrustStrip();
+    if (anchor.nextSibling) {
+      anchor.parentNode.insertBefore(trust, anchor.nextSibling);
+    } else {
+      anchor.parentNode.appendChild(trust);
+    }
+    trustApplied = true;
+    console.info('[credimed-v12] trust strip injected after hero estimator');
+    return true;
+  }
+
+  /* Replace the calculator's fineprint copy. Pure text-node mutation,
+     keeps the existing wrapper / styles. */
+  var ctaDone = false;
+  function updateCtaFineprint() {
+    if (ctaDone) return false;
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    var node;
+    while ((node = walker.nextNode())) {
+      if (/No credit card[\s\S]*Starts at \$\s*49/i.test(node.nodeValue || '')) {
+        node.nodeValue = 'Free estimate. Takes 30 seconds.';
+        ctaDone = true;
+        console.info('[credimed-v12] CTA fineprint updated');
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function tryApply() {
+    injectStyles();
+    applyTrustStrip();
+    updateCtaFineprint();
+  }
+
+  function start() {
+    var observer = new MutationObserver(function () {
+      tryApply();
+      if (trustApplied && ctaDone) observer.disconnect();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { observer.disconnect(); }, 12000);
+    tryApply();
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    start();
+  } else {
+    document.addEventListener('DOMContentLoaded', start);
+  }
+})();
+</script>
 
 </body>
 </html>
