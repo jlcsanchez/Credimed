@@ -104,36 +104,41 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
 }
 
 /* Two-column auth split-screen on wide desktop. Brand/value-prop on
-   the left, form card on the right. Hidden under 960px — mobile and
-   tablet stay with the focused single-card layout. */
+   the left (full teal background), form card on the right (cream
+   background). Hidden under 960px — mobile and tablet keep the
+   focused single-card layout. */
 .auth-brand-panel { display: none; }
 @media (min-width: 960px) {
+  html, body {
+    background: #FAF6EF !important;
+  }
   body {
-    background:
-      linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
     min-height: 100vh;
     display: grid !important;
-    grid-template-columns: 1fr 520px;
-    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
     gap: 0;
-  }
-  html, body {
-    background:
-      linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%) !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .auth-brand-panel {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 64px 80px;
+    align-items: flex-end;
+    padding: 64px 64px 64px 80px;
     color: #fff;
-    max-width: 720px;
-    margin-left: auto;
+    background:
+      radial-gradient(ellipse at top right, rgba(94,234,212,0.18), transparent 55%),
+      linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
+    min-height: 100vh;
   }
+  .auth-brand-panel > * { max-width: 480px; width: 100%; }
   .auth-brand-panel .ab-mark {
-    display: inline-flex; align-items: center; gap: 12px;
+    display: inline-flex !important; align-items: center; gap: 12px;
     font-size: 14px; font-weight: 700; letter-spacing: 0.18em;
-    color: rgba(255,255,255,0.92); margin-bottom: 40px;
+    color: rgba(255,255,255,0.92); margin: 0 0 40px;
+    width: auto !important;
   }
   .auth-brand-panel .ab-mark .ab-circle {
     width: 36px; height: 36px; border-radius: 50%;
@@ -144,19 +149,17 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
   }
   .auth-brand-panel h2 {
     font-family: 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
-    font-size: 44px; line-height: 1.15; letter-spacing: -0.02em;
+    font-size: 40px; line-height: 1.15; letter-spacing: -0.02em;
     margin: 0 0 18px; color: #fff; font-weight: 600;
-    max-width: 540px;
   }
   .auth-brand-panel h2 em { font-style: italic; color: var(--teal-300, #5EEAD4); }
   .auth-brand-panel .ab-sub {
-    font-size: 17px; line-height: 1.55; color: rgba(255,255,255,0.78);
-    margin: 0 0 36px; max-width: 480px;
+    font-size: 16px; line-height: 1.55; color: rgba(255,255,255,0.78);
+    margin: 0 0 32px;
   }
   .auth-brand-panel .ab-list {
     list-style: none; padding: 0; margin: 0 0 32px;
     display: flex; flex-direction: column; gap: 14px;
-    max-width: 480px;
   }
   .auth-brand-panel .ab-list li {
     display: flex; align-items: flex-start; gap: 12px;
@@ -171,16 +174,26 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     margin-top: 1px;
   }
   .auth-brand-panel .ab-trust {
-    display: flex; gap: 18px; flex-wrap: wrap;
+    display: flex; gap: 12px; flex-wrap: wrap;
     font-size: 12px; color: rgba(255,255,255,0.55);
     letter-spacing: 0.02em;
   }
-  .auth-brand-panel .ab-trust span { display: inline-flex; align-items: center; gap: 6px; }
+  .auth-brand-panel .ab-trust span { display: inline-flex; align-items: center; }
   .page {
-    margin: 40px 80px 40px 0 !important;
-    max-width: 520px !important;
-    width: 100%;
+    margin: 0 !important;
+    max-width: 460px !important;
+    width: 100% !important;
+    align-self: center;
+    justify-self: start;
+    margin-left: 80px !important;
+    border-radius: 24px !important;
+    box-shadow: 0 24px 64px rgba(15,23,42,0.14), 0 4px 16px rgba(15,23,42,0.06) !important;
+    overflow: hidden;
   }
+}
+@media (min-width: 1280px) {
+  .auth-brand-panel { padding-left: 120px; padding-right: 80px; }
+  .page { margin-left: 80px !important; }
 }
 </style>
 </head>
