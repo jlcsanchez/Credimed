@@ -126,7 +126,7 @@ function isAdmin(claims) {
     }
   }
   if (!Array.isArray(groups)) return false;
-  return groups.map((g) => String(g).trim()).includes(ADMIN_GROUP);
+  return groups.map((g) => String(g).trim().toLowerCase()).includes(ADMIN_GROUP);
 }
 
 // ---------- route handlers ----------
