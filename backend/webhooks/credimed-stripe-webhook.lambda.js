@@ -31,8 +31,11 @@
 import Stripe from 'stripe';
 import {
   DynamoDBClient,
+  GetItemCommand,
   UpdateItemCommand
 } from '@aws-sdk/client-dynamodb';
+import { KMSClient, DecryptCommand } from '@aws-sdk/client-kms';
+import { sendEmailSafely } from '../email/sendEmail.js';
 
 const REGION = process.env.AWS_REGION || 'us-west-2';
 const TABLE  = 'credimed-claims';
@@ -40,7 +43,21 @@ const TABLE  = 'credimed-claims';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-11-20.acacia'
 });
-const db = new DynamoDBClient({ region: REGION });
+const db  = new DynamoDBClient({ region: REGION });
+const kms = new KMSClient({ region: REGION });
+
+async function decryptField(encryptedValue) {
+  if (!encryptedValue) return '';
+  try {
+    const result = await kms.send(new DecryptCommand({
+      CiphertextBlob: Buffer.from(encryptedValue, 'base64')
+    }));
+    return new TextDecoder().decode(result.Plaintext);
+  } catch (err) {
+    console.error('decrypt failed:', err.message);
+    return '';
+  }
+}
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -186,9 +203,25 @@ export const handler = async (event) => {
             currency: pi.currency,
             dbUpdated: updated
           });
-          // TODO: enqueue email "Your payment was received" + insurer submission.
-          // Will be added once SES is wired up. For now the audit log is the
-          // single source of truth.
+          // Notify the patient. Only send if this was a fresh transition
+          // (updated=true). Stripe retries shouldn't double-send.
+          if (updated) {
+            const claimRow = await db.send(new GetItemCommand({
+              TableName: TABLE,
+              Key: { claimId: { S: claimId } }
+            }));
+            if (claimRow.Item) {
+              const email = await decryptField(claimRow.Item.email?.S);
+              const firstName = await decryptField(claimRow.Item.firstName?.S);
+              if (email) {
+                await sendEmailSafely({
+                  to: email,
+                  eventType: 'paymentReceived',
+                  data: { firstName: firstName || '', claimId }
+                });
+              }
+            }
+          }
         }
         break;
       }

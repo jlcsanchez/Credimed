@@ -31,6 +31,8 @@ import {
   UpdateItemCommand
 } from "@aws-sdk/client-dynamodb";
 import { KMSClient, DecryptCommand } from "@aws-sdk/client-kms";
+import { sendEmailSafely } from "../email/sendEmail.js";
+import { templateForStatus } from "../email/templates.js";
 
 const db  = new DynamoDBClient({ region: "us-west-2" });
 const kms = new KMSClient({ region: "us-west-2" });
@@ -204,6 +206,28 @@ async function updateStatus(claimId, newStatus) {
       ":u": { S: now }
     }
   }));
+
+  // Notify the patient that their status changed. PHI never leaves the
+  // database — the email contains only a generic claim ID and a link
+  // to the authenticated app where the detail lives. Email failure is
+  // logged but does not roll back the status update.
+  try {
+    const tplName = templateForStatus(newStatus);
+    if (tplName) {
+      const email = await decryptField(existing.Item.email?.S);
+      const firstName = await decryptField(existing.Item.firstName?.S);
+      if (email && email !== "[DECRYPTION_ERROR]") {
+        await sendEmailSafely({
+          to: email,
+          eventType: tplName,
+          data: { firstName: firstName || "", claimId }
+        });
+      }
+    }
+  } catch (err) {
+    console.error("[updateStatus] email side-effect failed:", err.message);
+  }
+
   return { ok: true, claimId, status: newStatus, updatedAt: now };
 }
 
