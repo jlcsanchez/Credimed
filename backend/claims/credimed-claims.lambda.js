@@ -54,7 +54,7 @@ const ENCRYPTED_FIELDS = [
 ];
 
 const ALLOWED_STATUSES = new Set([
-  "submitted", "in-review", "approved", "paid", "denied"
+  "submitted", "in-review", "approved", "paid", "denied", "refunded"
 ]);
 
 // ---------- helpers ----------
@@ -204,6 +204,10 @@ async function listAllClaims() {
   return { claims, count: claims.length };
 }
 
+// Plan-fee mapping for the money-back refund amount. Mirror with the
+// PLANS const in the payment Lambda — these must stay in sync.
+const PLAN_FEE_USD = { standard: 49, plus: 79, premium: 99 };
+
 async function updateStatus(claimId, newStatus) {
   if (!ALLOWED_STATUSES.has(newStatus)) {
     return {
@@ -218,15 +222,32 @@ async function updateStatus(claimId, newStatus) {
   if (!existing.Item) return { error: "Claim not found", code: 404 };
 
   const now = new Date().toISOString();
+  const isRefund = newStatus === "refunded";
+  const plan = existing.Item.plan?.S || "standard";
+  const refundAmount = PLAN_FEE_USD[plan] || PLAN_FEE_USD.standard;
+
+  // The refund path stamps refundedAt + refundAmount + refundStatus
+  // alongside the status so the admin Refunds tab and the patient
+  // dashboard can render the money-back without re-deriving from
+  // status alone.
+  let updateExpr = "SET #s = :s, updatedAt = :u";
+  const exprValues = {
+    ":s": { S: newStatus },
+    ":u": { S: now }
+  };
+  if (isRefund) {
+    updateExpr += ", refundedAt = :ra, refundAmount = :ramt, refundStatus = :rs";
+    exprValues[":ra"]   = { S: now };
+    exprValues[":ramt"] = { N: String(refundAmount) };
+    exprValues[":rs"]   = { S: "refunded" };
+  }
+
   await db.send(new UpdateItemCommand({
     TableName: TABLE,
     Key: { claimId: { S: claimId } },
-    UpdateExpression: "SET #s = :s, updatedAt = :u",
+    UpdateExpression: updateExpr,
     ExpressionAttributeNames: { "#s": "status" },
-    ExpressionAttributeValues: {
-      ":s": { S: newStatus },
-      ":u": { S: now }
-    }
+    ExpressionAttributeValues: exprValues
   }));
 
   // Notify the patient that their status changed. PHI never leaves the
@@ -239,10 +260,12 @@ async function updateStatus(claimId, newStatus) {
       const email = await decryptField(existing.Item.email?.S);
       const firstName = await decryptField(existing.Item.firstName?.S);
       if (email && email !== "[DECRYPTION_ERROR]") {
+        const data = { firstName: firstName || "", claimId };
+        if (isRefund) data.amountUsd = refundAmount;
         await sendEmailSafely({
           to: email,
           eventType: tplName,
-          data: { firstName: firstName || "", claimId }
+          data
         });
       }
     }
@@ -250,7 +273,9 @@ async function updateStatus(claimId, newStatus) {
     console.error("[updateStatus] email side-effect failed:", err.message);
   }
 
-  return { ok: true, claimId, status: newStatus, updatedAt: now };
+  const result = { ok: true, claimId, status: newStatus, updatedAt: now };
+  if (isRefund) { result.refundAmount = refundAmount; result.refundedAt = now; }
+  return result;
 }
 
 // ---------- main handler ----------

@@ -325,6 +325,15 @@ document.addEventListener('DOMContentLoaded', async function() {
   cookie.src = '/cookie-banner.js';
   cookie.defer = true;
   document.body.appendChild(cookie);
+
+  // Plausible analytics — privacy-first, no cookies, HIPAA-safe.
+  // Loaded only on public pages (landing + legal). Never on /app/*
+  // because URLs there can include PHI-adjacent identifiers.
+  var plausible = document.createElement('script');
+  plausible.defer = true;
+  plausible.setAttribute('data-domain', 'credimed.us');
+  plausible.src = 'https://plausible.io/js/script.js';
+  document.body.appendChild(plausible);
 })();
 </script>
 

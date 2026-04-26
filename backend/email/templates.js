@@ -171,12 +171,19 @@ export function buildEmail(eventType, data) {
 // Map claim status to template name. Used by the claims Lambda when
 // admin updates a claim status. Returns null if no email should be
 // sent for that transition.
+//
+// 'refunded' is the Credimed-side fee refund (money-back guarantee
+// processed). It's a terminal state: the claim journey is over and
+// we've returned the patient's fee. Insurer-side 'paid' is different
+// — that's when the insurer reimbursed the patient, which is the
+// happy-path success state.
 export function templateForStatus(status) {
   return {
     'submitted':  'claimSubmitted',
     'in-review':  'statusInReview',
     'approved':   'statusApproved',
     'paid':       'statusPaid',
-    'denied':     'statusDenied'
+    'denied':     'statusDenied',
+    'refunded':   'refundIssued'
   }[status] || null;
 }
