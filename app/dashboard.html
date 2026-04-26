@@ -693,6 +693,7 @@ html,body{
 <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
 <script src="backend.js"></script>
 <script src="state.js"></script>
+<script src="widgets/procedure-translate.js"></script>
 
 <script>
 const ICONS = {
@@ -754,62 +755,11 @@ function formatPaid(c) {
   return head;
 }
 
-// Translate common Mexican dental procedure names to English. The OCR
-// reads the receipt verbatim ('Endodoncia pieza 14', 'Corona temporal'),
-// which is intimidating for a US patient. This dictionary handles the
-// ~90% of cases without needing a translation API. Unknown terms pass
-// through unchanged.
-function translateProcedure(raw) {
-  if (!raw || typeof raw !== 'string') return raw;
-  let s = raw;
-  const map = [
-    // Endodontic
-    [/\bendodoncias?\b/gi,                'Root canal'],
-    [/\bpulpotom[ií]a\b/gi,               'Pulpotomy'],
-    // Crowns & prosthetics
-    [/\bcorona\s+de\s+zirconia\b/gi,      'Zirconia crown'],
-    [/\bcorona\s+de\s+porcelana\b/gi,     'Porcelain crown'],
-    [/\bcorona\s+metal[- ]?porcelana\b/gi,'Porcelain-fused-to-metal crown'],
-    [/\bcorona\s+definitiva\b/gi,         'Permanent crown'],
-    [/\bcorona\s+temporal\b/gi,           'Temporary crown'],
-    [/\bcorona(?:s)?\b/gi,                'Crown'],
-    [/\bcarillas?\b/gi,                   'Veneer'],
-    [/\bpuente\s+dental\b/gi,             'Dental bridge'],
-    [/\bpuente\b/gi,                      'Bridge'],
-    // Fillings / restorations
-    [/\breconstrucci[oó]n\s+dental\b/gi,  'Dental filling'],
-    [/\breconstrucci[oó]n\b/gi,           'Filling'],
-    [/\bresinas?\b/gi,                    'Composite filling'],
-    [/\bamalgamas?\b/gi,                  'Amalgam filling'],
-    [/\bincrustaci[oó]n\b/gi,             'Inlay/Onlay'],
-    // Hygiene
-    [/\blimpieza\s+profunda\b/gi,         'Deep cleaning'],
-    [/\blimpieza\s+dental\b/gi,           'Dental cleaning'],
-    [/\bprofilaxis\b/gi,                  'Cleaning (prophylaxis)'],
-    [/\bblanqueamiento\b/gi,              'Teeth whitening'],
-    // Surgical
-    [/\bextracci[oó]n\s+simple\b/gi,      'Simple extraction'],
-    [/\bextracci[oó]n\s+quir[uú]rgica\b/gi,'Surgical extraction'],
-    [/\bextracciones?\b/gi,               'Extraction'],
-    [/\bimplantes?\s+dentales?\b/gi,      'Dental implant'],
-    [/\bimplantes?\b/gi,                  'Implant'],
-    // Orthodontic / other
-    [/\bortodoncia\b/gi,                  'Orthodontics'],
-    [/\bbrackets?\b/gi,                   'Braces'],
-    [/\bf[eé]rula\s+dental\b/gi,          'Dental splint / night guard'],
-    [/\bradiograf[ií]as?\b/gi,            'X-ray'],
-    [/\bconsulta\b/gi,                    'Consultation'],
-    [/\bcirug[ií]a\s+oral\b/gi,           'Oral surgery'],
-    // Positional qualifiers
-    [/\bpieza\s+(\d+)\b/gi,               'tooth #$1'],
-    [/\bmolar\b/gi,                       'molar'],
-    [/\bmaxilar\s+superior\b/gi,          'upper jaw'],
-    [/\bmaxilar\s+inferior\b/gi,          'lower jaw'],
-  ];
-  for (const [re, en] of map) s = s.replace(re, en);
-  // Capitalize first letter
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
+// translateProcedure() lives in widgets/procedure-translate.js so the
+// dictionary stays in one place across dashboard, claim, claims, admin.
+// The widget script is loaded above this inline block so the global is
+// already defined here.
+var translateProcedure = window.translateProcedure;
 
 // Pull real data from CredimedState (populated during the claim flow) and
 // overwrite the mock. Missing fields keep the mock fallback so the UI still

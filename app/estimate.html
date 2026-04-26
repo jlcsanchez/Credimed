@@ -1067,6 +1067,91 @@ mount();
   applyOverride();
 })();
 </script>
+
+<script>
+/* ---- EARLIEST Stripe PaymentIntent prefetch ----
+   Fires the moment estimate.html loads. By this point the OCR engine
+   has run (processing.html) and pricing is in CredimedState. The user
+   spends ~10-20s reviewing the estimate, then ~5-10s on plan, then
+   30s+ on agreement. Total runway before payment.html: ~50-90s — way
+   more than even a cold-start Lambda + Stripe round-trip needs.
+
+   This is the third prefetch site (after the warm-up on documents.html
+   and the prefetches on plan.html / agreement.html). Whichever fires
+   first populates pendingPaymentIntent; subsequent calls see the cache
+   is fresh and skip. Idempotent on plan + claimId. */
+(function () {
+  try {
+    if (!window.CredimedState) return;
+    var pricing = window.CredimedState.get('pricing', null);
+    if (!pricing || !pricing.plan) return;
+
+    var pending = window.CredimedState.get('pendingPaymentIntent', null);
+    var TEN_MIN = 10 * 60 * 1000;
+    if (pending && pending.clientSecret
+        && pending.plan === pricing.plan
+        && typeof pending.createdAt === 'number'
+        && (Date.now() - pending.createdAt) < TEN_MIN) {
+      console.log('[prefetch:estimate] already cached, skipping');
+      return;
+    }
+
+    var email = null;
+    try {
+      var keys = Object.keys(localStorage);
+      var idKey = keys.find(function (k) {
+        return /CognitoIdentityServiceProvider\..+\..+\.idToken$/.test(k);
+      });
+      if (idKey) {
+        var payload = JSON.parse(atob(localStorage.getItem(idKey).split('.')[1]));
+        email = payload.email;
+      }
+    } catch (e) { /* can't read token */ }
+    if (!email) return;
+
+    var claimId = window.CredimedState.get('claim.id');
+    if (!claimId && window.CredimedState.generateClaimId) {
+      claimId = window.CredimedState.generateClaimId();
+    }
+    if (!claimId) return;
+
+    var LAMBDA = 'https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/';
+    var amountForPlan =
+      pricing.plan === 'premium' ? 9900 :
+      pricing.plan === 'plus'    ? 7900 :
+                                   4900;
+
+    console.log('[prefetch:estimate] triggering PaymentIntent for', pricing.plan, amountForPlan);
+    var t0 = Date.now();
+    fetch(LAMBDA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'create_payment_intent',
+        plan: pricing.plan,
+        amount: amountForPlan,
+        currency: 'usd',
+        email: email,
+        claimId: claimId
+      })
+    }).then(function (r) { return r.json(); })
+      .then(function (data) {
+        var cs = data.clientSecret || data.client_secret || data.paymentIntentClientSecret;
+        if (!cs) return;
+        window.CredimedState.set('pendingPaymentIntent', {
+          clientSecret: cs,
+          plan: pricing.plan,
+          amount: data.amount || amountForPlan,
+          claimId: claimId,
+          createdAt: Date.now()
+        });
+        console.log('[prefetch:estimate] PaymentIntent cached in', Date.now() - t0, 'ms');
+      })
+      .catch(function (e) { console.warn('[prefetch:estimate] failed (non-fatal):', e); });
+  } catch (e) { /* non-fatal */ }
+})();
+</script>
+
 <script src="auto-logoff.js"></script>
   </main>
 
