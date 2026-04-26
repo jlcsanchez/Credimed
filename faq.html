@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FAQ · Credimed — Dental insurance reimbursement for Mexico</title>
+<meta name="description" content="Common questions about filing US dental insurance claims for work done in Mexico. How Credimed works, costs, money-back guarantee, what documents you need, how long it takes, and more.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D9488">
+<link rel="canonical" href="https://www.credimed.us/faq.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Credimed FAQ — How dental insurance reimbursement for Mexico works">
+<meta property="og:description" content="Everything you need to know about claiming your US dental PPO benefits for work done in Mexico.">
+<meta property="og:url" content="https://www.credimed.us/faq.html">
+<meta property="og:image" content="https://www.credimed.us/og-image.png">
+
+<!-- Schema.org FAQPage — surfaces as rich snippet in Google -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How does Credimed work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "We help you recover money from your US dental PPO insurance for dental work done in Mexico. You upload your receipt and insurance card; we prepare and submit the claim to your carrier; the carrier pays you directly. You only pay our fee once." } },
+    { "@type": "Question", "name": "How much does it cost?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Pricing depends on claim complexity: Standard $49, Plus $79, Premium $99. One flat fee — no commission on your refund." } },
+    { "@type": "Question", "name": "What is the 100% money-back guarantee?",
+      "acceptedAnswer": { "@type": "Answer", "text": "If your claim was eligible under your plan and we cannot get you reimbursed after the initial submission and one free resubmission, we return 100% of your fee." } },
+    { "@type": "Question", "name": "Is my information protected?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your medical information is encrypted with AWS KMS (256-bit), all communication is HTTPS/TLS, and we operate under HIPAA-aligned practices with BAAs signed with AWS and Google Workspace." } },
+    { "@type": "Question", "name": "What insurance carriers do you support?",
+      "acceptedAnswer": { "@type": "Answer", "text": "All major US PPO carriers: Delta Dental, Cigna, Aetna, MetLife, United Healthcare, Guardian, Blue Cross Blue Shield, and more. PPO only — we do not accept HMO or Medicaid." } },
+    { "@type": "Question", "name": "How long does the whole process take?",
+      "acceptedAnswer": { "@type": "Answer", "text": "We submit your claim within 24 hours. Insurers typically respond in 3-6 weeks. Approved refunds arrive 3-7 business days after." } },
+    { "@type": "Question", "name": "What documents do I need to upload?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Two files: a photo or PDF of your dental insurance card (both sides if possible) and the dentist receipt from Mexico with itemized procedures." } },
+    { "@type": "Question", "name": "Do I have to be in Mexico?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. You only need to have had the dental work done in Mexico and have your receipt and insurance card. You handle the claim from anywhere within your insurer's claim window (typically 12 months from the procedure)." } }
+  ]
+}
+</script>
+
+<style>
+:root {
+  --teal-50: #F0FDFA;
+  --teal-100: #CCFBF1;
+  --teal-600: #0D9488;
+  --teal-700: #0B8278;
+  --teal-900: #134E4A;
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-900: #0F172A;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--slate-900);
+  background: #FAF6EF;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.55;
+}
+.nav {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(250, 246, 239, 0.92);
+  backdrop-filter: blur(14px) saturate(180%);
+  border-bottom: 1px solid var(--slate-200);
+  padding: 14px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 13px;
+  letter-spacing: 0.14em; color: var(--slate-900);
+  text-decoration: none;
+}
+.brand .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--teal-600); }
+.cta {
+  background: var(--teal-600); color: #fff;
+  padding: 9px 16px; border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  text-decoration: none;
+}
+.cta:hover { background: var(--teal-700); }
+
+.hero {
+  background: linear-gradient(160deg, #0f172a 0%, #134e4a 60%, #0D9488 100%);
+  color: #fff;
+  padding: 64px 24px 56px;
+}
+.hero-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+.hero .eyebrow {
+  font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.7); margin-bottom: 14px;
+}
+.hero h1 {
+  margin: 0 0 14px; font-size: clamp(32px, 5vw, 44px);
+  font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+}
+.hero p {
+  margin: 0; font-size: 17px; color: rgba(255,255,255,0.85);
+}
+
+main { max-width: 760px; margin: 0 auto; padding: 56px 24px 80px; }
+
+.section-title {
+  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--teal-700); font-weight: 600;
+  margin: 48px 0 8px; padding-top: 16px;
+  border-top: 1px solid var(--slate-200);
+}
+.section-title:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+
+.qa {
+  border-bottom: 1px solid var(--slate-200);
+  padding: 22px 0;
+}
+.qa h2 {
+  margin: 0 0 8px; font-size: 19px; font-weight: 600;
+  color: var(--slate-900);
+}
+.qa p {
+  margin: 0; font-size: 15.5px;
+  color: var(--slate-700);
+}
+.qa code {
+  background: var(--teal-50); color: var(--teal-700);
+  padding: 2px 6px; border-radius: 4px;
+  font-size: 14px;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+.cta-block {
+  margin-top: 56px;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: 16px;
+  padding: 32px 28px;
+  text-align: center;
+}
+.cta-block h3 {
+  margin: 0 0 10px; font-size: 22px; font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.cta-block p {
+  margin: 0 0 20px; color: var(--slate-600); font-size: 15px;
+}
+.cta-block .btn {
+  display: inline-block; background: var(--teal-600); color: #fff;
+  padding: 14px 24px; border-radius: 12px;
+  font-size: 15px; font-weight: 600;
+  text-decoration: none;
+}
+.cta-block .btn:hover { background: var(--teal-700); }
+
+footer {
+  border-top: 1px solid var(--slate-200);
+  padding: 28px 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--slate-500);
+}
+footer a { color: var(--slate-700); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+@media (max-width: 480px) {
+  .hero { padding: 48px 20px 40px; }
+  main { padding: 40px 20px 60px; }
+  .qa h2 { font-size: 17px; }
+  .qa p { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="/"><span class="dot"></span>CREDIMED</a>
+  <a class="cta" href="/app/login.html">Start my claim</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">FAQ</div>
+    <h1>Frequently asked questions</h1>
+    <p>Everything you need to know about claiming your US dental insurance for work done in Mexico.</p>
+  </div>
+</section>
+
+<main>
+  <div class="section-title">The basics</div>
+
+  <div class="qa">
+    <h2>How does Credimed work?</h2>
+    <p>We help you recover money from your US dental PPO insurance for dental work done in Mexico. You upload your receipt + your insurance card, we prepare the claim, submit it to your carrier, and the carrier pays you directly. You only pay our fee once.</p>
+  </div>
+
+  <div class="qa">
+    <h2>How much does Credimed cost?</h2>
+    <p>Pricing depends on claim complexity: <strong>Standard $49</strong>, <strong>Plus $79</strong>, <strong>Premium $99</strong>. Complexity is set by our system based on number of procedures, document count, and receipt clarity. One flat fee, no commission on your refund.</p>
+  </div>
+
+  <div class="qa">
+    <h2>What is the 100% money-back guarantee?</h2>
+    <p>If your claim was eligible under your plan and we can't get a refund after the initial submission and one free resubmission, we return 100% of your fee. Refund processing takes 5-10 business days back to the original payment method.</p>
+  </div>
+
+  <div class="qa">
+    <h2>Do I have to be in Mexico to use Credimed?</h2>
+    <p>No. You just need to have had the dental work done in Mexico and have your receipt and insurance card. You can submit the claim from anywhere, anytime within your insurer's claim window (typically 12 months from the procedure).</p>
+  </div>
+
+  <div class="section-title">Coverage & insurance</div>
+
+  <div class="qa">
+    <h2>What insurance carriers do you support?</h2>
+    <p>All major US PPO carriers: Delta Dental, Cigna, Aetna, MetLife, United Healthcare, Guardian, Blue Cross Blue Shield, and more. <strong>PPO only</strong> — we don't accept HMO plans or Medicaid.</p>
+  </div>
+
+  <div class="qa">
+    <h2>How much will my insurer reimburse?</h2>
+    <p>Most members recover <strong>$600-$1,500</strong>. The exact amount depends on your plan's coverage percentage, your annual maximum, and the procedures performed. Our system gives you an instant refund estimate after you upload your documents.</p>
+  </div>
+
+  <div class="qa">
+    <h2>What if my claim is denied?</h2>
+    <p>Two paths. (1) <strong>Free resubmission</strong> — if we find a new angle or missing detail, we file again at no charge. (2) If your claim was eligible under your plan and resubmission also fails, our <strong>100% money-back guarantee</strong> kicks in.</p>
+  </div>
+
+  <div class="section-title">Documents & process</div>
+
+  <div class="qa">
+    <h2>What documents do I need?</h2>
+    <p>Two files: (1) photo or PDF of your dental insurance card, both sides if possible; (2) the dentist receipt from Mexico with itemized procedures. JPG, PNG, or PDF format.</p>
+  </div>
+
+  <div class="qa">
+    <h2>Why do you need my insurance card?</h2>
+    <p>To identify your specific plan and calculate your coverage accurately. Without the card we can't tell which procedures are covered or what percentage your insurer reimburses.</p>
+  </div>
+
+  <div class="qa">
+    <h2>My receipt is in Spanish. Is that a problem?</h2>
+    <p>No, we translate it. Upload it as-is — our team handles the English translation and maps the Mexican procedure descriptions to CDT codes (the standard format US insurers recognize).</p>
+  </div>
+
+  <div class="qa">
+    <h2>What happens after I upload my documents?</h2>
+    <p>Our system processes the receipt in about 2 minutes, shows you the refund estimate, you choose a plan, sign the agreement, pay the one-time fee, and we submit your claim to your insurer within 24 hours.</p>
+  </div>
+
+  <div class="qa">
+    <h2>How long does the whole process take?</h2>
+    <p>We submit within 24 hours. Insurers typically respond in <strong>3-6 weeks</strong> (some up to 8). Approved refunds arrive in your account 3-7 business days after.</p>
+  </div>
+
+  <div class="section-title">Plans & resubmissions</div>
+
+  <div class="qa">
+    <h2>Why did I get Standard, Plus, or Premium?</h2>
+    <p>We assign a plan based on claim complexity. <strong>Standard ($49)</strong> for simple claims — few procedures, clear receipt. <strong>Plus ($79)</strong> for multiple procedures or harder receipts. <strong>Premium ($99)</strong> for ambiguous procedure codes, many procedures, or low-quality receipts that need more processing.</p>
+  </div>
+
+  <div class="qa">
+    <h2>What does my plan include?</h2>
+    <p>All plans include: claim preparation, Spanish→English receipt translation, mapping to CDT codes, submission to your insurer, follow-up tracking, and one free resubmission if denied. Plus and Premium include more detailed code review.</p>
+  </div>
+
+  <div class="qa">
+    <h2>Is the $19 resubmission fee real?</h2>
+    <p>The first resubmission is <strong>free</strong>. Each additional submission after that is $19, but only if you choose to retry — never automatic. Most claims are resolved within the free attempts.</p>
+  </div>
+
+  <div class="section-title">Payment & security</div>
+
+  <div class="qa">
+    <h2>How do I get paid?</h2>
+    <p>Your insurer pays <strong>you directly</strong>, not Credimed. Some send a check by mail, others use direct deposit based on the method they have on file with you. Funds typically arrive 3-7 business days after approval.</p>
+  </div>
+
+  <div class="qa">
+    <h2>Is my information protected?</h2>
+    <p>Yes. Your medical data is encrypted with AWS KMS (256-bit), all communication uses HTTPS/TLS, and we operate under HIPAA-aligned practices. We have Business Associate Agreements (BAAs) signed with AWS and Google Workspace. We never share your information with third parties except your insurer.</p>
+  </div>
+
+  <div class="qa">
+    <h2>What if my insurer calls me asking for information?</h2>
+    <p>That's normal — some insurers verify data directly with the policy holder. Confirm the information they ask based on your claim. If you need us to answer something technical, email <code>support@credimed.us</code> with the detail.</p>
+  </div>
+
+  <div class="qa">
+    <h2>Can I edit my claim after submitting?</h2>
+    <p>Once submitted to the insurer we can't modify it, but if your insurer requests additional info we'll email you to coordinate. For pre-submission corrections, email <code>support@credimed.us</code>.</p>
+  </div>
+
+  <div class="cta-block">
+    <h3>Ready to recover your money?</h3>
+    <p>Free estimate · No commitment · 100% money-back if eligible.</p>
+    <a class="btn" href="/app/login.html">Start my claim →</a>
+  </div>
+</main>
+
+<footer>
+  <a href="/">Home</a> · <a href="/legal/privacy.html">Privacy</a> · <a href="/legal/terms.html">Terms</a> · <a href="/legal/notice-of-privacy-practices.html">HIPAA Notice</a><br>
+  Questions not answered here? Email <a href="mailto:support@credimed.us">support@credimed.us</a><br>
+  <span style="font-size:11px;color:var(--slate-400);margin-top:8px;display:inline-block">© 2026 Credimed, Inc.</span>
+</footer>
+
+<script src="/cookie-banner.js" defer></script>
+<script defer data-domain="credimed.us" src="https://plausible.io/js/script.js"></script>
+</body>
+</html>

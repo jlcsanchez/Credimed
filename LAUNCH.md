@@ -1,0 +1,252 @@
+# Credimed launch checklist
+
+Master doc tracking everything that needs to be done before accepting
+the first paying patient. Group by responsibility area. Tick items
+inline as they complete (`- [x]` instead of `- [ ]`).
+
+Last updated: April 26, 2026.
+
+---
+
+## 🔴 Blockers — cannot launch without these
+
+### AWS infrastructure
+
+- [x] Cognito user pool (`us-west-2_8GgqReC58`) live
+- [x] Cognito `Admin` group provisioned
+- [x] Admin user added to `Admin` group
+- [x] DynamoDB `credimed-claims` table with KMS encryption
+- [x] API Gateway HTTP API with 5 claim routes + JWT authorizer
+- [x] Lambda `credimed-claims` deployed (read + admin)
+- [x] Lambda `credimed-payment` deployed (Stripe PaymentIntent)
+- [ ] Lambda `credimed-stripe-webhook` deployed (see `backend/webhooks/DEPLOY.md`)
+- [ ] Re-deploy `credimed-claims` with the audit-logging + email
+      changes from latest commits
+- [ ] Verify `metadata.claimId` is set in the payment Lambda when
+      creating PaymentIntents (without it the webhook can't link
+      payments to claims)
+- [ ] Delete duplicate API Gateway in us-east-1 (`bn55k0jyt0`)
+- [ ] Delete unused `credimed-agents` Lambda (replaced by FAQ widget)
+
+### Email (AWS SES)
+
+- [ ] Domain `credimed.us` verified in SES (CNAME records added)
+- [ ] SES out of sandbox (production access request approved by AWS)
+- [ ] DMARC + SPF DNS records added (see `backend/email/DEPLOY.md`)
+- [ ] IAM `ses:SendEmail` permission attached to claims + webhook
+      Lambda roles
+- [ ] `email/` subfolder added to both Lambdas (templates.js +
+      sendEmail.js)
+- [ ] `FROM_EMAIL` env var set on both Lambdas
+
+### Stripe
+
+- [x] Frontend integrated (Stripe Elements, JWT auth on intent)
+- [x] TEST MODE badge added when `pk_test_*` detected
+- [ ] **Switch from `pk_test_*` to `pk_live_*`** in `app/backend.js`
+      line 39 — the moment we accept real payments
+- [ ] Stripe live secret key in payment Lambda env
+- [ ] Stripe webhook registered in dashboard pointing to
+      `credimed-stripe-webhook` Function URL
+- [ ] `STRIPE_WEBHOOK_SECRET` in webhook Lambda env
+- [ ] Test end-to-end with `4242 4242 4242 4242` (test) and a real
+      live card under $10 to confirm full happy path
+
+### Google Workspace
+
+- [x] BAA signed with Google Workspace
+- [ ] Email aliases created: `support`, `privacy`, `legal`,
+      `hello`, `billing`, `dmarc-reports` (all alias to `ceo@`)
+- [ ] Verify replies to transactional emails route to a real inbox
+
+### Legal — counsel review BEFORE first paying patient
+
+- [ ] Healthcare/HIPAA lawyer engaged (1-2 hrs minimum)
+- [ ] Privacy Policy reviewed (`legal/privacy.html`)
+- [ ] Terms of Service reviewed (`legal/terms.html`)
+- [ ] Notice of Privacy Practices reviewed (`legal/notice-of-privacy-practices.html`)
+- [ ] Service Agreement v1.2 reviewed (`legal/AGREEMENT_v1.2.md`)
+- [ ] Determine: is Credimed a Covered Entity, Business Associate,
+      or both, under HIPAA? (Affects what compliance regime applies.)
+- [ ] HIPAA Risk Analysis document (formal, written)
+- [ ] HIPAA Policies & Procedures (sanction policy, breach response,
+      access management, contingency plan, etc.)
+
+---
+
+## 🟡 Important — should be in place but not strict blockers
+
+### Frontend / patient flow
+
+- [x] Patient flow pages all functional (no blank screens)
+- [x] Auto-logoff after 15 min idle (HIPAA technical safeguard)
+- [x] `require-auth.js` proactive session check before render
+- [x] Return URL preservation through login redirect
+- [x] State versioning in `app/state.js`
+- [x] Service Agreement signature capture with non-empty validation
+- [x] Cookie banner on public pages
+- [ ] End-to-end walkthrough: landing → login → documents →
+      processing → estimate → plan → before-sign → agreement →
+      payment → submission-confirmed (with the test card)
+- [ ] PC-adapted layouts on the 4 highest-traffic app pages
+      (dashboard, claim, documents, admin) — currently iPhone-only
+      designs centered in a card on desktop
+
+### Chat / support
+
+- [x] Ana FAQ widget on every page with FAQ matching
+- [x] Email escalation when FAQ has no match
+- [x] Per-page topic-aware quick replies
+- [x] Bilingual catalog (English default, Spanish fallback)
+
+### Audit & monitoring
+
+- [x] HIPAA-grade audit logging in claims Lambda (claim IDs,
+      sourceIp, userAgent, requestId)
+- [x] Plausible analytics on public pages (cookieless,
+      no PHI risk)
+- [ ] Plausible site registered at `plausible.io` for `credimed.us`
+- [ ] CloudWatch log retention set on Lambda log groups (default
+      is forever — set to 12 months for HIPAA, longer if needed)
+- [ ] DynamoDB point-in-time recovery enabled (1-click in console)
+
+### Cognito hardening
+
+- [ ] Password policy: min 12 chars, mixed case + symbol
+- [ ] MFA required for users in `Admin` group
+- [ ] Email verification required for sign-up
+
+### Service / brand
+
+- [x] Privacy / Terms / NPP draft pages live
+- [x] FAQ page (this commit)
+- [x] 404 / 500 error pages
+- [x] SEO: meta description, canonical, Open Graph, Twitter card,
+      schema.org Service JSON-LD
+- [x] Sitemap.xml + robots.txt with correct allow/disallow
+- [ ] `og-image.png` at repo root (1200×630, designed in Claude Design)
+- [ ] Email templates polished (Claude Design in flight)
+- [ ] About page (Claude Design in flight)
+- [ ] How-it-works page (Claude Design in flight)
+- [ ] Pricing comparison table on `/app/plan.html` (Claude Design
+      in flight)
+
+---
+
+## 🟢 Nice-to-have — after launch is fine
+
+### Performance
+
+- [ ] Lighthouse audit (target ≥ 90 on all four scores)
+- [ ] Lazy-load the 1.6 MB landing bundle
+- [ ] WebP + responsive images
+- [ ] Service worker / PWA for offline-first
+
+### Marketing / growth
+
+- [ ] Google Ads landing variant (separate from main landing)
+- [ ] Spanish-language landing
+- [ ] Blog post #1 ("How to file dental insurance from Mexico")
+- [ ] Email drip campaign for non-converted leads (5 emails)
+- [ ] Press kit / one-pager PDF
+- [ ] Referral page
+
+### Backend
+
+- [ ] PDF receipt generator per claim (branded share-back artifact)
+- [ ] A/B testing framework (simple flag-based)
+- [ ] Refund webhook handler — Stripe Refund API integration to
+      actually return money to the card when admin marks `refunded`
+      (today only the email + DB update happen)
+- [ ] Status-indexed GSI for admin claim queries (currently scans
+      whole table; fine until ~500 claims)
+
+### Operations
+
+- [ ] Vanta / Drata / Aptible signup for compliance automation
+      (~$300-1000/mo, generates HIPAA policies + monitoring)
+- [ ] Spruce Health (or equivalent) for patient messaging when
+      volume justifies (~$24/mo)
+
+### Cleanup
+
+- [ ] Delete `app/widgets/agent-chat.js` (deprecated, replaced by
+      `app/ana.js`)
+- [ ] Remove `LEGACY_EMAILS` allowlist code from `admin.html`
+      (already empty array; the dead code path can go)
+- [ ] Audit `connector.js` for stale routes from earlier versions
+
+---
+
+## File index — where things live
+
+```
+/                              # repo root
+├── index.html                 # landing
+├── faq.html                   # FAQ page (SEO)
+├── 404.html / 500.html        # error pages
+├── cookie-banner.js           # CCPA notice
+├── og-image.png               # social share (TODO: drop here)
+├── sitemap.xml / robots.txt   # crawler hygiene
+├── LAUNCH.md                  # this file
+│
+├── app/                       # patient + admin authenticated app
+│   ├── login.html
+│   ├── dashboard.html
+│   ├── documents.html
+│   ├── estimate.html
+│   ├── plan.html
+│   ├── before-sign.html
+│   ├── agreement.html         # signs AGREEMENT_v1.2
+│   ├── payment.html
+│   ├── submission-confirmed.html
+│   ├── claim.html / claims.html
+│   ├── profile.html
+│   ├── admin.html
+│   ├── ana.js                 # FAQ chat widget
+│   ├── auto-logoff.js         # HIPAA technical safeguard
+│   ├── require-auth.js        # session gate
+│   ├── backend.js             # Cognito + Stripe + authFetch
+│   ├── pricingEngine.js       # plan-tier calculator
+│   ├── state.js               # localStorage with schema versioning
+│   └── widgets/
+│       ├── faq-data.js        # 19-entry catalog (bilingual)
+│       └── status-timeline.js # available, not yet wired
+│
+├── legal/
+│   ├── AGREEMENT_v1.2.md      # signed by patient at /app/agreement.html
+│   ├── privacy.html
+│   ├── terms.html
+│   └── notice-of-privacy-practices.html
+│
+└── backend/
+    ├── claims/
+    │   └── credimed-claims.lambda.js   # GET/PATCH /claims + admin
+    ├── email/
+    │   ├── templates.js                # 7 transactional templates
+    │   ├── sendEmail.js                # SES wrapper
+    │   └── DEPLOY.md                   # SES setup walk-through
+    ├── webhooks/
+    │   ├── credimed-stripe-webhook.lambda.js
+    │   └── DEPLOY.md                   # webhook setup walk-through
+    └── pricingEngine.js                # source-of-truth for plan tiers
+```
+
+---
+
+## When something blocks launch
+
+1. **AWS Lambda re-deploy fails** → CloudWatch logs of the deploy
+   step. Likely a missing env var or IAM permission.
+2. **SES emails not arriving** → SES sandbox / verified sender / IAM.
+3. **Stripe webhook fires but DB doesn't update** → check
+   `metadata.claimId` is set on the PaymentIntent; check IAM
+   `dynamodb:UpdateItem` on the webhook role.
+4. **Patient sees 401 on signed-in page** → JWT auth missing on
+   that route, or the page lacks `<script src="require-auth.js">`.
+5. **Patient sees 403 on `/admin/claims`** → user not in Cognito
+   `Admin` group, OR the Lambda code wasn't redeployed after the
+   group-name change (lowercase comparison in `isAdmin`).
+
+For anything else, search this repo's commits — most failure modes
+have already been hit and documented in commit messages.
