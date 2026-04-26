@@ -23,10 +23,10 @@
   const SUPPORT_EMAIL = 'support@credimed.us';
 
   const AGENT_META = {
-    sofia: { name: 'Sofia', accent: '#0D9488', opener: 'Hola 👋 soy Sofia. ¿Te ayudo a ver si tu seguro PPO te debe dinero por trabajo dental en México? Toca una pregunta o escribe la tuya.' },
-    ana:   { name: 'Ana',   accent: '#0D9488', opener: 'Hola 👋 soy Ana. Aquí tienes las preguntas más comunes mientras subes tus documentos.' },
-    elena: { name: 'Elena', accent: '#0D9488', opener: 'Hola 👋 soy Elena. Estas son las preguntas más comunes sobre planes y precios.' },
-    marco: { name: 'Marco', accent: '#0D9488', opener: 'Hola 👋 soy Marco. Aquí están las preguntas más comunes sobre el status de tu claim. Para detalles específicos de tu caso, te conecto con un humano por correo.' },
+    sofia: { name: 'Sofia', accent: '#0D9488', opener: "Hi 👋 I'm Sofia. Want to see if your US PPO insurance owes you money for dental work in Mexico? Tap a question or type your own." },
+    ana:   { name: 'Ana',   accent: '#0D9488', opener: "Hi 👋 I'm Ana. Here are the most common questions while you upload your documents." },
+    elena: { name: 'Elena', accent: '#0D9488', opener: "Hi 👋 I'm Elena. These are the most common questions about plans and pricing." },
+    marco: { name: 'Marco', accent: '#0D9488', opener: "Hi 👋 I'm Marco. Here are the most common questions about your claim status. For case-specific details I'll connect you with a human by email." },
   };
 
   /**
@@ -45,19 +45,20 @@
   }
 
   /**
-   * Heuristic Spanish detector. We default to Spanish (since the
-   * personas open in Spanish) but flip to English if the message
-   * contains English-only function words and lacks Spanish ones.
+   * Heuristic language detector. Defaults to English (the personas
+   * open in English) and flips to Spanish only when the message has
+   * clear Spanish function words AND lacks English ones. Keeps the
+   * door open for bilingual support later without forcing it now.
    */
   function detectLang(text) {
     const t = normalize(text);
-    if (!t) return 'es';
+    if (!t) return 'en';
     const en = /\b(the|is|are|how|what|when|where|why|do|does|can|i|you|we|my|your)\b/g;
-    const es = /\b(el|la|los|las|que|como|cuando|donde|porque|cuanto|tu|mi|hola|gracias|si|no)\b/g;
+    const es = /\b(el|la|los|las|que|como|cuando|donde|porque|cuanto|tu|mi|hola|gracias|si)\b/g;
     const enHits = (t.match(en) || []).length;
     const esHits = (t.match(es) || []).length;
-    if (enHits >= 2 && esHits === 0) return 'en';
-    return 'es';
+    if (esHits >= 2 && enHits === 0) return 'es';
+    return 'en';
   }
 
   /**
@@ -266,7 +267,7 @@
         h('button', { class: 'cac-close', 'aria-label': 'Close', onclick: () => this.close() }, this._xIcon())
       );
       const body = h('div', { class: 'cac-body' });
-      const textarea = h('textarea', { placeholder: 'Escribe un mensaje…', rows: '1' });
+      const textarea = h('textarea', { placeholder: 'Type a message…', rows: '1' });
       textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this._send(); }
       });
@@ -295,7 +296,7 @@
       const catalog = (window.CredimedFAQ && window.CredimedFAQ[this.agent]) || [];
       if (catalog.length === 0) return;
       const container = h('div', { class: 'cac-quick-replies' });
-      const lang = this.lang || 'es';
+      const lang = this.lang || 'en';
       const slice = catalog.slice(0, limit || 4);
       for (const entry of slice) {
         const label = lang === 'en' ? entry.q_en : entry.q_es;
@@ -323,7 +324,7 @@
     _answerEntry(entry, userText) {
       this._clearQuickReplies();
       this._addMessage('user', userText);
-      const lang = this.lang || 'es';
+      const lang = this.lang || 'en';
       const reply = lang === 'en' ? entry.a_en : entry.a_es;
       this._addMessage('assistant', reply);
       this.unmatchedCount = 0;
@@ -336,7 +337,7 @@
      * we make the email path the headline.
      */
     _renderEscalation(prominent) {
-      const lang = this.lang || 'es';
+      const lang = this.lang || 'en';
       const msg = prominent
         ? (lang === 'en'
             ? "I can only answer common questions here. For your specific case, please email a human at " + SUPPORT_EMAIL + " — we reply within one business day."
@@ -351,7 +352,7 @@
 
     _renderEmailButton() {
       if (!this.body) return;
-      const lang = this.lang || 'es';
+      const lang = this.lang || 'en';
       const subject = encodeURIComponent('Pregunta para Credimed (' + this.agent + ')');
       const ctxLine = this.context && this.context.claimId ? '%0A%0AClaim ID: ' + encodeURIComponent(this.context.claimId) : '';
       const body = encodeURIComponent('Hola,%0A%0A') + ctxLine;
