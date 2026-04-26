@@ -102,12 +102,36 @@ Upload the zip in the Lambda Code section. Set the handler to
 
 Configuration → Environment variables:
 
-| Key            | Value             |
-|----------------|-------------------|
-| `DYNAMO_TABLE` | `credimed-claims` |
-| `ADMIN_GROUP`  | `admin`           |
+| Key                       | Value                       | Required |
+|---------------------------|-----------------------------|----------|
+| `DYNAMO_TABLE`            | `credimed-claims`           | yes      |
+| `ADMIN_GROUP`             | `admin`                     | yes      |
+| `STRIPE_REFUND_ENABLED`   | `false` (flip to `true` on) | no — defaults off |
+| `STRIPE_SECRET_KEY`       | `sk_test_…` or `sk_live_…`  | only when `STRIPE_REFUND_ENABLED=true` |
 
 (The AWS_REGION env var is auto-set by Lambda — don't override it.)
+
+**Stripe Refund — money-back guarantee path.** When admin marks a
+claim `refunded`:
+
+- `STRIPE_REFUND_ENABLED=false` (default): the function updates DynamoDB
+  + sends the patient the refund email, but **does not move money**.
+  Identical to today's behavior. Safe to leave on while you test the
+  rest of the flow.
+- `STRIPE_REFUND_ENABLED=true`: the function calls Stripe's `/v1/refunds`
+  with idempotency-key `refund_<claimId>` (so a double-click never
+  charges twice), and only proceeds with the DB update + email if
+  Stripe accepts the refund. If Stripe rejects, the admin sees a 502
+  and nothing changes — re-try after fixing the issue.
+
+**Pre-flip checklist (before setting STRIPE_REFUND_ENABLED=true):**
+1. Wire the same `STRIPE_SECRET_KEY` value already used by the payment
+   Lambda. They must match — refunds need the secret key from the
+   account that originally charged.
+2. Test with a single sandbox claim end-to-end: pay $1 with a test
+   card → admin marks `refunded` → confirm Stripe Dashboard shows the
+   refund + the claim record gets `stripeRefundId`.
+3. Confirm the patient dashboard shows the refund correctly.
 
 ### 6. API Gateway routes
 

@@ -48,6 +48,16 @@ const ADMIN_GROUP    = "admin";
 const TABLE          = "credimed-claims";
 const USER_INDEX     = "userId-createdAt-index";
 
+// Stripe — used when admin marks a claim 'refunded' and the money-back
+// guarantee fee should be returned to the patient's card. Feature-flagged
+// off by default so the function ships safely; flip STRIPE_REFUND_ENABLED
+// to "true" in Lambda env once STRIPE_SECRET_KEY is wired and you've
+// tested with a single sandbox refund.
+const STRIPE_API_BASE       = "https://api.stripe.com/v1";
+const STRIPE_API_VERSION    = "2024-04-10";
+const STRIPE_REFUND_ENABLED = process.env.STRIPE_REFUND_ENABLED === "true";
+const STRIPE_SECRET_KEY     = process.env.STRIPE_SECRET_KEY || "";
+
 const ENCRYPTED_FIELDS = [
   "email", "firstName", "lastName",
   "memberId", "insurer", "procedure", "amount"
@@ -208,6 +218,68 @@ async function listAllClaims() {
 // PLANS const in the payment Lambda — these must stay in sync.
 const PLAN_FEE_USD = { standard: 49, plus: 79, premium: 99 };
 
+/**
+ * Issue a Stripe refund for the patient's submission fee.
+ *
+ * Money-back guarantee path: when admin marks a claim 'refunded',
+ * the patient gets their plan fee back on the original card.
+ *
+ * Idempotency: the Idempotency-Key header is set per claim id so a
+ * double-click on the admin "Refund" button never charges twice —
+ * Stripe returns the same refund object on retry.
+ *
+ * Returns:
+ *   { ok: true, refundId, status }   — Stripe accepted the refund
+ *   { skipped: true }                 — flag off, no API call made
+ *   { error: 'reason', detail? }     — failed; caller decides whether
+ *                                       to roll back the status update
+ */
+async function processStripeRefund({ paymentIntentId, amountUsd, claimId }) {
+  if (!STRIPE_REFUND_ENABLED) {
+    console.log(`[refund:${claimId}] STRIPE_REFUND_ENABLED=false, skipping Stripe API call`);
+    return { skipped: true };
+  }
+  if (!STRIPE_SECRET_KEY) {
+    console.warn(`[refund:${claimId}] STRIPE_SECRET_KEY env var not set`);
+    return { error: "no-stripe-key" };
+  }
+  if (!paymentIntentId) {
+    console.warn(`[refund:${claimId}] no stripePaymentIntentId on claim — payment may have never landed`);
+    return { error: "no-payment-intent" };
+  }
+
+  const body = new URLSearchParams({
+    payment_intent: paymentIntentId,
+    amount: String(Math.round(amountUsd * 100)),
+    reason: "requested_by_customer",
+    "metadata[claimId]": claimId,
+    "metadata[source]": "credimed-money-back-guarantee"
+  });
+
+  try {
+    const res = await fetch(`${STRIPE_API_BASE}/refunds`, {
+      method: "POST",
+      headers: {
+        "Authorization":   `Bearer ${STRIPE_SECRET_KEY}`,
+        "Content-Type":    "application/x-www-form-urlencoded",
+        "Stripe-Version":  STRIPE_API_VERSION,
+        "Idempotency-Key": `refund_${claimId}`
+      },
+      body
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error(`[refund:${claimId}] Stripe ${res.status}:`, data);
+      return { error: "stripe-error", detail: data.error?.message || `HTTP ${res.status}` };
+    }
+    console.log(`[refund:${claimId}] Stripe refund issued: ${data.id} (${data.status})`);
+    return { ok: true, refundId: data.id, status: data.status };
+  } catch (e) {
+    console.error(`[refund:${claimId}] Stripe fetch failed:`, e.message);
+    return { error: "fetch-failed", detail: e.message };
+  }
+}
+
 async function updateStatus(claimId, newStatus) {
   if (!ALLOWED_STATUSES.has(newStatus)) {
     return {
@@ -226,10 +298,31 @@ async function updateStatus(claimId, newStatus) {
   const plan = existing.Item.plan?.S || "standard";
   const refundAmount = PLAN_FEE_USD[plan] || PLAN_FEE_USD.standard;
 
+  // Money-back path: try Stripe FIRST. If the Stripe call errors with
+  // the flag on, bail before the DB update + email so the patient
+  // doesn't get notified of a refund that didn't happen. Skipped
+  // (flag off) and Ok both proceed normally — Skipped is the safe
+  // pre-launch default that preserves today's behavior.
+  let stripeRefund = null;
+  if (isRefund) {
+    stripeRefund = await processStripeRefund({
+      paymentIntentId: existing.Item.stripePaymentIntentId?.S,
+      amountUsd: refundAmount,
+      claimId
+    });
+    if (stripeRefund.error) {
+      return {
+        error: `Stripe refund failed: ${stripeRefund.detail || stripeRefund.error}`,
+        code: 502
+      };
+    }
+  }
+
   // The refund path stamps refundedAt + refundAmount + refundStatus
   // alongside the status so the admin Refunds tab and the patient
   // dashboard can render the money-back without re-deriving from
-  // status alone.
+  // status alone. When Stripe successfully issued a refund (flag on),
+  // the refund id and Stripe status are also persisted for audit.
   let updateExpr = "SET #s = :s, updatedAt = :u";
   const exprValues = {
     ":s": { S: newStatus },
@@ -240,6 +333,11 @@ async function updateStatus(claimId, newStatus) {
     exprValues[":ra"]   = { S: now };
     exprValues[":ramt"] = { N: String(refundAmount) };
     exprValues[":rs"]   = { S: "refunded" };
+    if (stripeRefund?.ok) {
+      updateExpr += ", stripeRefundId = :sri, stripeRefundStatus = :srs";
+      exprValues[":sri"] = { S: stripeRefund.refundId };
+      exprValues[":srs"] = { S: stripeRefund.status };
+    }
   }
 
   await db.send(new UpdateItemCommand({
@@ -274,7 +372,16 @@ async function updateStatus(claimId, newStatus) {
   }
 
   const result = { ok: true, claimId, status: newStatus, updatedAt: now };
-  if (isRefund) { result.refundAmount = refundAmount; result.refundedAt = now; }
+  if (isRefund) {
+    result.refundAmount = refundAmount;
+    result.refundedAt = now;
+    if (stripeRefund?.ok) {
+      result.stripeRefundId = stripeRefund.refundId;
+      result.stripeRefundStatus = stripeRefund.status;
+    } else if (stripeRefund?.skipped) {
+      result.stripeRefundSkipped = true;
+    }
+  }
   return result;
 }
 
@@ -351,7 +458,10 @@ export const handler = async (event) => {
         event: "admin_update_claim",
         adminUserId: userId,
         claimId: id,
-        newStatus: body.status
+        newStatus: body.status,
+        stripeRefundId: result.stripeRefundId,
+        stripeRefundStatus: result.stripeRefundStatus,
+        stripeRefundSkipped: result.stripeRefundSkipped
       });
       return response(200, result);
     }
