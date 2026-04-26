@@ -125,11 +125,14 @@ Last updated: April 26, 2026.
       schema.org Service JSON-LD
 - [x] Sitemap.xml + robots.txt with correct allow/disallow
 - [ ] `og-image.png` at repo root (1200×630, designed in Claude Design)
-- [ ] Email templates polished (Claude Design in flight)
-- [ ] About page (Claude Design in flight)
-- [ ] How-it-works page (Claude Design in flight)
-- [ ] Pricing comparison table on `/app/plan.html` (Claude Design
-      in flight)
+- [x] Email templates polished — new branded shell wired through
+      all 7 templates in `backend/email/templates.js`
+- [x] About page (`about.html`) live with full SEO + cookie banner
+      + Plausible
+- [x] How-it-works page (`how-it-works.html`) live with HowTo
+      schema, full SEO + cookie banner + Plausible
+- [x] Pricing comparison table — embedded in `how-it-works.html`
+      (the in-app `app/plan.html` keeps the engine-picks-one model)
 
 ---
 
