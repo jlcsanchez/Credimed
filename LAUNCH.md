@@ -55,9 +55,14 @@ Last updated: April 26, 2026.
 ### Google Workspace
 
 - [x] BAA signed with Google Workspace
-- [ ] Email aliases created: `support`, `privacy`, `legal`,
-      `hello`, `billing`, `dmarc-reports` (all alias to `ceo@`)
+- [x] Email aliases created on `ceo@credimed.us`:
+      `support`, `privacy`, `legal`, `hello`, `billing`,
+      `dmarc-reports`, `disputes` (added per AGREEMENT_v1.2 §13).
+      All forward to the single `ceo@` inbox — no extra Workspace
+      seats needed.
 - [ ] Verify replies to transactional emails route to a real inbox
+      (send a test from a personal Gmail to `support@credimed.us`
+      and confirm it lands in `ceo@`)
 
 ### Legal — counsel review BEFORE first paying patient
 
