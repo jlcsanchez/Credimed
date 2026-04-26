@@ -260,13 +260,20 @@ window.authFetch = async function (url, opts) {
        premium:  9900
      The Lambda is authoritative — these numbers must stay in sync with
      its PLANS const. Whatever opts.amount the caller passes is ignored. */
-  window.createPaymentIntent = function (opts) {
+  window.createPaymentIntent = async function (opts) {
     opts = opts || {};
     var plan = opts.plan || 'standard';
-    var amount =
-      plan === 'premium' ? 9900 :
-      plan === 'plus'    ? 7900 :
-                           4900;
+    /* Frontend amount is the FALLBACK only — the Lambda re-derives the
+       price from `plan` against its server-side PLANS const before
+       creating the PaymentIntent, so a tampered `amount` in this body
+       is ignored. We still send a sane number to fail fast in the rare
+       case the Lambda is misconfigured. */
+    var PLAN_AMOUNTS = { standard: 4900, plus: 7900, premium: 9900 };
+    if (!PLAN_AMOUNTS[plan]) {
+      throw new Error('Unknown plan: ' + plan);
+    }
+    var amount = PLAN_AMOUNTS[plan];
+
     var body = {
       action:   'create_payment_intent',
       plan:     plan,
@@ -275,10 +282,22 @@ window.authFetch = async function (url, opts) {
       email:    opts.email    || null,
       claimId:  opts.claimId  || null
     };
+
+    /* Attach Cognito ID token so the Lambda can verify identity and tie
+       the PaymentIntent to a real user. The Lambda must reject requests
+       without a valid token to prevent unauthenticated PaymentIntent
+       creation. Failure to obtain a token is non-fatal here — the
+       Lambda will return 401 and the UI surfaces that. */
+    var headers = { 'Content-Type': 'application/json' };
+    try {
+      var idToken = await window.cognitoGetIdToken();
+      if (idToken) headers['Authorization'] = 'Bearer ' + idToken;
+    } catch (e) { /* not signed in — Lambda will reject */ }
+
     console.log('[createPaymentIntent] sending to Lambda:', body);
     return fetch(window.CREDIMED_LAMBDA, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body:    JSON.stringify(body)
     }).then(function (r) { return r.json(); })
       .then(function (data) {

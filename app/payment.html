@@ -1109,11 +1109,17 @@ function renderScreen(variant, scope) {
     `
     : '';
 
+  // Test-mode tell: append a small "TEST" suffix when the publishable
+  // key is a Stripe test key (pk_test_*). Helps QA notice they're not
+  // submitting a live payment without making the UI feel like a draft.
+  const isTestMode = (window.CREDIMED_STRIPE_PK || '').startsWith('pk_test_');
+  const testTag = isTestMode ? ' <small style="opacity:.65;font-weight:600;letter-spacing:.04em;">· TEST</small>' : '';
+
   const ctaContent = f.success
     ? `${ICONS.checkBig}<span>Payment confirmed</span>`
     : f.processing
     ? `<span class="spinner"></span><span>Processing payment...</span>`
-    : `<span>Pay ${plan.ctaPrice} · Submit my claim</span>`;
+    : `<span>Pay ${plan.ctaPrice} · Submit my claim${testTag}</span>`;
 
   const ctaClasses = `btn-primary ${f.success ? 'success' : ''}`;
   const ctaDisabled = !f.ctaEnabled || f.processing || f.success;
@@ -1584,7 +1590,7 @@ mountScope('desktop');
       var returnUrl = window.location.origin + '/app/submission-confirmed.html?paid=1';
       var result = await window.confirmStripePayment(returnUrl);
       if (result && result.error) {
-        cta.innerHTML = '<span>Pay · Submit my claim</span>';
+        cta.innerHTML = '<span>Pay · Submit my claim' + ((window.CREDIMED_STRIPE_PK || '').startsWith('pk_test_') ? ' <small style="opacity:.65;font-weight:600;letter-spacing:.04em;">· TEST</small>' : '') + '</span>';
         cta.disabled = false;
         state.submitting = false;
         var msg = result.error.message || 'Payment failed. Try again.';
@@ -1593,7 +1599,7 @@ mountScope('desktop');
       // If no error, Stripe redirects us to return_url automatically.
     } catch (err) {
       console.error('[Credimed] confirmPayment error:', err);
-      cta.innerHTML = '<span>Pay · Submit my claim</span>';
+      cta.innerHTML = '<span>Pay · Submit my claim' + ((window.CREDIMED_STRIPE_PK || '').startsWith('pk_test_') ? ' <small style="opacity:.65;font-weight:600;letter-spacing:.04em;">· TEST</small>' : '') + '</span>';
       cta.disabled = false;
       state.submitting = false;
       alert('Payment error: ' + (err && err.message || 'unknown'));
