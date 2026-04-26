@@ -239,6 +239,7 @@ html,body{
 <script src="backend.js"></script>
 <script src="state.js"></script>
 <script src="connector.js"></script>
+<script src="widgets/procedure-translate.js"></script>
 <script>
 (function () {
   'use strict';
@@ -301,8 +302,9 @@ html,body{
     }
 
     var pill = STATUS_PILL[c.status] || { label: '—', cls: 'pill-teal' };
-    var procs = Array.isArray(c.procedures) ? c.procedures.join(', ')
-              : (c.procedure || 'Dental claim');
+    var procsRaw = Array.isArray(c.procedures) ? c.procedures.join(', ')
+                 : (c.procedure || 'Dental claim');
+    var procs = window.translateProcedure ? window.translateProcedure(procsRaw) : procsRaw;
 
     $('ref').innerHTML = (c.id || '—') + '<button class="copy-btn" id="copyBtn">Copy</button>';
     $('title').textContent = procs;
