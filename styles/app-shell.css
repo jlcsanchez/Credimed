@@ -445,6 +445,21 @@ body[data-page="profile"]    .app-bottomnav a[data-nav="profile"]   svg {
 }
 
 /* ============================================================
+   ANA CHAT BUBBLE — lift above the mobile bottom nav so the
+   floating action button doesn't cover the rightmost tab.
+   Only applies on shell pages (this CSS file is loaded only
+   on /app/*); the landing's bubble keeps the default position.
+   ============================================================ */
+@media (max-width: 767px) {
+  .ana-fab {
+    bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+  }
+  .ana-drawer {
+    bottom: calc(146px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ============================================================
    SKIP LINK (a11y)
    ============================================================ */
 .app-skip-link {

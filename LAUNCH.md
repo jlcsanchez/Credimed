@@ -170,9 +170,18 @@ Last updated: April 26, 2026.
 
 - [ ] PDF receipt generator per claim (branded share-back artifact)
 - [ ] A/B testing framework (simple flag-based)
-- [ ] Refund webhook handler — Stripe Refund API integration to
-      actually return money to the card when admin marks `refunded`
-      (today only the email + DB update happen)
+- [x] Stripe Refund API integration coded in claims Lambda —
+      feature-flagged via `STRIPE_REFUND_ENABLED` (default `false`).
+      Idempotent on claim id. When flipped on, money actually
+      returns to the card. Pre-flip checklist in
+      `backend/claims/DEPLOY.md` Step 5.
+- [ ] Re-deploy claims Lambda with the refund code + add
+      `STRIPE_SECRET_KEY` env var
+- [ ] Sandbox test: $1 test payment → admin marks `refunded` →
+      confirm Stripe Dashboard shows the refund and the claim
+      gets `stripeRefundId`
+- [ ] Flip `STRIPE_REFUND_ENABLED=true` in production once the
+      sandbox test passes
 - [ ] Status-indexed GSI for admin claim queries (currently scans
       whole table; fine until ~500 claims)
 
