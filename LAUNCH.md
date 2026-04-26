@@ -88,11 +88,16 @@ Last updated: April 26, 2026.
 - [ ] End-to-end walkthrough: landing → login → documents →
       processing → estimate → plan → before-sign → agreement →
       payment → submission-confirmed (with the test card)
-- [x] PC-adapted layouts on the 4 highest-traffic app pages
-      (dashboard, claim, documents, admin) — wrapped with the
-      shared shell at `styles/app-shell.css` (sidebar 768+,
-      side panel 1280+, mobile bottom nav < 768). Mobile layout
-      preserved untouched.
+- [x] PC-adapted layouts on the 12 authenticated app pages
+      (dashboard, claim, claims, documents, admin, profile,
+      support, estimate, plan, payment, agreement, before-sign)
+      — all wrapped with the shared shell at
+      `styles/app-shell.css` (sidebar 768+, side panel 1280+,
+      mobile bottom nav < 768). Mobile layout preserved
+      untouched. Skipped: `login.html` (pre-auth),
+      `processing.html` (loading screen), `submission-confirmed.html`
+      (terminal success screen) — adding chrome to those would
+      hurt the focused experience.
 
 ### Chat / support
 
