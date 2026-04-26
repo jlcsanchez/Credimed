@@ -1,4 +1,10 @@
+# Public pages: open to all crawlers.
 User-agent: *
 Allow: /
+Allow: /legal/
+
+# Patient flow + admin: behind Cognito auth, indexing them is pointless
+# and risks exposing the structure of internal pages. Block crawl entirely.
+Disallow: /app/
 
 Sitemap: https://www.credimed.us/sitemap.xml
