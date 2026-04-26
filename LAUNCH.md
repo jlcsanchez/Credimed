@@ -88,9 +88,11 @@ Last updated: April 26, 2026.
 - [ ] End-to-end walkthrough: landing → login → documents →
       processing → estimate → plan → before-sign → agreement →
       payment → submission-confirmed (with the test card)
-- [ ] PC-adapted layouts on the 4 highest-traffic app pages
-      (dashboard, claim, documents, admin) — currently iPhone-only
-      designs centered in a card on desktop
+- [x] PC-adapted layouts on the 4 highest-traffic app pages
+      (dashboard, claim, documents, admin) — wrapped with the
+      shared shell at `styles/app-shell.css` (sidebar 768+,
+      side panel 1280+, mobile bottom nav < 768). Mobile layout
+      preserved untouched.
 
 ### Chat / support
 
@@ -124,7 +126,7 @@ Last updated: April 26, 2026.
 - [x] SEO: meta description, canonical, Open Graph, Twitter card,
       schema.org Service JSON-LD
 - [x] Sitemap.xml + robots.txt with correct allow/disallow
-- [ ] `og-image.png` at repo root (1200×630, designed in Claude Design)
+- [x] `og-image.png` at repo root (1200×630, designed in Claude Design)
 - [x] Email templates polished — new branded shell wired through
       all 7 templates in `backend/email/templates.js`
 - [x] About page (`about.html`) live with full SEO + cookie banner
