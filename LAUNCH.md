@@ -180,11 +180,13 @@ Last updated: April 26, 2026.
 
 ### Cleanup
 
-- [ ] Delete `app/widgets/agent-chat.js` (deprecated, replaced by
+- [x] Delete `app/widgets/agent-chat.js` (deprecated, replaced by
       `app/ana.js`)
-- [ ] Remove `LEGACY_EMAILS` allowlist code from `admin.html`
-      (already empty array; the dead code path can go)
-- [ ] Audit `connector.js` for stale routes from earlier versions
+- [x] Remove `LEGACY_EMAILS` allowlist code from `admin.html`
+      (Cognito group is the only path now)
+- [x] Audit `connector.js` for stale routes — clean (FLOW map
+      matches existing pages, brand-tap-home selector already covers
+      the new `<header class="app-topbar">` via the `header` selector)
 
 ---
 

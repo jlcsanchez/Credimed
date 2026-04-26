@@ -1019,13 +1019,8 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
        2. Create group: name='admin' (precedence 1)
        3. Add the relevant users to that group
      After that, those users get cognito:groups=['admin'] in their tokens.
-
-     Cognito group `Admin` is now provisioned in production — the legacy
-     email allowlist is empty. Don't add emails here unless you're
-     bootstrapping a new environment.
   */
   var REQUIRED_GROUP = 'admin';
-  var LEGACY_EMAILS = [];
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -1109,30 +1104,18 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   }
 
   /* Resolve whether the currently signed-in Cognito user is an admin.
-     Tries cognito:groups first; falls back to the legacy email allowlist
-     so existing operators don't get locked out before AWS groups are
-     configured. */
+     Reads cognito:groups from the ID token. */
   async function isAdmin() {
     try {
       var cu = await window.cognitoGetCurrentUser();
       if (!cu) return { ok: false, reason: 'not-signed-in', user: null };
 
-      // Read groups from the ID token if present.
       var token = await window.cognitoGetIdToken().catch(function () { return null; });
       var claims = token ? decodeJwt(token) : null;
       var groups = (claims && claims['cognito:groups']) || [];
       if (Array.isArray(groups) && groups.indexOf(REQUIRED_GROUP) !== -1) {
         return { ok: true, reason: 'group', user: cu };
       }
-
-      // Legacy fallback while Cognito groups aren't fully provisioned.
-      var email = ((cu.attributes && cu.attributes.email) || '').toLowerCase();
-      if (LEGACY_EMAILS.indexOf(email) !== -1) {
-        console.warn('[admin] Granting access via legacy email allowlist. ' +
-          'Move this user into the Cognito "admin" group and clear LEGACY_EMAILS once verified.');
-        return { ok: true, reason: 'legacy-email', user: cu };
-      }
-
       return { ok: false, reason: 'not-admin', user: cu };
     } catch (e) {
       return { ok: false, reason: 'error', user: null, error: e };
