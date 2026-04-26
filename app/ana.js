@@ -28,8 +28,15 @@
   }
 
   function openWhatsApp(message) {
-    var url = 'https://wa.me/' + PHONE + '?text=' + encodeURIComponent(message);
-    window.open(url, '_blank', 'noopener');
+    /* Renamed externally to "Email Ana" — kept the function name so
+       the call sites below don't have to change. WhatsApp doesn't
+       sign HIPAA BAAs, so we route to support@credimed.us (Google
+       Workspace BAA-covered) instead. */
+    var subject = 'Pregunta para Ana';
+    var url = 'mailto:support@credimed.us?subject=' +
+              encodeURIComponent(subject) +
+              '&body=' + encodeURIComponent(message);
+    window.location.href = url;
   }
 
   function injectStyles() {

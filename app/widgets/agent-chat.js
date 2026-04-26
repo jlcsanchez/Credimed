@@ -18,14 +18,81 @@
 (function () {
   'use strict';
 
-  const ENDPOINT = (window.CREDIMED_API || 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com') + '/agents';
+  const ENDPOINT = null;  // Removed: chat is FAQ-driven, no LLM round-trip.
+
+  const SUPPORT_EMAIL = 'support@credimed.us';
 
   const AGENT_META = {
-    sofia: { name: 'Sofia', accent: '#0D9488', opener: 'Hola 👋 soy Sofia. ¿Te ayudo a ver si tu seguro PPO te debe dinero por trabajo dental en México?' },
-    ana:   { name: 'Ana',   accent: '#0D9488', opener: 'Hola 👋 soy Ana. ¿Te ayudo con algo mientras subes tus documentos o revisas tu estimado?' },
-    elena: { name: 'Elena', accent: '#0D9488', opener: 'Hola 👋 soy Elena. Si tienes dudas del plan que te tocó o qué incluye el fee, pregúntame.' },
-    marco: { name: 'Marco', accent: '#0D9488', opener: 'Hola 👋 soy Marco. Tu claim está en camino — si tienes alguna duda, pregúntame.' },
+    sofia: { name: 'Sofia', accent: '#0D9488', opener: 'Hola 👋 soy Sofia. ¿Te ayudo a ver si tu seguro PPO te debe dinero por trabajo dental en México? Toca una pregunta o escribe la tuya.' },
+    ana:   { name: 'Ana',   accent: '#0D9488', opener: 'Hola 👋 soy Ana. Aquí tienes las preguntas más comunes mientras subes tus documentos.' },
+    elena: { name: 'Elena', accent: '#0D9488', opener: 'Hola 👋 soy Elena. Estas son las preguntas más comunes sobre planes y precios.' },
+    marco: { name: 'Marco', accent: '#0D9488', opener: 'Hola 👋 soy Marco. Aquí están las preguntas más comunes sobre el status de tu claim. Para detalles específicos de tu caso, te conecto con un humano por correo.' },
   };
+
+  /**
+   * Normalize a string for keyword matching: lowercase, strip accents,
+   * collapse whitespace. Mirror this logic exactly when adding entries
+   * to faq-data.js — keywords are matched against the normalized form.
+   */
+  function normalize(s) {
+    return (s || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Heuristic Spanish detector. We default to Spanish (since the
+   * personas open in Spanish) but flip to English if the message
+   * contains English-only function words and lacks Spanish ones.
+   */
+  function detectLang(text) {
+    const t = normalize(text);
+    if (!t) return 'es';
+    const en = /\b(the|is|are|how|what|when|where|why|do|does|can|i|you|we|my|your)\b/g;
+    const es = /\b(el|la|los|las|que|como|cuando|donde|porque|cuanto|tu|mi|hola|gracias|si|no)\b/g;
+    const enHits = (t.match(en) || []).length;
+    const esHits = (t.match(es) || []).length;
+    if (enHits >= 2 && esHits === 0) return 'en';
+    return 'es';
+  }
+
+  /**
+   * Score every FAQ entry against the query and return the best
+   * match (or null if no entry scores >= MIN_SCORE).
+   */
+  function matchFAQ(query, catalog) {
+    if (!catalog || catalog.length === 0) return null;
+    const q = normalize(query);
+    if (!q) return null;
+    const tokens = q.split(' ').filter(Boolean);
+    const MIN_SCORE = 1;
+    let best = null;
+    let bestScore = 0;
+    for (const entry of catalog) {
+      let score = 0;
+      // Keyword hits (1 point each, capped to avoid spam-keyword stuffing)
+      for (const kw of (entry.keywords || [])) {
+        const k = normalize(kw);
+        if (!k) continue;
+        if (q.indexOf(k) !== -1) score += 1;
+      }
+      // Strong bonus if a significant token of the question itself
+      // shows up: catches cases where keywords are missing but the
+      // user phrased close to the canonical question.
+      const qEs = normalize(entry.q_es);
+      const qEn = normalize(entry.q_en);
+      for (const tok of tokens) {
+        if (tok.length < 4) continue;
+        if (qEs.indexOf(tok) !== -1 || qEn.indexOf(tok) !== -1) score += 0.5;
+      }
+      if (score > bestScore) { bestScore = score; best = entry; }
+    }
+    return bestScore >= MIN_SCORE ? best : null;
+  }
 
   const SCROLLBAR_CSS = '::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:rgba(15,23,42,.15);border-radius:6px}';
 
@@ -68,6 +135,12 @@
       .cac-foot{padding:8px 12px;text-align:center;font-size:10.5px;color:#94A3B8;background:#fff;border-top:1px solid rgba(15,23,42,.04);flex-shrink:0}
       .cac-foot a{color:#64748B;text-decoration:none}
       .cac-foot a:hover{text-decoration:underline}
+      .cac-quick-replies{display:flex;flex-direction:column;gap:6px;margin-top:4px;align-self:stretch}
+      .cac-qr-btn{text-align:left;background:#fff;color:#0F172A;border:1px solid rgba(13,148,136,.25);border-radius:14px;padding:10px 14px;font-family:inherit;font-size:13px;line-height:1.35;cursor:pointer;transition:background .14s,border-color .14s}
+      .cac-qr-btn:hover{background:#F0FDFA;border-color:#0D9488}
+      .cac-qr-btn:active{background:#CCFBF1}
+      .cac-email-btn{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;background:#0D9488;color:#fff;border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;text-decoration:none;margin-top:4px}
+      .cac-email-btn:hover{background:#0A7A70}
       @media (max-width:520px){
         /* iOS Safari note: 100vh INCLUDES the URL bar area, so a panel sized
            with height:100vh would have its top (header with close button)
@@ -169,7 +242,10 @@
       this.isOpen = true;
       this.bubble.style.display = 'none';
       this._buildPanel();
-      if (this.messages.length === 0) this._addMessage('assistant', this.meta.opener, false);
+      if (this.messages.length === 0) {
+        this._addMessage('assistant', this.meta.opener, false);
+        this._renderQuickReplies(4);
+      }
       this._scrollToBottom();
       setTimeout(() => this.textarea?.focus(), 50);
     }
@@ -200,12 +276,94 @@
       });
       const send = h('button', { class: 'cac-send', 'aria-label': 'Send', onclick: () => this._send() }, this._sendIcon());
       const input = h('div', { class: 'cac-input' }, textarea, send);
-      const foot = h('div', { class: 'cac-foot' }, `${this.meta.name} is an AI assistant powered by Claude · `, h('a', { href: 'mailto:support@credimed.us' }, 'talk to a human'));
+      const foot = h('div', { class: 'cac-foot' }, 'For specific case questions · ', h('a', { href: 'mailto:' + SUPPORT_EMAIL }, 'email a human'));
       const panel = h('div', { class: 'cac-panel', role: 'dialog', 'aria-label': `Chat with ${this.meta.name}` }, head, body, input, foot);
       document.body.appendChild(panel);
       this.panel = panel; this.body = body; this.textarea = textarea; this.sendBtn = send;
       // Re-render existing messages
       for (const m of this.messages) this._renderMessage(m);
+    }
+
+    /**
+     * Render up-to-N quick-reply buttons in the chat body. Clicking
+     * one is equivalent to typing that question — same FAQ flow,
+     * just no typing required. Renders below the most recent assistant
+     * message, never above the user's history.
+     */
+    _renderQuickReplies(limit) {
+      if (!this.body) return;
+      const catalog = (window.CredimedFAQ && window.CredimedFAQ[this.agent]) || [];
+      if (catalog.length === 0) return;
+      const container = h('div', { class: 'cac-quick-replies' });
+      const lang = this.lang || 'es';
+      const slice = catalog.slice(0, limit || 4);
+      for (const entry of slice) {
+        const label = lang === 'en' ? entry.q_en : entry.q_es;
+        const btn = h('button', {
+          class: 'cac-qr-btn',
+          type: 'button',
+          onclick: () => this._answerEntry(entry, label)
+        }, label);
+        container.appendChild(btn);
+      }
+      this.body.appendChild(container);
+      this._scrollToBottom();
+    }
+
+    _clearQuickReplies() {
+      if (!this.body) return;
+      const existing = this.body.querySelectorAll('.cac-quick-replies');
+      existing.forEach((el) => el.remove());
+    }
+
+    /**
+     * Render an answer card and a follow-up "What else can I ask?"
+     * row of quick replies so the conversation can keep flowing.
+     */
+    _answerEntry(entry, userText) {
+      this._clearQuickReplies();
+      this._addMessage('user', userText);
+      const lang = this.lang || 'es';
+      const reply = lang === 'en' ? entry.a_en : entry.a_es;
+      this._addMessage('assistant', reply);
+      this.unmatchedCount = 0;
+      this._renderQuickReplies(4);
+    }
+
+    /**
+     * No FAQ matched. Surface the email-escalation card as a real chat
+     * bubble plus a button. After two unmatched attempts in a row,
+     * we make the email path the headline.
+     */
+    _renderEscalation(prominent) {
+      const lang = this.lang || 'es';
+      const msg = prominent
+        ? (lang === 'en'
+            ? "I can only answer common questions here. For your specific case, please email a human at " + SUPPORT_EMAIL + " — we reply within one business day."
+            : 'Aquí solo respondo preguntas comunes. Para tu caso específico, por favor escríbele a un humano a ' + SUPPORT_EMAIL + ' — respondemos en menos de un día hábil.')
+        : (lang === 'en'
+            ? "I don't have a canned answer for that. You can email " + SUPPORT_EMAIL + " for a human, or try one of the questions below."
+            : 'No tengo una respuesta para eso. Puedes escribir a ' + SUPPORT_EMAIL + ' para hablar con un humano, o prueba con una de las preguntas de abajo.');
+      this._addMessage('assistant', msg);
+      this._renderEmailButton();
+      this._renderQuickReplies(4);
+    }
+
+    _renderEmailButton() {
+      if (!this.body) return;
+      const lang = this.lang || 'es';
+      const subject = encodeURIComponent('Pregunta para Credimed (' + this.agent + ')');
+      const ctxLine = this.context && this.context.claimId ? '%0A%0AClaim ID: ' + encodeURIComponent(this.context.claimId) : '';
+      const body = encodeURIComponent('Hola,%0A%0A') + ctxLine;
+      const href = 'mailto:' + SUPPORT_EMAIL + '?subject=' + subject + '&body=' + body;
+      const btn = h('a', {
+        class: 'cac-email-btn',
+        href,
+        target: '_blank',
+        rel: 'noopener'
+      }, lang === 'en' ? '✉ Email a human' : '✉ Escribirle a un humano');
+      this.body.appendChild(btn);
+      this._scrollToBottom();
     }
 
     _xIcon() {
@@ -258,51 +416,57 @@
       if (this.body) this.body.scrollTop = this.body.scrollHeight;
     }
 
-    async _send() {
+    /**
+     * FAQ-driven response. No network call. Steps:
+     *   1. Detect language on the user's first typed message and lock it.
+     *   2. Score the catalog for the active persona; if a match wins,
+     *      render its answer.
+     *   3. If nothing scores, increment unmatchedCount. First miss is
+     *      a soft "try one of these" with quick replies; second miss
+     *      becomes the prominent email-escalation card.
+     */
+    _send() {
       if (this.isSending) return;
       const text = this.textarea.value.trim();
       if (!text) return;
       this.textarea.value = '';
       this.textarea.style.height = 'auto';
+
+      // Lock language to the first non-trivial typed message.
+      if (!this.lang || this.lang === 'auto') {
+        this.lang = detectLang(text);
+      }
+
+      this._clearQuickReplies();
       this._addMessage('user', text);
+
       this.isSending = true;
       this.sendBtn.disabled = true;
       this._showTyping();
 
-      try {
-        // JWT for logged-in agents (ana/elena/marco)
-        let token = null;
-        if (this.agent !== 'sofia' && window.cognitoGetIdToken) {
-          try { token = await window.cognitoGetIdToken(); } catch {}
-        }
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) headers['Authorization'] = 'Bearer ' + token;
-
-        const body = {
-          agent: this.agent,
-          messages: this.messages.map((m) => ({ role: m.role, content: m.content })),
-          context: this.context,
-        };
-
-        const resp = await fetch(ENDPOINT, { method: 'POST', headers, body: JSON.stringify(body) });
-        const data = await resp.json();
+      // Tiny delay so the typing indicator reads as "thinking" rather
+      // than being instant. Keeps the conversational feel without a
+      // real round-trip.
+      setTimeout(() => {
         this._hideTyping();
 
-        if (!resp.ok) {
-          const msg = data?.error || `Error ${resp.status}. Intenta de nuevo.`;
-          this._addMessage('assistant', `⚠️ ${msg}`);
-          return;
+        const catalog = (window.CredimedFAQ && window.CredimedFAQ[this.agent]) || [];
+        const match = matchFAQ(text, catalog);
+
+        if (match) {
+          const reply = this.lang === 'en' ? match.a_en : match.a_es;
+          this._addMessage('assistant', reply);
+          this.unmatchedCount = 0;
+          this._renderQuickReplies(4);
+        } else {
+          this.unmatchedCount = (this.unmatchedCount || 0) + 1;
+          this._renderEscalation(this.unmatchedCount >= 2);
         }
-        this._addMessage('assistant', data.reply || '…');
-      } catch (err) {
-        this._hideTyping();
-        this._addMessage('assistant', `⚠️ Tuve un problema conectándome. Revisa tu internet e intenta otra vez — o escríbenos a support@credimed.us.`);
-        console.error('[agent-chat]', err);
-      } finally {
+
         this.isSending = false;
         this.sendBtn.disabled = false;
         this.textarea.focus();
-      }
+      }, 240);
     }
   }
 

@@ -253,17 +253,23 @@ document.addEventListener('DOMContentLoaded', async function() {
 })();
 </script>
 
-<!-- Sofia, the public landing chat agent. Loads after first paint so it
-     never blocks the hero. The widget itself renders a friendly fallback
-     if the agents Lambda isn't live yet, so it's safe to ship before AWS
-     deployment. -->
+<!-- Sofia, the public landing chat persona. Loads after first paint so it
+     never blocks the hero. The widget is FAQ-driven (no LLM round-trip)
+     so it works fully offline of any backend. faq-data.js must load
+     before agent-chat.js — the widget reads window.CredimedFAQ at
+     open() time. -->
 <script>
 (function () {
-  var s = document.createElement('script');
-  s.src = '/app/widgets/agent-chat.js';
-  s.async = true;
-  s.setAttribute('data-agent', 'sofia');
-  document.body.appendChild(s);
+  var faq = document.createElement('script');
+  faq.src = '/app/widgets/faq-data.js';
+  faq.async = false;
+  document.body.appendChild(faq);
+
+  var chat = document.createElement('script');
+  chat.src = '/app/widgets/agent-chat.js';
+  chat.async = false;
+  chat.setAttribute('data-agent', 'sofia');
+  document.body.appendChild(chat);
 })();
 </script>
 
