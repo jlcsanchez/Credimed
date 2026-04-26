@@ -98,8 +98,8 @@ const ANA_FAQ = [
     topic: 'docs',
     q_es: '¿Qué documentos necesito subir?',
     q_en: 'What documents do I need to upload?',
-    a_es: 'Dos archivos: (1) foto/PDF de tu credencial de seguro dental, ambos lados si es posible. (2) recibo del dentista en México con el desglose de procedimientos. JPG, PNG o PDF.',
-    a_en: 'Two files: (1) photo/PDF of your dental insurance card, both sides if possible. (2) dentist receipt from Mexico with itemized procedures. JPG, PNG or PDF.',
+    a_es: 'Tres cosas: (1) foto/PDF de tu credencial de seguro dental, ambos lados si es posible. (2) recibo del dentista en México con el desglose de procedimientos. (3) las radiografías que te tomaron — refuerzan el claim. JPG, PNG o PDF.',
+    a_en: "Three things: (1) photo/PDF of your dental insurance card, both sides if possible. (2) dentist receipt from Mexico with itemized procedures. (3) any x-rays the dentist took — they strengthen the claim. JPG, PNG or PDF.",
     keywords: ['documento', 'document', 'subir', 'upload', 'archivo', 'file', 'papel', 'need', 'necesito', 'requier']
   },
   {
