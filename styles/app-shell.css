@@ -445,6 +445,77 @@ body[data-page="profile"]    .app-bottomnav a[data-nav="profile"]   svg {
 }
 
 /* ============================================================
+   IPHONE-MOCKUP CONTENT NORMALIZATION
+   The original /app/ pages were authored as iPhone mockups
+   (.stage > .device-wrap > .iphone > .screen). When wrapped in
+   the shell on PC, the mockup chrome looks small and centered
+   in a sea of cream. These rules strip the device-frame chrome
+   at >= 768px when inside .app-main, so the mobile screen content
+   fills the main column. The desktop-variant device-wrap (which
+   often ships empty or with stale chrome) is hidden so we don't
+   render duplicate or broken content.
+
+   Mobile (< 768px) is untouched — the iPhone framing is the
+   correct presentation there.
+   ============================================================ */
+@media (min-width: 768px) {
+  .app-main .stage {
+    padding: 0 !important;
+    min-height: auto !important;
+    background: transparent !important;
+    display: block !important;
+  }
+  .app-main .device-wrap:nth-of-type(1) {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .app-main .device-wrap:nth-of-type(2) { display: none !important; }
+  .app-main .device-label,
+  .app-main .topbar { display: none !important; }
+  .app-main .iphone {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .app-main .iphone::before { display: none !important; }
+  .app-main .screen,
+  .app-main #screen-mobile {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+  /* Center long-form screen content at a comfortable reading width
+     (the inner content was authored for ~480px wide) so it doesn't
+     stretch absurdly on a 1920px monitor. */
+  .app-main .screen,
+  .app-main #screen-mobile,
+  .app-main #screen-desktop {
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding: 24px 0 !important;
+  }
+}
+@media (min-width: 1280px) {
+  .app-main .screen,
+  .app-main #screen-mobile,
+  .app-main #screen-desktop {
+    max-width: 800px !important;
+  }
+}
+
+/* ============================================================
    ANA CHAT BUBBLE — lift above the mobile bottom nav so the
    floating action button doesn't cover the rightmost tab.
    Only applies on shell pages (this CSS file is loaded only
