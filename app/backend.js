@@ -58,7 +58,14 @@ window.authFetch = async function (url, opts) {
   if (resp.status === 401) {
     console.warn('[authFetch] 401 - session expired, redirecting to login');
     try { window.cognitoSignOut(); } catch (e) {}
-    try { window.location.href = '/app/login.html?expired=1'; } catch (e) {}
+    // Preserve where the user was so login can redirect back. Skip
+    // for the login page itself to avoid a redirect loop.
+    var here = window.location.pathname + window.location.search + window.location.hash;
+    var loginUrl = '/app/login.html?reason=expired';
+    if (!/\/login\.html$/.test(window.location.pathname)) {
+      loginUrl += '&return=' + encodeURIComponent(here);
+    }
+    try { window.location.href = loginUrl; } catch (e) {}
     throw new Error('Session expired. Please sign in again.');
   }
   return resp;

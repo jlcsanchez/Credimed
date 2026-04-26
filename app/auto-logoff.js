@@ -65,7 +65,14 @@
     try {
       if (window.cognitoSignOut) window.cognitoSignOut();
     } catch (e) {}
-    location.href = '/app/login.html?reason=inactivity';
+    // Preserve where the user was so login can redirect back. Skip
+    // the return param when already on login (avoids loops).
+    var here = location.pathname + location.search + location.hash;
+    var url = '/app/login.html?reason=inactivity';
+    if (!/\/login\.html$/.test(location.pathname)) {
+      url += '&return=' + encodeURIComponent(here);
+    }
+    location.href = url;
   }
 
   function buildModal() {

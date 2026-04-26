@@ -303,6 +303,15 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
      - default (unknown flow) → check local claim state, then fall back
        to documents for safety. */
   function getPostAuthUrl(mode) {
+    /* If the user was redirected here from a deep link (auto-logoff or
+       authFetch 401), return them to where they were. Validate the path
+       is internal to /app/ so a hostile ?return=https://evil.com link
+       can't redirect away after login. */
+    try {
+      var ret = new URLSearchParams(window.location.search).get('return');
+      if (ret && /^\/app\/[\w\-./]+$/.test(ret)) return ret;
+    } catch (e) {}
+
     if (mode === 'login') return '/app/dashboard.html';
     if (mode === 'signup') return '/app/documents.html';
     try {
@@ -756,9 +765,17 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     if (params.get('mode') === 'login' || window.location.hash === '#login') {
       show('screen-login');
     }
-    if (params.get('expired') === '1') {
+    /* Reason flags from authFetch (?reason=expired) and auto-logoff
+       (?reason=inactivity). Legacy ?expired=1 is still honored for
+       any old links sitting in muscle memory or in someone's tab. */
+    var reason = params.get('reason') || (params.get('expired') === '1' ? 'expired' : '');
+    if (reason) {
       show('screen-login');
-      showError('Your session expired. Please sign in again.');
+      var msg =
+        reason === 'inactivity' ? 'You were signed out for inactivity. Please sign in again to continue.' :
+        reason === 'signin'     ? 'Please sign in to continue.' :
+                                  'Your session expired. Please sign in again.';
+      showError(msg);
     }
   })();
 })();

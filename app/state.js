@@ -2,19 +2,35 @@
   'use strict';
 
   var STORAGE_KEY = 'credimed:state';
+  /* SCHEMA_VERSION: bump whenever the shape of the persisted state
+     object changes incompatibly. read() drops state whose version
+     doesn't match so old in-flight claims don't show up rendered
+     against new keys. Bump in the same commit that introduces the
+     new shape, never separately. */
+  var SCHEMA_VERSION = 1;
   var listeners = {};
 
   function read() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
+      if (!raw) return { _v: SCHEMA_VERSION };
+      var parsed = JSON.parse(raw);
+      if (parsed && parsed._v === SCHEMA_VERSION) return parsed;
+      // Old/unknown schema — discard. No migration today; the user
+      // re-enters the few fields in the active step. If the cost of
+      // that ever gets too high, write a real migrator here.
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      return { _v: SCHEMA_VERSION };
     } catch (e) {
-      return {};
+      return { _v: SCHEMA_VERSION };
     }
   }
 
   function write(obj) {
     try {
+      // Always stamp the version on every write so a partially-written
+      // tree from a tab crash still validates on next read.
+      obj._v = SCHEMA_VERSION;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
     } catch (e) {}
   }

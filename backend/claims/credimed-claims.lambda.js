@@ -37,7 +37,13 @@ import { templateForStatus } from "../email/templates.js";
 const db  = new DynamoDBClient({ region: "us-west-2" });
 const kms = new KMSClient({ region: "us-west-2" });
 
-const ALLOWED_ORIGIN = "https://credimed.us";
+const ALLOWED_ORIGINS = new Set([
+  "https://credimed.us",
+  "https://www.credimed.us",
+  // Local dev — strip these from a hardened production build.
+  "http://localhost:8000",
+  "http://127.0.0.1:8000"
+]);
 const ADMIN_GROUP    = "admin";
 const TABLE          = "credimed-claims";
 const USER_INDEX     = "userId-createdAt-index";
@@ -53,15 +59,31 @@ const ALLOWED_STATUSES = new Set([
 
 // ---------- helpers ----------
 
-function response(statusCode, body) {
+/**
+ * Origin-aware CORS. Echo back the request Origin only if it's in the
+ * allowlist; otherwise default to the canonical apex domain so the
+ * browser blocks the response. Including Vary: Origin so caches keep
+ * one entry per origin.
+ */
+function corsHeaders(event) {
+  const reqOrigin =
+    event?.headers?.origin || event?.headers?.Origin || "";
+  const allowed = ALLOWED_ORIGINS.has(reqOrigin)
+    ? reqOrigin
+    : "https://credimed.us";
+  return {
+    "Access-Control-Allow-Origin":  allowed,
+    "Access-Control-Allow-Methods": "GET, PATCH, OPTIONS",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    "Vary": "Origin",
+    "Content-Type": "application/json"
+  };
+}
+
+function buildResponse(statusCode, body, event) {
   return {
     statusCode,
-    headers: {
-      "Access-Control-Allow-Origin":  ALLOWED_ORIGIN,
-      "Access-Control-Allow-Methods": "GET, PATCH, OPTIONS",
-      "Access-Control-Allow-Headers": "Authorization, Content-Type",
-      "Content-Type": "application/json"
-    },
+    headers: corsHeaders(event),
     body: JSON.stringify(body)
   };
 }
@@ -252,6 +274,9 @@ function audit(event, fields) {
 }
 
 export const handler = async (event) => {
+  // Local response() binds the per-request event so corsHeaders can
+  // echo the right Origin without threading event through every call.
+  const response = (statusCode, body) => buildResponse(statusCode, body, event);
   try {
     const method = event.requestContext?.http?.method || "GET";
     if (method === "OPTIONS") return response(204, {});
