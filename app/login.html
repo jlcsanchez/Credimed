@@ -102,9 +102,119 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     overflow: hidden;
   }
 }
+
+/* Two-column auth split-screen on wide desktop. Brand/value-prop on
+   the left, form card on the right. Hidden under 960px — mobile and
+   tablet stay with the focused single-card layout. */
+.auth-brand-panel { display: none; }
+@media (min-width: 960px) {
+  body {
+    background:
+      linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
+    min-height: 100vh;
+    display: grid !important;
+    grid-template-columns: 1fr 520px;
+    align-items: center;
+    gap: 0;
+  }
+  html, body {
+    background:
+      linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%) !important;
+  }
+  .auth-brand-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 64px 80px;
+    color: #fff;
+    max-width: 720px;
+    margin-left: auto;
+  }
+  .auth-brand-panel .ab-mark {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.92); margin-bottom: 40px;
+  }
+  .auth-brand-panel .ab-mark .ab-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.24);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700;
+  }
+  .auth-brand-panel h2 {
+    font-family: 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
+    font-size: 44px; line-height: 1.15; letter-spacing: -0.02em;
+    margin: 0 0 18px; color: #fff; font-weight: 600;
+    max-width: 540px;
+  }
+  .auth-brand-panel h2 em { font-style: italic; color: var(--teal-300, #5EEAD4); }
+  .auth-brand-panel .ab-sub {
+    font-size: 17px; line-height: 1.55; color: rgba(255,255,255,0.78);
+    margin: 0 0 36px; max-width: 480px;
+  }
+  .auth-brand-panel .ab-list {
+    list-style: none; padding: 0; margin: 0 0 32px;
+    display: flex; flex-direction: column; gap: 14px;
+    max-width: 480px;
+  }
+  .auth-brand-panel .ab-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 15px; line-height: 1.5; color: rgba(255,255,255,0.88);
+  }
+  .auth-brand-panel .ab-list .ab-check {
+    flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(94,234,212,0.18);
+    border: 1px solid rgba(94,234,212,0.32);
+    color: var(--teal-300, #5EEAD4);
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .auth-brand-panel .ab-trust {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    letter-spacing: 0.02em;
+  }
+  .auth-brand-panel .ab-trust span { display: inline-flex; align-items: center; gap: 6px; }
+  .page {
+    margin: 40px 80px 40px 0 !important;
+    max-width: 520px !important;
+    width: 100%;
+  }
+}
 </style>
 </head>
 <body>
+
+<aside class="auth-brand-panel" aria-hidden="true">
+  <div class="ab-mark">
+    <span class="ab-circle">H</span>
+    <span>CREDIMED</span>
+  </div>
+  <h2>Recover money for dental work in <em>Mexico.</em></h2>
+  <p class="ab-sub">We file the claim with your US PPO insurer. You pay upfront. If your claim should be covered and isn't, we refund you 100%.</p>
+  <ul class="ab-list">
+    <li>
+      <span class="ab-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span>Your insurer pays you directly &mdash; we never touch your refund.</span>
+    </li>
+    <li>
+      <span class="ab-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span>Most members recover $600&ndash;$1,500 in 3&ndash;6 weeks.</span>
+    </li>
+    <li>
+      <span class="ab-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span>One flat fee from $49 &mdash; no commission, no subscription.</span>
+    </li>
+  </ul>
+  <div class="ab-trust">
+    <span>HIPAA-aligned</span>
+    <span>&middot;</span>
+    <span>256-bit encrypted</span>
+    <span>&middot;</span>
+    <span>US-incorporated</span>
+  </div>
+</aside>
 
 <div class="page">
 
