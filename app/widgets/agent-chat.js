@@ -1,18 +1,10 @@
 /* =========================================================================
-   Credimed agent chat widget
-   Drop-in floating chat bubble that talks to the credimed-agents Lambda.
-
-   Usage:
-     <script src="widgets/agent-chat.js"
-             data-agent="ana"
-             data-context='{"claimId":"CMX-...","claimStatus":"submitted"}'></script>
-
-     Or init manually:
-       CredimedAgentChat.init({ agent: 'marco', context: {...} });
-
-   Agent values: sofia | ana | elena | marco
-   Context is optional. If present, it is passed through to the Lambda so
-   the prompt can personalize replies.
+   Credimed agent chat widget — DEPRECATED
+   ----------------------------------------
+   Superseded by /app/ana.js, which is the single chat persona used
+   across the entire Credimed app. This file is kept for one release
+   cycle in case a page reference was missed; it will be removed once
+   we've confirmed nothing in production loads it.
    ========================================================================= */
 
 (function () {

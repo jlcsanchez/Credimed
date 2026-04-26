@@ -165,8 +165,8 @@
     ]);
 
     var body = el('div', { class: 'ana-body' }, [
-      el('div', { class: 'ana-msg ana-from' }, "Hi! I'm Ana, your Credimed claims assistant."),
-      el('div', { class: 'ana-msg ana-from' }, "I can help with documents, timing, or plan questions. Tap a question or type your own.")
+      el('div', { class: 'ana-msg ana-from' }, "Hi, I'm Ana Lucía — I'll help you recover your refund."),
+      el('div', { class: 'ana-msg ana-from' }, "Tap a question or type your own.")
     ]);
 
     function addMsg(role, text) {

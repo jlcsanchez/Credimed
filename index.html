@@ -253,11 +253,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 })();
 </script>
 
-<!-- Sofia, the public landing chat persona. Loads after first paint so it
-     never blocks the hero. The widget is FAQ-driven (no LLM round-trip)
-     so it works fully offline of any backend. faq-data.js must load
-     before agent-chat.js — the widget reads window.CredimedFAQ at
-     open() time. -->
+<!-- Ana — single chat persona across the entire app, FAQ-driven (no
+     LLM round-trip) so it works fully offline of any backend. Loads
+     after first paint so the hero never blocks. faq-data.js must
+     load before ana.js — the widget reads window.CredimedFAQ.ana
+     at build. -->
 <script>
 (function () {
   var faq = document.createElement('script');
@@ -266,9 +266,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.body.appendChild(faq);
 
   var chat = document.createElement('script');
-  chat.src = '/app/widgets/agent-chat.js';
+  chat.src = '/app/ana.js';
   chat.async = false;
-  chat.setAttribute('data-agent', 'sofia');
   document.body.appendChild(chat);
 })();
 </script>
