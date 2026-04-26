@@ -117,16 +117,22 @@ function isAdmin(claims) {
   let groups = claims["cognito:groups"];
   if (groups == null) return false;
   if (typeof groups === "string") {
-    const trimmed = groups.trim();
-    if (trimmed.startsWith("[")) {
-      try { groups = JSON.parse(trimmed); }
-      catch { groups = trimmed.split(/[,\s]+/); }
+    let trimmed = groups.trim();
+    // API Gateway HTTP API serializes JWT array claims as "[Admin Editor]"
+    // — bracket-wrapped, space-separated, no quotes. JSON.parse fails on
+    // this. Strip outer brackets first, then split.
+    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+      const inner = trimmed.slice(1, -1).trim();
+      try { groups = JSON.parse("[" + inner + "]"); }
+      catch { groups = inner.split(/[,\s]+/).filter(Boolean); }
     } else {
-      groups = trimmed.split(/[,\s]+/);
+      groups = trimmed.split(/[,\s]+/).filter(Boolean);
     }
   }
   if (!Array.isArray(groups)) return false;
-  return groups.map((g) => String(g).trim().toLowerCase()).includes(ADMIN_GROUP);
+  return groups
+    .map((g) => String(g).replace(/["\[\]]/g, "").trim().toLowerCase())
+    .includes(ADMIN_GROUP);
 }
 
 // ---------- route handlers ----------
