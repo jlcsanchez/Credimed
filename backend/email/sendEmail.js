@@ -25,7 +25,14 @@ import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { buildEmail } from './templates.js';
 
 const REGION = process.env.AWS_REGION || 'us-west-2';
-const FROM_EMAIL = process.env.FROM_EMAIL || 'Credimed <hello@credimed.us>';
+/**
+ * The verified domain in SES is credimed.us, so any @credimed.us
+ * address works as a sender — but replies route to wherever the
+ * address actually exists in Google Workspace. As of launch only
+ * ceo@credimed.us is live; switch this to hello@credimed.us once
+ * that alias is created.
+ */
+const FROM_EMAIL = process.env.FROM_EMAIL || 'Credimed <ceo@credimed.us>';
 
 const ses = new SESClient({ region: REGION });
 

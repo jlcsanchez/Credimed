@@ -91,7 +91,7 @@ For both Lambdas (`credimed-claims` and `credimed-stripe-webhook`):
 
 | Key          | Value                                |
 | ------------ | ------------------------------------ |
-| `FROM_EMAIL` | `Credimed <hello@credimed.us>`       |
+| `FROM_EMAIL` | `Credimed <ceo@credimed.us>` *(switch to `hello@credimed.us` once that alias exists in Google Workspace)* |
 | `AWS_REGION` | `us-west-2` (already set)            |
 
 ## Step 5 — Deploy the email helper alongside each Lambda
