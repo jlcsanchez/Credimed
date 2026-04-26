@@ -2,10 +2,9 @@
  * Ana — embedded floating chat for the in-app flow pages
  * (login, documents, estimate, before-sign, submission-confirmed).
  *
- * Same FAQ-driven model as agent-chat.js (Sofia on the landing) but
- * with Ana's drawer-style UI rather than a centered panel. Reads
- * window.CredimedFAQ.ana so all canned answers live in one place
- * (faq-data.js) instead of being duplicated here.
+ * FAQ-driven, drawer-style. Reads window.CredimedFAQ.ana so all
+ * canned answers live in one place (faq-data.js) instead of being
+ * duplicated here.
  *
  * No LLM. No WhatsApp. Free-text questions that don't match any
  * canned answer surface a mailto:support@credimed.us escalation.
@@ -29,7 +28,7 @@
   } catch (e) {}
   if (window.CREDIMED_ANA_TOPIC) topic = window.CREDIMED_ANA_TOPIC;
 
-  // -------- Helpers (mirror agent-chat.js so behavior is identical) -------
+  // -------- Helpers --------
 
   function normalize(s) {
     return (s || '')

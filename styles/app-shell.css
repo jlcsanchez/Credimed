@@ -1,0 +1,463 @@
+/* ============================================================
+   Credimed app-shell — shared CSS for /app/*.html
+   ------------------------------------------------------------
+   Drop-in, non-invasive: this file styles a wrapper that goes
+   AROUND existing page content. Existing rules inside .app-main
+   are untouched.
+
+   Class contract (stable, do not rename):
+     body[data-page="..."]   - drives sidebar active state
+     .app-shell              - root grid
+       .app-shell.has-panel  - opt in to right side panel
+     .app-topbar             - mobile-only top bar (< 768px)
+     .app-sidebar            - sidebar (768px+)
+     .app-main               - main content slot (existing page goes here)
+     .app-panel              - optional right-side panel (1280px+)
+     .app-bottomnav          - mobile-only bottom nav (< 768px)
+
+   Breakpoints:
+     <  768px : mobile  - topbar + bottomnav, no sidebar/panel
+     >= 768px : tablet  - icon-only sidebar (60px)
+     >= 960px : desktop - full sidebar (240px)
+     >= 1280px: wide    - right side panel (320px) appears on .has-panel
+
+   Tokens come from the tokens already defined in each app page.
+   This file does NOT redeclare them — assumes :root has them.
+   If a page lacks them, fall back values are inlined here.
+   ============================================================ */
+
+:root {
+  --shell-sidebar-w: 240px;
+  --shell-sidebar-w-collapsed: 60px;
+  --shell-panel-w: 320px;
+  --shell-content-max: 1080px;
+  --shell-reading-max: 720px;
+
+  /* Fallbacks — only used if the page hasn't already defined them. */
+  --shell-cream:    #FAF6EF;
+  --shell-cream-2:  #F1ECE0;
+  --shell-teal-50:  #F0FDFA;
+  --shell-teal-100: #CCFBF1;
+  --shell-teal-600: #0D9488;
+  --shell-teal-700: #0F766E;
+  --shell-teal-900: #134E4A;
+  --shell-slate-200:#E2E8F0;
+  --shell-slate-300:#CBD5E1;
+  --shell-slate-400:#94A3B8;
+  --shell-slate-500:#64748B;
+  --shell-slate-600:#475569;
+  --shell-slate-700:#334155;
+  --shell-slate-900:#0F172A;
+}
+
+/* ============================================================
+   ROOT GRID
+   ============================================================ */
+.app-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "topbar"
+    "main"
+    "bottomnav";
+  min-height: 100vh;
+  background: var(--cream, var(--shell-cream));
+}
+
+@media (min-width: 768px) {
+  .app-shell {
+    grid-template-columns: var(--shell-sidebar-w-collapsed) 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "sidebar main";
+  }
+  .app-shell.has-panel {
+    grid-template-columns: var(--shell-sidebar-w-collapsed) 1fr;
+    grid-template-areas: "sidebar main";
+  }
+}
+@media (min-width: 960px) {
+  .app-shell,
+  .app-shell.has-panel {
+    grid-template-columns: var(--shell-sidebar-w) 1fr;
+    grid-template-areas: "sidebar main";
+  }
+}
+@media (min-width: 1280px) {
+  .app-shell.has-panel {
+    grid-template-columns: var(--shell-sidebar-w) 1fr var(--shell-panel-w);
+    grid-template-areas: "sidebar main panel";
+  }
+}
+
+/* ============================================================
+   TOPBAR  (mobile only, < 768px)
+   ============================================================ */
+.app-topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 16px;
+  background: rgba(250, 246, 239, 0.92);
+  backdrop-filter: blur(14px) saturate(180%);
+  border-bottom: 1px solid var(--cream-2, var(--shell-cream-2));
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+@media (min-width: 768px) { .app-topbar { display: none; } }
+
+.app-topbar .brand {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 700; font-size: 13px; letter-spacing: 0.1em;
+  color: var(--slate-900, var(--shell-slate-900));
+}
+.app-topbar .brand-mark {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--teal-600, var(--shell-teal-600));
+  color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; letter-spacing: 0;
+}
+.app-topbar .icon-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--cream-2, var(--shell-cream-2));
+  background: #fff;
+  color: var(--slate-700, var(--shell-slate-700));
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.app-topbar .icon-btn svg { width: 18px; height: 18px; }
+
+/* ============================================================
+   SIDEBAR  (>= 768px)
+   ============================================================ */
+.app-sidebar {
+  grid-area: sidebar;
+  display: none;
+  flex-direction: column;
+  background: #fff;
+  border-right: 1px solid var(--cream-2, var(--shell-cream-2));
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 20;
+}
+@media (min-width: 768px) { .app-sidebar { display: flex; } }
+
+.app-sidebar .sb-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 20px 18px;
+  border-bottom: 1px solid var(--cream-2, var(--shell-cream-2));
+  height: 64px;
+  flex-shrink: 0;
+}
+.app-sidebar .sb-mark {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--teal-600, var(--shell-teal-600));
+  color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.app-sidebar .sb-name {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--slate-900, var(--shell-slate-900));
+}
+
+.app-sidebar .sb-section {
+  padding: 16px 12px;
+}
+.app-sidebar .sb-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-400, var(--shell-slate-400));
+  padding: 0 10px 8px;
+}
+.app-sidebar .sb-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.app-sidebar .sb-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--slate-600, var(--shell-slate-600));
+  text-decoration: none;
+  transition: background .12s, color .12s;
+  white-space: nowrap;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+}
+.app-sidebar .sb-link:hover {
+  background: var(--cream, var(--shell-cream));
+  color: var(--slate-900, var(--shell-slate-900));
+}
+.app-sidebar .sb-link svg {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  color: var(--slate-400, var(--shell-slate-400));
+  transition: color .12s;
+}
+.app-sidebar .sb-link:hover svg {
+  color: var(--slate-700, var(--shell-slate-700));
+}
+.app-sidebar .sb-link.active {
+  background: var(--teal-50, var(--shell-teal-50));
+  color: var(--teal-900, var(--shell-teal-900));
+  font-weight: 600;
+}
+.app-sidebar .sb-link.active svg {
+  color: var(--teal-600, var(--shell-teal-600));
+}
+.app-sidebar .sb-link .badge {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--teal-600, var(--shell-teal-600));
+  color: #fff;
+}
+
+/* Active state driven by [data-page] on body */
+body[data-page="dashboard"]  .app-sidebar .sb-link[data-nav="dashboard"],
+body[data-page="claims"]     .app-sidebar .sb-link[data-nav="claims"],
+body[data-page="claim"]      .app-sidebar .sb-link[data-nav="claims"],
+body[data-page="documents"]  .app-sidebar .sb-link[data-nav="documents"],
+body[data-page="profile"]    .app-sidebar .sb-link[data-nav="profile"],
+body[data-page="admin"]      .app-sidebar .sb-link[data-nav="admin"] {
+  background: var(--teal-50, var(--shell-teal-50));
+  color: var(--teal-900, var(--shell-teal-900));
+  font-weight: 600;
+}
+body[data-page="dashboard"]  .app-sidebar .sb-link[data-nav="dashboard"] svg,
+body[data-page="claims"]     .app-sidebar .sb-link[data-nav="claims"]    svg,
+body[data-page="claim"]      .app-sidebar .sb-link[data-nav="claims"]    svg,
+body[data-page="documents"]  .app-sidebar .sb-link[data-nav="documents"] svg,
+body[data-page="profile"]    .app-sidebar .sb-link[data-nav="profile"]   svg,
+body[data-page="admin"]      .app-sidebar .sb-link[data-nav="admin"]     svg {
+  color: var(--teal-600, var(--shell-teal-600));
+}
+
+/* Mirror to bottom nav */
+body[data-page="dashboard"]  .app-bottomnav a[data-nav="dashboard"],
+body[data-page="claims"]     .app-bottomnav a[data-nav="claims"],
+body[data-page="claim"]      .app-bottomnav a[data-nav="claims"],
+body[data-page="documents"]  .app-bottomnav a[data-nav="documents"],
+body[data-page="profile"]    .app-bottomnav a[data-nav="profile"] {
+  color: var(--teal-700, var(--shell-teal-700));
+}
+body[data-page="dashboard"]  .app-bottomnav a[data-nav="dashboard"] svg,
+body[data-page="claims"]     .app-bottomnav a[data-nav="claims"]    svg,
+body[data-page="claim"]      .app-bottomnav a[data-nav="claims"]    svg,
+body[data-page="documents"]  .app-bottomnav a[data-nav="documents"] svg,
+body[data-page="profile"]    .app-bottomnav a[data-nav="profile"]   svg {
+  color: var(--teal-600, var(--shell-teal-600));
+}
+
+.app-sidebar .sb-spacer { flex: 1; }
+
+.app-sidebar .sb-foot {
+  padding: 12px 12px 16px;
+  border-top: 1px solid var(--cream-2, var(--shell-cream-2));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.app-sidebar .sb-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+.app-sidebar .sb-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal-600, var(--shell-teal-600)), var(--teal-900, var(--shell-teal-900)));
+  color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  flex-shrink: 0;
+}
+.app-sidebar .sb-user-info { min-width: 0; flex: 1; }
+.app-sidebar .sb-user-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--slate-900, var(--shell-slate-900));
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.app-sidebar .sb-user-meta {
+  font-size: 11px; color: var(--slate-500, var(--shell-slate-500));
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* Tablet collapsed (icon-only) state */
+@media (min-width: 768px) and (max-width: 959px) {
+  .app-sidebar .sb-name,
+  .app-sidebar .sb-label,
+  .app-sidebar .sb-link span:not(.badge),
+  .app-sidebar .sb-link .badge,
+  .app-sidebar .sb-user-info { display: none; }
+  .app-sidebar .sb-brand    { justify-content: center; padding: 20px 8px; }
+  .app-sidebar .sb-link     { justify-content: center; padding: 10px; }
+  .app-sidebar .sb-section  { padding: 12px 8px; }
+  .app-sidebar .sb-user     { justify-content: center; padding: 6px; }
+  .app-sidebar .sb-foot     { padding: 10px 8px 14px; }
+}
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.app-main {
+  grid-area: main;
+  min-width: 0;
+  /* No padding here on purpose — existing pages may set their own.
+     Use the .app-main--padded modifier if you want shell padding. */
+}
+.app-main--padded {
+  padding: 24px 16px 80px;
+}
+@media (min-width: 768px) {
+  .app-main--padded { padding: 32px 32px 64px; }
+}
+@media (min-width: 960px) {
+  .app-main--padded { padding: 40px 40px 64px; }
+}
+
+/* Optional content-width helpers — opt-in only */
+.app-main-inner          { width: 100%; max-width: var(--shell-content-max); margin: 0 auto; }
+.app-main-inner--reading { max-width: var(--shell-reading-max); }
+
+/* ============================================================
+   PANEL  (>= 1280px, only when .has-panel)
+   ============================================================ */
+.app-panel {
+  display: none;
+  grid-area: panel;
+}
+@media (min-width: 1280px) {
+  .app-shell.has-panel .app-panel {
+    display: block;
+    border-left: 1px solid var(--cream-2, var(--shell-cream-2));
+    background: #fff;
+    padding: 32px 24px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+.app-panel .panel-section { margin-bottom: 32px; }
+.app-panel .panel-section:last-child { margin-bottom: 0; }
+.app-panel .panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-400, var(--shell-slate-400));
+  margin: 0 0 14px;
+}
+
+/* ============================================================
+   BOTTOM NAV  (mobile only, < 768px)
+   ============================================================ */
+.app-bottomnav {
+  grid-area: bottomnav;
+  display: flex;
+  position: sticky;
+  bottom: 0;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(14px) saturate(180%);
+  border-top: 1px solid var(--cream-2, var(--shell-cream-2));
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  justify-content: space-around;
+  z-index: 30;
+}
+.app-bottomnav a {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 4px;
+  font-size: 10.5px; font-weight: 600;
+  color: var(--slate-500, var(--shell-slate-500));
+  text-decoration: none;
+  border-radius: 8px;
+}
+.app-bottomnav a svg {
+  width: 20px; height: 20px;
+  color: var(--slate-400, var(--shell-slate-400));
+}
+@media (min-width: 768px) { .app-bottomnav { display: none; } }
+
+/* ============================================================
+   PAGE HEADER (optional helper inside .app-main)
+   ============================================================ */
+.app-page-header {
+  margin-bottom: 28px;
+}
+.app-page-crumb {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--slate-500, var(--shell-slate-500));
+  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.app-page-crumb a {
+  color: var(--slate-500, var(--shell-slate-500));
+  text-decoration: none;
+  transition: color .12s;
+}
+.app-page-crumb a:hover { color: var(--teal-700, var(--shell-teal-700)); }
+.app-page-crumb svg { width: 12px; height: 12px; opacity: .55; }
+
+.app-page-title {
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--slate-900, var(--shell-slate-900));
+  margin: 0;
+}
+.app-page-sub {
+  font-size: 14px;
+  color: var(--slate-500, var(--shell-slate-500));
+  margin-top: 6px;
+  max-width: 560px;
+}
+
+/* ============================================================
+   SKIP LINK (a11y)
+   ============================================================ */
+.app-skip-link {
+  position: absolute; left: 8px; top: 8px;
+  background: var(--slate-900, var(--shell-slate-900));
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform .15s;
+  z-index: 100;
+}
+.app-skip-link:focus { transform: translateY(0); }

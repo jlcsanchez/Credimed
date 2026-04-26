@@ -55,9 +55,14 @@ Last updated: April 26, 2026.
 ### Google Workspace
 
 - [x] BAA signed with Google Workspace
-- [ ] Email aliases created: `support`, `privacy`, `legal`,
-      `hello`, `billing`, `dmarc-reports` (all alias to `ceo@`)
+- [x] Email aliases created on `ceo@credimed.us`:
+      `support`, `privacy`, `legal`, `hello`, `billing`,
+      `dmarc-reports`, `disputes` (added per AGREEMENT_v1.2 §13).
+      All forward to the single `ceo@` inbox — no extra Workspace
+      seats needed.
 - [ ] Verify replies to transactional emails route to a real inbox
+      (send a test from a personal Gmail to `support@credimed.us`
+      and confirm it lands in `ceo@`)
 
 ### Legal — counsel review BEFORE first paying patient
 
@@ -88,9 +93,16 @@ Last updated: April 26, 2026.
 - [ ] End-to-end walkthrough: landing → login → documents →
       processing → estimate → plan → before-sign → agreement →
       payment → submission-confirmed (with the test card)
-- [ ] PC-adapted layouts on the 4 highest-traffic app pages
-      (dashboard, claim, documents, admin) — currently iPhone-only
-      designs centered in a card on desktop
+- [x] PC-adapted layouts on the 12 authenticated app pages
+      (dashboard, claim, claims, documents, admin, profile,
+      support, estimate, plan, payment, agreement, before-sign)
+      — all wrapped with the shared shell at
+      `styles/app-shell.css` (sidebar 768+, side panel 1280+,
+      mobile bottom nav < 768). Mobile layout preserved
+      untouched. Skipped: `login.html` (pre-auth),
+      `processing.html` (loading screen), `submission-confirmed.html`
+      (terminal success screen) — adding chrome to those would
+      hurt the focused experience.
 
 ### Chat / support
 
@@ -124,12 +136,15 @@ Last updated: April 26, 2026.
 - [x] SEO: meta description, canonical, Open Graph, Twitter card,
       schema.org Service JSON-LD
 - [x] Sitemap.xml + robots.txt with correct allow/disallow
-- [ ] `og-image.png` at repo root (1200×630, designed in Claude Design)
-- [ ] Email templates polished (Claude Design in flight)
-- [ ] About page (Claude Design in flight)
-- [ ] How-it-works page (Claude Design in flight)
-- [ ] Pricing comparison table on `/app/plan.html` (Claude Design
-      in flight)
+- [x] `og-image.png` at repo root (1200×630, designed in Claude Design)
+- [x] Email templates polished — new branded shell wired through
+      all 7 templates in `backend/email/templates.js`
+- [x] About page (`about.html`) live with full SEO + cookie banner
+      + Plausible
+- [x] How-it-works page (`how-it-works.html`) live with HowTo
+      schema, full SEO + cookie banner + Plausible
+- [x] Pricing comparison table — embedded in `how-it-works.html`
+      (the in-app `app/plan.html` keeps the engine-picks-one model)
 
 ---
 
@@ -170,11 +185,13 @@ Last updated: April 26, 2026.
 
 ### Cleanup
 
-- [ ] Delete `app/widgets/agent-chat.js` (deprecated, replaced by
+- [x] Delete `app/widgets/agent-chat.js` (deprecated, replaced by
       `app/ana.js`)
-- [ ] Remove `LEGACY_EMAILS` allowlist code from `admin.html`
-      (already empty array; the dead code path can go)
-- [ ] Audit `connector.js` for stale routes from earlier versions
+- [x] Remove `LEGACY_EMAILS` allowlist code from `admin.html`
+      (Cognito group is the only path now)
+- [x] Audit `connector.js` for stale routes — clean (FLOW map
+      matches existing pages, brand-tap-home selector already covers
+      the new `<header class="app-topbar">` via the `header` selector)
 
 ---
 

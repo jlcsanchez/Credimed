@@ -2,9 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>How it works — Credimed</title>
 <meta name="description" content="How Credimed gets you reimbursed for dental work done in Mexico — upload, estimate, file, get paid. Four steps, three to six weeks, $49 to start." />
+<meta name="theme-color" content="#0D9488">
+<link rel="canonical" href="https://www.credimed.us/how-it-works.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Credimed">
+<meta property="og:title" content="How Credimed works — from receipt to refund in four steps">
+<meta property="og:description" content="Upload, estimate, file, paid. The full process for claiming US dental insurance reimbursement on work done in Mexico, with pricing.">
+<meta property="og:url" content="https://www.credimed.us/how-it-works.html">
+<meta property="og:image" content="https://www.credimed.us/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How Credimed works — from receipt to refund in four steps">
+<meta name="twitter:description" content="The four-step process for filing US dental insurance claims for work done in Mexico. From $49.">
+<meta name="twitter:image" content="https://www.credimed.us/og-image.png">
+
+<!-- Schema.org: HowTo -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "File a US dental insurance claim for work done in Mexico",
+  "description": "Four-step process to recover money from your US dental PPO insurance for dental work performed at a clinic in Mexico.",
+  "totalTime": "P42D",
+  "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "49" },
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Upload your insurance card and the dentist's receipt", "text": "Snap a photo of both sides of your insurance card and an itemized receipt from the Mexican clinic. Spanish receipts are fine — Credimed translates." },
+    { "@type": "HowToStep", "position": 2, "name": "Get an instant estimate based on your specific plan", "text": "Credimed cross-references your carrier, plan tier, and procedures against typical out-of-network reimbursement rates and shows a realistic refund range." },
+    { "@type": "HowToStep", "position": 3, "name": "A specialist prepares and submits your claim", "text": "A senior claims specialist translates the receipt, maps each procedure to the correct CDT code, fills the carrier-specific ADA claim form, and files electronically within 24 hours." },
+    { "@type": "HowToStep", "position": 4, "name": "Your insurer pays you directly", "text": "When the claim clears, your insurer issues the reimbursement check directly to your address. Credimed never touches your refund." }
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -175,6 +213,50 @@
   .cta-helper{margin-top:16px;font-size:13px;color:var(--slate-500);}
   .cta-helper b{color:var(--teal-700);font-weight:600;}
 
+  /* PRICING (3-tier comparison) */
+  .cm-pricing{max-width:1120px;margin:0 auto;padding:80px 32px;font-family:var(--font-ui);}
+  .cm-pricing__head{text-align:center;max-width:640px;margin:0 auto 40px;}
+  .cm-pricing__eyebrow{display:inline-block;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal-700);background:var(--teal-50);border:1px solid var(--teal-100);padding:6px 12px;border-radius:999px;margin-bottom:16px;}
+  .cm-pricing__title{font-family:var(--font-display);font-size:36px;line-height:1.15;letter-spacing:-0.015em;color:var(--teal-900);margin:0 0 12px;font-weight:600;}
+  .cm-pricing__title em{font-style:italic;color:var(--teal-600);}
+  .cm-pricing__sub{font-size:16px;line-height:1.5;color:var(--slate-600);margin:0;}
+  .cm-pricing__grid{display:grid;grid-template-columns:1fr;gap:16px;align-items:stretch;}
+  @media(min-width:768px){.cm-pricing__grid{grid-template-columns:repeat(3,1fr);gap:20px;align-items:start;}}
+  .cm-tier{position:relative;background:#fff;border:1px solid var(--slate-200);border-radius:16px;padding:28px 24px 24px;display:flex;flex-direction:column;transition:transform 0.2s ease, box-shadow 0.2s ease;}
+  .cm-tier:hover{box-shadow:0 12px 28px -16px rgba(15,23,42,0.18);}
+  .cm-tier--recommended{border:1.5px solid var(--teal-600);background:linear-gradient(180deg,#fff 0%,#F8FFFD 100%);box-shadow:0 18px 36px -20px rgba(13,148,136,0.28);}
+  @media(min-width:768px){
+    .cm-tier--recommended{transform:translateY(-12px);padding-top:34px;padding-bottom:30px;}
+    .cm-tier--recommended:hover{transform:translateY(-14px);}
+  }
+  .cm-tier__badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--teal-900);color:var(--teal-300);font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:6px 12px;border-radius:999px;white-space:nowrap;box-shadow:0 4px 12px -4px rgba(19,78,74,0.4);}
+  .cm-tier__badge::before{content:"\2605";color:var(--teal-300);margin-right:6px;}
+  .cm-tier__name{font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal-700);margin:0 0 4px;}
+  .cm-tier--recommended .cm-tier__name{color:var(--teal-600);}
+  .cm-tier__tagline{font-size:14px;line-height:1.45;color:var(--slate-500);margin:0 0 20px;min-height:40px;}
+  .cm-tier__price{display:flex;align-items:baseline;gap:6px;margin:0 0 4px;}
+  .cm-tier__price-currency{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--slate-500);}
+  .cm-tier__price-amount{font-family:var(--font-display);font-size:52px;line-height:1;font-weight:600;color:var(--teal-900);letter-spacing:-0.02em;}
+  .cm-tier__price-suffix{font-size:14px;color:var(--slate-500);font-weight:500;}
+  .cm-tier__price-note{font-size:12px;color:var(--slate-400);margin:0 0 22px;letter-spacing:0.01em;}
+  .cm-tier__cta{display:block;width:100%;text-align:center;padding:13px 18px;border-radius:10px;font-family:var(--font-ui);font-size:14px;font-weight:600;letter-spacing:0.005em;cursor:pointer;border:1px solid transparent;text-decoration:none;transition:background 0.15s ease, border-color 0.15s ease, color 0.15s ease;box-sizing:border-box;}
+  .cm-tier__cta--ghost{background:#fff;color:var(--teal-900);border-color:var(--slate-200);}
+  .cm-tier__cta--ghost:hover{border-color:var(--teal-600);color:var(--teal-700);}
+  .cm-tier__cta--solid{background:var(--teal-600);color:#fff;box-shadow:0 6px 14px -6px rgba(13,148,136,0.6);}
+  .cm-tier__cta--solid:hover{background:var(--teal-700);}
+  .cm-tier__divider{height:1px;background:var(--slate-200);margin:24px 0 18px;border:0;}
+  .cm-tier__includes{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--slate-500);margin:0 0 14px;}
+  .cm-features{list-style:none;padding:0;margin:0 0 4px;display:flex;flex-direction:column;gap:12px;}
+  .cm-features li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.45;color:var(--slate-700);}
+  .cm-features li b{color:var(--slate-900);font-weight:600;}
+  .cm-features__check{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--teal-50);color:var(--teal-600);display:inline-flex;align-items:center;justify-content:center;margin-top:2px;}
+  .cm-features__check svg{width:10px;height:10px;stroke:currentColor;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  .cm-features li.cm-features__highlight .cm-features__check{background:var(--teal-600);color:#fff;}
+  .cm-features li.cm-features__highlight{color:var(--slate-900);}
+  .cm-features li.cm-features__highlight b{color:var(--teal-900);}
+  .cm-pricing__foot{margin-top:28px;text-align:center;font-size:13px;color:var(--slate-500);line-height:1.6;}
+  .cm-pricing__foot strong{color:var(--teal-900);font-weight:600;}
+
   /* FOOTER */
   footer{background:var(--cream-2);border-top:1px solid #E8E2D5;padding:32px 32px 40px;}
   .footer-inner{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center;font-size:13px;color:var(--slate-500);}
@@ -336,6 +418,88 @@
   </article>
 </section>
 
+<!-- PRICING -->
+<section class="cm-pricing" aria-label="Pricing plans" id="pricing">
+  <header class="cm-pricing__head">
+    <span class="cm-pricing__eyebrow">Simple, one-time pricing</span>
+    <h2 class="cm-pricing__title">One fee. <em>No commission.</em></h2>
+    <p class="cm-pricing__sub">Pick the plan that matches your case. If we can't recover anything eligible, you pay nothing.</p>
+  </header>
+
+  <div class="cm-pricing__grid">
+    <article class="cm-tier" aria-label="Standard plan">
+      <h3 class="cm-tier__name">Standard</h3>
+      <p class="cm-tier__tagline">Simple claims — 1–2 procedures with a clear, itemized receipt.</p>
+      <div class="cm-tier__price">
+        <span class="cm-tier__price-currency">$</span>
+        <span class="cm-tier__price-amount">49</span>
+        <span class="cm-tier__price-suffix">one-time</span>
+      </div>
+      <p class="cm-tier__price-note">Best for cleanings, fillings, single crowns.</p>
+      <a href="/app/login.html" class="cm-tier__cta cm-tier__cta--ghost" data-tier="standard">Choose Standard</a>
+      <hr class="cm-tier__divider" />
+      <p class="cm-tier__includes">What's included</p>
+      <ul class="cm-features">
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Claim preparation &amp; <b>CDT code</b> mapping</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Spanish&nbsp;&rarr;&nbsp;English receipt translation</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>One <b>free resubmission</b> if denied</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span><b>100% money-back</b> guarantee if eligible</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Insurer pays you <b>directly</b> &mdash; we never touch your refund</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Email updates at every claim status change</span></li>
+      </ul>
+    </article>
+
+    <article class="cm-tier cm-tier--recommended" aria-label="Plus plan, recommended">
+      <span class="cm-tier__badge">Recommended</span>
+      <h3 class="cm-tier__name">Plus</h3>
+      <p class="cm-tier__tagline">Multiple procedures or harder-to-read receipts &mdash; most cases land here.</p>
+      <div class="cm-tier__price">
+        <span class="cm-tier__price-currency">$</span>
+        <span class="cm-tier__price-amount">79</span>
+        <span class="cm-tier__price-suffix">one-time</span>
+      </div>
+      <p class="cm-tier__price-note">Best for crowns + cleaning, root canals, partial bridges.</p>
+      <a href="/app/login.html" class="cm-tier__cta cm-tier__cta--solid" data-tier="plus">Choose Plus</a>
+      <hr class="cm-tier__divider" />
+      <p class="cm-tier__includes">Everything in Standard, plus</p>
+      <ul class="cm-features">
+        <li class="cm-features__highlight"><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span><b>Detailed code review</b> by a senior specialist</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Multi-procedure itemization &amp; cross-checks</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Receipt clean-up for blurry or handwritten scans</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Carrier-specific form selection (Aetna, Cigna, Delta&hellip;)</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Status SMS alerts in addition to email</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Same no-fee guarantee as Standard</span></li>
+      </ul>
+    </article>
+
+    <article class="cm-tier" aria-label="Premium plan">
+      <h3 class="cm-tier__name">Premium</h3>
+      <p class="cm-tier__tagline">Ambiguous codes, contested cases, complex multi-visit treatment plans.</p>
+      <div class="cm-tier__price">
+        <span class="cm-tier__price-currency">$</span>
+        <span class="cm-tier__price-amount">99</span>
+        <span class="cm-tier__price-suffix">one-time</span>
+      </div>
+      <p class="cm-tier__price-note">Best for implants, full-mouth restorations, denied claims.</p>
+      <a href="/app/login.html" class="cm-tier__cta cm-tier__cta--ghost" data-tier="premium">Choose Premium</a>
+      <hr class="cm-tier__divider" />
+      <p class="cm-tier__includes">Everything in Plus, plus</p>
+      <ul class="cm-features">
+        <li class="cm-features__highlight"><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span><b>Priority handling</b> &mdash; filed within 24 hours</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Direct line with a senior specialist</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Coverage analysis before submission</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Up to <b>3 free resubmissions</b> &amp; appeal letters</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Phone call with the insurer's claims dept. on your behalf</span></li>
+        <li><span class="cm-features__check"><svg viewBox="0 0 12 12"><polyline points="2,6.5 5,9 10,3.5"/></svg></span><span>Same no-fee guarantee as Standard</span></li>
+      </ul>
+    </article>
+  </div>
+
+  <p class="cm-pricing__foot">
+    Not sure which plan? Start with Plus &mdash; we'll bump you down if your case is simpler. <strong>You'll never overpay.</strong>
+  </p>
+</section>
+
 <!-- FAQ -->
 <section class="faq-section">
   <div class="faq-inner">
@@ -443,5 +607,7 @@
   </div>
 </footer>
 
+<script src="/cookie-banner.js" defer></script>
+<script defer data-domain="credimed.us" src="https://plausible.io/js/script.js"></script>
 </body>
 </html>
