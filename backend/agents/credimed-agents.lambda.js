@@ -76,12 +76,36 @@ const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',  // TODO: restrict to credimed.us in prod
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Content-Type': 'application/json',
-};
+const ALLOWED_ORIGINS = new Set([
+  'https://credimed.us',
+  'https://www.credimed.us',
+  // Local development — remove for hardened prod builds.
+  'http://localhost:8000',
+  'http://127.0.0.1:8000'
+]);
+
+/**
+ * Origin-aware CORS. We must echo back the exact origin the browser sent
+ * (when allowed) — wildcards don't work alongside `Authorization` headers
+ * in modern browsers, and a static `Access-Control-Allow-Origin: *` lets
+ * any site on the internet drain our Anthropic API budget.
+ *
+ * Vary: Origin tells caches to keep one entry per origin.
+ */
+function corsHeaders(event) {
+  const reqOrigin =
+    event.headers?.origin || event.headers?.Origin || '';
+  const allowed = ALLOWED_ORIGINS.has(reqOrigin)
+    ? reqOrigin
+    : 'https://credimed.us';
+  return {
+    'Access-Control-Allow-Origin':  allowed,
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin',
+    'Content-Type': 'application/json'
+  };
+}
 
 function buildContextBlock(context) {
   if (!context) return null;
@@ -100,25 +124,27 @@ function buildContextBlock(context) {
 }
 
 export async function handler(event) {
+  const cors = corsHeaders(event);
+
   // CORS preflight
   if (event.requestContext?.http?.method === 'OPTIONS' || event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers: CORS_HEADERS, body: '' };
+    return { statusCode: 200, headers: cors, body: '' };
   }
 
   let body;
   try {
     body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
   } catch {
-    return errorResponse(400, 'Invalid JSON body');
+    return errorResponse(400, 'Invalid JSON body', cors);
   }
 
   const { agent, messages, context } = body || {};
 
   if (!agent || !PROMPTS[agent]) {
-    return errorResponse(400, `Unknown agent: ${agent}. Valid: sofia, ana, elena, marco.`);
+    return errorResponse(400, `Unknown agent: ${agent}. Valid: sofia, ana, elena, marco.`, cors);
   }
   if (!Array.isArray(messages) || messages.length === 0) {
-    return errorResponse(400, 'messages[] required and non-empty');
+    return errorResponse(400, 'messages[] required and non-empty', cors);
   }
   // Defensive: cap message history at 30 turns to control token cost
   const trimmed = messages.slice(-30);
@@ -147,7 +173,7 @@ export async function handler(event) {
 
     return {
       statusCode: 200,
-      headers: CORS_HEADERS,
+      headers: cors,
       body: JSON.stringify({
         reply,
         agent,
@@ -157,14 +183,14 @@ export async function handler(event) {
   } catch (err) {
     console.error('[credimed-agents]', agent, err);
     const status = err.status || 500;
-    return errorResponse(status, err.message || 'Agent unavailable');
+    return errorResponse(status, err.message || 'Agent unavailable', cors);
   }
 }
 
-function errorResponse(statusCode, message) {
+function errorResponse(statusCode, message, headers) {
   return {
     statusCode,
-    headers: CORS_HEADERS,
+    headers: headers || { 'Content-Type': 'application/json' },
     body: JSON.stringify({ error: message }),
   };
 }
