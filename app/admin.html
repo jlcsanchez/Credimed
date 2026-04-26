@@ -953,16 +953,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
        3. Add the relevant users to that group
      After that, those users get cognito:groups=['admin'] in their tokens.
 
-     Fallback: if Cognito groups aren't yet set up (early-stage), we still
-     allow the legacy email allowlist below — but log a warning. Once
-     groups are configured for at least one admin, remove the allowlist
-     by setting LEGACY_EMAILS = [].
+     Cognito group `Admin` is now provisioned in production — the legacy
+     email allowlist is empty. Don't add emails here unless you're
+     bootstrapping a new environment.
   */
   var REQUIRED_GROUP = 'admin';
-  var LEGACY_EMAILS = [
-    'admin@credimed.us',
-    'jlcsanchezavila@gmail.com'
-  ];
+  var LEGACY_EMAILS = [];
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -2617,5 +2613,6 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   });
 })();
 </script>
+<script src="auto-logoff.js"></script>
 </body>
 </html>

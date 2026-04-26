@@ -1237,7 +1237,7 @@ function renderScreen(variant, scope) {
       <div class="checkbox-row ${checked ? 'checked' : ''}" data-checkbox data-scope="${scope}">
         <div class="check-box">${ICONS.check}</div>
         <div class="checkbox-label">
-          I've read and agree to the <a href="#">Service Agreement</a> and <a href="#">Privacy Policy</a>
+          I've read and agree to the <a href="/legal/AGREEMENT_v1.2.md" target="_blank" rel="noopener">Service Agreement</a> and <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
         </div>
       </div>
 
@@ -1844,22 +1844,49 @@ mountScope('desktop');
 
     var canvas = document.querySelector('[data-canvas][data-scope="' + SCOPE + '"]');
     var sigDataUrl = null;
+    var sigValid   = false;
     if (canvas) {
-      try { sigDataUrl = canvas.toDataURL('image/png'); } catch (err) {}
+      try {
+        sigDataUrl = canvas.toDataURL('image/png');
+        // Reject if canvas is effectively empty: count non-transparent pixels.
+        // A trivial check (length > N) doesn't work because PNG headers are
+        // always present even for blank canvases.
+        var ctx = canvas.getContext('2d');
+        var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        var inkPixels = 0;
+        for (var i = 3; i < data.length; i += 4) {
+          if (data[i] > 0) inkPixels++;
+        }
+        // Require at least 200 non-transparent pixels (a few real strokes)
+        sigValid = inkPixels >= 200;
+      } catch (err) {}
+    }
+    if (!sigValid) {
+      e.preventDefault();
+      e.stopPropagation();
+      alert('Please add your signature before continuing.');
+      return;
     }
 
     syncBankingToState();
     syncAddressToState();
 
     S.set('agreement', {
-      version: 'v1.8',
+      // The version stored here MUST match the canonical document at
+      // /legal/AGREEMENT_v1.2.md. If the agreement is updated, bump
+      // both this string and the file together — never one without
+      // the other. Disputes turn on which exact version the user signed.
+      version: 'v1.2',
+      documentUrl: '/legal/AGREEMENT_v1.2.md',
       signedAt: new Date().toISOString(),
       signatureDataUrl: sigDataUrl,
       signerFirstName: S.get('user.firstName', ''),
       signerLastName:  S.get('user.lastName', ''),
       signerEmail:     S.get('user.email', ''),
+      signerIp: null,  /* Captured server-side by save-claim Lambda from sourceIp */
       termsAccepted: true,
-      privacyAccepted: true
+      privacyAccepted: true,
+      userAgent: navigator.userAgent
     });
     /* do NOT preventDefault — connector.js will navigate on .footer-cta .btn-primary click */
   }, true);
@@ -1940,5 +1967,6 @@ mountScope('desktop');
   } catch (e) { /* non-fatal */ }
 })();
 </script>
+<script src="auto-logoff.js"></script>
 </body>
 </html>

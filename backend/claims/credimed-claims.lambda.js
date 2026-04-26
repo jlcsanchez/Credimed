@@ -209,6 +209,24 @@ async function updateStatus(claimId, newStatus) {
 
 // ---------- main handler ----------
 
+/**
+ * HIPAA audit logging — every PHI access logs WHO, WHAT (claim IDs),
+ * WHEN, FROM WHERE (IP), and ACTION TYPE. Logs persist in CloudWatch
+ * indefinitely (or per the log group's retention setting). For breach
+ * analysis these logs must be queryable; CloudWatch Logs Insights uses
+ * the JSON structure below.
+ */
+function audit(event, fields) {
+  const ctx = event.requestContext || {};
+  console.log(JSON.stringify({
+    timestamp: new Date().toISOString(),
+    requestId: ctx.requestId,
+    sourceIp:  ctx.http?.sourceIp,
+    userAgent: ctx.http?.userAgent,
+    ...fields
+  }));
+}
+
 export const handler = async (event) => {
   try {
     const method = event.requestContext?.http?.method || "GET";
@@ -230,34 +248,37 @@ export const handler = async (event) => {
     if (routeKey === "GET /admin/claims"
         || (method === "GET" && /^\/admin\/claims\/?$/.test(path))) {
       if (!adminUser) {
-        console.log(JSON.stringify({
-          event: "admin_forbidden", userId, path,
-          timestamp: new Date().toISOString()
-        }));
+        audit(event, { event: "admin_forbidden", userId, path });
         return response(403, { error: "Admin group required" });
       }
       const out = await listAllClaims();
-      console.log(JSON.stringify({
-        event: "admin_list_claims", adminUserId: userId,
-        count: out.count, timestamp: new Date().toISOString()
-      }));
+      audit(event, {
+        event: "admin_list_claims",
+        adminUserId: userId,
+        count: out.count,
+        claimIds: out.claims.map((c) => c.claimId)
+      });
       return response(200, out);
     }
 
     if (routeKey === "PATCH /admin/claims/{id}"
         || (method === "PATCH" && /^\/admin\/claims\/[^\/]+\/?$/.test(path))) {
-      if (!adminUser) return response(403, { error: "Admin group required" });
+      if (!adminUser) {
+        audit(event, { event: "admin_forbidden", userId, path });
+        return response(403, { error: "Admin group required" });
+      }
       if (!id) return response(400, { error: "Missing claim id" });
       let body;
       try { body = event.body ? JSON.parse(event.body) : {}; }
       catch { return response(400, { error: "Invalid JSON body" }); }
       const result = await updateStatus(id, body.status);
       if (result.error) return response(result.code || 400, { error: result.error });
-      console.log(JSON.stringify({
-        event: "admin_update_claim", adminUserId: userId,
-        claimId: id, newStatus: body.status,
-        timestamp: new Date().toISOString()
-      }));
+      audit(event, {
+        event: "admin_update_claim",
+        adminUserId: userId,
+        claimId: id,
+        newStatus: body.status
+      });
       return response(200, result);
     }
 
@@ -268,21 +289,28 @@ export const handler = async (event) => {
       if (!id) return response(400, { error: "Missing claim id" });
       const claim = await getOneClaim(id, userId, adminUser);
       if (claim === null)        return response(404, { error: "Claim not found" });
-      if (claim === "forbidden") return response(403, { error: "Forbidden" });
-      console.log(JSON.stringify({
-        event: "get_claim", userId, claimId: id,
-        timestamp: new Date().toISOString()
-      }));
+      if (claim === "forbidden") {
+        audit(event, { event: "claim_forbidden", userId, claimId: id });
+        return response(403, { error: "Forbidden" });
+      }
+      audit(event, {
+        event: "get_claim",
+        userId,
+        claimId: id,
+        viewedAsAdmin: adminUser && claim.userId !== userId
+      });
       return response(200, { claim });
     }
 
     if (routeKey === "GET /claims"
         || (method === "GET" && /^\/claims\/?$/.test(path))) {
       const out = await listUserClaims(userId);
-      console.log(JSON.stringify({
-        event: "list_claims", userId, count: out.count,
-        timestamp: new Date().toISOString()
-      }));
+      audit(event, {
+        event: "list_claims",
+        userId,
+        count: out.count,
+        claimIds: out.claims.map((c) => c.claimId)
+      });
       return response(200, out);
     }
 
