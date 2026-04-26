@@ -636,10 +636,39 @@ input[type=file] { display: none; }
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
+<!-- Preconnect to the payment Lambda so the TLS handshake is already
+     done before the Stripe prefetch fires on plan.html / agreement.html.
+     Saves ~200-400ms on the first prefetch. -->
+<link rel="preconnect" href="https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws" crossorigin>
+<link rel="preconnect" href="https://js.stripe.com" crossorigin>
+<link rel="preconnect" href="https://api.stripe.com" crossorigin>
 </head>
 <body data-page="documents">
 
 <a href="#main" class="app-skip-link">Skip to content</a>
+
+<script>
+/* ---- Lambda warm-up ----
+   Documents.html is the earliest auth'd page in the claim flow. The
+   user spends 2-3 minutes here uploading insurance card + receipt and
+   waiting for OCR. Fire a no-op POST to credimed-payment so the Lambda
+   container is hot by the time the user reaches plan.html. Without
+   this, the first prefetch eats a 5-7s cold start and Stripe takes
+   ~10s to mount on payment.html. With this, the prefetch returns in
+   <500ms and Stripe mounts instantly.
+
+   Fire-and-forget. The Lambda will return 400 (unknown action) but
+   that's fine — the cold start has already happened. */
+(function () {
+  try {
+    fetch('https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ action: 'ping' })
+    }).catch(function () { /* expected — warmup */ });
+  } catch (e) { /* non-fatal */ }
+})();
+</script>
 <div class="app-shell">
 
   <header class="app-topbar">
