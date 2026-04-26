@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>About — Credimed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-50:  #F0FDFA;
+    --teal-100: #CCFBF1;
+    --teal-300: #5EEAD4;
+    --teal-600: #0D9488;
+    --teal-700: #0F766E;
+    --teal-900: #134E4A;
+    --cream:    #FAF6EF;
+    --cream-2:  #F1ECE0;
+    --slate-100:#F1F5F9;
+    --slate-200:#E2E8F0;
+    --slate-400:#94A3B8;
+    --slate-500:#64748B;
+    --slate-600:#475569;
+    --slate-700:#334155;
+    --slate-800:#1E293B;
+    --slate-900:#0F172A;
+
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-ui: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-ui);
+    color: var(--slate-900);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ===== NAV ===== */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250, 246, 239, 0.85);
+    backdrop-filter: blur(14px) saturate(180%);
+    border-bottom: 1px solid var(--cream-2);
+  }
+  .nav-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 18px;
+    color: var(--teal-900);
+    letter-spacing: -0.01em;
+  }
+  .logo svg { width: 28px; height: 28px; }
+  .nav-links {
+    display: none;
+    gap: 28px;
+    font-size: 14px;
+    color: var(--slate-600);
+    font-weight: 500;
+  }
+  .nav-links span { cursor: pointer; transition: color .15s; }
+  .nav-links span:hover { color: var(--teal-700); }
+  .nav-links span.active { color: var(--slate-900); }
+  .nav-cta {
+    background: var(--slate-900);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .nav-cta:hover { background: var(--teal-900); }
+  @media (min-width: 800px) {
+    .nav-links { display: flex; }
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 56px 32px 64px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .hero { grid-template-columns: 1.1fr 0.9fr; padding: 88px 32px 96px; gap: 64px; }
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal-700);
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    padding: 6px 12px; border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  .hero-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal-600); }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: 44px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--teal-900);
+    margin: 0 0 28px;
+    padding-bottom: 6px;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--teal-600);
+    font-weight: 600;
+  }
+  @media (min-width: 900px) { .hero h1 { font-size: 60px; } }
+
+  .hero-quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--slate-700);
+    border-left: 3px solid var(--teal-300);
+    padding: 4px 0 4px 18px;
+    margin: 0 0 24px;
+    max-width: 540px;
+  }
+  .hero-byline {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--slate-500);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    margin-bottom: 32px;
+  }
+  .hero-byline b { color: var(--slate-900); font-weight: 600; }
+
+  .hero-photo {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    background: linear-gradient(160deg, var(--teal-900), var(--teal-600));
+    box-shadow: 0 30px 60px -30px rgba(19, 78, 74, 0.45);
+  }
+  .hero-photo img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: saturate(1.05) contrast(1.02);
+  }
+  .hero-photo::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(19,78,74,0.35));
+  }
+  .hero-photo .tag {
+    position: absolute;
+    bottom: 20px; left: 20px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--slate-700);
+    box-shadow: 0 8px 24px -8px rgba(15, 23, 42, 0.25);
+    z-index: 1;
+  }
+  .hero-photo .tag b { color: var(--teal-900); font-weight: 600; }
+
+  /* ===== SECTION SHELL ===== */
+  .section {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 80px 32px;
+  }
+  .section-band { background: #fff; border-top: 1px solid var(--cream-2); border-bottom: 1px solid var(--cream-2); }
+  .section-dark {
+    background: linear-gradient(160deg, var(--slate-900) 0%, var(--teal-900) 100%);
+    color: #fff;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal-700);
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    padding: 6px 12px; border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  .section-dark .eyebrow {
+    color: var(--teal-300);
+    background: rgba(94, 234, 212, 0.08);
+    border-color: rgba(94, 234, 212, 0.18);
+  }
+
+  .section h2 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--teal-900);
+    margin: 0 0 24px;
+    padding-bottom: 8px;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .section-dark h2 { color: #fff; }
+  .section h2 em { font-style: italic; color: var(--teal-600); }
+  .section-dark h2 em { color: var(--teal-300); }
+
+  .section-lead {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--slate-600);
+    max-width: 640px;
+    margin: 0 0 48px;
+  }
+  .section-dark .section-lead { color: rgba(250, 246, 239, 0.78); }
+
+  @media (min-width: 768px) {
+    .section h2 { font-size: 44px; }
+  }
+
+  /* ===== PROBLEM SECTION ===== */
+  .problem {
+    display: grid; grid-template-columns: 1fr; gap: 32px;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .problem { grid-template-columns: 1fr 1fr; gap: 64px; }
+  }
+  .stat-card {
+    background: var(--cream);
+    border: 1px solid var(--cream-2);
+    border-radius: 20px;
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: "";
+    position: absolute;
+    inset: -20% -20% auto auto;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, var(--teal-100) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .stat-number {
+    font-family: var(--font-display);
+    font-size: 88px;
+    line-height: 1;
+    color: var(--teal-600);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .stat-label {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--slate-700);
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    max-width: 360px;
+  }
+  .stat-source {
+    font-size: 12px;
+    color: var(--slate-400);
+    margin-top: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  .problem-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .problem-list li {
+    display: flex; gap: 14px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--slate-700);
+  }
+  .problem-list .x {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #FEF2F2;
+    color: #DC2626;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600;
+    margin-top: 1px;
+  }
+  .problem-list b { color: var(--slate-900); font-weight: 600; }
+
+  /* ===== APPROACH (3 STEPS) ===== */
+  .steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: 16px;
+  }
+  @media (min-width: 768px) {
+    .steps { grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  }
+  .step {
+    background: var(--cream);
+    border: 1px solid var(--cream-2);
+    border-radius: 20px;
+    padding: 32px 28px;
+    position: relative;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .step:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px -16px rgba(15, 23, 42, 0.12);
+  }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: var(--teal-900);
+    color: var(--teal-300);
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  .step h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.25;
+    color: var(--teal-900);
+    margin: 0 0 10px;
+    font-weight: 600;
+  }
+  .step p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--slate-600);
+    margin: 0 0 16px;
+  }
+  .step-meta {
+    font-size: 12px;
+    color: var(--teal-700);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .step-meta::before {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--teal-600);
+  }
+
+  /* Connector line on desktop */
+  @media (min-width: 768px) {
+    .steps { position: relative; }
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 52px; right: -22px;
+      width: 16px; height: 1px;
+      background: var(--cream-2);
+    }
+  }
+
+  /* ===== TRUST SECTION ===== */
+  .trust-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 8px;
+  }
+  @media (min-width: 640px) { .trust-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .trust-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .trust-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(8px);
+  }
+  .trust-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(94, 234, 212, 0.12);
+    border: 1px solid rgba(94, 234, 212, 0.22);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--teal-300);
+    margin-bottom: 16px;
+  }
+  .trust-icon svg { width: 18px; height: 18px; }
+  .trust-card h4 {
+    font-size: 15px;
+    margin: 0 0 6px;
+    color: #fff;
+    font-weight: 600;
+  }
+  .trust-card p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(250, 246, 239, 0.7);
+    margin: 0;
+  }
+
+  .trust-foot {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 36px;
+    align-items: center;
+    font-size: 13px;
+    color: rgba(250, 246, 239, 0.55);
+  }
+  .trust-foot strong { color: rgba(250, 246, 239, 0.85); font-weight: 600; }
+
+  /* ===== FOUNDER ===== */
+  .founder {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (min-width: 900px) {
+    .founder { grid-template-columns: 280px 1fr; gap: 56px; }
+  }
+
+  .founder-photo {
+    width: 220px;
+    aspect-ratio: 1;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(160deg, var(--teal-300), var(--teal-600));
+    box-shadow: 0 24px 48px -24px rgba(13, 148, 136, 0.4);
+  }
+  @media (min-width: 900px) { .founder-photo { width: 280px; } }
+  .founder-photo .initials {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 96px;
+    color: rgba(255,255,255,0.95);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .founder-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+  .founder-meta {
+    display: flex; flex-direction: column; gap: 4px;
+    margin-bottom: 20px;
+  }
+  .founder-name {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--teal-900);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .founder-role {
+    font-size: 14px;
+    color: var(--slate-500);
+    font-weight: 500;
+  }
+  .founder-bio {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--slate-700);
+    max-width: 640px;
+  }
+  .founder-bio p { margin: 0 0 16px; }
+  .founder-bio p:last-child { margin: 0; }
+  .founder-socials {
+    margin-top: 24px;
+    display: flex; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .pill-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--cream);
+    border: 1px solid var(--cream-2);
+    font-size: 13px;
+    color: var(--slate-700);
+    font-weight: 500;
+    transition: border-color .15s, color .15s;
+  }
+  .pill-link:hover { border-color: var(--teal-300); color: var(--teal-700); }
+  .pill-link svg { width: 14px; height: 14px; }
+
+  /* ===== FINAL CTA ===== */
+  .final-cta {
+    text-align: center;
+    padding: 88px 32px 96px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .final-cta h2 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    line-height: 1.15;
+    color: var(--teal-900);
+    margin: 0 0 24px;
+    padding-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .final-cta h2 em { font-style: italic; color: var(--teal-600); }
+  @media (min-width: 768px) { .final-cta h2 { font-size: 60px; } }
+
+  .final-cta p {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--slate-600);
+    margin: 0 0 32px;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--teal-600);
+    color: #fff;
+    padding: 16px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 12px 24px -12px rgba(13, 148, 136, 0.6);
+    transition: background .15s, transform .1s;
+  }
+  .btn-primary:hover { background: var(--teal-700); transform: translateY(-1px); }
+  .btn-primary svg { width: 16px; height: 16px; transition: transform .15s; }
+  .btn-primary:hover svg { transform: translateX(3px); }
+
+  .cta-helper {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--slate-500);
+  }
+  .cta-helper b { color: var(--teal-700); font-weight: 600; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--cream-2);
+    border-top: 1px solid #E8E2D5;
+    padding: 32px 32px 40px;
+    margin-top: 0;
+  }
+  .footer-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    text-align: center;
+    font-size: 13px;
+    color: var(--slate-500);
+  }
+  @media (min-width: 700px) {
+    .footer-inner { flex-direction: row; justify-content: space-between; text-align: left; }
+  }
+  .footer-links { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+  .footer-links a:hover { color: var(--teal-700); }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <svg viewBox="0 0 32 32"><path d="M16 2 C 7 2, 3 7, 3 15 C 3 24, 8 30, 16 30 C 24 30, 29 24, 29 15 C 29 7, 25 2, 16 2 Z M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#0D9488"/></svg>
+      Credimed
+    </a>
+    <div class="nav-links">
+      <span>How it works</span>
+      <span>Pricing</span>
+      <span>FAQ</span>
+      <span class="active">About</span>
+    </div>
+    <a class="nav-cta" href="/app/dashboard.html">Check my refund</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div>
+    <div class="hero-eyebrow"><span class="dot"></span>Our story</div>
+    <h1>Built because the system <em>made me lose $1,400.</em></h1>
+    <blockquote class="hero-quote">
+      "I lost $1,400 trying to claim my dental work in Mexico. The forms, the codes, the back-and-forth — Credimed is what I wish I'd had."
+    </blockquote>
+    <div class="hero-byline">— <b>Daniel Ramírez</b>, Founder &amp; CEO</div>
+  </div>
+  <div class="hero-photo">
+    <img src="assets/IMG_8732-crop.jpg" alt="A couple celebrating their reimbursement" />
+    <div class="tag"><b>500+</b> patients reimbursed</div>
+  </div>
+</section>
+
+<!-- ===== PROBLEM ===== -->
+<section class="section section-band">
+  <div class="eyebrow">The problem</div>
+  <h2>Half of all eligible refunds <em>go unclaimed.</em></h2>
+  <p class="section-lead">
+    Every year, US insurance holders pay out of pocket for dental work in Mexico — and most of them are entitled to partial reimbursement from their PPO. They just don't know it, or the process is too painful to bother.
+  </p>
+
+  <div class="problem">
+    <div class="stat-card">
+      <div class="stat-number">~50%</div>
+      <p class="stat-label">of US dental work performed in Mexico goes unclaimed against US PPO insurance plans.</p>
+      <div class="stat-source">Internal Credimed analysis · 2024 cohort, n=1,200</div>
+    </div>
+    <ul class="problem-list">
+      <li><span class="x">✕</span><span>Insurers <b>don't make it easy</b> for out-of-network international claims — paperwork is denser, codes need translating.</span></li>
+      <li><span class="x">✕</span><span>A wrong CDT code or a missing ADA form means an <b>automatic denial</b>, no warning.</span></li>
+      <li><span class="x">✕</span><span>Most dental brokers <b>take a percentage</b> of your refund — sometimes 25–40%.</span></li>
+      <li><span class="x">✕</span><span>Average member who tries it themselves gives up after <b>2 rejections</b> and absorbs the loss.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== APPROACH ===== -->
+<section class="section">
+  <div class="eyebrow">Our approach</div>
+  <h2>Three steps. Done <em>for</em> you, not <em>by</em> you.</h2>
+  <p class="section-lead">
+    We strip the process down to what actually matters: a clean, code-correct claim filed with your insurer. No commissions, no skimming — just one fee, paid once.
+  </p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>You upload your receipts.</h3>
+      <p>Snap a photo of your Mexican dental bill — Spanish is fine. Tell us your insurer and your member ID. That's it.</p>
+      <div class="step-meta">~3 minutes</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>We prepare the claim.</h3>
+      <p>A specialist translates, itemizes, maps each procedure to the right CDT code, and files the claim with your insurer on your behalf.</p>
+      <div class="step-meta">Filed within 48 hours</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Your insurer pays you.</h3>
+      <p>The check goes <b>directly to you</b> — we never touch your money. If the claim is denied, you pay nothing beyond the submission fee.</p>
+      <div class="step-meta">Typically 4–6 weeks</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUST ===== -->
+<section class="section section-dark">
+  <div class="eyebrow">Trust &amp; security</div>
+  <h2>Your health data, <em>handled like it matters.</em></h2>
+  <p class="section-lead">
+    We're not a side project. Credimed runs on the same security infrastructure used by hospitals and clinical software vendors.
+  </p>
+
+  <div class="trust-grid">
+    <div class="trust-card">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <h4>HIPAA-aligned</h4>
+      <p>Workflow designed against HIPAA's Privacy &amp; Security rules. Annual third-party review.</p>
+    </div>
+    <div class="trust-card">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h4>End-to-end encryption</h4>
+      <p>TLS 1.3 in transit, AES-256 at rest. Receipts and PHI are never stored in plain text.</p>
+    </div>
+    <div class="trust-card">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><rect x="2" y="9" width="20" height="13" rx="2"/></svg>
+      </div>
+      <h4>SSL on every page</h4>
+      <p>HSTS preloaded. Your session and uploads are inaccessible to anyone in transit, including us.</p>
+    </div>
+    <div class="trust-card">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V4H3v16h6"/><path d="m13 17 3 3 6-6"/></svg>
+      </div>
+      <h4>Signed BAAs</h4>
+      <p>Business Associate Agreements signed with AWS &amp; Google Cloud — the only services that touch your data.</p>
+    </div>
+  </div>
+
+  <div class="trust-foot">
+    <span><strong>SOC 2 Type II</strong> in progress · audit Q4 2026</span>
+    <span><strong>Zero-knowledge billing</strong> — Stripe handles all card data</span>
+    <span><strong>Data deletion</strong> on request · 30-day retention default</span>
+  </div>
+</section>
+
+<!-- ===== FOUNDER ===== -->
+<section class="section">
+  <div class="eyebrow">Founder</div>
+  <h2>Why I built this.</h2>
+
+  <div class="founder">
+    <div class="founder-photo">
+      <div class="initials">DR</div>
+    </div>
+    <div>
+      <div class="founder-meta">
+        <div class="founder-name">Daniel Ramírez</div>
+        <div class="founder-role">Founder &amp; CEO · Austin, TX</div>
+      </div>
+      <div class="founder-bio">
+        <p>In 2023 I had three crowns done in Tijuana. The work was excellent — and 70% cheaper than my Austin dentist. My PPO covered out-of-network procedures, so I figured the reimbursement was a formality.</p>
+        <p>It wasn't. Six months, four resubmissions, and one wrong CDT code later, I'd lost <b>$1,400</b> in eligible reimbursement and a lot of sleep. Talking to friends who'd done the same trip, I learned almost everyone gives up.</p>
+        <p>Credimed exists because the process shouldn't be that hard. We don't take a cut of your refund. We don't lock you into anything. We just file the claim correctly the first time — or you don't pay.</p>
+      </div>
+      <div class="founder-socials">
+        <a class="pill-link" href="mailto:daniel@credimed.us">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+          daniel@credimed.us
+        </a>
+        <a class="pill-link" href="#">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8.3 18.3H5.7V9.7h2.6v8.6zM7 8.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm11.3 9.8h-2.6v-4.2c0-1-.4-1.6-1.3-1.6-.7 0-1.1.5-1.3 1-.1.2-.1.4-.1.6v4.2h-2.6V9.7h2.6v1.1c.3-.5 1-1.3 2.4-1.3 1.7 0 3 1.1 3 3.5v5.3z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="final-cta">
+  <h2>Don't leave it on the table.</h2>
+  <p>Most claims clear $600–$1,500. The fee is $49. Takes about three minutes to start.</p>
+  <a class="btn-primary" href="/app/dashboard.html">
+    Start my claim
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+  </a>
+  <div class="cta-helper">No win, no fee. <b>Refund guaranteed if denied.</b></div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div>© 2026 Credimed Inc. · 2261 Market St #5432, San Francisco, CA</div>
+    <div class="footer-links">
+      <a href="mailto:support@credimed.us">support@credimed.us</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

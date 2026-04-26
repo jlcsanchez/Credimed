@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Credimed — OG Image</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #1a1a1a;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .og {
+    width: 1200px;
+    height: 630px;
+    position: relative;
+    overflow: hidden;
+    /* Diagonal teal → dark teal gradient */
+    background:
+      radial-gradient(ellipse 900px 700px at 88% 110%, rgba(94, 234, 212, 0.18), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 10% -10%, rgba(94, 234, 212, 0.10), transparent 55%),
+      linear-gradient(135deg, #0D9488 0%, #0F766E 45%, #134E4A 100%);
+    color: #ffffff;
+    isolation: isolate;
+  }
+
+  /* Subtle grid texture for "healthcare-grade" feel */
+  .og::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: -1px -1px;
+    mask-image: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0) 80%);
+    -webkit-mask-image: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0) 80%);
+    pointer-events: none;
+  }
+
+  /* Soft vignette at bottom right */
+  .og::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 800px 500px at 100% 100%, rgba(19, 78, 74, 0.55), transparent 55%);
+    pointer-events: none;
+  }
+
+  .frame {
+    position: absolute;
+    inset: 56px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 2;
+  }
+
+  /* ===== Top row: wordmark ===== */
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .mark {
+    width: 28px;
+    height: 28px;
+    position: relative;
+  }
+  .mark svg { display: block; width: 100%; height: 100%; }
+
+  .wordmark-text {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    font-size: 18px;
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(6px);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(250, 246, 239, 0.85);
+    letter-spacing: 0.02em;
+  }
+  .badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #5EEAD4;
+    box-shadow: 0 0 0 3px rgba(94,234,212,0.18);
+  }
+
+  /* ===== Body row ===== */
+  .body {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 48px;
+    align-items: center;
+    flex: 1;
+    padding-top: 16px;
+  }
+
+  .copy {
+    max-width: 720px;
+  }
+
+  .headline {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+    font-size: 66px;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: #ffffff;
+    text-wrap: balance;
+  }
+  .headline .em {
+    font-style: italic;
+    font-weight: 600;
+    color: #5EEAD4;
+  }
+  .headline .pause {
+    color: rgba(255,255,255,0.55);
+    font-style: normal;
+    font-weight: 500;
+    margin: 0 0.05em;
+  }
+
+  .subline {
+    margin-top: 26px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 22px;
+    line-height: 1.5;
+    color: rgba(250, 246, 239, 0.80);
+    font-weight: 400;
+    letter-spacing: 0.005em;
+    max-width: 660px;
+  }
+  .subline .price {
+    color: #FAF6EF;
+    font-weight: 600;
+  }
+
+  /* ===== Right artwork ===== */
+  .art {
+    position: relative;
+    width: 320px;
+    height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .art-stage {
+    position: relative;
+    width: 280px;
+    height: 280px;
+  }
+
+  /* Soft halo */
+  .halo {
+    position: absolute;
+    inset: -40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(94,234,212,0.18), rgba(94,234,212,0) 65%);
+    filter: blur(2px);
+  }
+
+  /* Concentric rings */
+  .ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .ring.r2 { inset: 28px; border-color: rgba(255,255,255,0.10); }
+  .ring.r3 { inset: 56px; border-color: rgba(255,255,255,0.08); }
+
+  /* Centerpiece: abstract care + cross-border flow */
+  .card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 188px;
+    height: 188px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255,255,255,0.22), rgba(255,255,255,0.04) 55%),
+      linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(10px);
+    box-shadow:
+      0 30px 60px -20px rgba(0,0,0,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card svg { width: 96px; height: 96px; display: block; }
+
+  /* Flag chips floating */
+  .chip {
+    position: absolute;
+    height: 44px;
+    padding: 0 14px 0 8px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255,255,255,0.16);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    box-shadow: 0 12px 30px -10px rgba(0,0,0,0.5);
+  }
+  .chip .flag {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+  }
+  .chip .flag svg { width: 100%; height: 100%; display: block; }
+
+  .chip.us { top: 14px; left: -10px; }
+  .chip.mx { bottom: 14px; right: -10px; }
+
+  .arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-22deg);
+    width: 220px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(94,234,212,0), rgba(94,234,212,0.55), rgba(94,234,212,0));
+    pointer-events: none;
+  }
+
+  /* ===== Bottom row ===== */
+  .bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: rgba(250, 246, 239, 0.65);
+    letter-spacing: 0.02em;
+  }
+  .meta .sep {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+  }
+
+  .url {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #5EEAD4;
+    letter-spacing: 0.01em;
+  }
+</style>
+</head>
+<body>
+  <div class="og" id="og">
+    <div class="frame">
+      <!-- TOP -->
+      <div class="top">
+        <div class="wordmark">
+          <div class="mark">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 2 C 7 2, 3 7, 3 15 C 3 24, 8 30, 16 30 C 24 30, 29 24, 29 15 C 29 7, 25 2, 16 2 Z M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="16" cy="15" r="2.5" fill="#5EEAD4"/>
+            </svg>
+          </div>
+          <span class="wordmark-text">CREDIMED</span>
+        </div>
+        <div class="badge">
+          <span class="dot"></span>
+          <span>Cross-border health reimbursement</span>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="body">
+        <div class="copy">
+          <h1 class="headline">
+            You either get paid<span class="pause">…</span><br/>
+            <span class="em">or you pay nothing.</span>
+          </h1>
+          <p class="subline">
+            Recover <span class="price">$600–$1,500</span> from your dental insurance — claims for work done in Mexico, filed for you. From <span class="price">$49</span>.
+          </p>
+        </div>
+
+        <div class="art">
+          <div class="art-stage">
+            <div class="halo"></div>
+            <div class="ring"></div>
+            <div class="ring r2"></div>
+            <div class="ring r3"></div>
+            <div class="arrow"></div>
+
+            <!-- Centerpiece: Credimed H mark, scaled up -->
+            <div class="card">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#ffffff"/>
+                    <stop offset="1" stop-color="#5EEAD4"/>
+                  </linearGradient>
+                </defs>
+                <path d="M16 2 C 7 2, 3 7, 3 15 C 3 24, 8 30, 16 30 C 24 30, 29 24, 29 15 C 29 7, 25 2, 16 2 Z M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="url(#hg)" stroke-width="2.2" stroke-linecap="round"/>
+                <circle cx="16" cy="15" r="2.4" fill="#5EEAD4"/>
+              </svg>
+            </div>
+
+            <!-- US chip -->
+            <div class="chip us">
+              <span class="flag">
+                <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="28" height="28" fill="#B22234"/>
+                  <g fill="#ffffff">
+                    <rect y="2.15" width="28" height="2.15"/>
+                    <rect y="6.46" width="28" height="2.15"/>
+                    <rect y="10.77" width="28" height="2.15"/>
+                    <rect y="15.08" width="28" height="2.15"/>
+                    <rect y="19.38" width="28" height="2.15"/>
+                    <rect y="23.69" width="28" height="2.15"/>
+                  </g>
+                  <rect width="12" height="12.92" fill="#3C3B6E"/>
+                  <g fill="#ffffff" font-family="serif" font-size="2">
+                    <circle cx="2" cy="2" r="0.6"/><circle cx="5" cy="2" r="0.6"/><circle cx="8" cy="2" r="0.6"/><circle cx="11" cy="2" r="0.6"/>
+                    <circle cx="3.5" cy="4" r="0.6"/><circle cx="6.5" cy="4" r="0.6"/><circle cx="9.5" cy="4" r="0.6"/>
+                    <circle cx="2" cy="6" r="0.6"/><circle cx="5" cy="6" r="0.6"/><circle cx="8" cy="6" r="0.6"/><circle cx="11" cy="6" r="0.6"/>
+                    <circle cx="3.5" cy="8" r="0.6"/><circle cx="6.5" cy="8" r="0.6"/><circle cx="9.5" cy="8" r="0.6"/>
+                    <circle cx="2" cy="10" r="0.6"/><circle cx="5" cy="10" r="0.6"/><circle cx="8" cy="10" r="0.6"/><circle cx="11" cy="10" r="0.6"/>
+                  </g>
+                </svg>
+              </span>
+              <span>US</span>
+            </div>
+
+            <!-- MX chip -->
+            <div class="chip mx">
+              <span class="flag">
+                <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="9.33" height="28" fill="#006847"/>
+                  <rect x="9.33" width="9.34" height="28" fill="#ffffff"/>
+                  <rect x="18.67" width="9.33" height="28" fill="#CE1126"/>
+                  <circle cx="14" cy="14" r="2.4" fill="none" stroke="#8B5A2B" stroke-width="0.6"/>
+                </svg>
+              </span>
+              <span>MX</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM -->
+      <div class="bottom">
+        <div class="meta">
+          <span>No win, no fee</span>
+          <span class="sep"></span>
+          <span>HIPAA-aware workflow</span>
+          <span class="sep"></span>
+          <span>Filed for you in 48h</span>
+        </div>
+        <div class="url">credimed.us</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

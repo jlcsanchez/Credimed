@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How it works — Credimed</title>
+<meta name="description" content="How Credimed gets you reimbursed for dental work done in Mexico — upload, estimate, file, get paid. Four steps, three to six weeks, $49 to start." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-300:#5EEAD4;
+    --teal-600:#0D9488; --teal-700:#0F766E; --teal-900:#134E4A;
+    --cream:#FAF6EF; --cream-2:#F1ECE0;
+    --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
+    --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569;
+    --slate-700:#334155; --slate-800:#1E293B; --slate-900:#0F172A;
+    --font-display:"Playfair Display", Georgia, serif;
+    --font-ui:"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono:"SF Mono", Menlo, Monaco, Consolas, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;font-family:var(--font-ui);color:var(--slate-900);background:var(--cream);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(250,246,239,0.85);backdrop-filter:blur(14px) saturate(180%);border-bottom:1px solid var(--cream-2);}
+  .nav-inner{max-width:1180px;margin:0 auto;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;color:var(--teal-900);letter-spacing:-0.01em;}
+  .logo svg{width:28px;height:28px;}
+  .nav-links{display:none;gap:28px;font-size:14px;color:var(--slate-600);font-weight:500;}
+  .nav-links span{cursor:pointer;}
+  .nav-links span:hover{color:var(--teal-700);}
+  .nav-links span.active{color:var(--slate-900);}
+  .nav-cta{background:var(--slate-900);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
+  .nav-cta:hover{background:var(--teal-900);}
+  @media(min-width:800px){.nav-links{display:flex;}}
+
+  /* HERO */
+  .hero{max-width:1180px;margin:0 auto;padding:64px 32px 32px;text-align:center;}
+  .eyebrow{display:inline-block;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal-700);background:var(--teal-50);border:1px solid var(--teal-100);padding:6px 12px;border-radius:999px;margin-bottom:20px;}
+  .hero h1{font-family:var(--font-display);font-size:48px;line-height:1.25;padding-bottom:12px;letter-spacing:-0.02em;color:var(--teal-900);margin:0 auto 32px;font-weight:600;text-wrap:balance;max-width:780px;}
+  .hero h1 em{font-style:italic;color:var(--teal-600);}
+  @media(min-width:800px){.hero h1{font-size:62px;}}
+  .hero-sub{font-size:18px;line-height:1.55;color:var(--slate-600);max-width:620px;margin:0 auto 28px;}
+  .hero-meta{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;font-size:13px;color:var(--slate-500);margin-bottom:8px;}
+  .hero-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .hero-meta b{color:var(--slate-900);font-weight:600;}
+  .hero-meta .dot{width:5px;height:5px;border-radius:50%;background:var(--teal-300);}
+
+  /* TIMELINE */
+  .steps{max-width:1080px;margin:0 auto;padding:48px 32px 80px;}
+  .step{display:grid;grid-template-columns:1fr;gap:36px;padding:48px 0;border-top:1px solid var(--cream-2);position:relative;}
+  .step:first-child{border-top:none;}
+  @media(min-width:900px){
+    .step{grid-template-columns:1fr 1fr;gap:64px;align-items:center;padding:72px 0;}
+    .step.reverse .step-text{order:2;}
+    .step.reverse .step-art{order:1;}
+  }
+  .step-num{position:absolute;top:48px;left:0;font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:0.18em;color:var(--teal-600);text-transform:uppercase;}
+  @media(min-width:900px){.step-num{position:static;margin-bottom:0;}}
+
+  .step-text .step-num{position:static;display:block;margin-bottom:14px;}
+  .step-icon{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:var(--teal-50);border:1px solid var(--teal-100);color:var(--teal-700);margin-bottom:20px;}
+  .step-icon svg{width:22px;height:22px;}
+  .step h2{font-family:var(--font-display);font-size:32px;line-height:1.25;padding-bottom:10px;letter-spacing:-0.015em;color:var(--teal-900);margin:0 0 20px;font-weight:600;text-wrap:balance;}
+  @media(min-width:900px){.step h2{font-size:38px;}}
+  .step h2 em{font-style:italic;color:var(--teal-600);}
+  .step-body{font-size:16px;line-height:1.65;color:var(--slate-600);margin:0 0 20px;max-width:520px;}
+  .step-body b{color:var(--slate-900);font-weight:600;}
+  .step-meta{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--teal-700);background:var(--teal-50);border:1px solid var(--teal-100);padding:6px 12px;border-radius:999px;}
+  .step-meta::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--teal-600);}
+
+  /* Mockup illustrations */
+  .step-art{position:relative;aspect-ratio:5/4;border-radius:24px;background:linear-gradient(160deg,var(--cream) 0%,#F4EFE3 100%);border:1px solid var(--cream-2);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:24px;box-shadow:0 24px 48px -28px rgba(15,23,42,0.18);}
+
+  /* Step 1: upload card */
+  .mock-upload{position:relative;width:100%;max-width:340px;}
+  .upload-card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 12px 24px -12px rgba(15,23,42,0.18);border:1px solid var(--slate-200);}
+  .upload-card .label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--slate-400);margin-bottom:10px;}
+  .upload-row{display:flex;gap:10px;align-items:center;padding:10px;background:var(--cream);border:1px dashed var(--slate-300);border-radius:10px;margin-bottom:10px;}
+  .upload-row.done{border-style:solid;border-color:var(--teal-300);background:var(--teal-50);}
+  .upload-thumb{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,var(--teal-600),var(--teal-900));flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;}
+  .upload-thumb.receipt{background:linear-gradient(135deg,#94A3B8,#475569);}
+  .upload-info{flex:1;min-width:0;}
+  .upload-name{font-size:13px;font-weight:600;color:var(--slate-900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .upload-size{font-size:11px;color:var(--slate-500);margin-top:2px;}
+  .upload-check{width:20px;height:20px;border-radius:50%;background:var(--teal-600);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .upload-check svg{width:11px;height:11px;}
+  .upload-progress{height:4px;background:var(--slate-200);border-radius:999px;overflow:hidden;margin-top:6px;}
+  .upload-progress span{display:block;height:100%;width:62%;background:var(--teal-600);border-radius:999px;}
+
+  /* Step 2: estimate */
+  .mock-estimate{width:100%;max-width:340px;background:#fff;border-radius:16px;padding:24px;box-shadow:0 12px 24px -12px rgba(15,23,42,0.18);border:1px solid var(--slate-200);}
+  .estimate-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .estimate-head .pill{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal-700);background:var(--teal-50);padding:4px 8px;border-radius:999px;}
+  .estimate-label{font-size:12px;color:var(--slate-500);font-weight:500;}
+  .estimate-amount{font-family:var(--font-display);font-size:48px;line-height:1.05;font-weight:600;color:var(--teal-900);letter-spacing:-0.02em;margin:6px 0 4px;}
+  .estimate-range{font-size:12px;color:var(--slate-500);margin-bottom:18px;}
+  .estimate-bar{height:8px;background:var(--slate-100);border-radius:999px;overflow:hidden;margin-bottom:18px;position:relative;}
+  .estimate-bar span{display:block;height:100%;width:78%;background:linear-gradient(90deg,var(--teal-600),var(--teal-300));border-radius:999px;}
+  .estimate-rows{display:flex;flex-direction:column;gap:10px;font-size:13px;}
+  .estimate-row{display:flex;justify-content:space-between;color:var(--slate-600);}
+  .estimate-row b{color:var(--slate-900);font-weight:600;font-variant-numeric:tabular-nums;}
+
+  /* Step 3: claim doc */
+  .mock-claim{width:100%;max-width:320px;background:#fff;border-radius:14px;padding:20px;box-shadow:0 12px 24px -12px rgba(15,23,42,0.18);border:1px solid var(--slate-200);position:relative;}
+  .mock-claim::after{content:"";position:absolute;top:14px;right:14px;background:var(--teal-50);color:var(--teal-700);font-size:10px;font-weight:700;letter-spacing:0.1em;padding:4px 8px;border-radius:6px;border:1px solid var(--teal-100);}
+  .claim-head{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--slate-100);margin-bottom:14px;}
+  .claim-logo{width:28px;height:28px;border-radius:8px;background:var(--teal-900);color:var(--teal-300);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;letter-spacing:0.08em;}
+  .claim-title{font-size:13px;font-weight:600;color:var(--slate-900);}
+  .claim-sub{font-size:11px;color:var(--slate-500);margin-top:2px;}
+  .claim-line{display:flex;justify-content:space-between;font-size:12px;padding:8px 0;border-bottom:1px dashed var(--slate-200);font-family:var(--font-mono);color:var(--slate-700);}
+  .claim-line:last-of-type{border-bottom:none;}
+  .claim-line .code{color:var(--teal-700);font-weight:600;}
+  .claim-line .amt{color:var(--slate-900);font-weight:600;}
+  .claim-foot{margin-top:12px;padding-top:12px;border-top:1px solid var(--slate-100);display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--slate-900);font-family:var(--font-mono);}
+
+  /* Step 4: payment */
+  .mock-payment{width:100%;max-width:320px;background:#fff;border-radius:16px;padding:28px 24px;box-shadow:0 12px 24px -12px rgba(15,23,42,0.18);border:1px solid var(--slate-200);text-align:center;position:relative;}
+  .pay-icon{width:56px;height:56px;border-radius:50%;background:var(--teal-50);border:1px solid var(--teal-100);color:var(--teal-600);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+  .pay-icon svg{width:28px;height:28px;}
+  .pay-status{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal-700);margin-bottom:8px;}
+  .pay-amount{font-family:var(--font-display);font-size:36px;font-weight:600;color:var(--teal-900);letter-spacing:-0.02em;margin-bottom:4px;}
+  .pay-from{font-size:13px;color:var(--slate-500);margin-bottom:16px;}
+  .pay-bar{display:flex;justify-content:space-between;font-size:11px;color:var(--slate-400);padding-top:14px;border-top:1px solid var(--slate-100);}
+  .pay-bar b{color:var(--slate-900);font-weight:600;display:block;font-size:12px;margin-top:2px;}
+
+  /* FAQ */
+  .faq-section{background:#fff;border-top:1px solid var(--cream-2);border-bottom:1px solid var(--cream-2);padding:80px 32px;}
+  .faq-inner{max-width:760px;margin:0 auto;}
+  .faq-head{text-align:center;margin-bottom:40px;}
+  .faq-head h2{font-family:var(--font-display);font-size:36px;line-height:1.25;padding-bottom:10px;color:var(--teal-900);margin:0 0 16px;font-weight:600;letter-spacing:-0.015em;text-wrap:balance;}
+  .faq-head h2 em{font-style:italic;color:var(--teal-600);}
+  .faq-head p{font-size:16px;color:var(--slate-600);margin:0;}
+
+  .faq-list{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--cream-2);}
+  .faq-item{border-bottom:1px solid var(--cream-2);}
+  .faq-item summary{list-style:none;cursor:pointer;padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;font-size:17px;font-weight:600;color:var(--slate-900);transition:color .15s;}
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary:hover{color:var(--teal-700);}
+  .faq-item summary .plus{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--cream);border:1px solid var(--cream-2);display:flex;align-items:center;justify-content:center;color:var(--slate-500);transition:transform .25s,background .15s,color .15s;}
+  .faq-item summary .plus svg{width:12px;height:12px;}
+  .faq-item[open] summary .plus{transform:rotate(45deg);background:var(--teal-600);color:#fff;border-color:var(--teal-600);}
+  .faq-body{padding:0 0 22px;font-size:15px;line-height:1.65;color:var(--slate-600);max-width:640px;}
+  .faq-body p{margin:0 0 12px;}
+  .faq-body p:last-child{margin:0;}
+  .faq-body a{color:var(--teal-700);font-weight:600;border-bottom:1px solid var(--teal-300);}
+
+  .faq-foot{margin-top:36px;text-align:center;font-size:14px;color:var(--slate-600);}
+  .faq-foot a{color:var(--teal-700);font-weight:600;border-bottom:1px solid var(--teal-300);}
+
+  /* TRUST STRIP */
+  .trust{max-width:1080px;margin:0 auto;padding:64px 32px;}
+  .trust-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+  @media(min-width:640px){.trust-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(min-width:1000px){.trust-grid{grid-template-columns:repeat(4,1fr);}}
+  .trust-card{background:#fff;border:1px solid var(--cream-2);border-radius:16px;padding:22px;}
+  .trust-card .icn{width:32px;height:32px;border-radius:9px;background:var(--teal-50);border:1px solid var(--teal-100);color:var(--teal-700);display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .trust-card .icn svg{width:16px;height:16px;}
+  .trust-card h4{font-size:14px;margin:0 0 4px;color:var(--slate-900);font-weight:600;}
+  .trust-card p{font-size:13px;line-height:1.5;color:var(--slate-500);margin:0;}
+
+  /* FINAL CTA */
+  .final-cta{text-align:center;padding:80px 32px 96px;max-width:720px;margin:0 auto;}
+  .final-cta h2{font-family:var(--font-display);font-size:48px;line-height:1.2;padding-bottom:10px;color:var(--teal-900);margin:0 0 22px;font-weight:600;letter-spacing:-0.02em;text-wrap:balance;}
+  .final-cta h2 em{font-style:italic;color:var(--teal-600);}
+  @media(min-width:768px){.final-cta h2{font-size:60px;}}
+  .final-cta p{font-size:17px;line-height:1.55;color:var(--slate-600);margin:0 0 32px;}
+  .btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--teal-600);color:#fff;padding:16px 28px;border-radius:12px;font-size:16px;font-weight:600;box-shadow:0 12px 24px -12px rgba(13,148,136,0.6);transition:background .15s,transform .1s;}
+  .btn-primary:hover{background:var(--teal-700);transform:translateY(-1px);}
+  .btn-primary svg{width:16px;height:16px;}
+  .cta-helper{margin-top:16px;font-size:13px;color:var(--slate-500);}
+  .cta-helper b{color:var(--teal-700);font-weight:600;}
+
+  /* FOOTER */
+  footer{background:var(--cream-2);border-top:1px solid #E8E2D5;padding:32px 32px 40px;}
+  .footer-inner{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center;font-size:13px;color:var(--slate-500);}
+  @media(min-width:700px){.footer-inner{flex-direction:row;justify-content:space-between;text-align:left;}}
+  .footer-links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+  .footer-links a:hover{color:var(--teal-700);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <svg viewBox="0 0 32 32"><path d="M16 2 C 7 2, 3 7, 3 15 C 3 24, 8 30, 16 30 C 24 30, 29 24, 29 15 C 29 7, 25 2, 16 2 Z M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#0D9488"/></svg>
+      Credimed
+    </a>
+    <div class="nav-links">
+      <span class="active">How it works</span>
+      <span>Pricing</span>
+      <span>FAQ</span>
+      <span>About</span>
+    </div>
+    <a class="nav-cta" href="/app/dashboard.html">Check my refund</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="eyebrow">How it works</span>
+  <h1>From receipt to refund in <em>four steps.</em></h1>
+  <p class="hero-sub">Most people who paid out of pocket for dental work in Mexico are owed money by their US insurance — they just don't know it. Here's how we get it back for you.</p>
+  <div class="hero-meta">
+    <span><span class="dot"></span><b>~3 min</b> to start</span>
+    <span><span class="dot"></span><b>$49</b> one-time fee</span>
+    <span><span class="dot"></span><b>3–6 weeks</b> to payout</span>
+  </div>
+</header>
+
+<section class="steps">
+
+  <!-- STEP 1 -->
+  <article class="step">
+    <div class="step-text">
+      <span class="step-num">Step 01 · ~2 minutes</span>
+      <span class="step-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </span>
+      <h2>Upload your insurance card and the dentist's receipt.</h2>
+      <p class="step-body">Snap a photo of both sides of your <b>insurance card</b> and a copy of your <b>itemized receipt</b> from the Mexican clinic. Spanish receipts are fine — we translate. We also ask for your member ID and a few questions about your plan, but you can skip that and we'll pull it from the card.</p>
+      <span class="step-meta">No login required to estimate</span>
+    </div>
+    <div class="step-art">
+      <div class="mock-upload">
+        <div class="upload-card">
+          <div class="label">Documents</div>
+          <div class="upload-row done">
+            <div class="upload-thumb">PPO</div>
+            <div class="upload-info">
+              <div class="upload-name">aetna-card-front.jpg</div>
+              <div class="upload-size">2.1 MB · uploaded</div>
+            </div>
+            <div class="upload-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6.5 5,9 10,3.5"/></svg></div>
+          </div>
+          <div class="upload-row">
+            <div class="upload-thumb receipt">RX</div>
+            <div class="upload-info">
+              <div class="upload-name">recibo-clinica-tijuana.pdf</div>
+              <div class="upload-progress"><span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- STEP 2 -->
+  <article class="step reverse">
+    <div class="step-text">
+      <span class="step-num">Step 02 · instant</span>
+      <span class="step-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      </span>
+      <h2>Get an <em>instant estimate</em> based on your specific plan.</h2>
+      <p class="step-body">We cross-reference your carrier, plan tier, and the procedures on your receipt against typical reimbursement rates for out-of-network dental care. You see a realistic refund range <b>before</b> you decide to file. No surprises, no upsell.</p>
+      <span class="step-meta">Free · no card required</span>
+    </div>
+    <div class="step-art">
+      <div class="mock-estimate">
+        <div class="estimate-head">
+          <span class="estimate-label">Estimated refund</span>
+          <span class="pill">Aetna PPO</span>
+        </div>
+        <div class="estimate-amount">$1,247</div>
+        <div class="estimate-range">Range: $980 – $1,420</div>
+        <div class="estimate-bar"><span></span></div>
+        <div class="estimate-rows">
+          <div class="estimate-row"><span>Crown × 2 (D2740)</span><b>$820</b></div>
+          <div class="estimate-row"><span>Root canal (D3330)</span><b>$310</b></div>
+          <div class="estimate-row"><span>Cleaning (D1110)</span><b>$117</b></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- STEP 3 -->
+  <article class="step">
+    <div class="step-text">
+      <span class="step-num">Step 03 · within 24 hours</span>
+      <span class="step-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 14l2 2 4-4"/></svg>
+      </span>
+      <h2>A specialist prepares and submits your claim.</h2>
+      <p class="step-body">A senior claims specialist translates your receipt, maps each procedure to the correct <b>CDT code</b>, fills the carrier-specific ADA claim form, and submits it electronically through your insurer's provider portal. Filed within <b>24 hours</b> of upload — usually the same day.</p>
+      <span class="step-meta">No paperwork on your end</span>
+    </div>
+    <div class="step-art">
+      <div class="mock-claim">
+        <div class="claim-head">
+          <div class="claim-logo">H</div>
+          <div>
+            <div class="claim-title">Claim CMD-7K2P-9X4M</div>
+            <div class="claim-sub">Filed · April 26, 2026</div>
+          </div>
+        </div>
+        <div class="claim-line"><span class="code">D2740</span><span class="amt">$420.00</span></div>
+        <div class="claim-line"><span class="code">D2740</span><span class="amt">$420.00</span></div>
+        <div class="claim-line"><span class="code">D3330</span><span class="amt">$310.00</span></div>
+        <div class="claim-line"><span class="code">D1110</span><span class="amt">$117.00</span></div>
+        <div class="claim-foot"><span>Submitted</span><span>$1,267.00</span></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- STEP 4 -->
+  <article class="step reverse">
+    <div class="step-text">
+      <span class="step-num">Step 04 · 3–6 weeks</span>
+      <span class="step-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </span>
+      <h2>Your insurer pays you <em>directly.</em></h2>
+      <p class="step-body">When the claim clears, your carrier issues the reimbursement check straight to your address — Credimed never touches your money. If the claim is denied, we resubmit once for free. If it's denied again, <b>you owe nothing beyond the $49 submission fee</b> (and we'll refund that too if your case was eligible).</p>
+      <span class="step-meta">Direct from insurer · check in mail</span>
+    </div>
+    <div class="step-art">
+      <div class="mock-payment">
+        <div class="pay-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="pay-status">Reimbursement issued</div>
+        <div class="pay-amount">$1,247.00</div>
+        <div class="pay-from">Aetna · check mailed to your address</div>
+        <div class="pay-bar">
+          <span>Filed<b>Apr 26</b></span>
+          <span>Approved<b>May 12</b></span>
+          <span>Mailed<b>May 18</b></span>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="faq-inner">
+    <div class="faq-head">
+      <h2>Frequently asked, <em>quickly answered.</em></h2>
+      <p>The questions we hear most often. Need more depth? See the full FAQ.</p>
+    </div>
+
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Will my insurance actually reimburse me for work done in Mexico?
+          <span class="plus"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>Most US dental PPOs cover <b>out-of-network</b> care, including international providers, at a lower percentage than in-network. If your plan includes out-of-network benefits, the procedures are eligible regardless of country. We verify this against your specific plan before filing.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>What if my claim is denied?
+          <span class="plus"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>We resubmit once for free with corrections. If it's denied again and your case was eligible at intake, <b>you get the $49 fee back</b>. We don't charge success fees on top of the submission fee — what you pay up front is what you pay, period.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>How does Credimed get paid? Do you take a cut of my refund?
+          <span class="plus"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>No. We charge a flat <b>$49–$99</b> submission fee depending on the complexity of your claim. The reimbursement check goes from your insurer directly to you. We never see, hold, or take a percentage of your refund.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Is my health information safe?
+          <span class="plus"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>Yes. All Protected Health Information is encrypted in transit (TLS 1.3) and at rest (AES-256). We've signed Business Associate Agreements with AWS and Google Cloud — the only services that touch your data — and follow HIPAA's Privacy &amp; Security rules. You can request deletion any time.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>How long does the whole thing actually take?
+          <span class="plus"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg></span>
+        </summary>
+        <div class="faq-body">
+          <p>Your part takes about <b>3 minutes</b>. We file within 24 hours. After that, your insurer's processing time controls the timeline — typically <b>3–6 weeks</b> to receive the check, occasionally faster, occasionally up to 8 weeks for complex multi-procedure claims.</p>
+        </div>
+      </details>
+    </div>
+
+    <p class="faq-foot">Still have questions? <a href="/faq.html">Read the full FAQ →</a></p>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust">
+  <div class="trust-grid">
+    <div class="trust-card">
+      <span class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <h4>HIPAA-aligned</h4>
+      <p>Workflow built around HIPAA Privacy &amp; Security rules.</p>
+    </div>
+    <div class="trust-card">
+      <span class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+      <h4>End-to-end encrypted</h4>
+      <p>TLS 1.3 in transit, AES-256 at rest. Never plain text.</p>
+    </div>
+    <div class="trust-card">
+      <span class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V4H3v16h6"/><path d="m13 17 3 3 6-6"/></svg></span>
+      <h4>BAAs in place</h4>
+      <p>Signed with AWS &amp; Google Cloud — our only data processors.</p>
+    </div>
+    <div class="trust-card">
+      <span class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+      <h4>500+ claims filed</h4>
+      <p>Across 18 carriers · paid out $640K+ to members.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <h2>Ready to claim what's <em>yours?</em></h2>
+  <p>Three minutes to start. $49 to file. The check goes directly to you.</p>
+  <a class="btn-primary" href="/app/dashboard.html">
+    Start my claim
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+  </a>
+  <div class="cta-helper">No win, no fee. <b>$49 refunded if denied.</b></div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>© 2026 Credimed Inc. · 2261 Market St #5432, San Francisco, CA</div>
+    <div class="footer-links">
+      <a href="mailto:support@credimed.us">support@credimed.us</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
