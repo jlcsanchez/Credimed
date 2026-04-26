@@ -35,8 +35,9 @@
 const SUPPORT_EMAIL = 'support@credimed.us';
 
 const ANA_FAQ = [
-  // ---- General / pre-signup (Sofia's old territory) -------------------
+  // ---- General — used pre-signup and on landing -----------------------
   {
+    topic: 'general',
     q_es: '¿Cómo funciona Credimed?',
     q_en: 'How does Credimed work?',
     a_es: 'Te ayudamos a recuperar dinero de tu seguro dental PPO de US por trabajos hechos en México. Subes tu recibo + tu credencial del seguro, nosotros preparamos el claim, lo enviamos a tu aseguradora, y la aseguradora te paga directo a ti. Tú solo pagas nuestra tarifa una vez.',
@@ -44,6 +45,7 @@ const ANA_FAQ = [
     keywords: ['como', 'funciona', 'how', 'works', 'work', 'que', 'hacen', 'do']
   },
   {
+    topic: 'general',
     q_es: '¿Cuánto cuesta?',
     q_en: 'How much does it cost?',
     a_es: 'Cobramos según la complejidad del claim: Standard $49, Plus $79, Premium $99. La complejidad la determina nuestro sistema basado en cuántos procedimientos, cuántos documentos, y la calidad del recibo. Una sola tarifa, sin comisión sobre tu reembolso.',
@@ -51,6 +53,7 @@ const ANA_FAQ = [
     keywords: ['cuesta', 'precio', 'tarifa', 'fee', 'price', 'cost', 'how much', 'cuanto', 'cobran']
   },
   {
+    topic: 'general',
     q_es: '¿Qué es la garantía 100% money-back?',
     q_en: 'What is the 100% money-back guarantee?',
     a_es: 'Si tu claim era elegible bajo tu plan y no logramos reembolso después del envío inicial + una resubmission gratis, te devolvemos el 100% del fee. El refund toma 5-10 días hábiles a tu método de pago original. Lee el detalle en el Service Agreement.',
@@ -58,6 +61,7 @@ const ANA_FAQ = [
     keywords: ['money', 'back', 'garantia', 'refund', 'reembolso', 'guarantee', 'devuelven', 'devuelve']
   },
   {
+    topic: 'general',
     q_es: '¿Es seguro? ¿Mi info está protegida?',
     q_en: 'Is it safe? Is my info protected?',
     a_es: 'Sí. Tu información médica está cifrada con AWS KMS (256-bit), comunicación HTTPS/TLS, y operamos bajo prácticas alineadas con HIPAA. Tenemos BAA firmado con AWS y Google Workspace. Nunca compartimos tu información con terceros excepto tu aseguradora.',
@@ -65,6 +69,7 @@ const ANA_FAQ = [
     keywords: ['seguro', 'safe', 'hipaa', 'privacy', 'data', 'datos', 'proteg']
   },
   {
+    topic: 'general',
     q_es: '¿Qué aseguradoras manejan?',
     q_en: 'What insurance carriers do you support?',
     a_es: 'Trabajamos con todas las PPO mayores en US: Delta Dental, Cigna, Aetna, MetLife, United Healthcare, Guardian, Blue Cross Blue Shield, y otros. Solo PPO — no aceptamos HMO ni Medicaid.',
@@ -72,6 +77,7 @@ const ANA_FAQ = [
     keywords: ['aseguradora', 'insurance', 'carrier', 'delta', 'cigna', 'aetna', 'metlife', 'united', 'bcbs', 'ppo', 'hmo']
   },
   {
+    topic: 'general',
     q_es: '¿Cuánto tarda todo el proceso?',
     q_en: 'How long does the whole process take?',
     a_es: 'Nosotros preparamos y enviamos tu claim en 24 horas. Tu aseguradora típicamente responde en 3-6 semanas (algunas hasta 8). Si te aprueban, el reembolso llega a tu cuenta en 3-7 días hábiles después.',
@@ -79,6 +85,7 @@ const ANA_FAQ = [
     keywords: ['tarda', 'tiempo', 'time', 'long', 'cuanto', 'demora', 'tardan', 'cuando']
   },
   {
+    topic: 'general',
     q_es: '¿Tengo que estar en Mexico?',
     q_en: 'Do I have to be in Mexico?',
     a_es: 'No. Solo necesitas haber tenido el trabajo dental hecho en México y tener tu recibo + credencial. El claim lo manejas desde donde estés, en cualquier momento dentro del periodo de cobertura de tu seguro (típicamente 12 meses desde el procedimiento).',
@@ -86,8 +93,9 @@ const ANA_FAQ = [
     keywords: ['mexico', 'estar', 'donde', 'where', 'tengo', 'have']
   },
 
-  // ---- Onboarding / docs upload (Ana's old territory) ------------------
+  // ---- Docs — onboarding, document upload, OCR -------------------------
   {
+    topic: 'docs',
     q_es: '¿Qué documentos necesito subir?',
     q_en: 'What documents do I need to upload?',
     a_es: 'Dos archivos: (1) foto/PDF de tu credencial de seguro dental, ambos lados si es posible. (2) recibo del dentista en México con el desglose de procedimientos. JPG, PNG o PDF.',
@@ -95,6 +103,7 @@ const ANA_FAQ = [
     keywords: ['documento', 'document', 'subir', 'upload', 'archivo', 'file', 'papel', 'need', 'necesito', 'requier']
   },
   {
+    topic: 'docs',
     q_es: '¿Por qué piden mi credencial de seguro?',
     q_en: 'Why do you need my insurance card?',
     a_es: 'Para identificar tu plan y calcular tu cobertura exacta. Sin la credencial no podemos saber qué procedimientos cubre tu plan ni el porcentaje de reembolso esperado.',
@@ -102,6 +111,7 @@ const ANA_FAQ = [
     keywords: ['credencial', 'card', 'insurance', 'porque', 'why', 'piden']
   },
   {
+    topic: 'docs',
     q_es: 'Mi recibo está en español, ¿es problema?',
     q_en: 'My receipt is in Spanish, is that a problem?',
     a_es: 'No, lo traducimos nosotros. Súbelo tal como está y nuestro equipo se encarga de la traducción al inglés y de mapear los procedimientos a códigos CDT que tu aseguradora reconoce.',
@@ -109,6 +119,7 @@ const ANA_FAQ = [
     keywords: ['espanol', 'spanish', 'idioma', 'language', 'traduc', 'translate']
   },
   {
+    topic: 'docs',
     q_es: '¿Qué pasa después de subir mis documentos?',
     q_en: 'What happens after I upload my documents?',
     a_es: 'Nuestro sistema procesa el recibo (~2 minutos), te muestra el estimado de reembolso, eliges plan, firmas el agreement, pagas, y nosotros enviamos el claim a tu aseguradora dentro de 24 horas.',
@@ -116,6 +127,7 @@ const ANA_FAQ = [
     keywords: ['despues', 'after', 'siguiente', 'next', 'que pasa', 'what happens']
   },
   {
+    topic: 'docs',
     q_es: '¿Puedo editar mi claim después de enviarlo?',
     q_en: 'Can I edit my claim after submitting?',
     a_es: 'Una vez enviado a la aseguradora no podemos modificarlo, pero si recibes alguna comunicación de la aseguradora pidiendo info adicional, te contactamos por email para ayudarte. Para correcciones antes del envío, escríbenos a ' + SUPPORT_EMAIL + '.',
@@ -123,8 +135,9 @@ const ANA_FAQ = [
     keywords: ['editar', 'edit', 'cambiar', 'change', 'modificar', 'modify', 'corregir']
   },
 
-  // ---- Plan / pricing (Elena's old territory) --------------------------
+  // ---- Pricing — plan tiers, fees, payment, agreement ------------------
   {
+    topic: 'pricing',
     q_es: '¿Por qué me tocó plan Standard / Plus / Premium?',
     q_en: 'Why did I get Standard / Plus / Premium?',
     a_es: 'Asignamos plan según la complejidad de tu claim: Standard ($49) si es simple — pocos procedimientos, recibo claro. Plus ($79) si hay múltiples procedimientos o el recibo necesita más trabajo. Premium ($99) si hay códigos ambiguos, muchos procedimientos, o calidad de recibo baja.',
@@ -132,6 +145,7 @@ const ANA_FAQ = [
     keywords: ['plan', 'standard', 'plus', 'premium', 'asign', 'tier']
   },
   {
+    topic: 'pricing',
     q_es: '¿Qué incluye mi plan?',
     q_en: 'What does my plan include?',
     a_es: 'Todos los planes incluyen: preparación del claim, traducción español→inglés, mapeo a códigos CDT, envío a tu aseguradora, seguimiento, y una resubmission gratis si te niegan. Plus y Premium incluyen revisión de códigos más detallada.',
@@ -139,6 +153,7 @@ const ANA_FAQ = [
     keywords: ['incluye', 'include', 'features']
   },
   {
+    topic: 'pricing',
     q_es: '¿Es real lo del fee de $19 por resubmission?',
     q_en: 'Is the $19 resubmission fee real?',
     a_es: 'Sí. La primera resubmission es gratis. Si tu aseguradora te niega de nuevo y quieres reintentar, cada submission adicional es $19. Solo cobramos si tú decides reintentar — no es automático.',
@@ -146,8 +161,9 @@ const ANA_FAQ = [
     keywords: ['resubmission', 'resub', '19', 'reintent', 'retry']
   },
 
-  // ---- Claim status / case management (Marco's old territory) ----------
+  // ---- Status — claim tracking, decisions, denials ---------------------
   {
+    topic: 'status',
     q_es: '¿Qué significan los status de mi claim?',
     q_en: 'What do the claim statuses mean?',
     a_es: 'Submitted: enviado a tu aseguradora. In-review: la aseguradora lo está analizando. Approved: aprobado, te van a pagar. Paid: el reembolso ya salió. Denied: negado — te contactamos para opciones (resubmission gratis, money-back si aplica).',
@@ -155,6 +171,7 @@ const ANA_FAQ = [
     keywords: ['status', 'estado', 'significa', 'mean', 'submitted', 'review', 'approved', 'paid', 'denied']
   },
   {
+    topic: 'status',
     q_es: '¿Cómo me pagan el reembolso?',
     q_en: 'How do I get paid?',
     a_es: 'Tu aseguradora te paga a ti directo, no a Credimed. Algunas mandan cheque por correo, otras hacen depósito directo según el método que tengan registrado contigo. Llega 3-7 días hábiles después de aprobado.',
@@ -162,6 +179,7 @@ const ANA_FAQ = [
     keywords: ['pagan', 'pay', 'pago', 'payment', 'depos', 'cheque', 'check']
   },
   {
+    topic: 'status',
     q_es: '¿Qué hago si mi aseguradora me llama pidiendo info?',
     q_en: 'What if my insurer calls me asking for info?',
     a_es: 'Eso es normal — algunas aseguradoras verifican datos directamente contigo. Confirma la info que pidan basándote en tu claim. Si necesitas que nosotros respondamos algo técnico, escríbenos a ' + SUPPORT_EMAIL + ' con el detalle.',
@@ -169,6 +187,7 @@ const ANA_FAQ = [
     keywords: ['llama', 'call', 'pide', 'ask', 'verific']
   },
   {
+    topic: 'status',
     q_es: 'Mi claim fue denegado, ¿qué hago?',
     q_en: 'My claim was denied, what do I do?',
     a_es: 'Lo siento que pasó eso. Tienes dos opciones: (1) resubmission gratis si encontramos un ángulo nuevo. (2) si tu claim era elegible bajo tu plan, aplica el 100% money-back. Por favor escríbenos a ' + SUPPORT_EMAIL + ' con tu claim ID y un asesor humano revisa tu caso específico.',

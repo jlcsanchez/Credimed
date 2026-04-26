@@ -16,6 +16,19 @@
   var SUPPORT_EMAIL = 'support@credimed.us';
   var DEFAULT_LANG = 'en';
 
+  /* Per-page topic. Drives which quick-reply chips render at the top
+     of the chat. Read once at script-parse time from data-topic on
+     the <script> tag (or window.CREDIMED_ANA_TOPIC for dynamic
+     loaders). Falls back to 'general' when missing. Topics: general,
+     docs, pricing, status. */
+  var topic = 'general';
+  try {
+    if (document.currentScript) {
+      topic = document.currentScript.getAttribute('data-topic') || topic;
+    }
+  } catch (e) {}
+  if (window.CREDIMED_ANA_TOPIC) topic = window.CREDIMED_ANA_TOPIC;
+
   // -------- Helpers (mirror agent-chat.js so behavior is identical) -------
 
   function normalize(s) {
@@ -216,13 +229,23 @@
       addEmailCta(text);
     }
 
-    // Quick-reply chips. The first three pull straight from the FAQ
-    // catalog so they always match. The fourth is an explicit
-    // "talk to human" button that skips the FAQ and opens email.
+    // Quick-reply chips. Pull the first 3 entries that match the
+    // page's topic — that way docs.html shows upload questions,
+    // dashboard.html shows status questions, etc. If a topic has
+    // fewer than 3 entries we top up with general ones so the chip
+    // row never feels sparse. The 4th chip is the human-escalation
+    // path and is always present.
     var chipsRow = el('div', { class: 'ana-chips' });
     var anaCatalog = (window.CredimedFAQ && window.CredimedFAQ.ana) || [];
-    var firstThree = anaCatalog.slice(0, 3);
-    firstThree.forEach(function (entry) {
+    var topicEntries = anaCatalog.filter(function (e) { return e.topic === topic; });
+    var displayed = topicEntries.slice(0, 3);
+    if (displayed.length < 3) {
+      var generals = anaCatalog.filter(function (e) {
+        return e.topic === 'general' && displayed.indexOf(e) === -1;
+      });
+      displayed = displayed.concat(generals).slice(0, 3);
+    }
+    displayed.forEach(function (entry) {
       chipsRow.appendChild(el('button', {
         class: 'ana-chip', type: 'button',
         onClick: function () { respond(entry.q_en); }
