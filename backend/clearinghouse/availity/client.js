@@ -290,7 +290,7 @@ function getPayerId(insurerName) {
   return null;
 }
 
-module.exports = {
+export {
   getAccessToken,
   submitClaim,
   getStatus,

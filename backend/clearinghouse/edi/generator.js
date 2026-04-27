@@ -143,8 +143,11 @@ function generate837D(claim, options) {
   // ---------------------------------------------------------------
   // ST — Transaction Set Header
   // ---------------------------------------------------------------
-  // Reset segment count for the transaction (ST..SE pair)
-  segCount = 1;
+  // Reset segment count for the transaction (ST..SE pair). Set to 0 so
+  // the seg() call below increments to 1 and ST is correctly counted as
+  // segment #1 of the transaction. SE01 includes both ST and SE itself,
+  // so when we emit SE we read segCount and add 1 (for SE).
+  segCount = 0;
   seg(`ST*837*${transactionSetControlNumber}*005010X224A2~`);
 
   // ---------------------------------------------------------------
@@ -277,4 +280,4 @@ function generate837D(claim, options) {
   return segments.join("\n");
 }
 
-module.exports = { generate837D, clean, ediDate, ediTime };
+export { generate837D, clean, ediDate, ediTime };

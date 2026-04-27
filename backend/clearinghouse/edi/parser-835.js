@@ -328,4 +328,4 @@ function isOutrightDenial(claim) {
   return !onlyPR;
 }
 
-module.exports = { parse835, isOutrightDenial, describeClaimStatus, describeAdjustmentReason };
+export { parse835, isOutrightDenial, describeClaimStatus, describeAdjustmentReason };

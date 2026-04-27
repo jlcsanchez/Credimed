@@ -1,0 +1,19 @@
+{
+  "name": "credimed-clearinghouse",
+  "version": "1.0.0",
+  "description": "Availity clearinghouse integration for Credimed dental claims (EDI 837D submission + 999/277/835 response parsing)",
+  "private": true,
+  "type": "module",
+  "main": "credimed-clearinghouse.lambda.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/client-kms": "^3.600.0",
+    "@aws-sdk/client-s3": "^3.600.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

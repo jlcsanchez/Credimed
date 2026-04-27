@@ -277,4 +277,4 @@ function mapToInternalStatus(claim) {
   return "submitted";
 }
 
-module.exports = { parse277, mapToInternalStatus, describeStatus };
+export { parse277, mapToInternalStatus, describeStatus };

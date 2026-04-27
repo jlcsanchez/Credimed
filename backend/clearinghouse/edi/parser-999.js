@@ -214,4 +214,4 @@ function friendlyIK5Error(code) {
   return IK5_MESSAGES[code] || `Transaction set error code ${code}`;
 }
 
-module.exports = { parse999 };
+export { parse999 };
