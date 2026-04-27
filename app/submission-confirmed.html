@@ -291,6 +291,47 @@ html, body {
     overflow: hidden;
   }
 }
+
+@media (min-width: 960px) {
+  .conf-mobile-only { display: none; }
+  .conf-pc { padding: 56px 40px; min-height: calc(100vh - 64px); display: flex; align-items: center; justify-content: center; }
+  .conf-card { width: 100%; max-width: 600px; background: #fff; border: 1px solid var(--cream-2); border-radius: 20px; padding: 44px 48px 40px; text-align: center; position: relative; box-shadow: 0 30px 80px -30px rgba(13,148,136,0.18); }
+  .conf-confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: 20px; }
+  .conf-confetti span { position: absolute; width: 8px; height: 8px; background: var(--teal-300); opacity: 0.6; animation: conf-fall 3s ease-out forwards; }
+  .conf-confetti span:nth-child(1) { left: 10%; top: -5%; }
+  .conf-confetti span:nth-child(2) { left: 25%; top: -5%; background: #FCD34D; animation-delay: .3s; }
+  .conf-confetti span:nth-child(3) { left: 45%; top: -5%; animation-delay: .1s; }
+  .conf-confetti span:nth-child(4) { left: 65%; top: -5%; background: #6EE7B7; animation-delay: .5s; }
+  .conf-confetti span:nth-child(5) { left: 80%; top: -5%; animation-delay: .2s; }
+  .conf-confetti span:nth-child(6) { left: 90%; top: -5%; background: #FCD34D; animation-delay: .4s; }
+  @keyframes conf-fall { to { transform: translateY(700px) rotate(540deg); opacity: 0; } }
+  .conf-check { width: 88px; height: 88px; margin: 0 auto 22px; border-radius: 50%; position: relative; background: linear-gradient(135deg, #34D399, var(--green-600, #059669)); display: inline-flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 12px 30px -8px rgba(16,185,129,0.5), 0 0 0 8px rgba(16,185,129,0.08); animation: conf-pop 600ms cubic-bezier(0.2,0.8,0.2,1) backwards; }
+  @keyframes conf-pop { 0% { transform: scale(0.4); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+  .conf-check svg { width: 44px; height: 44px; }
+  .conf-card h1 { font-size: 28px; font-weight: 700; margin: 0 0 8px; letter-spacing: -0.02em; color: var(--slate-900); }
+  .conf-card .lead { font-size: 15px; color: var(--slate-600); margin: 0 0 28px; line-height: 1.55; }
+  .conf-card .lead b { color: var(--slate-900); font-weight: 600; }
+  .conf-id { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: var(--cream); border: 1px solid var(--cream-2); font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; color: var(--slate-700); font-weight: 600; margin-bottom: 28px; }
+  .conf-id .lbl { color: var(--slate-500); font-weight: 500; font-family: var(--font-ui); letter-spacing: 0.04em; text-transform: uppercase; font-size: 11px; }
+  .conf-next { text-align: left; padding: 22px 24px; background: var(--cream); border-radius: 14px; margin-bottom: 24px; }
+  .conf-next h3 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 14px; }
+  .conf-next-list { list-style: none; padding: 0; margin: 0; position: relative; }
+  .conf-next-list::before { content: ""; position: absolute; left: 9px; top: 8px; bottom: 8px; width: 2px; background: var(--cream-2); }
+  .conf-next-list li { position: relative; padding: 6px 0 6px 32px; }
+  .conf-next-list li .ndot { position: absolute; left: 4px; top: 9px; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid var(--slate-300); }
+  .conf-next-list li.done .ndot { background: var(--teal-600); border-color: var(--teal-600); }
+  .conf-next-list li .ntitle { font-size: 14px; font-weight: 600; color: var(--slate-900); margin-bottom: 2px; }
+  .conf-next-list li.done .ntitle { color: var(--slate-700); }
+  .conf-next-list li:not(.done) .ntitle { color: var(--slate-500); font-weight: 500; }
+  .conf-next-list li .nmeta { font-size: 12.5px; color: var(--slate-500); }
+  .conf-actions { display: flex; gap: 10px; justify-content: center; }
+  .conf-btn { flex: 1; padding: 13px; border-radius: 11px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid; }
+  .conf-btn.primary { background: var(--teal-600); color: #fff; border-color: var(--teal-600); }
+  .conf-btn.primary:hover { background: var(--teal-700); }
+  .conf-btn.ghost { background: #fff; color: var(--slate-700); border-color: var(--cream-2); }
+  .conf-btn.ghost:hover { background: var(--cream); }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 </head>
@@ -452,3 +493,33 @@ document.getElementById('copyBtn').addEventListener('click', function () {
 <script src="auto-logoff.js"></script>
 </body>
 </html>
+
+<div class="conf-mobile-only"></div><!-- /.conf-mobile-only -->
+
+
+<div class="conf-pc">
+  <div class="conf-card">
+    <div class="conf-confetti"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="conf-check">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h1>Claim submitted!</h1>
+    <p class="lead">We've filed your claim with your insurer. You'll get email updates as it moves through their system.</p>
+    <div class="conf-id"><span class="lbl">Claim ID</span><span id="confClaimId">CMX-2026-0A4B29</span></div>
+    <div class="conf-next">
+      <h3>What happens next</h3>
+      <ul class="conf-next-list">
+        <li class="done"><span class="ndot"></span><div class="ntitle">Claim filed with insurer</div><div class="nmeta">Just now</div></li>
+        <li><span class="ndot"></span><div class="ntitle">Insurer acknowledges receipt</div><div class="nmeta">Within 1&ndash;2 business days</div></li>
+        <li><span class="ndot"></span><div class="ntitle">Carrier review</div><div class="nmeta">10&ndash;15 business days typically</div></li>
+        <li><span class="ndot"></span><div class="ntitle">Refund check mailed to you</div><div class="nmeta">By insurer</div></li>
+      </ul>
+    </div>
+    <div class="conf-actions">
+      <a class="conf-btn ghost" href="dashboard.html">Back to dashboard</a>
+      <a class="conf-btn primary" href="claims.html">View my claims &rarr;</a>
+    </div>
+  </div>
+</div>
+
+

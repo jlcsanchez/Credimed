@@ -395,6 +395,41 @@ html, body {
 @media (max-width: 1200px) {
   .desktop { display: none; }
 }
+
+@media (min-width: 960px) {
+  .proc-mobile-only { display: none; }
+  body[data-page="processing"] .app-shell { background: transparent; }
+  body[data-page="processing"] .app-main {
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(94,234,212,0.18), transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(13,148,136,0.20), transparent 55%),
+      linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
+    min-height: 100vh; color: #fff;
+  }
+  .proc-pc { min-height: calc(100vh - 64px); padding: 48px 40px; display: flex; align-items: center; justify-content: center; }
+  .proc-card { width: 100%; max-width: 520px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 20px; padding: 44px 44px 40px; backdrop-filter: blur(16px); text-align: center; }
+  .proc-icon-pc { width: 72px; height: 72px; margin: 0 auto 22px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(94,234,212,0.4); display: inline-flex; align-items: center; justify-content: center; color: var(--teal-300); animation: proc-pulse 2.4s ease-in-out infinite; }
+  @keyframes proc-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(94,234,212,0.25); } 50% { box-shadow: 0 0 0 14px rgba(94,234,212,0); } }
+  .proc-icon-pc svg { width: 32px; height: 32px; animation: proc-spin 2.6s linear infinite; }
+  @keyframes proc-spin { to { transform: rotate(360deg); } }
+  .proc-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal-300); margin: 0 0 8px; }
+  .proc-card h1 { font-size: 24px; font-weight: 700; margin: 0 0 8px; letter-spacing: -0.02em; color: #fff; }
+  .proc-card .label-now { font-size: 14px; color: rgba(250,246,239,0.7); margin: 0 0 28px; min-height: 22px; }
+  .proc-track { height: 8px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
+  .proc-fill { height: 100%; width: 49%; background: linear-gradient(90deg, var(--teal-300), #fff); border-radius: 999px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 12px rgba(94,234,212,0.6); }
+  .proc-pct { display: flex; justify-content: space-between; font-size: 12px; color: rgba(250,246,239,0.6); font-variant-numeric: tabular-nums; }
+  .proc-pct .num { color: #fff; font-weight: 700; }
+  .proc-steps { list-style: none; padding: 0; margin: 28px 0 0; text-align: left; }
+  .proc-step { display: flex; gap: 12px; align-items: center; padding: 8px 0; font-size: 13px; color: rgba(250,246,239,0.55); transition: color 0.25s; }
+  .proc-step.done { color: rgba(250,246,239,0.85); }
+  .proc-step.active { color: #fff; font-weight: 600; }
+  .proc-step .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); flex-shrink: 0; }
+  .proc-step.done .dot { background: var(--teal-300); }
+  .proc-step.active .dot { background: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,0.18); animation: proc-step-pulse 1.4s ease-in-out infinite; }
+  @keyframes proc-step-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(255,255,255,0.18); } 50% { box-shadow: 0 0 0 8px rgba(255,255,255,0.06); } }
+  .proc-foot { margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: rgba(250,246,239,0.5); line-height: 1.5; }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 </head>
@@ -601,3 +636,28 @@ applyMode('live');
 <script src="auto-logoff.js"></script>
 </body>
 </html>
+
+<div class="proc-mobile-only"></div><!-- /.proc-mobile-only -->
+
+
+<div class="proc-pc">
+  <div class="proc-card">
+    <div class="proc-icon-pc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    </div>
+    <p class="proc-eyebrow">Working on it</p>
+    <h1>Matching your PPO plan</h1>
+    <p class="label-now" id="procLabelPc">Looking up Aetna PPO 2000 fee schedules&hellip;</p>
+    <div class="proc-track"><div class="proc-fill" id="procFillPc" style="width:49%"></div></div>
+    <div class="proc-pct"><span>Step 2 of 4</span><span class="num" id="procPctPc">49%</span></div>
+    <ul class="proc-steps" id="procStepsPc">
+      <li class="proc-step done"><span class="dot"></span>Read your receipt &amp; insurance card</li>
+      <li class="proc-step done"><span class="dot"></span>Translated procedures to ADA codes</li>
+      <li class="proc-step active"><span class="dot"></span>Looking up your PPO fee schedules</li>
+      <li class="proc-step"><span class="dot"></span>Modeling refund estimate</li>
+    </ul>
+    <p class="proc-foot">This usually takes 6&ndash;8 seconds. Don't close this tab &mdash; we'll bring you to your estimate automatically.</p>
+  </div>
+</div>
+
+
