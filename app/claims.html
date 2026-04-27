@@ -134,7 +134,36 @@ html,body{
    DESKTOP CLAIMS LIST (>= 960px) — Claude Design page 4.
    ============================================================ */
 @media (min-width: 960px) {
-  .claims-mobile-only { display: none; }
+  /* Hide the Claude Design admin-style table — patient-facing claims
+     list looks better as cards (matches profile, dashboard). */
+  .claims-pc { display: none !important; }
+
+  /* Show the mobile-card list on PC, but in a 2-col grid with PC
+     padding/max-width. */
+  .claims-mobile-only { display: block !important; }
+  .claims-mobile-only .topbar,
+  .claims-mobile-only .device-label,
+  .claims-mobile-only .bottom-nav { display: none !important; }
+  .claims-mobile-only .body-wrap {
+    max-width: 1080px; margin: 0 auto; padding: 32px 40px 56px;
+  }
+  .claims-mobile-only .hero {
+    background: transparent !important; color: var(--slate-900) !important;
+    padding: 32px 40px 12px !important; max-width: 1080px; margin: 0 auto;
+  }
+  .claims-mobile-only .hero::before { display: none; }
+  .claims-mobile-only .hero h1 {
+    font-size: 26px !important; color: var(--slate-900) !important;
+    margin-bottom: 4px;
+  }
+  .claims-mobile-only .hero .sub {
+    color: var(--slate-500) !important;
+  }
+  .claims-mobile-only #list {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .claims-mobile-only #list .empty { grid-column: 1 / -1; }
+  .claims-mobile-only .filter-bar { padding: 0 0 8px; }
   .claims-pc { padding: 32px 40px 56px; max-width: 1180px; margin: 0 auto; }
   .claims-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
   .claims-head h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }
