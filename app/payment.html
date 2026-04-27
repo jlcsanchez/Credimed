@@ -1734,7 +1734,7 @@ mountScope('desktop');
 <div class="pay-pc">
   <header class="pay-head">
     <p class="eyebrow">Step 4 of 4 &middot; Payment</p>
-    <h1>Pay $49 to file your claim</h1>
+    <h1 id="pcPayHeadline">Pay $49 to file your claim</h1>
     <p>One-time charge. We file with your insurer within 24 hours.</p>
   </header>
 
@@ -1742,20 +1742,20 @@ mountScope('desktop');
     <section class="pay-summary">
       <h3>Order summary</h3>
       <div class="pay-claim">
-        <div class="id">CMX-2026-0A4B29</div>
-        <div class="desc">Crown + root canal &middot; Tijuana, MX</div>
+        <div class="id" id="pcClaimId">—</div>
+        <div class="desc" id="pcClaimDesc">Dental claim</div>
       </div>
-      <div class="pay-line"><span class="k">Plan</span><span class="v">Standard</span></div>
-      <div class="pay-line"><span class="k">Filing service</span><span class="v">$49.00</span></div>
-      <div class="pay-line"><span class="k">Estimated refund (paid by insurer)</span><span class="v">$450&ndash;$610</span></div>
-      <div class="pay-total"><span class="k">You pay today</span><span class="v">$49.00</span></div>
+      <div class="pay-line"><span class="k">Plan</span><span class="v" id="pcPlanName">Standard</span></div>
+      <div class="pay-line"><span class="k">Filing service</span><span class="v" id="pcPlanPrice">$49.00</span></div>
+      <div class="pay-line"><span class="k">Estimated refund (paid by insurer)</span><span class="v" id="pcRefundRange">—</span></div>
+      <div class="pay-total"><span class="k">You pay today</span><span class="v" id="pcPayToday">$49.00</span></div>
       <div class="pay-guarantee">
         <div class="icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
         </div>
         <div>
           <strong>Money-back guarantee</strong>
-          <p>If your insurer rejects the claim outright and we can't fix it on resubmission, we refund the $49 &mdash; no questions asked.</p>
+          <p>If your insurer rejects the claim outright and we can't fix it on resubmission, we refund the <span id="pcGuaranteeAmount">$49</span> &mdash; no questions asked.</p>
         </div>
       </div>
       <div class="pay-trust">
@@ -1795,6 +1795,92 @@ mountScope('desktop');
     document.addEventListener('DOMContentLoaded', relocate);
   } else {
     relocate();
+  }
+})();
+</script>
+
+<script>
+/* PC Order Summary hydration — same data the mobile renderer pulls from
+   CredimedState + sessionStorage. The PC sidebar HTML used to be hardcoded
+   ($49 / Standard / CMX-2026-0A4B29 / Crown + root canal · Tijuana, MX),
+   which mismatched the dynamically-priced Stripe button (e.g. $79 if user
+   chose Plus). Now they share one source of truth. */
+(function () {
+  if (window.innerWidth < 960) return;
+
+  function pickPlan() {
+    /* Priority: pricing engine output > sessionStorage from plan.html >
+       fallback to Standard $49. */
+    var cs = (window.CredimedState && window.CredimedState.get('pricing', null)) || null;
+    if (cs && cs.plan && typeof cs.price === 'number') {
+      var name = cs.plan.charAt(0).toUpperCase() + cs.plan.slice(1);
+      return { name: name, price: cs.price };
+    }
+    try {
+      var ssPlan  = sessionStorage.getItem('credimed_plan');
+      var ssPrice = parseInt(sessionStorage.getItem('credimed_price'), 10);
+      if (ssPlan && ssPrice > 0) {
+        var n = ssPlan.charAt(0).toUpperCase() + ssPlan.slice(1);
+        return { name: n, price: ssPrice };
+      }
+    } catch (e) {}
+    var sel = (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard';
+    var price = sel === 'plus' ? 79 : sel === 'premium' ? 99 : 49;
+    return { name: sel.charAt(0).toUpperCase() + sel.slice(1), price: price };
+  }
+
+  function hydrate() {
+    var $ = function (id) { return document.getElementById(id); };
+    var S = window.CredimedState;
+    var plan = pickPlan();
+
+    /* Header + plan + totals */
+    if ($('pcPayHeadline')) $('pcPayHeadline').textContent = 'Pay $' + plan.price + ' to file your claim';
+    if ($('pcPlanName'))    $('pcPlanName').textContent    = plan.name;
+    if ($('pcPlanPrice'))   $('pcPlanPrice').textContent   = '$' + plan.price + '.00';
+    if ($('pcPayToday'))    $('pcPayToday').textContent    = '$' + plan.price + '.00';
+    if ($('pcGuaranteeAmount')) $('pcGuaranteeAmount').textContent = '$' + plan.price;
+
+    /* Claim ID — generate if not present (matches mobile's behavior) */
+    var claimId = (S && S.get('claim.id')) ||
+                  (S && S.generateClaimId && S.generateClaimId()) || '—';
+    if ($('pcClaimId')) $('pcClaimId').textContent = claimId;
+
+    /* Description: receipt procedures + city if available, otherwise generic */
+    var receipt = (S && S.get('receipt', {})) || {};
+    var procs = Array.isArray(receipt.procedures) && receipt.procedures.length
+      ? receipt.procedures.slice(0, 3).join(' · ') +
+        (receipt.procedures.length > 3 ? ' +' + (receipt.procedures.length - 3) + ' more' : '')
+      : (receipt.procedure || 'Dental claim');
+    var city = receipt.city || '';
+    if ($('pcClaimDesc')) {
+      $('pcClaimDesc').textContent = city ? procs + ' · ' + city : procs;
+    }
+
+    /* Estimated refund range — pricing engine stores estimated_refund_min/max */
+    var refundLow = (S && S.get('pricing.estimated_refund_min')) ||
+                    (cs && cs.estimated_refund_min);
+    var refundHigh = (S && S.get('pricing.estimated_refund_max')) ||
+                     (cs && cs.estimated_refund_max);
+    /* Fallback: 60-80% of paid amount */
+    if (!refundLow || !refundHigh) {
+      var paidUSD = receipt.amountPaidUSD || 0;
+      if (paidUSD > 0) {
+        refundLow  = Math.round(paidUSD * 0.55);
+        refundHigh = Math.round(paidUSD * 0.80);
+      }
+    }
+    if ($('pcRefundRange')) {
+      $('pcRefundRange').textContent = (refundLow && refundHigh)
+        ? '$' + refundLow + '–$' + refundHigh
+        : '—';
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', hydrate);
+  } else {
+    hydrate();
   }
 })();
 </script>
