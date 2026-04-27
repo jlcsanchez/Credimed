@@ -34,9 +34,9 @@ The company is US-incorporated, HIPAA-aligned, and based in Boston, Massachusett
 
 ## The story
 
-In 2023, Juan Luis Sanchez watched a close friend battle the US dental insurance system after dental work in Tijuana, Mexico. The friend had had crowns and a root canal done — top-quality work at a fraction of the Boston price — and expected reimbursement from his PPO to be straightforward.
+Founder Juan Luis Sanchez is a practicing dentist with several colleagues at border-area clinics in Mexico — clinics that treat US patients every week. Through his professional network, Sanchez observed firsthand how often US patients lose $1,000-$2,000 in legitimate PPO reimbursement after their dental work, not because their plans don't cover the procedures, but because the claim isn't filed in the format the insurer wants.
 
-Six months later, after four rejected claims and one wrong CDT code (D2750 for porcelain-fused-to-metal crowns instead of D2740 for porcelain crowns), the friend had recovered only $1,200 of the $2,600 he was eligible to claim. A few conversations with other patients who had also traveled to Mexico for dental work revealed a pattern: almost everyone gives up on the reimbursement.
+A typical case: a patient pays $2,600 out of pocket for crowns and a root canal in Tijuana. Files an out-of-network reimbursement claim with their PPO. Six months and four rejections later, the patient has recovered only $1,200 — and the rest is lost to a single wrong CDT code (D2750 for porcelain-fused-to-metal crowns instead of D2740 for porcelain crowns). Patients who try to fight the rejections themselves usually give up by the third or fourth round.
 
 Roughly 1.4 million Americans travel to Mexico each year for dental procedures, drawn by prices that run 50–80% lower than US in-network rates. According to the American Dental Association, about half pay out of pocket and never file an out-of-network claim — leaving an estimated $400 million per year in eligible US PPO benefits unclaimed.
 
@@ -51,7 +51,7 @@ Credimed was built to capture that gap. The company files the claim correctly on
 
 ## Quotes (attributable to Juan Luis Sanchez, Founder & CEO)
 
-> "A close friend of mine lost $1,400 trying to claim his own dental work in Mexico. The forms, the codes, the back-and-forth — it's exactly the kind of process that makes you think the system was designed to discourage you from collecting what you're owed. Credimed is what I wish he'd had."
+> "I'm a dentist, and several of my colleagues practice at border-area clinics in Mexico that treat a lot of US patients. We see this problem every week — excellent dental work, legitimate insurance coverage, and patients walking away from money their PPO owed them. Credimed is what I wish my colleagues had been able to hand their patients five years ago."
 
 > "Roughly half of all eligible Mexico-dental claims go unclaimed against US PPO plans. That's not because the claims are denied — it's because patients give up before they ever submit. Most of these refunds are six hundred to fifteen hundred dollars. We're trying to make sure that money stops being left on the table."
 
@@ -76,7 +76,7 @@ Credimed was built to capture that gap. The company files the claim correctly on
 
 ## Founder bio
 
-Juan Luis Sanchez is the founder and CEO of Credimed. Based in Boston, Massachusetts. Previously [TBD — fill in based on background you'd like to share]. Reached the decision to start Credimed after watching a close friend lose $1,400 in eligible insurance reimbursement to paperwork mistakes on a 2023 dental tourism trip to Tijuana, and discovering through subsequent research that this is the norm, not the exception.
+Juan Luis Sanchez is the founder and CEO of Credimed. A practicing dentist based in Boston, Massachusetts. Built Credimed to address a problem he had observed for years through his network of colleagues at border-area clinics in Mexico: US patients losing legitimate PPO reimbursement to paperwork rather than coverage limitations. Credimed is independent of any clinic and does not refer patients to specific providers.
 
 Reachable at `jlcsanchezavila@gmail.com` for press inquiries.
 

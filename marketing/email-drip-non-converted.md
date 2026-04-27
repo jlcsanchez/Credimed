@@ -70,17 +70,19 @@ Not $80, not "they'll just deny it." $200, every time, as long as we file it cor
 ## E3 — Founder story (T+3 days)
 
 **Subject:** Why I built Credimed
-**Preview:** A friend of mine lost $1,400 doing this himself
+**Preview:** I'm a dentist. I've seen this problem too many times.
 
 Hey [FIRST_NAME],
 
 I'll keep it short — this is the origin story of Credimed.
 
-In 2023 a close friend of mine had three crowns and a root canal done in Tijuana. Excellent dentist, fraction of the Boston price. His PPO covered out-of-network procedures, so he figured the reimbursement was a formality.
+I'm a dentist, and several friends of mine practice at border-area clinics in Mexico. Every week they treat US patients who come for affordable, high-quality dental work — crowns, root canals, the kind of care that costs 60-70% less than in the US.
 
-It wasn't. He spent **six months and four resubmissions** to get $1,200 of $2,600 back. One of the rejections was because the form used CDT code D2750 instead of D2740 — a porcelain-fused-to-metal crown vs. a porcelain crown. One letter difference; complete denial.
+Most of these patients then file an out-of-network reimbursement claim with their PPO. And most of the time, they walk away with nothing or pennies on the dollar. Not because the work wasn't covered — but because the claim wasn't filed in the format their insurer wanted.
 
-When I asked around, I found that almost everyone who tries this on their own gives up the same way. **The system makes you walk away** from money your plan owes you. That's why I built Credimed.
+One letter difference in a CDT code (D2750 vs D2740 — porcelain-fused-to-metal vs porcelain crown). A missing factura field. An exchange-rate dispute. **Six months and four rejections to get $1,200 of $2,600 back**, when the right paperwork would have gotten the full $2,600 in 21 days.
+
+After watching this happen to too many patients, I decided to build Credimed. The dentists do excellent work. The patients pay for it legitimately. The insurance covers it on paper. We just need to file the claim correctly the first time.
 
 That's why Credimed exists. We file the claim correctly the first time. If we can't recover it, you don't pay.
 
