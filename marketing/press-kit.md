@@ -34,9 +34,9 @@ The company is US-incorporated, HIPAA-aligned, and based in Boston, Massachusett
 
 ## The story
 
-In 2023, Juan Luis Sanchez had a couple of crowns and a root canal done at a clinic in Tijuana, Mexico. The dental work cost a fraction of what his Boston dentist would have charged, and Sanchez expected reimbursement from his PPO plan to be straightforward.
+In 2023, Juan Luis Sanchez watched a close friend battle the US dental insurance system after dental work in Tijuana, Mexico. The friend had had crowns and a root canal done — top-quality work at a fraction of the Boston price — and expected reimbursement from his PPO to be straightforward.
 
-Six months later, after four rejected claims and one wrong CDT code (D2750 for porcelain-fused-to-metal crowns instead of D2740 for porcelain crowns), Sanchez had recovered only $1,200 of the $2,600 he was eligible to claim. A casual conversation with friends who had also traveled to Mexico for dental work revealed a pattern: almost everyone gives up on the reimbursement.
+Six months later, after four rejected claims and one wrong CDT code (D2750 for porcelain-fused-to-metal crowns instead of D2740 for porcelain crowns), the friend had recovered only $1,200 of the $2,600 he was eligible to claim. A few conversations with other patients who had also traveled to Mexico for dental work revealed a pattern: almost everyone gives up on the reimbursement.
 
 Roughly 1.4 million Americans travel to Mexico each year for dental procedures, drawn by prices that run 50–80% lower than US in-network rates. According to the American Dental Association, about half pay out of pocket and never file an out-of-network claim — leaving an estimated $400 million per year in eligible US PPO benefits unclaimed.
 
@@ -51,7 +51,7 @@ Credimed was built to capture that gap. The company files the claim correctly on
 
 ## Quotes (attributable to Juan Luis Sanchez, Founder & CEO)
 
-> "I lost $1,400 trying to claim my own dental work in Mexico. The forms, the codes, the back-and-forth — it's exactly the kind of process that makes you think the system was designed to discourage you from collecting what you're owed. Credimed is what I wished I'd had."
+> "A close friend of mine lost $1,400 trying to claim his own dental work in Mexico. The forms, the codes, the back-and-forth — it's exactly the kind of process that makes you think the system was designed to discourage you from collecting what you're owed. Credimed is what I wish he'd had."
 
 > "Roughly half of all eligible Mexico-dental claims go unclaimed against US PPO plans. That's not because the claims are denied — it's because patients give up before they ever submit. Most of these refunds are six hundred to fifteen hundred dollars. We're trying to make sure that money stops being left on the table."
 
@@ -76,7 +76,7 @@ Credimed was built to capture that gap. The company files the claim correctly on
 
 ## Founder bio
 
-Juan Luis Sanchez is the founder and CEO of Credimed. Based in Boston, Massachusetts. Previously [TBD — fill in based on background you'd like to share]. Reached the decision to start Credimed after personally losing $1,400 in eligible insurance reimbursement to paperwork mistakes on a 2023 dental tourism trip to Tijuana.
+Juan Luis Sanchez is the founder and CEO of Credimed. Based in Boston, Massachusetts. Previously [TBD — fill in based on background you'd like to share]. Reached the decision to start Credimed after watching a close friend lose $1,400 in eligible insurance reimbursement to paperwork mistakes on a 2023 dental tourism trip to Tijuana, and discovering through subsequent research that this is the norm, not the exception.
 
 Reachable at `jlcsanchezavila@gmail.com` for press inquiries.
 

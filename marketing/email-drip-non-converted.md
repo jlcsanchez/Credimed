@@ -70,17 +70,17 @@ Not $80, not "they'll just deny it." $200, every time, as long as we file it cor
 ## E3 — Founder story (T+3 days)
 
 **Subject:** Why I built Credimed
-**Preview:** I lost $1,400 doing this myself
+**Preview:** A friend of mine lost $1,400 doing this himself
 
 Hey [FIRST_NAME],
 
-I'll keep it short — this is my origin story for Credimed.
+I'll keep it short — this is the origin story of Credimed.
 
-In 2023 I had three crowns and a root canal done in Tijuana. Excellent dentist, fraction of the Boston price. My PPO covered out-of-network procedures, so I figured the reimbursement was a formality.
+In 2023 a close friend of mine had three crowns and a root canal done in Tijuana. Excellent dentist, fraction of the Boston price. His PPO covered out-of-network procedures, so he figured the reimbursement was a formality.
 
-It wasn't. I spent **six months and four resubmissions** to get $1,200 of $2,600 back. One of the rejections was because I used CDT code D2750 instead of D2740 — a porcelain-fused-to-metal crown vs. a porcelain crown. One letter difference; complete denial.
+It wasn't. He spent **six months and four resubmissions** to get $1,200 of $2,600 back. One of the rejections was because the form used CDT code D2750 instead of D2740 — a porcelain-fused-to-metal crown vs. a porcelain crown. One letter difference; complete denial.
 
-Talking to friends who'd done the same trip, almost all of them just gave up. **The system makes you walk away** from money your plan owes you.
+When I asked around, I found that almost everyone who tries this on their own gives up the same way. **The system makes you walk away** from money your plan owes you. That's why I built Credimed.
 
 That's why Credimed exists. We file the claim correctly the first time. If we can't recover it, you don't pay.
 
