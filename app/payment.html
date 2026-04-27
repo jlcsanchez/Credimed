@@ -1494,10 +1494,21 @@ mountScope('desktop');
     submitting: false
   };
 
-  /* --- Replace mock card form with Stripe Payment Element --- */
+  /* --- Replace mock card form with Stripe Payment Element ---
+     On PC (>= 960px) inject directly into #pay-stripe-mount-pc so the
+     Stripe iframe is born in the VISIBLE PC sidebar. The mobile card
+     panel lives inside .payment-mobile-only which is display:none on
+     PC — mounting Stripe into a hidden subtree caused the
+     'should have a mounted Payment Element' error when confirmPayment
+     ran (and any later DOM-relocation of the iframe broke its connection
+     to Stripe Elements). */
   async function injectStripeElement() {
-    var scope = 'mobile'; // production renders mobile
-    var cardPanel = document.querySelector('[data-panel="card"][data-scope="' + scope + '"]');
+    var cardPanel;
+    if (window.innerWidth >= 960) {
+      cardPanel = document.getElementById('pay-stripe-mount-pc');
+    } else {
+      cardPanel = document.querySelector('[data-panel="card"][data-scope="mobile"]');
+    }
     if (!cardPanel) {
       // Rendering lifecycle may not have fired yet; try again on next tick.
       return setTimeout(injectStripeElement, 120);
@@ -1780,53 +1791,23 @@ mountScope('desktop');
    BEFORE the Stripe SDK mounts (which happens after a Lambda call —
    plenty of time). */
 (function () {
-  /* Stripe's #payment-element + #stripe-skeleton are injected
-     DYNAMICALLY by injectStripeElement() after a Lambda fetches the
-     PaymentIntent clientSecret — that can take 1-2s after page load.
-     A one-shot relocate at DOMContentLoaded misses them: only the
-     pre-existing .footer-cta (the Pay button) gets moved, while the
-     payment element stays inside .payment-mobile-only (display:none
-     on PC). Stripe.confirmPayment() then throws 'elements should
-     have a mounted Payment Element' because the element is in a
-     detached/hidden tree.
-
-     Fix: keep watching the DOM via MutationObserver until both
-     elements appear, then move them. Disconnect once relocated. */
-  function relocate() {
-    if (window.innerWidth < 960) return false;
+  /* injectStripeElement now mounts Stripe directly into
+     #pay-stripe-mount-pc on PC, so the only thing left to relocate
+     is the Pay button (.footer-cta), which lives inside
+     .payment-mobile-only (display:none on PC) at parse time. Move
+     it right below the Stripe element so the user sees the natural
+     reading order: card form → Pay button. */
+  function relocateCta() {
+    if (window.innerWidth < 960) return;
     var target = document.getElementById('pay-stripe-mount-pc');
-    if (!target) return false;
-
-    var skel = document.getElementById('stripe-skeleton');
-    var pe   = document.getElementById('payment-element');
-    var cta  = document.querySelector('.payment-mobile-only .footer-cta');
-
-    /* Move the Pay button as soon as we see it (it exists at parse time). */
+    if (!target) return;
+    var cta = document.querySelector('.payment-mobile-only .footer-cta');
     if (cta && cta.parentNode !== target) target.appendChild(cta);
-
-    /* The skeleton + payment element appear later. Move each as it shows up. */
-    if (skel && skel.parentNode !== target) target.appendChild(skel);
-    if (pe && pe.parentNode !== target) target.appendChild(pe);
-
-    /* Done once both Stripe pieces have landed in the PC mount. */
-    return !!(pe && pe.parentNode === target);
   }
-
-  function startWatching() {
-    if (relocate()) return;
-    var mo = new MutationObserver(function () {
-      if (relocate()) mo.disconnect();
-    });
-    mo.observe(document.body, { childList: true, subtree: true });
-    /* Safety stop after 30s so we don't observe forever if Stripe
-       never mounts (e.g. backend error — separate failure mode). */
-    setTimeout(function () { mo.disconnect(); }, 30000);
-  }
-
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startWatching);
+    document.addEventListener('DOMContentLoaded', relocateCta);
   } else {
-    startWatching();
+    relocateCta();
   }
 })();
 </script>
@@ -1889,12 +1870,17 @@ mountScope('desktop');
       $('pcClaimDesc').textContent = city ? procs + ' · ' + city : procs;
     }
 
-    /* Estimated refund range — pricing engine stores estimated_refund_min/max */
+    /* Estimated refund range — pricing engine stores estimated_refund_min/max
+       on the CredimedState 'pricing' object. Re-read it here (don't reference
+       the `cs` from pickPlan() — that's in another function's scope and
+       throws ReferenceError, which blew up the whole hydrator and cascaded
+       into Stripe failing with a bad clientSecret). */
+    var pricing = (S && S.get('pricing', null)) || {};
     var refundLow = (S && S.get('pricing.estimated_refund_min')) ||
-                    (cs && cs.estimated_refund_min);
+                    pricing.estimated_refund_min;
     var refundHigh = (S && S.get('pricing.estimated_refund_max')) ||
-                     (cs && cs.estimated_refund_max);
-    /* Fallback: 60-80% of paid amount */
+                     pricing.estimated_refund_max;
+    /* Fallback: 55-80% of paid amount */
     if (!refundLow || !refundHigh) {
       var paidUSD = receipt.amountPaidUSD || 0;
       if (paidUSD > 0) {
