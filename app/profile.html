@@ -495,6 +495,19 @@ html,body{
     $('displayEmail').textContent = email || '—';
     $('avatarInitials').textContent = ((firstName[0] || '') + (lastName[0] || '')).toUpperCase() || (email[0] || 'A').toUpperCase();
 
+    /* PC view — same identity, separate elements */
+    var initials = ((firstName[0] || '') + (lastName[0] || '')).toUpperCase() || (email[0] || 'A').toUpperCase();
+    var fullName = (firstName + ' ' + lastName).trim() || email || 'You';
+    var memberSince = S.get('user.createdYear', '') || new Date().getFullYear();
+    if ($('pcAvatar')) $('pcAvatar').textContent = initials;
+    if ($('pcName'))   $('pcName').textContent = fullName;
+    if ($('pcMeta'))   $('pcMeta').textContent = (email || '—') + ' · Member since ' + memberSince;
+    if ($('pcFirstName')) $('pcFirstName').value = firstName;
+    if ($('pcLastName'))  $('pcLastName').value  = lastName;
+    if ($('pcEmail'))     $('pcEmail').value     = email;
+    if ($('pcPhone'))     $('pcPhone').value     = phone;
+    if ($('pcDob'))       $('pcDob').value       = S.get('user.dob', '') || '';
+
     // Mailing address — populated by agreement.html's syncAddressToState.
     var addr = S.get('mailingAddress', {}) || {};
     $('addrName').value   = addr.name   || (firstName + ' ' + lastName).trim();
@@ -503,6 +516,11 @@ html,body{
     $('addrCity').value   = addr.city   || '';
     $('addrState').value  = addr.state  || '';
     $('addrZip').value    = addr.zip    || '';
+
+    if ($('pcAddrStreet')) $('pcAddrStreet').value = addr.street || '';
+    if ($('pcAddrCity'))   $('pcAddrCity').value   = addr.city   || '';
+    if ($('pcAddrState'))  $('pcAddrState').value  = addr.state  || '';
+    if ($('pcAddrZip'))    $('pcAddrZip').value    = addr.zip    || '';
 
     // Banking
     var bank = S.get('banking', {}) || {};
@@ -570,6 +588,33 @@ html,body{
     flash('statusAddr');
   });
 
+  /* PC save handlers — share state with the mobile inputs via CredimedState. */
+  if ($('pcSaveContact')) {
+    $('pcSaveContact').addEventListener('click', function () {
+      S.merge('user', {
+        firstName: ($('pcFirstName') || {}).value && $('pcFirstName').value.trim(),
+        lastName:  ($('pcLastName')  || {}).value && $('pcLastName').value.trim(),
+        phone:     ($('pcPhone')     || {}).value && $('pcPhone').value.trim(),
+        dob:       ($('pcDob')       || {}).value || '',
+      });
+      hydrate();
+    });
+  }
+  if ($('pcSaveAddress')) {
+    $('pcSaveAddress').addEventListener('click', function () {
+      var prev = S.get('mailingAddress', {}) || {};
+      S.set('mailingAddress', {
+        name:   prev.name || '',
+        street: ($('pcAddrStreet') || {}).value && $('pcAddrStreet').value.trim() || '',
+        apt:    prev.apt || '',
+        city:   ($('pcAddrCity')   || {}).value && $('pcAddrCity').value.trim()   || '',
+        state:  ($('pcAddrState')  || {}).value && $('pcAddrState').value.trim().toUpperCase() || '',
+        zip:    ($('pcAddrZip')    || {}).value && $('pcAddrZip').value.trim()    || '',
+      });
+      hydrate();
+    });
+  }
+
   $('saveBank').addEventListener('click', function () {
     var holder  = $('bankHolder').value.trim();
     var bankNm  = $('bankName').value.trim();
@@ -613,33 +658,33 @@ html,body{
 
 <div class="prof-pc">
   <header class="prof-head">
-    <span class="prof-avatar" id="profAvatar">JL</span>
+    <span class="prof-avatar" id="pcAvatar"></span>
     <div>
-      <h1 id="profName">Juan Luis Sanchez</h1>
-      <p class="meta" id="profMeta">ceo@credimed.us &middot; Member since 2026</p>
+      <h1 id="pcName"></h1>
+      <p class="meta" id="pcMeta"></p>
     </div>
   </header>
   <div class="prof-grid">
     <div>
       <section class="prof-card">
-        <div class="prof-card-head"><h3>Contact info</h3><button class="prof-edit">Edit</button></div>
+        <div class="prof-card-head"><h3>Contact info</h3><button class="prof-edit" id="pcSaveContact">Save</button></div>
         <div class="prof-field-row">
-          <div class="prof-field"><label>First name</label><input type="text" value=""></div>
-          <div class="prof-field"><label>Last name</label><input type="text" value=""></div>
+          <div class="prof-field"><label>First name</label><input type="text" id="pcFirstName"></div>
+          <div class="prof-field"><label>Last name</label><input type="text" id="pcLastName"></div>
         </div>
-        <div class="prof-field"><label>Email</label><input type="email" value=""></div>
-        <div class="prof-field"><label>Phone (US)</label><input type="tel" placeholder="+1 (555) 555-5555"></div>
-        <div class="prof-field"><label>Date of birth</label><input type="date"></div>
+        <div class="prof-field"><label>Email</label><input type="email" id="pcEmail" disabled></div>
+        <div class="prof-field"><label>Phone (US)</label><input type="tel" id="pcPhone" placeholder="+1 (555) 555-5555"></div>
+        <div class="prof-field"><label>Date of birth</label><input type="date" id="pcDob"></div>
       </section>
       <section class="prof-card" style="margin-top: 22px;">
-        <div class="prof-card-head"><h3>Mailing address</h3><button class="prof-edit">Edit</button></div>
-        <div class="prof-field"><label>Street</label><input type="text"></div>
+        <div class="prof-card-head"><h3>Mailing address</h3><button class="prof-edit" id="pcSaveAddress">Save</button></div>
+        <div class="prof-field"><label>Street</label><input type="text" id="pcAddrStreet"></div>
         <div class="prof-field-row">
-          <div class="prof-field"><label>City</label><input type="text"></div>
-          <div class="prof-field"><label>State</label><input type="text"></div>
+          <div class="prof-field"><label>City</label><input type="text" id="pcAddrCity"></div>
+          <div class="prof-field"><label>State</label><input type="text" id="pcAddrState"></div>
         </div>
         <div class="prof-field-row">
-          <div class="prof-field"><label>ZIP</label><input type="text"></div>
+          <div class="prof-field"><label>ZIP</label><input type="text" id="pcAddrZip"></div>
           <div class="prof-field"><label>Country</label><select><option selected>United States</option></select></div>
         </div>
       </section>

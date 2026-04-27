@@ -1539,7 +1539,197 @@ function applyBackendClaim(c) {
     mountScope('mobile');
     mountScope('desktop');
   }
+  // Refresh the PC dashboard too (lives outside .dashboard-mobile-only).
+  if (typeof window.hydratePCDashboard === 'function') window.hydratePCDashboard();
 }
+
+/* ========================================================================
+   PC DASHBOARD HYDRATION
+   The desktop view (.dash + .app-panel) sits outside .dashboard-mobile-only
+   so the mountScope() flow doesn't touch it. We hydrate it here from
+   Cognito (firstname) + the user's claim list (single active claim from
+   CredimedState plus any history saved under 'claims').
+   ======================================================================== */
+window.hydratePCDashboard = async function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var S = window.CredimedState;
+
+  /* ---- First name from Cognito; demo session falls through ---- */
+  var firstName = '';
+  try {
+    var cu = await window.cognitoGetCurrentUser();
+    if (cu && cu.attributes) firstName = cu.attributes.given_name || '';
+  } catch (e) {}
+  if (!firstName && S) firstName = S.get('user.firstName', '') || '';
+  if ($('dash-firstname')) $('dash-firstname').textContent = firstName || 'there';
+
+  /* ---- Claim list — single active + history array ---- */
+  var active = S ? S.get('claim', null) : null;
+  var history = S ? (S.getAllClaims() || []) : [];
+  var allClaims = [];
+  if (active && active.id) allClaims.push(active);
+  history.forEach(function (c) {
+    if (c && c.id && (!active || c.id !== active.id)) allClaims.push(c);
+  });
+
+  var heroEl  = $('pc-dash-hero');
+  var emptyEl = $('pc-dash-empty');
+  var subEl   = $('pc-dash-sub');
+  var asideClaim = $('pc-aside-claim-section');
+
+  if (!allClaims.length) {
+    if (heroEl)     heroEl.style.display = 'none';
+    if (emptyEl)    emptyEl.style.display = '';
+    if (subEl)      subEl.textContent = 'Upload your first dental receipt to get started.';
+    if (asideClaim) asideClaim.style.display = 'none';
+  } else {
+    if (heroEl)     heroEl.style.display = '';
+    if (emptyEl)    emptyEl.style.display = 'none';
+    if (subEl)      subEl.textContent = "Here's where your reimbursement stands today.";
+    if (asideClaim) asideClaim.style.display = '';
+
+    var c = allClaims[0];
+    var statusLabel = ({ 'submitted':'Submitted','in-review':'Under review','approved':'Approved','paid':'Paid','denied':'Denied' })[c.status] || (c.status || 'Submitted');
+    var insurer = c.insurer || c.payerName || 'your insurer';
+    var procCount = (c.procedures && c.procedures.length) || c.procedureCount || 0;
+    var location = c.clinicCity || c.location || '';
+    var filedDate = c.submittedAt ? new Date(c.submittedAt).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : '';
+    var amountText = '';
+    if (c.estRefundLow != null && c.estRefundHigh != null) {
+      amountText = '$' + Math.round(c.estRefundLow).toLocaleString() + '–$' + Math.round(c.estRefundHigh).toLocaleString();
+    } else if (c.refundAmount != null) {
+      amountText = '$' + Number(c.refundAmount).toLocaleString();
+    } else {
+      amountText = '—';
+    }
+
+    if ($('pc-claim-id'))       $('pc-claim-id').textContent = c.id;
+    if ($('pc-claim-status'))   $('pc-claim-status').textContent = statusLabel;
+    if ($('pc-claim-headline')) $('pc-claim-headline').textContent = 'Your claim is with ' + insurer + '.';
+    if ($('pc-claim-meta')) {
+      var bits = [];
+      if (filedDate) bits.push('Filed ' + filedDate);
+      if (procCount) bits.push(procCount + ' procedure' + (procCount === 1 ? '' : 's'));
+      if (location) bits.push(location);
+      $('pc-claim-meta').textContent = bits.join(' · ');
+    }
+    if ($('pc-claim-amount')) $('pc-claim-amount').textContent = amountText;
+    if ($('pc-claim-view'))   $('pc-claim-view').setAttribute('href', 'claim.html?id=' + encodeURIComponent(c.id));
+    if (heroEl) heroEl.setAttribute('data-claim-id', c.id);
+
+    /* Progress bar — 0/33/66/100 by status */
+    var pct = ({ 'submitted': 25, 'in-review': 55, 'approved': 80, 'paid': 100, 'denied': 100 })[c.status] || 25;
+    if ($('pc-claim-progress-fill')) $('pc-claim-progress-fill').style.width = pct + '%';
+
+    /* Right-side timeline based on this claim's status */
+    var ol = $('app-panel-timeline');
+    if (ol) {
+      var steps = [
+        { key: 'uploaded',   title: 'Receipt uploaded',   reached: ['submitted','in-review','approved','paid','denied'] },
+        { key: 'prepared',   title: 'Claim prepared',     reached: ['submitted','in-review','approved','paid','denied'] },
+        { key: 'filed',      title: 'Filed with ' + insurer, reached: ['submitted','in-review','approved','paid','denied'] },
+        { key: 'review',     title: 'Under carrier review', reached: ['in-review','approved','paid','denied'] },
+        { key: 'decision',   title: 'Decision',           reached: ['approved','paid','denied'] },
+        { key: 'paid',       title: c.status === 'denied' ? 'Denied' : 'Refund paid', reached: ['paid','denied'] }
+      ];
+      var activeIdx = (function () {
+        switch (c.status) {
+          case 'submitted': return 2;
+          case 'in-review': return 3;
+          case 'approved':  return 4;
+          case 'paid':      return 5;
+          case 'denied':    return 5;
+          default:          return 0;
+        }
+      })();
+      ol.innerHTML = steps.map(function (s, i) {
+        var cls = s.reached.indexOf(c.status) >= 0 ? 'done' : (i === activeIdx ? 'active' : '');
+        return '<li class="panel-tl-step ' + cls + '"><span class="panel-tl-dot"></span>' +
+               '<div class="panel-tl-title">' + s.title + '</div></li>';
+      }).join('');
+    }
+  }
+
+  /* ---- Stats ---- */
+  var filed = allClaims.length;
+  var approved = allClaims.filter(function (c) { return c.status === 'approved' || c.status === 'paid'; }).length;
+  var refundedTotal = allClaims
+    .filter(function (c) { return c.status === 'paid' && (c.refundAmount || c.paidAmount); })
+    .reduce(function (sum, c) { return sum + Number(c.refundAmount || c.paidAmount || 0); }, 0);
+  var pendingTotal = allClaims
+    .filter(function (c) { return c.status === 'submitted' || c.status === 'in-review' || c.status === 'approved'; })
+    .reduce(function (sum, c) {
+      var mid = (c.estRefundLow != null && c.estRefundHigh != null)
+        ? (Number(c.estRefundLow) + Number(c.estRefundHigh)) / 2
+        : Number(c.estRefundAmount || 0);
+      return sum + (mid || 0);
+    }, 0);
+  if ($('pc-stat-filed'))    $('pc-stat-filed').textContent = String(filed);
+  if ($('pc-stat-approved')) $('pc-stat-approved').textContent = String(approved);
+  if ($('pc-stat-refunded')) $('pc-stat-refunded').textContent = '$' + Math.round(refundedTotal).toLocaleString();
+  if ($('pc-stat-pending'))  $('pc-stat-pending').textContent = '$' + Math.round(pendingTotal).toLocaleString();
+
+  /* ---- Activity feed (max 4 most recent items) ---- */
+  var actEl = $('pc-activity');
+  if (actEl) {
+    var events = [];
+    allClaims.forEach(function (c) {
+      if (c.submittedAt) {
+        events.push({ ts: c.submittedAt, dot: 'slate', html: '<b>Claim ' + c.id + '</b> submitted to insurer' });
+      }
+      if (c.acknowledgedAt) {
+        events.push({ ts: c.acknowledgedAt, dot: '', html: '<b>' + (c.insurer || 'Insurer') + ' acknowledged</b> claim ' + c.id + ' receipt' });
+      }
+      if (c.paidAt && c.refundAmount) {
+        events.push({ ts: c.paidAt, dot: 'green', html: '<b>Refund paid</b> for claim ' + c.id + ' — $' + Number(c.refundAmount).toLocaleString() });
+      }
+    });
+    events.sort(function (a, b) { return new Date(b.ts) - new Date(a.ts); });
+    events = events.slice(0, 4);
+    if (!events.length) {
+      actEl.innerHTML =
+        '<div class="activity-row">' +
+          '<span class="activity-dot slate"></span>' +
+          '<div class="activity-text">No activity yet. Upload a receipt to get started.</div>' +
+        '</div>';
+    } else {
+      actEl.innerHTML = events.map(function (e) {
+        var when = new Date(e.ts);
+        var hoursAgo = (Date.now() - when) / 3600000;
+        var label = hoursAgo < 24
+          ? Math.max(1, Math.round(hoursAgo)) + 'h ago'
+          : when.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+        return '<div class="activity-row">' +
+                 '<span class="activity-dot ' + e.dot + '"></span>' +
+                 '<div class="activity-text">' + e.html + '</div>' +
+                 '<div class="activity-time">' + label + '</div>' +
+               '</div>';
+      }).join('');
+    }
+  }
+};
+
+/* Run once after first paint, then again whenever the backend hydrate
+   completes. Demo sessions also trigger via the load below. */
+window.hydratePCDashboard();
+
+/* Pull the user's claim list from the backend so cross-device users see
+   their history. Falls through silently for demo sessions or offline. */
+(async function fetchClaimList() {
+  try {
+    if (localStorage.getItem('credimed.demo')) return;
+    if (!window.authFetch || !window.CREDIMED_API) return;
+    var resp = await window.authFetch(window.CREDIMED_API + '/claims');
+    if (!resp || !resp.ok) return;
+    var data = await resp.json();
+    var list = (data && data.claims) || data || [];
+    if (!Array.isArray(list)) return;
+    if (window.CredimedState) window.CredimedState.set('claims', list);
+    window.hydratePCDashboard();
+  } catch (e) {
+    console.info('[dashboard] /claims fetch skipped:', e.message || e);
+  }
+})();
 </script>
 </div><!-- /.dashboard-mobile-only -->
 
@@ -1551,34 +1741,49 @@ function applyBackendClaim(c) {
 <div class="dash">
   <header class="dash-header">
     <p class="dash-eyebrow">Dashboard</p>
-    <h1 class="dash-title">Welcome back, <span id="dash-firstname">Lupita</span>.</h1>
-    <p class="dash-sub">Here's where your reimbursement stands today.</p>
+    <h1 class="dash-title">Welcome back, <span id="dash-firstname">there</span>.</h1>
+    <p class="dash-sub" id="pc-dash-sub">Here's where your reimbursement stands today.</p>
   </header>
 
-  <article class="dash-hero" data-claim-id="CMX-2026-0A4B29">
+  <!-- Empty state — shown when user has no claims yet -->
+  <article id="pc-dash-empty" class="dash-hero" style="display:none;">
     <div class="dh-row">
       <div>
-        <div class="dh-claim-id">CMX-2026-0A4B29</div>
-        <div class="dh-status">Under review</div>
-        <h2 class="dh-headline">Your claim is with Aetna.</h2>
-        <div class="dh-meta">Filed Apr 23 &middot; 2 procedures &middot; Tijuana, MX</div>
+        <div class="dh-status">Get started</div>
+        <h2 class="dh-headline">No claims yet.</h2>
+        <div class="dh-meta">Upload your dental receipt to file your first reimbursement claim.</div>
+      </div>
+    </div>
+    <div class="dh-actions">
+      <a class="dh-btn primary" href="documents.html">Start a claim &rarr;</a>
+      <a class="dh-btn" href="support.html">Talk to Ana</a>
+    </div>
+  </article>
+
+  <!-- Active-claim hero — populated by hydratePCDashboard() -->
+  <article id="pc-dash-hero" class="dash-hero" data-claim-id="" style="display:none;">
+    <div class="dh-row">
+      <div>
+        <div class="dh-claim-id" id="pc-claim-id"></div>
+        <div class="dh-status" id="pc-claim-status"></div>
+        <h2 class="dh-headline" id="pc-claim-headline"></h2>
+        <div class="dh-meta" id="pc-claim-meta"></div>
       </div>
       <div style="text-align:right;">
         <div class="dh-amount-label">Estimated refund</div>
-        <div class="dh-amount">$450&ndash;$610</div>
+        <div class="dh-amount" id="pc-claim-amount"></div>
         <div class="dh-amount-sub">Final amount set by insurer</div>
       </div>
     </div>
     <div class="dh-progress">
-      <div class="dh-track"><div class="dh-fill"></div></div>
+      <div class="dh-track"><div class="dh-fill" id="pc-claim-progress-fill"></div></div>
       <div class="dh-labels">
         <span>Submitted</span><span>Under review</span>
         <span>Approved</span><span>Paid</span>
       </div>
     </div>
     <div class="dh-actions">
-      <a class="dh-btn primary" href="claim.html?id=CMX-2026-0A4B29">View claim &rarr;</a>
-      <button class="dh-btn" type="button">Download claim PDF</button>
+      <a class="dh-btn primary" id="pc-claim-view" href="#">View claim &rarr;</a>
       <a class="dh-btn" href="support.html">Message support</a>
     </div>
   </article>
@@ -1586,23 +1791,23 @@ function applyBackendClaim(c) {
   <div class="dash-stats">
     <div class="stat-card">
       <div class="stat-label">Claims filed</div>
-      <div class="stat-value">3</div>
+      <div class="stat-value" id="pc-stat-filed">0</div>
       <div class="stat-meta">Lifetime</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Approved</div>
-      <div class="stat-value">2</div>
-      <div class="stat-meta up">+1 this year</div>
+      <div class="stat-value" id="pc-stat-approved">0</div>
+      <div class="stat-meta">Lifetime</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Refunded</div>
-      <div class="stat-value">$2,180</div>
+      <div class="stat-value" id="pc-stat-refunded">$0</div>
       <div class="stat-meta">Lifetime recovered</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Pending</div>
-      <div class="stat-value">$530</div>
-      <div class="stat-meta">Est. May 18</div>
+      <div class="stat-value" id="pc-stat-pending">$0</div>
+      <div class="stat-meta">In review</div>
     </div>
   </div>
 
@@ -1625,26 +1830,10 @@ function applyBackendClaim(c) {
     <h3>Recent activity</h3>
     <a class="link" href="claims.html">View all &rarr;</a>
   </div>
-  <div class="activity-card">
-    <div class="activity-row">
-      <span class="activity-dot"></span>
-      <div class="activity-text"><b>Aetna acknowledged</b> claim CMX-2026-0A4B29 receipt</div>
-      <div class="activity-time">2h ago</div>
-    </div>
+  <div class="activity-card" id="pc-activity">
     <div class="activity-row">
       <span class="activity-dot slate"></span>
-      <div class="activity-text"><b>Claim CMX-2026-0A4B29</b> submitted to insurer</div>
-      <div class="activity-time">Apr 23</div>
-    </div>
-    <div class="activity-row">
-      <span class="activity-dot green"></span>
-      <div class="activity-text"><b>Refund paid</b> for claim CMX-2025-0R1F88 &mdash; $447</div>
-      <div class="activity-time">Mar 12</div>
-    </div>
-    <div class="activity-row">
-      <span class="activity-dot green"></span>
-      <div class="activity-text"><b>Refund paid</b> for claim CMX-2025-0K4N12 &mdash; $486</div>
-      <div class="activity-time">Nov 21</div>
+      <div class="activity-text">No activity yet.</div>
     </div>
   </div>
 </div><!-- /.dash -->
@@ -1654,29 +1843,10 @@ function applyBackendClaim(c) {
 <script src="auto-logoff.js"></script>
   </main>
 
-  <aside class="app-panel">
-    <div class="panel-section">
+  <aside class="app-panel" id="pc-aside">
+    <div class="panel-section" id="pc-aside-claim-section" style="display:none;">
       <h4 class="panel-title">Active claim</h4>
-      <ol class="panel-tl" id="app-panel-timeline">
-        <li class="panel-tl-step done"><span class="panel-tl-dot"></span>
-          <div class="panel-tl-title">Receipt uploaded</div>
-          <div class="panel-tl-meta">Apr 22 &middot; 2:14 PM</div></li>
-        <li class="panel-tl-step done"><span class="panel-tl-dot"></span>
-          <div class="panel-tl-title">Claim prepared</div>
-          <div class="panel-tl-meta">Apr 23 &middot; 9:08 AM</div></li>
-        <li class="panel-tl-step done"><span class="panel-tl-dot"></span>
-          <div class="panel-tl-title">Filed with Aetna</div>
-          <div class="panel-tl-meta">Apr 23 &middot; 11:32 AM</div></li>
-        <li class="panel-tl-step active"><span class="panel-tl-dot"></span>
-          <div class="panel-tl-title">Under carrier review</div>
-          <div class="panel-tl-meta">Started Apr 24</div></li>
-        <li class="panel-tl-step"><span class="panel-tl-dot"></span>
-          <div class="panel-tl-title">Decision</div>
-          <div class="panel-tl-meta">Est. May 8</div></li>
-        <li class="panel-tl-step"><span class="panel-tl-dot"></span>
-          <div class="panel-tl-title">Check mailed</div>
-          <div class="panel-tl-meta">Est. May 18</div></li>
-      </ol>
+      <ol class="panel-tl" id="app-panel-timeline"></ol>
     </div>
     <div class="panel-section">
       <h4 class="panel-title">Need a hand?</h4>

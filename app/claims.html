@@ -134,56 +134,10 @@ html,body{
    DESKTOP CLAIMS LIST (>= 960px) — Claude Design page 4.
    ============================================================ */
 @media (min-width: 960px) {
-  /* Hide the Claude Design admin-style table — patient-facing claims
-     list looks better as cards (matches profile, dashboard). */
-  .claims-pc { display: none !important; }
-
-  /* Show the mobile-card list on PC, but in a 2-col grid with PC
-     padding/max-width. */
-  .claims-mobile-only { display: block !important; }
-  .claims-mobile-only .topbar,
-  .claims-mobile-only .device-label,
-  .claims-mobile-only .bottom-nav { display: none !important; }
-
-  /* Override the mobile-mockup .page wrapper so claims spreads to fill
-     the app-shell content area instead of being trapped in a 520px
-     phone frame. */
-  .claims-mobile-only .page {
-    max-width: none !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    min-height: 0 !important;
-  }
-  .claims-mobile-only .body-wrap {
-    max-width: 1180px; margin: 0 auto; padding: 24px 40px 56px;
-  }
-  .claims-mobile-only .hero {
-    background: transparent !important; color: var(--slate-900) !important;
-    padding: 32px 40px 12px !important; max-width: 1180px; margin: 0 auto;
-  }
-  .claims-mobile-only .hero::before { display: none; }
-  .claims-mobile-only .hero .hero-top { display: none !important; }
-  .claims-mobile-only .hero h1 {
-    font-size: 28px !important; color: var(--slate-900) !important;
-    margin-bottom: 4px;
-  }
-  .claims-mobile-only .hero .sub {
-    color: var(--slate-500) !important;
-  }
-  /* Card grid that adapts to width — 2 cols at 960, 3 cols at 1280+ */
-  .claims-mobile-only #list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 18px;
-  }
-  .claims-mobile-only #list .empty { grid-column: 1 / -1; }
-  .claims-mobile-only .filter-bar { padding: 0 0 16px; }
-
-  /* PC table layout — kept hidden by display:none above; styles preserved
-     in case we ever flip back. */
-  .claims-pc { padding: 32px 40px 56px; max-width: 1180px; margin: 0 auto; }
+  /* Restore Claude Design's PC-native admin-style table — matches the
+     dashboard / profile shell and lets us show many claims at a glance. */
+  .claims-mobile-only { display: none !important; }
+  .claims-pc { display: block !important; padding: 32px 40px 56px; max-width: 1180px; margin: 0 auto; }
   .claims-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
   .claims-head h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }
   .claims-head .sub { font-size: 14px; color: var(--slate-500); margin: 0; }
@@ -390,7 +344,73 @@ html,body{
     return true;
   }
 
+  /* Render the PC-native admin-style table from the same ALL array. */
+  function renderPC() {
+    var body  = $('pcClaimsBody');
+    var empty = $('pcEmptyState');
+    if (!body) return;
+
+    /* Update chip counts from the full list (not the filter view). */
+    var counts = {
+      all: ALL.length,
+      active: ALL.filter(function (c) { return c.status === 'submitted' || c.status === 'in-review' || c.status === 'approved'; }).length,
+      paid: ALL.filter(function (c) { return c.status === 'paid'; }).length,
+      denied: ALL.filter(function (c) { return c.status === 'denied'; }).length
+    };
+    document.querySelectorAll('[data-pc-count]').forEach(function (el) {
+      var k = el.getAttribute('data-pc-count');
+      el.textContent = counts[k] != null ? counts[k] : 0;
+    });
+
+    /* Apply filter + search to get the visible rows. */
+    var search = (($('pcSearch') || {}).value || '').trim().toLowerCase();
+    var visible = ALL.filter(matchFilter).filter(function (c) {
+      if (!search) return true;
+      var hay = (c.id || '') + ' ' + (Array.isArray(c.procedures) ? c.procedures.join(' ') : (c.procedure || ''));
+      return hay.toLowerCase().indexOf(search) >= 0;
+    });
+
+    if (ALL.length === 0) {
+      body.innerHTML = '';
+      if (empty) empty.style.display = '';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    var STATUS_TABLE = {
+      'submitted':  { label: 'Submitted',     cls: 'review' },
+      'in-review':  { label: 'Under review',  cls: 'review' },
+      'approved':   { label: 'Approved',      cls: 'paid' },
+      'paid':       { label: 'Paid',          cls: 'paid' },
+      'denied':     { label: 'Needs attention', cls: 'denied' }
+    };
+
+    body.innerHTML = visible.map(function (c) {
+      var st = STATUS_TABLE[c.status] || { label: c.status || '—', cls: 'review' };
+      var procsRaw = Array.isArray(c.procedures) ? c.procedures.join(' · ')
+                   : (c.procedure || 'Dental claim');
+      var procs = window.translateProcedure ? window.translateProcedure(procsRaw) : procsRaw;
+      var procCount = Array.isArray(c.procedures) ? c.procedures.length : 1;
+      var refundLow  = c.estimateMin || c.refundLow;
+      var refundHigh = c.estimateMax || c.refundHigh;
+      var refundLine = (c.refundAmount || c.paidRefundUSD) ? '$' + Number(c.refundAmount || c.paidRefundUSD).toLocaleString()
+        : (refundLow && refundHigh)
+          ? '$' + Number(refundLow).toLocaleString() + '–$' + Number(refundHigh).toLocaleString()
+          : (refundLow ? '$' + Number(refundLow).toLocaleString() : '—');
+      var href = 'claim.html?id=' + encodeURIComponent(c.id || '');
+      return '<tr onclick="location.href=\'' + href + '\'">' +
+        '<td class="id">' + (c.id || '—') + '</td>' +
+        '<td><span class="ct-pill ' + st.cls + '"><span class="d"></span>' + st.label + '</span></td>' +
+        '<td class="procs">' + procs + '<small>' + procCount + ' procedure' + (procCount === 1 ? '' : 's') + '</small></td>' +
+        '<td class="amt">' + refundLine + '</td>' +
+        '<td class="date">' + fmtDate(c.submittedAt) + '</td>' +
+        '<td class="action"><a href="' + href + '">View &rarr;</a></td>' +
+      '</tr>';
+    }).join('');
+  }
+
   function render() {
+    renderPC();
     var list = ALL.filter(matchFilter);
     if (list.length === 0) {
       $('list').innerHTML =
@@ -440,6 +460,26 @@ html,body{
       render();
     });
   });
+
+  /* PC chips share the same FILTER state. */
+  document.querySelectorAll('[data-pc-filter]').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      document.querySelectorAll('[data-pc-filter]').forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      FILTER = chip.getAttribute('data-pc-filter');
+      render();
+    });
+  });
+
+  /* PC search — debounced re-render so typing feels responsive. */
+  var searchInput = $('pcSearch');
+  if (searchInput) {
+    var t;
+    searchInput.addEventListener('input', function () {
+      clearTimeout(t);
+      t = setTimeout(renderPC, 120);
+    });
+  }
 
   async function load() {
     // 1) Try the backend first.
@@ -494,65 +534,28 @@ html,body{
   </header>
 
   <div class="claims-toolbar">
-    <div class="claims-chips">
-      <button class="claims-chip active">All <span class="count">8</span></button>
-      <button class="claims-chip">Under review <span class="count">1</span></button>
-      <button class="claims-chip">Approved <span class="count">1</span></button>
-      <button class="claims-chip">Paid <span class="count">5</span></button>
-      <button class="claims-chip">Needs attention <span class="count">1</span></button>
+    <div class="claims-chips" id="pcChips">
+      <button class="claims-chip active" data-pc-filter="all">All <span class="count" data-pc-count="all">0</span></button>
+      <button class="claims-chip" data-pc-filter="active">Active <span class="count" data-pc-count="active">0</span></button>
+      <button class="claims-chip" data-pc-filter="paid">Paid <span class="count" data-pc-count="paid">0</span></button>
+      <button class="claims-chip" data-pc-filter="denied">Needs attention <span class="count" data-pc-count="denied">0</span></button>
     </div>
     <div class="claims-search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="search" placeholder="Search claims&hellip;">
+      <input type="search" id="pcSearch" placeholder="Search claims&hellip;">
     </div>
   </div>
 
   <div class="claims-table-wrap">
     <table class="claims-table">
       <thead><tr><th>Claim</th><th>Status</th><th>Procedures</th><th class="right">Refund</th><th>Submitted</th><th></th></tr></thead>
-      <tbody>
-        <tr onclick="location.href='claim.html?id=CMX-2026-0A4B29'">
-          <td class="id">CMX-2026-0A4B29</td>
-          <td><span class="ct-pill review"><span class="d"></span>Under review</span></td>
-          <td class="procs">Crown &middot; Root canal<small>2 procedures</small></td>
-          <td class="amt">$450&ndash;$610</td>
-          <td class="date">Apr 23, 2026</td>
-          <td class="action"><a href="claim.html?id=CMX-2026-0A4B29">View &rarr;</a></td>
-        </tr>
-        <tr onclick="location.href='claim.html?id=CMX-2026-0X9F12'">
-          <td class="id">CMX-2026-0X9F12</td>
-          <td><span class="ct-pill denied"><span class="d"></span>Needs attention</span></td>
-          <td class="procs">Filling D2392<small>1 procedure</small></td>
-          <td class="amt">$120</td>
-          <td class="date">Mar 04, 2026</td>
-          <td class="action"><a href="claim.html?id=CMX-2026-0X9F12">View &rarr;</a></td>
-        </tr>
-        <tr>
-          <td class="id">CMX-2025-0R1F88</td>
-          <td><span class="ct-pill paid"><span class="d"></span>Paid</span></td>
-          <td class="procs">Crown<small>1 procedure</small></td>
-          <td class="amt">$447</td>
-          <td class="date">Mar 12, 2025</td>
-          <td class="action"><a href="#">View &rarr;</a></td>
-        </tr>
-        <tr>
-          <td class="id">CMX-2025-0K4N12</td>
-          <td><span class="ct-pill paid"><span class="d"></span>Paid</span></td>
-          <td class="procs">Implant<small>1 procedure</small></td>
-          <td class="amt">$486</td>
-          <td class="date">Nov 21, 2025</td>
-          <td class="action"><a href="#">View &rarr;</a></td>
-        </tr>
-        <tr>
-          <td class="id">CMX-2025-0J2P03</td>
-          <td><span class="ct-pill paid"><span class="d"></span>Paid</span></td>
-          <td class="procs">Cleaning &middot; 2 fillings<small>3 procedures</small></td>
-          <td class="amt">$312</td>
-          <td class="date">Aug 14, 2025</td>
-          <td class="action"><a href="#">View &rarr;</a></td>
-        </tr>
-      </tbody>
+      <tbody id="pcClaimsBody"></tbody>
     </table>
+    <div id="pcEmptyState" style="display:none; padding:48px 24px; text-align:center; color:var(--slate-500);">
+      <div style="font-size:16px; font-weight:600; color:var(--slate-700); margin-bottom:6px;">No claims yet</div>
+      <div style="font-size:14px; margin-bottom:16px;">Upload your dental receipt to file your first reimbursement claim.</div>
+      <a href="documents.html" class="new-claim" style="display:inline-flex">Start a new claim</a>
+    </div>
   </div>
 </div>
 
