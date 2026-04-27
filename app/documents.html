@@ -1329,22 +1329,27 @@ setInterval(() => {
   }
 
   function updateCardUploading(cardId, filename, pct) {
-    var root = document.querySelector('[data-card-root="' + cardId + '"]');
-    if (!root) return;
-    root.className = 'upload-card state-uploading';
-    /* Replace the dropzone inner with progress */
-    var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
-    if (content) {
-      content.outerHTML =
-        '<div class="uploading-row">' +
-          '<div class="uploading-icon spinner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55" /></svg></div>' +
-          '<div class="uploading-body">' +
-            '<div class="uploading-filename">' + filename + '</div>' +
-            '<div class="uploading-bar"><div class="uploading-bar-fill" style="width:' + pct + '%"></div></div>' +
-          '</div>' +
-          '<div class="uploading-pct">' + pct + '%</div>' +
-        '</div>';
-    }
+    /* renderCard() emits the same data-card-root on BOTH the mobile mockup
+       (#screen-mobile) and the PC layout (#screen-pc), so we update every
+       matching card root — otherwise PC users see the dropzone unchanged
+       even after the file uploads successfully. */
+    var roots = document.querySelectorAll('[data-card-root="' + cardId + '"]');
+    if (!roots.length) return;
+    roots.forEach(function (root) {
+      root.className = 'upload-card state-uploading';
+      var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
+      if (content) {
+        content.outerHTML =
+          '<div class="uploading-row">' +
+            '<div class="uploading-icon spinner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55" /></svg></div>' +
+            '<div class="uploading-body">' +
+              '<div class="uploading-filename">' + filename + '</div>' +
+              '<div class="uploading-bar"><div class="uploading-bar-fill" style="width:' + pct + '%"></div></div>' +
+            '</div>' +
+            '<div class="uploading-pct">' + pct + '%</div>' +
+          '</div>';
+      }
+    });
   }
 
   /* Map OCR'd insurer name -> known corporate domain, used to fetch the logo from
@@ -1400,14 +1405,14 @@ setInterval(() => {
   }
 
   function updateCardDone(cardId, filename, metaText, extracted) {
-    var root = document.querySelector('[data-card-root="' + cardId + '"]');
-    if (!root) return;
-    root.className = 'upload-card state-done';
-    var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
+    /* Update both mobile + PC card roots. */
+    var roots = document.querySelectorAll('[data-card-root="' + cardId + '"]');
+    if (!roots.length) return;
+
+    /* Build the extracted-preview block once — same HTML for both copies. */
     var extractedHtml = '';
     var logoUrls = null;
     if (extracted) {
-      /* If this is the insurance card and we have a recognised insurer, render the logo at the top */
       var headerHtml = '';
       if (cardId === 'insurance' && extracted.insurer) {
         logoUrls = getInsurerLogoUrl(extracted.insurer);
@@ -1427,9 +1432,6 @@ setInterval(() => {
             var v = extracted[k];
             if (!v) return '';
             if (k === 'insurer' && headerHtml) return '';
-            /* Procedures gets a highlighted treatment: teal callout box
-               with a count header and checkmark per item. The array comes
-               through shownR.procedures unchanged. */
             if (k === 'procedures' && Array.isArray(v) && v.length) {
               var items = v.map(function (p) {
                 return '<div style="display:flex;align-items:flex-start;gap:8px;margin:4px 0;font-size:13px"><span style="color:var(--teal-600,#0D9488);font-weight:700;flex-shrink:0;line-height:1.4">✓</span><span style="line-height:1.4">' + p + '</span></div>';
@@ -1445,7 +1447,11 @@ setInterval(() => {
           }).join('') +
         '</div>';
     }
-    if (content) {
+
+    roots.forEach(function (root) {
+      root.className = 'upload-card state-done';
+      var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
+      if (!content) return;
       content.outerHTML =
         '<div class="uploaded-row">' +
           '<div class="uploaded-thumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
@@ -1458,13 +1464,15 @@ setInterval(() => {
           '</div>' +
         '</div>' + extractedHtml;
 
-      /* Wire up the logo fallback chain on the newly inserted <img> */
+      /* Wire the logo fallback chain on the freshly inserted <img>
+         inside THIS root (not via document.querySelector which would
+         only catch the first copy). */
       if (logoUrls && logoUrls.length) {
-        var newRoot = document.querySelector('[data-card-root="' + cardId + '"]');
-        var img = newRoot && newRoot.querySelector('img[data-insurer-logo]');
+        var img = root.querySelector('img[data-insurer-logo]');
         if (img) installLogoFallback(img, logoUrls);
       }
-    }
+    });
+
     tryEnableContinue();
   }
 
@@ -1473,12 +1481,9 @@ setInterval(() => {
      The MutationObserver picks up the new dropzone and wires a fresh
      file input into it. */
   function renderSupportingStack() {
-    var root = document.querySelector('[data-card-root="supporting"]');
-    if (!root) return;
+    var roots = document.querySelectorAll('[data-card-root="supporting"]');
+    if (!roots.length) return;
     var list = (window.CredimedState && window.CredimedState.get('supportingDocs', [])) || [];
-    root.className = 'upload-card' + (list.length ? ' state-done' : ' state-empty');
-    var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row, .supporting-stack');
-    if (!content) return;
     var rowsHtml = '';
     list.forEach(function (doc, idx) {
       rowsHtml +=
@@ -1495,45 +1500,51 @@ setInterval(() => {
     });
     var addMoreLabel = list.length ? '+ Add another file' : 'Drop a file or tap to upload';
     var addMoreSub = list.length ? 'Upload as many supporting docs as you like' : 'X-rays, treatment plan, EOB, etc.';
-    content.outerHTML =
-      '<div class="supporting-stack">' +
-        rowsHtml +
-        '<label class="dropzone" data-card="supporting" style="padding:14px;border-style:dashed;margin-top:4px;cursor:pointer;display:block;">' +
-          '<input type="file" data-card-input="supporting" accept="image/*,.pdf,application/pdf" multiple style="display:block;position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">' +
-          '<div class="dropzone-primary" style="font-size:14px"><span class="em">' + addMoreLabel + '</span></div>' +
-          '<div class="dropzone-secondary">' + addMoreSub + '</div>' +
-        '</label>' +
-      '</div>';
+    roots.forEach(function (root) {
+      root.className = 'upload-card' + (list.length ? ' state-done' : ' state-empty');
+      var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row, .supporting-stack');
+      if (!content) return;
+      content.outerHTML =
+        '<div class="supporting-stack">' +
+          rowsHtml +
+          '<label class="dropzone" data-card="supporting" style="padding:14px;border-style:dashed;margin-top:4px;cursor:pointer;display:block;">' +
+            '<input type="file" data-card-input="supporting" accept="image/*,.pdf,application/pdf" multiple style="display:block;position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">' +
+            '<div class="dropzone-primary" style="font-size:14px"><span class="em">' + addMoreLabel + '</span></div>' +
+            '<div class="dropzone-secondary">' + addMoreSub + '</div>' +
+          '</label>' +
+        '</div>';
+    });
     tryEnableContinue();
   }
 
   function updateCardError(cardId, msg) {
-    var root = document.querySelector('[data-card-root="' + cardId + '"]');
-    if (!root) return;
-    root.className = 'upload-card state-error';
-    var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
-    if (content) {
-      var errAccept = cardId === 'insurance' ? 'image/*' : 'image/*,.pdf,application/pdf';
-      var errMulti = cardId === 'supporting' ? 'multiple' : '';
+    var roots = document.querySelectorAll('[data-card-root="' + cardId + '"]');
+    if (!roots.length) return;
+    var errAccept = cardId === 'insurance' ? 'image/*' : 'image/*,.pdf,application/pdf';
+    var errMulti = cardId === 'supporting' ? 'multiple' : '';
+    roots.forEach(function (root) {
+      root.className = 'upload-card state-error';
+      var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
+      if (!content) return;
       content.outerHTML =
         '<label class="dropzone" data-card="' + cardId + '" style="cursor:pointer;display:block;">' +
           '<input type="file" data-card-input="' + cardId + '" accept="' + errAccept + '" ' + errMulti + ' style="display:block;position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">' +
           '<div class="dropzone-primary" style="color:#B91C1C"><b>' + msg + '</b></div>' +
           '<div class="dropzone-secondary">Tap to try again</div>' +
         '</label>';
-    }
+    });
   }
 
   function showOcrNotice(cardId, msg) {
-    var root = document.querySelector('[data-card-root="' + cardId + '"]');
-    if (!root) return;
-    var existing = root.querySelector('.ocr-notice');
-    if (existing) existing.remove();
-    var n = document.createElement('div');
-    n.className = 'ocr-notice';
-    n.style.cssText = 'margin-top:10px;padding:10px 12px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;font-size:12px;color:#92400E;line-height:1.5';
-    n.innerHTML = '<b>⚠ ' + msg + '</b>';
-    root.appendChild(n);
+    document.querySelectorAll('[data-card-root="' + cardId + '"]').forEach(function (root) {
+      var existing = root.querySelector('.ocr-notice');
+      if (existing) existing.remove();
+      var n = document.createElement('div');
+      n.className = 'ocr-notice';
+      n.style.cssText = 'margin-top:10px;padding:10px 12px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;font-size:12px;color:#92400E;line-height:1.5';
+      n.innerHTML = '<b>⚠ ' + msg + '</b>';
+      root.appendChild(n);
+    });
   }
 
   /* ---- upload + OCR pipeline ---- */
@@ -1850,22 +1861,22 @@ setInterval(() => {
     var btn = e.target.closest('[data-remove]');
     if (!btn) return;
     var cardId = btn.getAttribute('data-remove');
-    var root = document.querySelector('[data-card-root="' + cardId + '"]');
-    if (!root) return;
-    root.className = 'upload-card state-empty';
-    /* Restore dropzone */
-    var inner = root.querySelector('.uploaded-row, .extracted-preview, .error-row');
-    if (inner) {
+    var roots = document.querySelectorAll('[data-card-root="' + cardId + '"]');
+    if (!roots.length) return;
+    var rmAccept = cardId === 'insurance' ? 'image/*' : 'image/*,.pdf,application/pdf';
+    var rmMulti = cardId === 'supporting' ? 'multiple' : '';
+    roots.forEach(function (root) {
+      root.className = 'upload-card state-empty';
+      var inner = root.querySelector('.uploaded-row, .extracted-preview, .error-row');
+      if (!inner) return;
       root.querySelectorAll('.extracted-preview').forEach(function (n) { n.remove(); });
-      var rmAccept = cardId === 'insurance' ? 'image/*' : 'image/*,.pdf,application/pdf';
-      var rmMulti = cardId === 'supporting' ? 'multiple' : '';
       inner.outerHTML =
         '<label class="dropzone" data-card="' + cardId + '" style="cursor:pointer;display:block;">' +
           '<input type="file" data-card-input="' + cardId + '" accept="' + rmAccept + '" ' + rmMulti + ' style="display:block;position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">' +
           '<div class="dropzone-primary"><span class="em">Drop a file</span> or tap to upload</div>' +
           '<div class="dropzone-secondary">Re-upload to replace</div>' +
         '</label>';
-    }
+    });
     if (cardId === 'insurance') window.CredimedState && window.CredimedState.set('insurance', {});
     if (cardId === 'receipt')   window.CredimedState && window.CredimedState.set('receipt', {});
     tryEnableContinue();
@@ -1873,10 +1884,13 @@ setInterval(() => {
 
   /* Gate Continue button on insurance + receipt being present */
   function tryEnableContinue() {
+    /* Both mobile + PC card roots get the .state-done class; check either. */
     var hasIns = !!document.querySelector('[data-card-root="insurance"].state-done');
     var hasRec = !!document.querySelector('[data-card-root="receipt"].state-done');
-    var cta = document.querySelector('.footer-cta .btn-primary');
-    if (cta) cta.disabled = !(hasIns && hasRec);
+    /* Both #screen-mobile-cta and #screen-pc-cta render their own .footer-cta — enable both. */
+    document.querySelectorAll('.footer-cta .btn-primary').forEach(function (cta) {
+      cta.disabled = !(hasIns && hasRec);
+    });
   }
   /* Disable CTA initially until both required docs are uploaded */
   setTimeout(tryEnableContinue, 200);
