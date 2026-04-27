@@ -1035,8 +1035,38 @@ html, body {
 }
 
 @media (min-width: 960px) {
-  .agreement-mobile-only { display: none; }
-  .agr-pc { padding: 32px 40px 56px; max-width: 1180px; margin: 0 auto; }
+  /* The .agr-pc layout that lived here was a hardcoded v1.2 summary
+     (Aetna PPO mock, fake $450-$610 estimate, "use the mobile flow
+     above" Continue button with no real handler) — i.e. the user
+     could never sign on PC because the signature pad lived only in
+     .agreement-mobile-only and the PC layout had nothing wired.
+     Same pattern as claims.html: hide the decorative PC layout,
+     stretch the mobile-mockup version to fill the PC viewport so
+     the user gets the working v1.9 TERMS_HTML + signature pad +
+     consent checkbox + state-wired Continue button. */
+  .agr-pc { display: none !important; }
+  .agreement-mobile-only { display: block !important; }
+
+  /* Hide Claude Design's dev chrome (top tabs, secondary device preview, labels) */
+  .agreement-mobile-only .topbar,
+  .agreement-mobile-only .device-label,
+  .agreement-mobile-only .bottom-nav,
+  .agreement-mobile-only .device-wrap:nth-of-type(2) { display: none !important; }
+
+  /* Strip the phone frame so the agreement uses the PC viewport width */
+  .agreement-mobile-only .stage { background: transparent !important; padding: 0 !important; min-height: 0 !important; }
+  .agreement-mobile-only .device-wrap { margin: 0 auto !important; padding: 0 !important; width: 100% !important; max-width: 720px !important; }
+  .agreement-mobile-only .iphone {
+    border: none !important; border-radius: 0 !important; box-shadow: none !important;
+    background: transparent !important; padding: 0 !important; margin: 0 !important;
+    width: 100% !important; max-width: 720px !important; min-height: 0 !important; height: auto !important;
+  }
+  .agreement-mobile-only .iphone::before { display: none !important; }
+  .agreement-mobile-only .screen {
+    width: 100% !important; max-width: 100% !important; min-height: auto !important;
+    border-radius: 0 !important; padding: 24px 28px 56px !important;
+    background: var(--cream, #FAF6EF) !important;
+  }
   .agr-head { margin-bottom: 24px; }
   .agr-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 6px; }
   .agr-head h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }
