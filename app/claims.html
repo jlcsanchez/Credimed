@@ -129,6 +129,52 @@ html,body{
 }
 .bottom-nav a.active { color:var(--teal-700); }
 .bottom-nav a svg { width:22px; height:22px; }
+
+/* ============================================================
+   DESKTOP CLAIMS LIST (>= 960px) — Claude Design page 4.
+   ============================================================ */
+@media (min-width: 960px) {
+  .claims-mobile-only { display: none; }
+  .claims-pc { padding: 32px 40px 56px; max-width: 1180px; margin: 0 auto; }
+  .claims-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+  .claims-head h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }
+  .claims-head .sub { font-size: 14px; color: var(--slate-500); margin: 0; }
+  .claims-head .new-claim { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 10px; background: var(--teal-600); color: #fff; font-weight: 600; font-size: 14px; text-decoration: none; border: 1px solid var(--teal-600); }
+  .claims-head .new-claim:hover { background: var(--teal-700); }
+  .claims-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; padding: 12px 14px; background: #fff; border: 1px solid var(--cream-2); border-radius: 12px; }
+  .claims-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .claims-chip { padding: 6px 12px; border-radius: 999px; background: transparent; border: 1px solid var(--cream-2); font-size: 12.5px; font-weight: 600; color: var(--slate-600); cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; }
+  .claims-chip:hover { border-color: var(--slate-300); }
+  .claims-chip.active { background: var(--slate-900); color: #fff; border-color: var(--slate-900); }
+  .claims-chip .count { padding: 1px 7px; border-radius: 999px; background: var(--cream-2); color: var(--slate-700); font-size: 11px; font-weight: 700; }
+  .claims-chip.active .count { background: rgba(255,255,255,0.18); color: #fff; }
+  .claims-search { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 8px; background: var(--cream); border: 1px solid var(--cream-2); width: 240px; }
+  .claims-search svg { width: 14px; height: 14px; color: var(--slate-500); }
+  .claims-search input { border: none; background: transparent; outline: none; font: inherit; font-size: 13px; color: var(--slate-900); flex: 1; min-width: 0; }
+  .claims-table-wrap { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; overflow: hidden; }
+  .claims-table { width: 100%; border-collapse: collapse; }
+  .claims-table thead th { text-align: left; padding: 12px 18px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate-500); background: var(--cream); border-bottom: 1px solid var(--cream-2); }
+  .claims-table thead th.right { text-align: right; }
+  .claims-table tbody td { padding: 16px 18px; border-bottom: 1px solid var(--cream-2); font-size: 14px; color: var(--slate-700); vertical-align: middle; }
+  .claims-table tbody tr:last-child td { border-bottom: none; }
+  .claims-table tbody tr { cursor: pointer; transition: background 0.1s; }
+  .claims-table tbody tr:hover { background: var(--cream); }
+  .claims-table .id { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; font-weight: 600; color: var(--slate-900); }
+  .claims-table .procs { color: var(--slate-700); }
+  .claims-table .procs small { color: var(--slate-500); display: block; font-size: 12px; margin-top: 2px; }
+  .claims-table .amt { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--slate-900); }
+  .claims-table .date { color: var(--slate-500); font-size: 13px; white-space: nowrap; }
+  .claims-table .action a { color: var(--teal-700); font-weight: 600; text-decoration: none; font-size: 13px; }
+  .claims-table .action a:hover { text-decoration: underline; }
+  .ct-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid; white-space: nowrap; }
+  .ct-pill .d { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .ct-pill.review { background: rgba(99,102,241,0.08); color: #4F46E5; border-color: rgba(99,102,241,0.25); }
+  .ct-pill.submitted { background: rgba(13,148,136,0.08); color: var(--teal-700); border-color: rgba(13,148,136,0.25); }
+  .ct-pill.approved { background: rgba(16,185,129,0.08); color: var(--green-600); border-color: rgba(16,185,129,0.25); }
+  .ct-pill.paid { background: rgba(16,185,129,0.16); color: var(--green-600); border-color: rgba(16,185,129,0.35); }
+  .ct-pill.denied { background: rgba(245,158,11,0.1); color: #D97706; border-color: rgba(245,158,11,0.3); }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -195,6 +241,8 @@ html,body{
   </aside>
 
   <main class="app-main" id="main">
+
+<div class="claims-mobile-only">
 <div class="page">
   <header class="hero">
     <div class="hero-top">
@@ -365,7 +413,85 @@ html,body{
 <script src="widgets/faq-data.js"></script>
 <script src="ana.js" data-topic="status"></script>
 <script src="auto-logoff.js"></script>
-  </main>
+  </div><!-- /.claims-mobile-only -->
+
+
+<div class="claims-pc">
+  <header class="claims-head">
+    <div>
+      <h1>My claims</h1>
+      <p class="sub">Every claim you've filed with Credimed.</p>
+    </div>
+    <a class="new-claim" href="documents.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New claim
+    </a>
+  </header>
+
+  <div class="claims-toolbar">
+    <div class="claims-chips">
+      <button class="claims-chip active">All <span class="count">8</span></button>
+      <button class="claims-chip">Under review <span class="count">1</span></button>
+      <button class="claims-chip">Approved <span class="count">1</span></button>
+      <button class="claims-chip">Paid <span class="count">5</span></button>
+      <button class="claims-chip">Needs attention <span class="count">1</span></button>
+    </div>
+    <div class="claims-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" placeholder="Search claims&hellip;">
+    </div>
+  </div>
+
+  <div class="claims-table-wrap">
+    <table class="claims-table">
+      <thead><tr><th>Claim</th><th>Status</th><th>Procedures</th><th class="right">Refund</th><th>Submitted</th><th></th></tr></thead>
+      <tbody>
+        <tr onclick="location.href='claim.html?id=CMX-2026-0A4B29'">
+          <td class="id">CMX-2026-0A4B29</td>
+          <td><span class="ct-pill review"><span class="d"></span>Under review</span></td>
+          <td class="procs">Crown &middot; Root canal<small>2 procedures</small></td>
+          <td class="amt">$450&ndash;$610</td>
+          <td class="date">Apr 23, 2026</td>
+          <td class="action"><a href="claim.html?id=CMX-2026-0A4B29">View &rarr;</a></td>
+        </tr>
+        <tr onclick="location.href='claim.html?id=CMX-2026-0X9F12'">
+          <td class="id">CMX-2026-0X9F12</td>
+          <td><span class="ct-pill denied"><span class="d"></span>Needs attention</span></td>
+          <td class="procs">Filling D2392<small>1 procedure</small></td>
+          <td class="amt">$120</td>
+          <td class="date">Mar 04, 2026</td>
+          <td class="action"><a href="claim.html?id=CMX-2026-0X9F12">View &rarr;</a></td>
+        </tr>
+        <tr>
+          <td class="id">CMX-2025-0R1F88</td>
+          <td><span class="ct-pill paid"><span class="d"></span>Paid</span></td>
+          <td class="procs">Crown<small>1 procedure</small></td>
+          <td class="amt">$447</td>
+          <td class="date">Mar 12, 2025</td>
+          <td class="action"><a href="#">View &rarr;</a></td>
+        </tr>
+        <tr>
+          <td class="id">CMX-2025-0K4N12</td>
+          <td><span class="ct-pill paid"><span class="d"></span>Paid</span></td>
+          <td class="procs">Implant<small>1 procedure</small></td>
+          <td class="amt">$486</td>
+          <td class="date">Nov 21, 2025</td>
+          <td class="action"><a href="#">View &rarr;</a></td>
+        </tr>
+        <tr>
+          <td class="id">CMX-2025-0J2P03</td>
+          <td><span class="ct-pill paid"><span class="d"></span>Paid</span></td>
+          <td class="procs">Cleaning &middot; 2 fillings<small>3 procedures</small></td>
+          <td class="amt">$312</td>
+          <td class="date">Aug 14, 2025</td>
+          <td class="action"><a href="#">View &rarr;</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
 
   <aside class="app-panel">
     <div class="panel-section">

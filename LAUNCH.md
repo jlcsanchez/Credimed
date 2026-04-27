@@ -22,9 +22,11 @@ Last updated: April 26, 2026.
 - [ ] Lambda `credimed-stripe-webhook` deployed (see `backend/webhooks/DEPLOY.md`)
 - [ ] Re-deploy `credimed-claims` with the audit-logging + email
       changes from latest commits
-- [ ] Verify `metadata.claimId` is set in the payment Lambda when
-      creating PaymentIntents (without it the webhook can't link
-      payments to claims)
+- [x] Verify `metadata.claimId` is set in the payment Lambda when
+      creating PaymentIntents — confirmed via code audit. Lambda
+      includes `metadata: { userId, claimId, plan, source }` plus
+      an `idempotencyKey` of `userId-claimId-plan-amount` for
+      double-click safety. HIPAA-safe metadata (no PHI).
 - [ ] Delete duplicate API Gateway in us-east-1 (`bn55k0jyt0`)
 - [ ] Delete unused `credimed-agents` Lambda (replaced by FAQ widget)
 

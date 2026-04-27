@@ -151,6 +151,67 @@ html,body{
   cursor:pointer; font-family:inherit; margin-left:8px;
 }
 .copy-btn.copied { background:rgba(255,255,255,0.16); }
+
+/* ============================================================
+   DESKTOP CLAIM DETAIL (>= 960px) — Claude Design page 3.
+   ============================================================ */
+@media (min-width: 960px) {
+  .claim-mobile-only { display: none; }
+  .claim-pc { padding: 32px 40px 56px; max-width: 1200px; margin: 0 auto; }
+  .claim-crumb { font-size: 13px; color: var(--slate-500); margin: 0 0 14px; display: flex; align-items: center; gap: 8px; }
+  .claim-crumb a { color: var(--slate-500); text-decoration: none; }
+  .claim-crumb a:hover { color: var(--teal-700); }
+  .claim-crumb .sep { color: var(--slate-300); }
+  .claim-crumb .cur { color: var(--slate-900); font-weight: 600; font-family: var(--font-mono, ui-monospace, monospace); }
+  .claim-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--cream-2); }
+  .claim-head-left h1 { font-size: 26px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; color: var(--slate-900); }
+  .claim-head-meta { font-size: 13px; color: var(--slate-500); display: flex; gap: 14px; flex-wrap: wrap; }
+  .claim-head-meta b { color: var(--slate-700); font-weight: 600; }
+  .claim-status-pill { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; background: rgba(99,102,241,0.1); color: #4F46E5; border: 1px solid rgba(99,102,241,0.25); }
+  .claim-status-pill .sd { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+  .claim-status-pill.approved { background: rgba(16,185,129,0.1); color: var(--green-600); border-color: rgba(16,185,129,0.25); }
+  .claim-grid { display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
+  .claim-section { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .claim-section h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 16px; }
+  .amount-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .amount-cell { padding-right: 20px; border-right: 1px solid var(--cream-2); }
+  .amount-cell:last-child { border-right: none; padding-right: 0; }
+  .amount-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-500); margin-bottom: 6px; }
+  .amount-value { font-size: 24px; font-weight: 700; color: var(--slate-900); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .amount-value.refund { color: var(--teal-700); }
+  .amount-meta { font-size: 12px; color: var(--slate-500); margin-top: 4px; }
+  .proc-list { list-style: none; padding: 0; margin: 0; }
+  .proc-row { display: grid; grid-template-columns: 60px 1fr auto; gap: 14px; padding: 12px 0; border-bottom: 1px dashed var(--cream-2); align-items: center; }
+  .proc-row:last-child { border-bottom: none; }
+  .proc-code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; color: var(--slate-500); font-weight: 600; }
+  .proc-name { font-size: 14px; color: var(--slate-900); font-weight: 500; }
+  .proc-name small { display: block; color: var(--slate-500); font-size: 12px; font-weight: 400; margin-top: 2px; }
+  .proc-amount { font-size: 14px; font-weight: 600; color: var(--slate-700); font-variant-numeric: tabular-nums; }
+  .insurer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 32px; row-gap: 16px; }
+  .insurer-row .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-500); margin-bottom: 4px; }
+  .insurer-row .val { font-size: 14px; color: var(--slate-900); font-weight: 500; }
+  .claim-rail { position: sticky; top: 24px; }
+  .rail-card { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; padding: 22px 24px; margin-bottom: 16px; }
+  .rail-card h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 16px; }
+  .claim-tl { position: relative; padding-left: 22px; list-style: none; margin: 0; padding-top: 0; padding-bottom: 0; }
+  .claim-tl::before { content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1px; background: var(--cream-2); }
+  .claim-tl-step { position: relative; padding-bottom: 18px; }
+  .claim-tl-step:last-child { padding-bottom: 0; }
+  .claim-tl-dot { position: absolute; left: -22px; top: 4px; width: 13px; height: 13px; border-radius: 50%; background: #fff; border: 2px solid var(--slate-300); }
+  .claim-tl-step.done .claim-tl-dot { background: var(--teal-600); border-color: var(--teal-600); }
+  .claim-tl-step.active .claim-tl-dot { background: #fff; border-color: var(--teal-600); box-shadow: 0 0 0 4px rgba(13,148,136,0.15); }
+  .claim-tl-title { font-size: 13.5px; font-weight: 600; color: var(--slate-800); margin-bottom: 2px; }
+  .claim-tl-step:not(.done):not(.active) .claim-tl-title { color: var(--slate-500); font-weight: 500; }
+  .claim-tl-meta { font-size: 12px; color: var(--slate-500); }
+  .rail-actions { display: flex; flex-direction: column; gap: 8px; }
+  .rail-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; background: #fff; border: 1px solid var(--cream-2); font-size: 13.5px; font-weight: 600; color: var(--slate-800); cursor: pointer; font-family: inherit; text-align: left; text-decoration: none; transition: all 0.15s; }
+  .rail-btn:hover { border-color: var(--teal-300); background: var(--teal-50); }
+  .rail-btn svg { width: 16px; height: 16px; color: var(--teal-700); flex-shrink: 0; }
+  .rail-btn.primary { background: var(--teal-600); color: #fff; border-color: var(--teal-600); }
+  .rail-btn.primary:hover { background: var(--teal-700); }
+  .rail-btn.primary svg { color: #fff; }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -217,6 +278,8 @@ html,body{
   </aside>
 
   <main class="app-main" id="main">
+
+<div class="claim-mobile-only">
 <div class="page">
   <header class="hero">
     <div class="hero-top">
@@ -431,7 +494,79 @@ html,body{
 <script src="widgets/faq-data.js"></script>
 <script src="ana.js" data-topic="status"></script>
 <script src="auto-logoff.js"></script>
-  </main>
+  </div><!-- /.claim-mobile-only -->
+
+
+<div class="claim-pc">
+  <p class="claim-crumb">
+    <a href="claims.html">Claims</a><span class="sep">/</span>
+    <span class="cur" id="dashRef">CMX-2026-0A4B29</span>
+  </p>
+  <header class="claim-head">
+    <div class="claim-head-left">
+      <h1 id="dashTitle">Crown + root canal &middot; Tijuana</h1>
+      <div class="claim-head-meta">
+        <span>Filed <b>Apr 23, 2026</b></span>
+        <span>Updated <b>Apr 24, 2026</b></span>
+        <span>Carrier <b>Aetna PPO</b></span>
+      </div>
+    </div>
+    <span class="claim-status-pill"><span class="sd"></span>Under review</span>
+  </header>
+  <div class="claim-grid">
+    <div class="claim-grid-left">
+      <section class="claim-section">
+        <h3>Amounts</h3>
+        <div class="amount-row">
+          <div class="amount-cell"><div class="amount-label">Paid at clinic</div><div class="amount-value">$790</div><div class="amount-meta">Apr 19 &middot; Tijuana, MX</div></div>
+          <div class="amount-cell"><div class="amount-label">Estimated refund</div><div class="amount-value refund">$450&ndash;$610</div><div class="amount-meta">Final amount set by insurer</div></div>
+          <div class="amount-cell"><div class="amount-label">Plan</div><div class="amount-value" style="font-size:18px">Standard &middot; $49</div><div class="amount-meta">Paid Apr 23</div></div>
+        </div>
+      </section>
+      <section class="claim-section">
+        <h3>Procedures</h3>
+        <ul class="proc-list">
+          <li class="proc-row"><span class="proc-code">D2740</span><div class="proc-name">Crown &mdash; porcelain/ceramic<small>Tooth #14, zirconia</small></div><span class="proc-amount">$520</span></li>
+          <li class="proc-row"><span class="proc-code">D3330</span><div class="proc-name">Endodontic therapy &mdash; molar<small>Root canal, tooth #14</small></div><span class="proc-amount">$270</span></li>
+        </ul>
+      </section>
+      <section class="claim-section">
+        <h3>Insurer &amp; policy</h3>
+        <div class="insurer-row">
+          <div><div class="lbl">Carrier</div><div class="val">Aetna PPO</div></div>
+          <div><div class="lbl">Plan name</div><div class="val">Aetna Dental PPO 2000</div></div>
+          <div><div class="lbl">Member ID</div><div class="val">W123456789</div></div>
+          <div><div class="lbl">Group #</div><div class="val">0834521</div></div>
+          <div><div class="lbl">Provider</div><div class="val">Dental Cancun Tijuana</div></div>
+          <div><div class="lbl">Visit date</div><div class="val">Apr 19, 2026</div></div>
+        </div>
+      </section>
+    </div>
+    <aside class="claim-rail">
+      <div class="rail-card">
+        <h3>Status timeline</h3>
+        <ol class="claim-tl">
+          <li class="claim-tl-step done"><span class="claim-tl-dot"></span><div class="claim-tl-title">Documents uploaded</div><div class="claim-tl-meta">Apr 22 &middot; 2:14 PM</div></li>
+          <li class="claim-tl-step done"><span class="claim-tl-dot"></span><div class="claim-tl-title">Claim prepared</div><div class="claim-tl-meta">Apr 23 &middot; 9:08 AM</div></li>
+          <li class="claim-tl-step done"><span class="claim-tl-dot"></span><div class="claim-tl-title">Filed with Aetna</div><div class="claim-tl-meta">Apr 23 &middot; 11:32 AM</div></li>
+          <li class="claim-tl-step active"><span class="claim-tl-dot"></span><div class="claim-tl-title">Under carrier review</div><div class="claim-tl-meta">Started Apr 24</div></li>
+          <li class="claim-tl-step"><span class="claim-tl-dot"></span><div class="claim-tl-title">Decision</div><div class="claim-tl-meta">Est. May 8</div></li>
+          <li class="claim-tl-step"><span class="claim-tl-dot"></span><div class="claim-tl-title">Refund mailed by carrier</div><div class="claim-tl-meta">Est. May 18</div></li>
+        </ol>
+      </div>
+      <div class="rail-card">
+        <h3>Actions</h3>
+        <div class="rail-actions">
+          <button class="rail-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download claim PDF</button>
+          <button class="rail-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>View uploaded documents</button>
+          <a class="rail-btn primary" href="support.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Message Ana about this claim</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+</main>
 
   <aside class="app-panel">
     <div class="panel-section">
