@@ -1503,19 +1503,17 @@ mountScope('desktop');
      ran (and any later DOM-relocation of the iframe broke its connection
      to Stripe Elements). */
   async function injectStripeElement() {
-    /* Track which scope we ended up using so other code in this function
-       (active-tab toggling, panel show/hide, CTA-by-scope lookups) can
-       still target the right ancestor. On PC we inject into the visible
-       PC mount but keep `scope = 'mobile'` because the tab/panel/cta
-       attributes only exist with data-scope="mobile" or "desktop" — the
-       PC mount has neither, so 'mobile' is the closest match. */
+    /* ALWAYS inject Stripe into the mobile cardPanel — that's the
+       source-of-truth target the rest of this function (tab toggling,
+       panel queries, CTA lookups) expects. After Stripe has fully
+       mounted, we'll relocate the rendered iframe + skeleton to the
+       PC mount via the post-mount handler at the bottom of this file.
+       Trying to inject directly into the PC mount caused
+       'GET /v1/elements/sessions 400' because mount() ran while
+       relocateCta() was concurrently mutating the same subtree, and
+       Stripe got a partially-attached element. */
     var scope = 'mobile';
-    var cardPanel;
-    if (window.innerWidth >= 960) {
-      cardPanel = document.getElementById('pay-stripe-mount-pc');
-    } else {
-      cardPanel = document.querySelector('[data-panel="card"][data-scope="mobile"]');
-    }
+    var cardPanel = document.querySelector('[data-panel="card"][data-scope="' + scope + '"]');
     if (!cardPanel) {
       // Rendering lifecycle may not have fired yet; try again on next tick.
       return setTimeout(injectStripeElement, 120);
@@ -1643,7 +1641,20 @@ mountScope('desktop');
 
       /* Swap skeleton → real form the moment Stripe's iframe signals
          it has finished rendering. Cross-fade (not hard display:none)
-         so the hand-off feels continuous instead of popping in. */
+         so the hand-off feels continuous instead of popping in.
+         On PC, also move the now-mounted iframe + skeleton into the
+         visible #pay-stripe-mount-pc sidebar — by this point Stripe
+         is fully initialised, so detaching/reattaching the iframe is
+         safe (browsers preserve iframe state on DOM moves). */
+      function relocateMountedStripeToPC() {
+        if (window.innerWidth < 960) return;
+        var pcMount = document.getElementById('pay-stripe-mount-pc');
+        if (!pcMount) return;
+        var stripeMountWrap = document.getElementById('credimed-stripe-mount');
+        if (stripeMountWrap && stripeMountWrap.parentNode !== pcMount) {
+          pcMount.appendChild(stripeMountWrap);
+        }
+      }
       if (paymentEl && typeof paymentEl.on === 'function') {
         paymentEl.on('ready', function () {
           var skeleton = document.getElementById('stripe-skeleton');
@@ -1653,8 +1664,13 @@ mountScope('desktop');
             skeleton.classList.add('fade-out');
             setTimeout(function () { skeleton.style.display = 'none'; }, 240);
           }
+          relocateMountedStripeToPC();
         });
       }
+      /* Run the relocate even before 'ready' fires so the user sees
+         the skeleton in the right place during the iframe load (the
+         skeleton wrap is part of #credimed-stripe-mount). */
+      relocateMountedStripeToPC();
 
       /* Reliability fallback: if 'ready' never fires within 3s (rare,
          but Stripe iframe can hang in corner-case networks), swap
