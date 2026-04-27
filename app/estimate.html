@@ -587,7 +587,33 @@ html, body {
 }
 
 @media (min-width: 960px) {
-  .est-mobile-only { display: none; }
+  /* The .est-pc layout was a fully hardcoded mockup (Aetna PPO, Crown
+     D2740 \$300-\$420, Root canal D3330 \$150-\$190, total \$450-\$610) — none
+     of it driven by the user's actual OCR'd receipt or insurer. The
+     .est-mobile-only block already reads CredimedState.get('receipt')
+     + 'insurance' + 'pricing' and renders dynamically. Same pattern as
+     claims/agreement/claim: hide the decorative PC, stretch the mobile
+     to fill the viewport. */
+  .est-pc { display: none !important; }
+  .est-mobile-only { display: block !important; }
+  .est-mobile-only .topbar,
+  .est-mobile-only .device-label,
+  .est-mobile-only .bottom-nav,
+  .est-mobile-only .device-wrap:nth-of-type(2) { display: none !important; }
+  .est-mobile-only .stage { background: transparent !important; padding: 0 !important; min-height: 0 !important; }
+  .est-mobile-only .device-wrap { margin: 0 auto !important; padding: 0 !important; width: 100% !important; max-width: 760px !important; }
+  .est-mobile-only .iphone {
+    border: none !important; border-radius: 0 !important; box-shadow: none !important;
+    background: transparent !important; padding: 0 !important; margin: 0 !important;
+    width: 100% !important; max-width: 760px !important; min-height: 0 !important; height: auto !important;
+  }
+  .est-mobile-only .iphone::before { display: none !important; }
+  .est-mobile-only .screen {
+    width: 100% !important; max-width: 100% !important; min-height: auto !important;
+    border-radius: 0 !important; padding: 24px 28px 56px !important;
+    background: var(--cream, #FAF6EF) !important;
+  }
+
   .est-pc { padding: 40px 40px 56px; max-width: 1080px; margin: 0 auto; }
   .est-pc-head { text-align: center; margin-bottom: 32px; }
   .est-pc-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal-700); margin: 0 0 6px; }
