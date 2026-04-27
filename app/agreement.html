@@ -1033,6 +1033,35 @@ html, body {
 .desktop-inner .field-row {
   grid-template-columns: 2fr 1fr 1fr;
 }
+
+@media (min-width: 960px) {
+  .agreement-mobile-only { display: none; }
+  .agr-pc { padding: 32px 40px 56px; max-width: 1180px; margin: 0 auto; }
+  .agr-head { margin-bottom: 24px; }
+  .agr-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 6px; }
+  .agr-head h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }
+  .agr-head p { font-size: 14px; color: var(--slate-500); margin: 0; }
+  .agr-grid { display: grid; grid-template-columns: 1fr 380px; gap: 28px; align-items: start; }
+  .agr-doc { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; max-height: 640px; overflow: hidden; display: flex; flex-direction: column; }
+  .agr-doc-head { padding: 14px 20px; border-bottom: 1px solid var(--cream-2); display: flex; align-items: center; justify-content: space-between; background: var(--cream); }
+  .agr-doc-head .doc-title { font-size: 13px; font-weight: 600; color: var(--slate-700); }
+  .agr-doc-head .doc-meta { font-size: 12px; color: var(--slate-500); font-variant-numeric: tabular-nums; }
+  .agr-doc-body { flex: 1; overflow-y: auto; padding: 28px 32px; font-size: 14px; line-height: 1.7; color: var(--slate-700); }
+  .agr-doc-body h2 { font-size: 16px; font-weight: 700; color: var(--slate-900); margin: 24px 0 8px; letter-spacing: -0.01em; }
+  .agr-doc-body h2:first-child { margin-top: 0; }
+  .agr-doc-body p { margin: 0 0 12px; }
+  .agr-doc-body b { color: var(--slate-900); font-weight: 600; }
+  .agr-rail { position: sticky; top: 24px; }
+  .agr-card { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; padding: 22px 24px; margin-bottom: 16px; }
+  .agr-card h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 14px; }
+  .agr-summary-row { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px dashed var(--cream-2); font-size: 13.5px; }
+  .agr-summary-row:last-child { border-bottom: none; }
+  .agr-summary-row .k { color: var(--slate-600); }
+  .agr-summary-row .v { color: var(--slate-900); font-weight: 600; }
+  .agr-card .footer-cta { margin: 0; padding: 0; background: transparent; border: none; box-shadow: none; position: static; }
+  .agr-card .footer-cta .btn-primary { width: 100%; padding: 13px; font-size: 14.5px; border-radius: 10px; }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -1099,6 +1128,8 @@ html, body {
   </aside>
 
   <main class="app-main" id="main">
+
+<div class="agreement-mobile-only">
 
 <div class="topbar">
   <div class="brand">
@@ -2032,7 +2063,57 @@ mountScope('desktop');
 })();
 </script>
 <script src="auto-logoff.js"></script>
-  </main>
+  </div><!-- /.agreement-mobile-only -->
+
+
+<div class="agr-pc">
+  <header class="agr-head">
+    <p class="eyebrow">Service Agreement &middot; Step before payment</p>
+    <h1>Sign your Service Agreement</h1>
+    <p>This authorizes Credimed to file your dental claim with your US insurer.</p>
+  </header>
+  <div class="agr-grid">
+    <article class="agr-doc">
+      <div class="agr-doc-head">
+        <span class="doc-title">Credimed Service Agreement v1.2</span>
+        <span class="doc-meta">2026 &middot; 1 of 1</span>
+      </div>
+      <div class="agr-doc-body">
+        <h2>1. What you're authorizing</h2>
+        <p>You authorize Credimed Inc. to act on your behalf as a <b>limited claims representative</b> for the purpose of preparing and submitting one (1) dental claim to your designated US insurance carrier.</p>
+        <h2>2. What we do</h2>
+        <p>We translate, code (using current ADA CDT codes), format, and electronically submit your claim. We track its status and notify you of decisions.</p>
+        <h2>3. What we don't do</h2>
+        <p>We do not collect or hold your refund. <b>Your insurer pays you directly</b> using the deposit information you have on file with them.</p>
+        <h2>4. Fee</h2>
+        <p>You agree to pay a one-time service fee for this filing. The fee is charged when you complete checkout.</p>
+        <h2>5. Money-back guarantee</h2>
+        <p>If your claim is eligible and your insurer rejects it on grounds we cannot remedy through resubmission, we will refund the service fee within 5&ndash;10 business days.</p>
+        <h2>6. Privacy &amp; data</h2>
+        <p>Your documents are stored encrypted at rest. We share data only with the carrier necessary to file your claim. Full privacy policy at credimed.us/legal/privacy.html.</p>
+        <h2>7. Disputes</h2>
+        <p>For refund eligibility disputes, email disputes@credimed.us within 30 days of the determination.</p>
+      </div>
+    </article>
+    <aside class="agr-rail">
+      <div class="agr-card">
+        <h3>Summary</h3>
+        <div class="agr-summary-row"><span class="k">Plan</span><span class="v">Standard &middot; $49</span></div>
+        <div class="agr-summary-row"><span class="k">Estimated refund</span><span class="v">$450&ndash;$610</span></div>
+        <div class="agr-summary-row"><span class="k">Carrier</span><span class="v">Aetna PPO</span></div>
+      </div>
+      <div class="agr-card">
+        <h3>Continue</h3>
+        <p style="font-size:13px;color:var(--slate-600);margin:0 0 16px;line-height:1.55;">Use the existing signature pad and consent checkbox in the mobile flow above &mdash; this PC layout shares the same JS state.</p>
+        <div class="footer-cta">
+          <button class="btn-primary" type="button"><span>Continue to payment</span><span class="arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+</main>
 
   <nav class="app-bottomnav">
     <a data-nav="dashboard" href="dashboard.html">
