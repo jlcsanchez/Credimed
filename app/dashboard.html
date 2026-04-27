@@ -552,6 +552,165 @@ html,body{
 
 /* safe area */
 .safe-bottom{padding-bottom:env(safe-area-inset-bottom)}
+
+/* ============================================================
+   DESKTOP DASHBOARD (>= 960px) — PC-native redesign from
+   Claude Design. Hides the iPhone-mockup presenter at desktop
+   and shows a real dashboard: hero claim card + stats + quick
+   actions + activity feed. Right panel mirrors live timeline.
+   Mobile (< 768px) is untouched — uses .dashboard-mobile-only
+   wrapper which hides at >= 960px.
+   ============================================================ */
+@media (min-width: 960px) {
+  .dashboard-mobile-only { display: none; }
+
+  .dash {
+    padding: 40px 40px 64px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .dash-header { margin-bottom: 28px; }
+  .dash-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--slate-500); margin: 0 0 6px;
+  }
+  .dash-title {
+    font-size: 28px; font-weight: 700; line-height: 1.2;
+    letter-spacing: -0.02em; color: var(--slate-900); margin: 0 0 4px;
+  }
+  .dash-sub { font-size: 14px; color: var(--slate-500); margin: 0; }
+
+  /* Hero claim card */
+  .dash-hero {
+    background: linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
+    color: #fff; border-radius: 18px; padding: 28px 32px;
+    position: relative; overflow: hidden; margin-bottom: 24px;
+  }
+  .dash-hero::before {
+    content: ""; position: absolute; inset: -40% -40% auto auto;
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, rgba(94,234,212,0.18) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .dh-row { display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 24px; position: relative; z-index: 1; }
+  .dh-claim-id { font-family: var(--font-mono); font-size: 12px;
+    color: var(--teal-300); letter-spacing: 0.04em; margin-bottom: 8px; }
+  .dh-status { font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--teal-300); margin-bottom: 8px; }
+  .dh-headline { font-size: 24px; font-weight: 700; margin: 0 0 6px;
+    letter-spacing: -0.01em; }
+  .dh-meta { font-size: 13px; color: rgba(250,246,239,0.7); }
+  .dh-amount-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--teal-300); margin-bottom: 4px; }
+  .dh-amount { font-size: 36px; font-weight: 700; letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums; line-height: 1; }
+  .dh-amount-sub { font-size: 12px; color: rgba(250,246,239,0.6); margin-top: 4px; }
+  .dh-progress { margin-top: 24px; position: relative; z-index: 1; }
+  .dh-track { height: 6px; background: rgba(255,255,255,0.1);
+    border-radius: 999px; overflow: hidden; }
+  .dh-fill { height: 100%; width: 55%;
+    background: linear-gradient(90deg, var(--teal-300), #fff); border-radius: 999px; }
+  .dh-labels { display: flex; justify-content: space-between;
+    font-size: 11px; color: rgba(250,246,239,0.55); margin-top: 8px; font-weight: 500; }
+  .dh-actions { display: flex; gap: 8px; margin-top: 22px;
+    position: relative; z-index: 1; flex-wrap: wrap; }
+  .dh-btn { display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 14px; border-radius: 9px; font-size: 13px; font-weight: 600;
+    background: rgba(255,255,255,0.12); color: #fff;
+    border: 1px solid rgba(255,255,255,0.18); cursor: pointer;
+    font-family: inherit; text-decoration: none; transition: background .15s; }
+  .dh-btn:hover { background: rgba(255,255,255,0.2); }
+  .dh-btn.primary { background: #fff; color: var(--teal-900); border-color: #fff; }
+  .dh-btn.primary:hover { background: var(--cream); }
+  .dh-btn svg { width: 14px; height: 14px; }
+
+  /* Stats grid */
+  .dash-stats { display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 32px; }
+  .stat-card {
+    background: #fff; border: 1px solid var(--cream-2);
+    border-radius: 12px; padding: 18px 20px;
+  }
+  .stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--slate-500); margin-bottom: 8px; }
+  .stat-value { font-size: 26px; font-weight: 700; color: var(--slate-900);
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .stat-meta { font-size: 12px; color: var(--slate-500); margin-top: 6px; }
+  .stat-meta.up { color: var(--green-600); }
+
+  /* Quick actions row */
+  .dash-quick { display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin-bottom: 32px; }
+  .quick-card {
+    background: #fff; border: 1px solid var(--cream-2); border-radius: 12px;
+    padding: 18px 20px; display: flex; align-items: center; gap: 14px;
+    text-decoration: none; color: var(--slate-900); transition: all .15s;
+    cursor: pointer; font-family: inherit; text-align: left;
+  }
+  .quick-card:hover { border-color: var(--teal-300);
+    background: var(--teal-50); transform: translateY(-1px); }
+  .quick-icon { width: 40px; height: 40px; border-radius: 10px;
+    background: var(--teal-50); color: var(--teal-700);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; border: 1px solid var(--teal-100); }
+  .quick-icon svg { width: 18px; height: 18px; }
+  .quick-title { font-size: 14px; font-weight: 600; margin: 0 0 2px; }
+  .quick-sub { font-size: 12px; color: var(--slate-500); margin: 0; }
+
+  /* Section heading */
+  .dash-section-head { display: flex; align-items: baseline;
+    justify-content: space-between; margin-bottom: 14px; }
+  .dash-section-head h3 { font-size: 16px; font-weight: 700;
+    color: var(--slate-900); margin: 0; }
+  .dash-section-head .link { font-size: 13px; font-weight: 600;
+    color: var(--teal-700); text-decoration: none; }
+
+  /* Activity feed */
+  .activity-card { background: #fff; border: 1px solid var(--cream-2);
+    border-radius: 14px; overflow: hidden; }
+  .activity-row { display: grid; grid-template-columns: 32px 1fr auto;
+    gap: 14px; align-items: center; padding: 14px 18px;
+    border-bottom: 1px solid var(--cream-2); }
+  .activity-row:last-child { border-bottom: none; }
+  .activity-dot { width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal-600); justify-self: center; }
+  .activity-dot.slate { background: var(--slate-300); }
+  .activity-dot.green { background: var(--green-500); }
+  .activity-text { font-size: 13.5px; color: var(--slate-700); line-height: 1.4; }
+  .activity-text b { color: var(--slate-900); font-weight: 600; }
+  .activity-time { font-size: 12px; color: var(--slate-500);
+    font-variant-numeric: tabular-nums; }
+
+  /* Right panel timeline */
+  .panel-tl-card { padding: 0; }
+  .panel-tl { position: relative; padding-left: 22px; list-style: none; margin: 0; }
+  .panel-tl::before { content: ""; position: absolute;
+    left: 6px; top: 6px; bottom: 6px; width: 1px; background: var(--cream-2); }
+  .panel-tl-step { position: relative; padding-bottom: 18px; }
+  .panel-tl-step:last-child { padding-bottom: 0; }
+  .panel-tl-dot { position: absolute; left: -22px; top: 4px;
+    width: 13px; height: 13px; border-radius: 50%; background: #fff;
+    border: 2px solid var(--slate-300); }
+  .panel-tl-step.done .panel-tl-dot { background: var(--teal-600);
+    border-color: var(--teal-600); }
+  .panel-tl-step.active .panel-tl-dot { background: #fff;
+    border-color: var(--teal-600); box-shadow: 0 0 0 4px rgba(13,148,136,0.15); }
+  .panel-tl-title { font-size: 13px; font-weight: 600;
+    color: var(--slate-800); margin-bottom: 2px; }
+  .panel-tl-step:not(.done):not(.active) .panel-tl-title {
+    color: var(--slate-500); font-weight: 500; }
+  .panel-tl-meta { font-size: 11.5px; color: var(--slate-500); }
+
+  .panel-help { font-size: 13px; line-height: 1.6;
+    color: var(--slate-600); margin: 0 0 14px; }
+  .panel-cta { display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 9px; font-size: 13px; font-weight: 600;
+    background: var(--teal-600); color: #fff; text-decoration: none;
+    border: 1px solid var(--teal-600); }
+  .panel-cta:hover { background: var(--teal-700); border-color: var(--teal-700); }
+  .panel-cta svg { width: 14px; height: 14px; }
+}
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -619,6 +778,13 @@ html,body{
 
   <main class="app-main" id="main">
 
+<!-- ============================================================
+     MOBILE PRESENTER (visible only at < 960px)
+     The original Claude Design iPhone-mockup with #screen-mobile
+     and #screen-desktop. Hidden at >= 960px by .dashboard-mobile-only
+     so the new desktop dashboard below takes over.
+     ============================================================ -->
+<div class="dashboard-mobile-only">
 <div class="topbar">
   <div class="brand">
     <span class="bdot"></span>
@@ -1375,6 +1541,113 @@ function applyBackendClaim(c) {
   }
 }
 </script>
+</div><!-- /.dashboard-mobile-only -->
+
+<!-- ============================================================
+     DESKTOP DASHBOARD (visible only at >= 960px)
+     Real PC-native dashboard from Claude Design. Hero claim card,
+     stats row, quick actions, activity feed.
+     ============================================================ -->
+<div class="dash">
+  <header class="dash-header">
+    <p class="dash-eyebrow">Dashboard</p>
+    <h1 class="dash-title">Welcome back, <span id="dash-firstname">Lupita</span>.</h1>
+    <p class="dash-sub">Here's where your reimbursement stands today.</p>
+  </header>
+
+  <article class="dash-hero" data-claim-id="CMX-2026-0A4B29">
+    <div class="dh-row">
+      <div>
+        <div class="dh-claim-id">CMX-2026-0A4B29</div>
+        <div class="dh-status">Under review</div>
+        <h2 class="dh-headline">Your claim is with Aetna.</h2>
+        <div class="dh-meta">Filed Apr 23 &middot; 2 procedures &middot; Tijuana, MX</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="dh-amount-label">Estimated refund</div>
+        <div class="dh-amount">$450&ndash;$610</div>
+        <div class="dh-amount-sub">Final amount set by insurer</div>
+      </div>
+    </div>
+    <div class="dh-progress">
+      <div class="dh-track"><div class="dh-fill"></div></div>
+      <div class="dh-labels">
+        <span>Submitted</span><span>Under review</span>
+        <span>Approved</span><span>Paid</span>
+      </div>
+    </div>
+    <div class="dh-actions">
+      <a class="dh-btn primary" href="claim.html?id=CMX-2026-0A4B29">View claim &rarr;</a>
+      <button class="dh-btn" type="button">Download claim PDF</button>
+      <a class="dh-btn" href="support.html">Message support</a>
+    </div>
+  </article>
+
+  <div class="dash-stats">
+    <div class="stat-card">
+      <div class="stat-label">Claims filed</div>
+      <div class="stat-value">3</div>
+      <div class="stat-meta">Lifetime</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Approved</div>
+      <div class="stat-value">2</div>
+      <div class="stat-meta up">+1 this year</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Refunded</div>
+      <div class="stat-value">$2,180</div>
+      <div class="stat-meta">Lifetime recovered</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value">$530</div>
+      <div class="stat-meta">Est. May 18</div>
+    </div>
+  </div>
+
+  <div class="dash-quick">
+    <a class="quick-card" href="documents.html">
+      <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+      <div><div class="quick-title">Start a new claim</div><div class="quick-sub">Upload your receipt</div></div>
+    </a>
+    <a class="quick-card" href="claims.html">
+      <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+      <div><div class="quick-title">View all claims</div><div class="quick-sub">See your history</div></div>
+    </a>
+    <a class="quick-card" href="support.html">
+      <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+      <div><div class="quick-title">Talk to Ana</div><div class="quick-sub">Get help in seconds</div></div>
+    </a>
+  </div>
+
+  <div class="dash-section-head">
+    <h3>Recent activity</h3>
+    <a class="link" href="claims.html">View all &rarr;</a>
+  </div>
+  <div class="activity-card">
+    <div class="activity-row">
+      <span class="activity-dot"></span>
+      <div class="activity-text"><b>Aetna acknowledged</b> claim CMX-2026-0A4B29 receipt</div>
+      <div class="activity-time">2h ago</div>
+    </div>
+    <div class="activity-row">
+      <span class="activity-dot slate"></span>
+      <div class="activity-text"><b>Claim CMX-2026-0A4B29</b> submitted to insurer</div>
+      <div class="activity-time">Apr 23</div>
+    </div>
+    <div class="activity-row">
+      <span class="activity-dot green"></span>
+      <div class="activity-text"><b>Refund paid</b> for claim CMX-2025-0R1F88 &mdash; $447</div>
+      <div class="activity-time">Mar 12</div>
+    </div>
+    <div class="activity-row">
+      <span class="activity-dot green"></span>
+      <div class="activity-text"><b>Refund paid</b> for claim CMX-2025-0K4N12 &mdash; $486</div>
+      <div class="activity-time">Nov 21</div>
+    </div>
+  </div>
+</div><!-- /.dash -->
 
 <script src="widgets/faq-data.js"></script>
 <script src="ana.js" data-topic="status"></script>
@@ -1383,8 +1656,32 @@ function applyBackendClaim(c) {
 
   <aside class="app-panel">
     <div class="panel-section">
-      <div class="panel-title">Status timeline</div>
-      <div id="app-panel-timeline" style="font-size:13px;color:var(--slate-500);">Open a claim to see its timeline here.</div>
+      <h4 class="panel-title">Active claim</h4>
+      <ol class="panel-tl" id="app-panel-timeline">
+        <li class="panel-tl-step done"><span class="panel-tl-dot"></span>
+          <div class="panel-tl-title">Receipt uploaded</div>
+          <div class="panel-tl-meta">Apr 22 &middot; 2:14 PM</div></li>
+        <li class="panel-tl-step done"><span class="panel-tl-dot"></span>
+          <div class="panel-tl-title">Claim prepared</div>
+          <div class="panel-tl-meta">Apr 23 &middot; 9:08 AM</div></li>
+        <li class="panel-tl-step done"><span class="panel-tl-dot"></span>
+          <div class="panel-tl-title">Filed with Aetna</div>
+          <div class="panel-tl-meta">Apr 23 &middot; 11:32 AM</div></li>
+        <li class="panel-tl-step active"><span class="panel-tl-dot"></span>
+          <div class="panel-tl-title">Under carrier review</div>
+          <div class="panel-tl-meta">Started Apr 24</div></li>
+        <li class="panel-tl-step"><span class="panel-tl-dot"></span>
+          <div class="panel-tl-title">Decision</div>
+          <div class="panel-tl-meta">Est. May 8</div></li>
+        <li class="panel-tl-step"><span class="panel-tl-dot"></span>
+          <div class="panel-tl-title">Check mailed</div>
+          <div class="panel-tl-meta">Est. May 18</div></li>
+      </ol>
+    </div>
+    <div class="panel-section">
+      <h4 class="panel-title">Need a hand?</h4>
+      <p class="panel-help">Questions about your claim? Ana replies within one business day.</p>
+      <a class="panel-cta" href="support.html">Message Ana &rarr;</a>
     </div>
   </aside>
 
