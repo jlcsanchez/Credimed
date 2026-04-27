@@ -50,6 +50,7 @@
     banner.innerHTML =
       '<div style="flex:1;min-width:200px;">' +
         'We use essential cookies to keep you signed in and secure your session. We do not use tracking or advertising cookies. ' +
+        '<a href="/legal/cookies.html" target="_blank" rel="noopener">Cookie Policy</a> &middot; ' +
         '<a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.' +
       '</div>' +
       '<button type="button" id="credimed-cookie-ok">Got it</button>';

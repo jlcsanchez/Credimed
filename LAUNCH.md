@@ -19,7 +19,10 @@ Last updated: April 26, 2026.
 - [x] API Gateway HTTP API with 5 claim routes + JWT authorizer
 - [x] Lambda `credimed-claims` deployed (read + admin)
 - [x] Lambda `credimed-payment` deployed (Stripe PaymentIntent)
-- [ ] Lambda `credimed-stripe-webhook` deployed (see `backend/webhooks/DEPLOY.md`)
+- [x] Lambda `credimed-stripe-webhook` deployed (Function URL:
+      `https://ghb6a2atbkzwxyzktxk5da5w7y0llegr.lambda-url.us-west-2.on.aws/`)
+      with HMAC-SHA256 signature verification and IAM perms for
+      DynamoDB GetItem/UpdateItem, KMS Decrypt, and SES SendEmail
 - [ ] Re-deploy `credimed-claims` with the audit-logging + email
       changes from latest commits
 - [x] Verify `metadata.claimId` is set in the payment Lambda when
@@ -48,9 +51,12 @@ Last updated: April 26, 2026.
 - [ ] **Switch from `pk_test_*` to `pk_live_*`** in `app/backend.js`
       line 39 — the moment we accept real payments
 - [ ] Stripe live secret key in payment Lambda env
-- [ ] Stripe webhook registered in dashboard pointing to
-      `credimed-stripe-webhook` Function URL
-- [ ] `STRIPE_WEBHOOK_SECRET` in webhook Lambda env
+- [x] Stripe webhook registered in dashboard (test mode) pointing to
+      `credimed-stripe-webhook` Function URL — listening to
+      `payment_intent.succeeded` + `payment_intent.payment_failed`
+- [ ] Stripe webhook registered in **live mode** (separate signing secret)
+- [x] `STRIPE_WEBHOOK_SECRET` in webhook Lambda env (test secret)
+- [ ] `STRIPE_WEBHOOK_SECRET` swapped to live secret when going live
 - [ ] Test end-to-end with `4242 4242 4242 4242` (test) and a real
       live card under $10 to confirm full happy path
 
@@ -91,7 +97,20 @@ Last updated: April 26, 2026.
 - [x] Return URL preservation through login redirect
 - [x] State versioning in `app/state.js`
 - [x] Service Agreement signature capture with non-empty validation
-- [x] Cookie banner on public pages
+- [x] Cookie banner on public pages — links to both Cookie Policy
+      and Privacy Policy
+- [x] `legal/cookies.html` — Cookie Policy (CCPA-aligned, lists every
+      cookie/storage key)
+- [x] `legal/disclosures.html` — what Credimed is / isn't, refund
+      estimate caveats, money-back scope, processing-time clarification
+- [x] `contact.html` — single page with all support / privacy /
+      legal / security email aliases
+- [x] All legal pages cross-linked (privacy ↔ terms ↔ cookies ↔
+      disclosures ↔ HIPAA notice ↔ contact) via the related-links footer
+- [x] Sitemap updated with the 3 new pages
+- [ ] Footer in landing React component still hardcodes Press / Careers
+      / broken hrefs — needs to be edited in the bundled JS directly
+      (the previous DOM-patch approach was reverted as too fragile)
 - [ ] End-to-end walkthrough: landing → login → documents →
       processing → estimate → plan → before-sign → agreement →
       payment → submission-confirmed (with the test card)
