@@ -1710,7 +1710,10 @@ setInterval(() => {
       updateCardDone(cardId, file.name, bytesLabel(file.size) + ' · Extracted', Object.keys(shownR).length ? shownR : null);
 
       /* Auto-fill the visible "Amount paid (USD)" input so the user doesn't have to
-         type it again. If currency is MXN, convert at ~18:1 (conservative). */
+         type it again. If currency is MXN, convert at ~18:1 (conservative).
+         renderCard() emits .amount-input on BOTH the mobile mockup and PC
+         layouts, so update every match — otherwise the PC user sees $0.00
+         even though the OCR extracted a real amount. */
       var paidUSD = null;
       if (amtNum != null) {
         var MXN_TO_USD = 1 / 18;
@@ -1718,12 +1721,10 @@ setInterval(() => {
         /* Store USD value in state for estimate.html to read later */
         window.CredimedState && window.CredimedState.merge('receipt', { amountPaidUSD: paidUSD });
 
-        var amountInput = document.querySelector('.amount-input');
-        if (amountInput) {
+        document.querySelectorAll('.amount-input').forEach(function (amountInput) {
           amountInput.value = paidUSD;
-          /* Fire input event so any Claude Design listeners (enabling CTA, etc.) react */
           amountInput.dispatchEvent(new Event('input', { bubbles: true }));
-        }
+        });
       }
 
       /* ---- Pricing engine (client-side, runs AFTER amountPaidUSD) ----
