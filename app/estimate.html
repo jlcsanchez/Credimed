@@ -585,6 +585,41 @@ html, body {
 @media (max-width: 1200px) {
   .desktop { display: none; }
 }
+
+@media (min-width: 960px) {
+  .est-mobile-only { display: none; }
+  .est-pc { padding: 40px 40px 56px; max-width: 1080px; margin: 0 auto; }
+  .est-pc-head { text-align: center; margin-bottom: 32px; }
+  .est-pc-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal-700); margin: 0 0 6px; }
+  .est-pc-head h1 { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.02em; color: var(--slate-900); }
+  .est-grid { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; }
+  .est-hero { background: linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%); color: #fff; border-radius: 20px; padding: 40px 44px; position: relative; overflow: hidden; }
+  .est-hero::before { content: ""; position: absolute; inset: -40% -40% auto auto; width: 420px; height: 420px; background: radial-gradient(circle, rgba(94,234,212,0.18) 0%, transparent 60%); pointer-events: none; }
+  .est-hero .label { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal-300); margin: 0 0 12px; position: relative; }
+  .est-hero .amount { font-size: 88px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; color: #fff; margin: 0; position: relative; }
+  .est-hero .amount .dash { color: var(--teal-300); margin: 0 6px; font-weight: 600; }
+  .est-hero .sub { margin: 14px 0 0; font-size: 14.5px; color: rgba(250,246,239,0.75); position: relative; }
+  .est-hero .sub b { color: #fff; font-weight: 600; }
+  .est-confidence { margin-top: 24px; padding: 14px 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; position: relative; display: flex; gap: 12px; align-items: flex-start; }
+  .est-confidence svg { width: 18px; height: 18px; color: var(--teal-300); flex-shrink: 0; margin-top: 1px; }
+  .est-confidence p { margin: 0; font-size: 13px; line-height: 1.55; color: rgba(250,246,239,0.85); }
+  .est-confidence b { color: #fff; font-weight: 600; }
+  .est-pc .footer-cta { margin-top: 28px; padding: 0; background: transparent; border: none; box-shadow: none; position: static; }
+  .est-pc .footer-cta .btn-primary { width: 100%; padding: 16px; font-size: 16px; border-radius: 12px; }
+  .est-breakdown { background: #fff; border: 1px solid var(--cream-2); border-radius: 16px; padding: 24px 26px; position: sticky; top: 24px; }
+  .est-breakdown h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 14px; }
+  .est-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 11px 0; border-bottom: 1px dashed var(--cream-2); font-size: 13.5px; align-items: baseline; }
+  .est-row:last-of-type { border-bottom: none; }
+  .est-row .name { color: var(--slate-700); }
+  .est-row .name small { display: block; color: var(--slate-500); font-size: 11.5px; margin-top: 2px; }
+  .est-row .v { font-variant-numeric: tabular-nums; color: var(--slate-900); font-weight: 600; }
+  .est-row .v.refund { color: var(--teal-700); }
+  .est-total { margin-top: 6px; padding-top: 14px; border-top: 1px solid var(--cream-2); display: flex; justify-content: space-between; align-items: baseline; }
+  .est-total .k { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-600); }
+  .est-total .v { font-size: 22px; font-weight: 700; color: var(--teal-700); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .est-foot { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--cream-2); font-size: 12px; color: var(--slate-500); line-height: 1.55; }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -651,6 +686,8 @@ html, body {
   </aside>
 
   <main class="app-main" id="main">
+
+<div class="est-mobile-only">
 
 <div class="topbar">
   <div class="brand">
@@ -1153,7 +1190,40 @@ mount();
 </script>
 
 <script src="auto-logoff.js"></script>
-  </main>
+  </div><!-- /.est-mobile-only -->
+
+
+<div class="est-pc">
+  <header class="est-pc-head">
+    <p class="eyebrow">Step 2 of 4 &middot; Estimate ready</p>
+    <h1>Here's what your insurer should refund.</h1>
+  </header>
+  <div class="est-grid">
+    <section class="est-hero">
+      <p class="label">Estimated refund</p>
+      <p class="amount">$450<span class="dash">&ndash;</span>$610</p>
+      <p class="sub">Based on your <b>Aetna PPO</b> coverage and the procedures on your receipt. Final amount is set by your insurer.</p>
+      <div class="est-confidence">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <p>We model this estimate against <b>thousands of PPO claim outcomes</b> for similar procedures. Most patients land within &plusmn;10% of the midpoint.</p>
+      </div>
+      <div class="footer-cta">
+        <button class="btn-primary"><span>Continue &mdash; pick a plan</span><span class="arrow">&rarr;</span></button>
+      </div>
+    </section>
+    <aside class="est-breakdown">
+      <h3>How we got there</h3>
+      <div class="est-row"><div class="name">Crown <small>D2740</small></div><div class="v refund">$300&ndash;$420</div></div>
+      <div class="est-row"><div class="name">Root canal <small>D3330</small></div><div class="v refund">$150&ndash;$190</div></div>
+      <div class="est-row"><div class="name">PPO out-of-network coverage</div><div class="v">50&ndash;80%</div></div>
+      <div class="est-row"><div class="name">Annual deductible remaining</div><div class="v">$0</div></div>
+      <div class="est-total"><span class="k">Estimated refund</span><span class="v">$450&ndash;$610</span></div>
+      <p class="est-foot">Your insurer determines the final amount. If they pay less than the low end, our team will resubmit on your behalf at no extra cost.</p>
+    </aside>
+  </div>
+</div>
+
+</main>
 
   <nav class="app-bottomnav">
     <a data-nav="dashboard" href="dashboard.html">
