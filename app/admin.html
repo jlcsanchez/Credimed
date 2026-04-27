@@ -506,11 +506,11 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     </nav>
     <div class="sb-spacer"></div>
     <div class="sb-foot">
-      <a class="sb-link" href="mailto:support@credimed.us">
+      <button class="sb-link" type="button" onclick="window.location.href='mailto:support@credimed.us'">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <span>Help &amp; support</span>
-      </a>
-      <button class="sb-link" type="button" id="sign-out-btn">
+      </button>
+      <button class="sb-link" type="button" id="sign-out-btn" onclick="try{if(window.cognitoSignOut)window.cognitoSignOut();}catch(e){};window.location.href='/app/login.html?logout=1';">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span>Sign out</span>
       </button>
