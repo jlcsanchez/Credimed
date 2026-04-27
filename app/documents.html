@@ -633,6 +633,122 @@ input[type=file] { display: none; }
 @media (max-width: 1200px) {
   .desktop { display: none; }
 }
+
+/* ============================================================
+   DESKTOP DOCUMENTS (>= 960px) — Claude Design page 2.
+   Hides iPhone presenter, renders 2-col upload grid + tips
+   sidebar. JS adds renderPC() / renderPCFooter() that reuse
+   renderCard() so dropzones + .footer-cta .btn-primary still
+   work and connector.js finds its hook.
+   ============================================================ */
+@media (min-width: 960px) {
+  .documents-mobile-only { display: none; }
+
+  .docs-pc { padding: 40px 40px 64px; max-width: 1180px; margin: 0 auto; }
+
+  .docs-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 32px; margin-bottom: 28px;
+  }
+  .docs-header-left { flex: 1; min-width: 0; }
+  .docs-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--slate-500); margin: 0 0 6px;
+  }
+  .docs-title {
+    font-size: 28px; font-weight: 700; line-height: 1.2;
+    letter-spacing: -0.02em; color: var(--slate-900); margin: 0 0 4px;
+  }
+  .docs-sub { font-size: 14px; color: var(--slate-500); margin: 0; max-width: 520px; }
+
+  .docs-progress { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .docs-progress-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--slate-500);
+  }
+  .docs-progress-segs { display: flex; gap: 4px; }
+  .docs-progress-seg { width: 28px; height: 4px; border-radius: 2px; background: var(--cream-2); }
+  .docs-progress-seg.active { background: var(--teal-600); }
+  .docs-progress-seg.done { background: var(--teal-300); }
+
+  .docs-grid { display: grid; grid-template-columns: 1fr 320px; gap: 28px; align-items: start; }
+
+  .docs-uploads { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .docs-uploads .upload-card-pc.span-2 { grid-column: 1 / -1; }
+  .docs-uploads .upload-card.span-2 { grid-column: 1 / -1; }
+
+  .docs-uploads .upload-card {
+    margin: 0; padding: 22px 24px; border-radius: 14px;
+    box-shadow: none; border: 1px solid var(--cream-2);
+  }
+  .docs-uploads .upload-card.state-uploading,
+  .docs-uploads .upload-card.state-done { border-color: var(--teal-300); }
+  .docs-uploads .upload-card .dropzone { padding: 28px 16px; border-radius: 10px; }
+  .docs-uploads .upload-card.span-2 .dropzone { padding: 22px 16px; }
+
+  .docs-tips {
+    background: linear-gradient(180deg, #fff 0%, var(--teal-50) 100%);
+    border: 1px solid var(--teal-100); border-radius: 14px;
+    padding: 22px 24px; position: sticky; top: 24px;
+  }
+  .docs-tips-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--teal-700); margin: 0 0 6px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .docs-tips-eyebrow svg { width: 13px; height: 13px; }
+  .docs-tips h3 {
+    font-size: 17px; font-weight: 700; color: var(--slate-900);
+    margin: 0 0 12px; letter-spacing: -0.01em;
+  }
+  .docs-tips ul { list-style: none; padding: 0; margin: 0 0 16px; }
+  .docs-tips li {
+    display: flex; gap: 10px; padding: 9px 0;
+    border-bottom: 1px dashed rgba(13,148,136,0.15);
+    font-size: 13px; line-height: 1.5; color: var(--slate-700);
+  }
+  .docs-tips li:last-child { border-bottom: none; }
+  .docs-tips li b { color: var(--slate-900); font-weight: 600; }
+  .docs-tips-check {
+    flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--teal-600); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .docs-tips-check svg { width: 10px; height: 10px; }
+  .docs-tips-foot {
+    font-size: 12px; color: var(--slate-500); margin: 0;
+    padding-top: 12px; border-top: 1px solid rgba(13,148,136,0.15); line-height: 1.5;
+  }
+  .docs-tips-foot b { color: var(--slate-700); font-weight: 600; }
+
+  .docs-pc .footer-cta {
+    margin-top: 28px; padding: 0; background: transparent;
+    border: none; box-shadow: none; position: static;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap;
+  }
+  .docs-pc .footer-cta .required-summary {
+    margin: 0; font-size: 13px; color: var(--slate-600); flex: 1; min-width: 0;
+  }
+  .docs-pc .footer-cta .required-summary .check { color: var(--teal-700); font-weight: 600; }
+  .docs-pc .footer-cta .btn-primary {
+    width: auto; padding: 12px 22px; font-size: 14px; border-radius: 10px;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .docs-pc .footer-cta .footer-link {
+    background: transparent; border: none; cursor: pointer;
+    font-size: 13px; color: var(--slate-500); font-family: inherit;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .docs-pc .footer-cta-row {
+    display: grid; grid-template-columns: 1fr 320px; gap: 28px;
+    align-items: center; margin-top: 28px;
+  }
+  .docs-pc .footer-cta-buttons {
+    display: flex; align-items: center; gap: 14px; justify-self: end;
+  }
+}
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -729,6 +845,7 @@ input[type=file] { display: none; }
 
   <main class="app-main" id="main">
 
+<div class="documents-mobile-only">
 <div class="topbar">
   <div class="brand">
     <span class="dot"></span>
@@ -1036,9 +1153,45 @@ function render(variantKey, device) {
 
 let activeVariant = 'default';
 
+// PC-only render: just the upload cards (no hero / no footer). Reuses
+// renderCard() so dropzones + drag-drop wiring stay identical. Marks
+// the supporting-docs card with span-2 so it fills both columns.
+function renderPC(variantKey) {
+  const state = VARIANT_STATES[variantKey];
+  return CARDS.map(c => {
+    const html = renderCard(c, state[c.id], 'pc');
+    return c.id === 'supporting'
+      ? html.replace('class="upload-card', 'class="upload-card span-2')
+      : html;
+  }).join('');
+}
+
+// PC footer — separate from the cards so it can sit in its own grid
+// row below the uploads + tips. Reuses .footer-cta + .btn-primary so
+// connector.js's existing selector still matches.
+function renderPCFooter(variantKey) {
+  const state = VARIANT_STATES[variantKey];
+  return `
+    <div class="footer-cta">
+      <div class="required-summary">${summaryLine(state)}</div>
+      <div class="footer-cta-buttons">
+        <button class="footer-link">Save and finish later</button>
+        <button class="btn-primary" ${ctaEnabled(state) ? '' : 'disabled'}>
+          <span>Continue</span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 function mount() {
   document.getElementById('screen-mobile').innerHTML = render(activeVariant, 'mobile');
   document.getElementById('screen-desktop').innerHTML = render(activeVariant, 'desktop');
+  const pc = document.getElementById('screen-pc');
+  if (pc) pc.innerHTML = renderPC(activeVariant);
+  const pcCta = document.getElementById('screen-pc-cta');
+  if (pcCta) pcCta.innerHTML = renderPCFooter(activeVariant);
   wireInteractions();
 }
 
@@ -1789,6 +1942,63 @@ setInterval(() => {
   document.body.appendChild(a);
 })();
 </script>
+</div><!-- /.documents-mobile-only -->
+
+<div class="docs-pc">
+  <header class="docs-header">
+    <div class="docs-header-left">
+      <p class="docs-eyebrow">Claim setup &middot; Step 1 of 4</p>
+      <h1 class="docs-title">Upload your documents</h1>
+      <p class="docs-sub">Two required, one optional. Takes about 2 minutes &mdash; we'll handle the rest.</p>
+    </div>
+    <div class="docs-progress">
+      <span class="docs-progress-label">Progress</span>
+      <div class="docs-progress-segs">
+        <span class="docs-progress-seg active"></span>
+        <span class="docs-progress-seg"></span>
+        <span class="docs-progress-seg"></span>
+        <span class="docs-progress-seg"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="docs-grid">
+    <div id="screen-pc" class="docs-uploads"></div>
+
+    <aside class="docs-tips">
+      <p class="docs-tips-eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.8 5.5L19 9l-5.2 1.5L12 16l-1.8-5.5L5 9l5.2-1.5z"/></svg>
+        What strengthens your claim
+      </p>
+      <h3>Bring everything your dentist gave you.</h3>
+      <ul>
+        <li>
+          <span class="docs-tips-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span><b>X-rays</b> &mdash; pre and post if you have both. PDF or image.</span>
+        </li>
+        <li>
+          <span class="docs-tips-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span><b>Treatment plan</b> &mdash; the itemized list with procedure codes.</span>
+        </li>
+        <li>
+          <span class="docs-tips-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span><b>EOB</b> if you've already filed once and need to resubmit.</span>
+        </li>
+        <li>
+          <span class="docs-tips-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span><b>Before/after photos</b> &mdash; useful for crowns, implants, and aesthetic work.</span>
+        </li>
+      </ul>
+      <p class="docs-tips-foot">
+        <b>Spanish receipts are fine.</b> We translate every line item before submitting to your US insurer &mdash; no extra step on your end.
+      </p>
+    </aside>
+  </div>
+
+  <div class="footer-cta-row">
+    <div id="screen-pc-cta"></div>
+  </div>
+</div>
 
 <script src="auto-logoff.js"></script>
   </main>
