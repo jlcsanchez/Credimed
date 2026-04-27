@@ -156,8 +156,38 @@ html,body{
    DESKTOP CLAIM DETAIL (>= 960px) — Claude Design page 3.
    ============================================================ */
 @media (min-width: 960px) {
-  .claim-mobile-only { display: none; }
-  .claim-pc { padding: 32px 40px 56px; max-width: 1200px; margin: 0 auto; }
+  /* The .claim-pc layout was a fully hardcoded mockup (CMX-2026-0A4B29,
+     Aetna PPO, $790, $450-$610, Standard $49, Tijuana, Dental Cancun
+     Tijuana, etc.) with non-functional Download/View-documents buttons.
+     The mobile mockup (.claim-mobile-only) has the working load() that
+     fetches /claims/:id from the backend and falls back to local state.
+     Same pattern as claims.html: hide the decorative PC, stretch the
+     mobile to fill the PC viewport. */
+  .claim-pc { display: none !important; }
+  .claim-mobile-only { display: block !important; }
+  .claim-mobile-only .topbar,
+  .claim-mobile-only .device-label,
+  .claim-mobile-only .bottom-nav { display: none !important; }
+  .claim-mobile-only .page {
+    max-width: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    min-height: 0 !important;
+  }
+  .claim-mobile-only .body-wrap,
+  .claim-mobile-only main {
+    max-width: 880px; margin: 0 auto; padding: 24px 40px 56px;
+  }
+  .claim-mobile-only .hero {
+    background: transparent !important; color: var(--slate-900) !important;
+    padding: 24px 40px 12px !important; max-width: 880px; margin: 0 auto;
+  }
+  .claim-mobile-only .hero::before { display: none; }
+  .claim-mobile-only .hero h1 {
+    font-size: 26px !important; color: var(--slate-900) !important;
+  }
   .claim-crumb { font-size: 13px; color: var(--slate-500); margin: 0 0 14px; display: flex; align-items: center; gap: 8px; }
   .claim-crumb a { color: var(--slate-500); text-decoration: none; }
   .claim-crumb a:hover { color: var(--teal-700); }
