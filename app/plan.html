@@ -725,7 +725,30 @@ html, body {
 }
 
 @media (min-width: 960px) {
-  .plan-mobile-only { display: none; }
+  /* Same Claude Design pattern as estimate/claim/agreement: .plan-pc
+     was a hardcoded mockup (D2740 Crown, D3330 Root canal, fixed
+     copy). Hide it; stretch the working .plan-mobile-only that reads
+     real procedures + price tiers from CredimedState + sessionStorage. */
+  .plan-pc { display: none !important; }
+  .plan-mobile-only { display: block !important; }
+  .plan-mobile-only .topbar,
+  .plan-mobile-only .device-label,
+  .plan-mobile-only .bottom-nav,
+  .plan-mobile-only .device-wrap:nth-of-type(2) { display: none !important; }
+  .plan-mobile-only .stage { background: transparent !important; padding: 0 !important; min-height: 0 !important; }
+  .plan-mobile-only .device-wrap { margin: 0 auto !important; padding: 0 !important; width: 100% !important; max-width: 760px !important; }
+  .plan-mobile-only .iphone {
+    border: none !important; border-radius: 0 !important; box-shadow: none !important;
+    background: transparent !important; padding: 0 !important; margin: 0 !important;
+    width: 100% !important; max-width: 760px !important; min-height: 0 !important; height: auto !important;
+  }
+  .plan-mobile-only .iphone::before { display: none !important; }
+  .plan-mobile-only .screen {
+    width: 100% !important; max-width: 100% !important; min-height: auto !important;
+    border-radius: 0 !important; padding: 24px 28px 56px !important;
+    background: var(--cream, #FAF6EF) !important;
+  }
+
   .plan-pc { padding: 40px 40px 56px; max-width: 1100px; margin: 0 auto; }
   .plan-pc-head { text-align: center; margin-bottom: 32px; }
   .plan-pc-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 8px; }
