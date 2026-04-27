@@ -335,7 +335,7 @@ html, body {
 </style>
 <script src="/app/require-auth.js"></script>
 </head>
-<body>
+<body data-page="submission-confirmed">
 <div class="page">
 
   <section class="hero">
@@ -419,9 +419,11 @@ html, body {
 /* --- hydrate UI with real data from state (+ cognito user) --- */
 (async function () {
   var claim = (window.CredimedState && window.CredimedState.submitClaim) ? window.CredimedState.submitClaim() : null;
-  var claimId = (claim && claim.id) || (window.CredimedState && window.CredimedState.get('claim.id')) || 'CMX-2026-0A4B29';
-  var codeEl = document.getElementById('claimCode');
-  if (codeEl) codeEl.textContent = claimId;
+  var claimId = (claim && claim.id) || (window.CredimedState && window.CredimedState.get('claim.id')) || '—';
+  /* Update both copies — mobile mockup (#claimCode) and PC layout (#confClaimId). */
+  document.querySelectorAll('#claimCode, #confClaimId').forEach(function (el) {
+    el.textContent = claimId;
+  });
 
   /* Grab user email for display if needed */
   var email = null;
@@ -430,8 +432,10 @@ html, body {
     if (cu && cu.attributes) email = cu.attributes.email;
   } catch (e) { /* not signed in */ }
   if (email) {
-    var sub = document.querySelector('.hero .sub');
-    if (sub) sub.textContent = "We've filed your claim with your insurer. Updates will go to " + email + ".";
+    var msg = "We've filed your claim with your insurer. Updates will go to " + email + ".";
+    document.querySelectorAll('.hero .sub, #confLead').forEach(function (el) {
+      el.textContent = msg;
+    });
   }
 
   /* If this page loaded from Stripe redirect (?paid=1 or payment_intent_client_secret),
@@ -487,15 +491,7 @@ document.getElementById('copyBtn').addEventListener('click', function () {
 });
 </script>
 
-<script src="widgets/faq-data.js"></script>
-<script src="ana.js" data-topic="status"></script>
-<script src="connector.js"></script>
-<script src="auto-logoff.js"></script>
-</body>
-</html>
-
 <div class="conf-mobile-only"></div><!-- /.conf-mobile-only -->
-
 
 <div class="conf-pc">
   <div class="conf-card">
@@ -504,8 +500,8 @@ document.getElementById('copyBtn').addEventListener('click', function () {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <h1>Claim submitted!</h1>
-    <p class="lead">We've filed your claim with your insurer. You'll get email updates as it moves through their system.</p>
-    <div class="conf-id"><span class="lbl">Claim ID</span><span id="confClaimId">CMX-2026-0A4B29</span></div>
+    <p class="lead" id="confLead">We've filed your claim with your insurer. You'll get email updates as it moves through their system.</p>
+    <div class="conf-id"><span class="lbl">Claim ID</span><span id="confClaimId">—</span></div>
     <div class="conf-next">
       <h3>What happens next</h3>
       <ul class="conf-next-list">
@@ -522,4 +518,9 @@ document.getElementById('copyBtn').addEventListener('click', function () {
   </div>
 </div>
 
-
+<script src="widgets/faq-data.js"></script>
+<script src="ana.js" data-topic="status"></script>
+<script src="connector.js"></script>
+<script src="auto-logoff.js"></script>
+</body>
+</html>
