@@ -531,6 +531,43 @@ body[data-page="profile"]    .app-bottomnav a[data-nav="profile"]   svg {
 }
 
 /* ============================================================
+   CARD BRAND TINT — at >= 960px add a subtle white→teal-50
+   gradient to every card class across the redesigned PC pages
+   so the brand color is visible. Stays clean (almost-white) but
+   feels like Credimed instead of generic dashboard white.
+   Admin (dark navy) is excluded.
+   ============================================================ */
+@media (min-width: 960px) {
+  body:not([data-page="admin"]) .app-main .claim-section,
+  body:not([data-page="admin"]) .app-main .rail-card,
+  body:not([data-page="admin"]) .app-main .stat-card,
+  body:not([data-page="admin"]) .app-main .quick-card,
+  body:not([data-page="admin"]) .app-main .activity-card,
+  body:not([data-page="admin"]) .app-main .prof-card,
+  body:not([data-page="admin"]) .app-main .est-breakdown,
+  body:not([data-page="admin"]) .app-main .pay-summary,
+  body:not([data-page="admin"]) .app-main .pay-stripe-card,
+  body:not([data-page="admin"]) .app-main .agr-card,
+  body:not([data-page="admin"]) .app-main .bsign-card,
+  body:not([data-page="admin"]) .app-main .conf-card,
+  body:not([data-page="admin"]) .app-main .claims-table-wrap,
+  body:not([data-page="admin"]) .app-main .docs-uploads .upload-card,
+  body:not([data-page="admin"]) .app-main .agr-doc,
+  body:not([data-page="admin"]) .app-main .plan-context,
+  body:not([data-page="admin"]) .app-main .sup-contact {
+    background: linear-gradient(180deg, #fff 0%, var(--teal-50, #F0FDFA) 100%) !important;
+    border-color: var(--teal-100, #CCFBF1) !important;
+  }
+  /* Inputs & selects keep clean white so they read as fields */
+  body:not([data-page="admin"]) .app-main .prof-card input,
+  body:not([data-page="admin"]) .app-main .prof-card select,
+  body:not([data-page="admin"]) .app-main .claims-search input,
+  body:not([data-page="admin"]) .app-main .sup-input {
+    background: #fff !important;
+  }
+}
+
+/* ============================================================
    SKIP LINK (a11y)
    ============================================================ */
 .app-skip-link {

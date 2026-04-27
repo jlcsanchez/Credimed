@@ -2000,6 +2000,14 @@ setInterval(() => {
   </div>
 </div>
 
+<script>
+/* Re-fire mount() after #screen-pc + #screen-pc-cta are in the DOM.
+   The original mount() in the inline JS above runs at parse time,
+   BEFORE the parser reaches this section, so the PC slots end up
+   empty. This re-fire fills them once the full DOM is parsed. */
+if (typeof mount === 'function') mount();
+</script>
+
 <script src="auto-logoff.js"></script>
   </main>
 
