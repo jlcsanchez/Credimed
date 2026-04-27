@@ -723,6 +723,41 @@ html, body {
 @media (max-width: 1200px) {
   .desktop { display: none; }
 }
+
+@media (min-width: 960px) {
+  .plan-mobile-only { display: none; }
+  .plan-pc { padding: 40px 40px 56px; max-width: 1100px; margin: 0 auto; }
+  .plan-pc-head { text-align: center; margin-bottom: 32px; }
+  .plan-pc-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 8px; }
+  .plan-pc-head h1 { font-size: 30px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; color: var(--slate-900); }
+  .plan-pc-head p { font-size: 15px; color: var(--slate-600); margin: 0 auto; max-width: 540px; }
+  .plan-grid { display: grid; grid-template-columns: 320px 1fr; gap: 32px; align-items: start; }
+  .plan-context { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; padding: 22px 24px; position: sticky; top: 24px; }
+  .plan-context h3 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 12px; }
+  .plan-procs { list-style: none; padding: 0; margin: 0 0 18px; }
+  .plan-procs li { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--cream-2); font-size: 13.5px; color: var(--slate-700); align-items: center; }
+  .plan-procs li:last-child { border-bottom: none; }
+  .plan-procs li .code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; color: var(--slate-500); padding: 2px 7px; background: var(--cream); border-radius: 4px; }
+  .plan-why { padding: 14px; background: var(--teal-50); border: 1px solid var(--teal-100); border-radius: 10px; font-size: 13px; line-height: 1.55; color: var(--slate-700); }
+  .plan-why b { color: var(--slate-900); font-weight: 600; }
+  .plan-card-pc { background: #fff; border: 2px solid var(--teal-600); border-radius: 18px; padding: 32px 36px; box-shadow: 0 20px 50px -16px rgba(13,148,136,0.18); position: relative; }
+  .plan-recommend-badge { position: absolute; top: -14px; left: 32px; background: var(--teal-600); color: #fff; padding: 6px 14px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; }
+  .plan-recommend-badge svg { width: 12px; height: 12px; }
+  .plan-tier-name { font-size: 13px; font-weight: 700; color: var(--teal-700); letter-spacing: 0.06em; text-transform: uppercase; margin: 6px 0 2px; }
+  .plan-card-pc h2 { font-size: 28px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }
+  .plan-tier-sub { font-size: 14px; color: var(--slate-500); margin: 0 0 20px; }
+  .plan-price-row { display: flex; align-items: baseline; gap: 14px; padding: 18px 0; border-top: 1px solid var(--cream-2); border-bottom: 1px solid var(--cream-2); margin-bottom: 22px; }
+  .plan-price-pc { font-size: 48px; font-weight: 800; color: var(--slate-900); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .plan-price-meta { font-size: 13px; color: var(--slate-500); }
+  .plan-price-meta strong { display: block; color: var(--slate-700); }
+  .plan-features-pc { list-style: none; padding: 0; margin: 0 0 24px; }
+  .plan-features-pc li { display: flex; gap: 12px; padding: 9px 0; font-size: 14.5px; color: var(--slate-700); align-items: flex-start; }
+  .plan-features-pc li .ck { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--teal-600); color: #fff; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .plan-features-pc li .ck svg { width: 11px; height: 11px; }
+  .plan-card-pc .footer-cta { margin: 0; padding: 0; background: transparent; border: none; box-shadow: none; position: static; }
+  .plan-card-pc .footer-cta .btn-primary { width: 100%; padding: 15px; font-size: 15px; border-radius: 11px; }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -789,6 +824,8 @@ html, body {
   </aside>
 
   <main class="app-main" id="main">
+
+<div class="plan-mobile-only">
 
 <div class="topbar">
   <div class="brand">
@@ -1450,7 +1487,53 @@ mount();
 })();
 </script>
 <script src="auto-logoff.js"></script>
-  </main>
+  </div><!-- /.plan-mobile-only -->
+
+
+<div class="plan-pc">
+  <header class="plan-pc-head">
+    <p class="eyebrow">Step 3 of 4 &middot; Plan match</p>
+    <h1>We matched you with the <span style="color:var(--teal-700)">Standard</span> plan.</h1>
+    <p>Based on your procedures and PPO coverage, this is the right tier for your claim.</p>
+  </header>
+  <div class="plan-grid">
+    <aside class="plan-context">
+      <h3>From your receipt</h3>
+      <ul class="plan-procs">
+        <li><span class="code">D2740</span> Crown &mdash; porcelain/ceramic</li>
+        <li><span class="code">D3330</span> Endodontic therapy &mdash; molar</li>
+      </ul>
+      <div class="plan-why">
+        <b>Why Standard?</b> Your claim has 2 procedures with PPO coverage at 50&ndash;80%. Standard handles complex multi-procedure claims and includes a free resubmission if your insurer pushes back.
+      </div>
+    </aside>
+    <section class="plan-card-pc" data-tier="standard">
+      <div class="plan-recommend-badge">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.5L19 9l-5.2 1.5L12 16l-1.8-5.5L5 9l5.2-1.5z"/></svg>
+        Recommended for you
+      </div>
+      <div class="plan-tier-name">Standard</div>
+      <h2>Multi-procedure filing</h2>
+      <p class="plan-tier-sub">For claims with 2+ procedures or PPO carriers known for back-and-forth.</p>
+      <div class="plan-price-row">
+        <div class="plan-price-pc">$49</div>
+        <div class="plan-price-meta"><strong>One-time</strong>Charged when you file</div>
+      </div>
+      <ul class="plan-features-pc">
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Full claim preparation &mdash; we translate, code, and format for your carrier.</span></li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Filed within <b>24 hours</b> of payment, directly with your US insurer.</span></li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>One free resubmission if denied for coding or documentation issues.</span></li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Status tracking + email updates until your refund check arrives.</span></li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Money-back guarantee if your insurer rejects the claim outright.</span></li>
+      </ul>
+      <div class="footer-cta">
+        <button class="btn-primary"><span>Continue with Standard</span><span class="arrow">&rarr;</span></button>
+      </div>
+    </section>
+  </div>
+</div>
+
+</main>
 
   <nav class="app-bottomnav">
     <a data-nav="dashboard" href="dashboard.html">

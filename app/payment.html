@@ -865,6 +865,49 @@ html, body {
 @media (max-width: 1200px) {
   .desktop { display: none; }
 }
+
+/* ============================================================
+   DESKTOP PAYMENT (>= 960px) — Claude Design page 6.
+   Stripe #payment-element + #stripe-skeleton are moved into the
+   PC card at runtime via JS so they only mount once.
+   ============================================================ */
+@media (min-width: 960px) {
+  .payment-mobile-only { display: none; }
+  .pay-pc { padding: 40px 40px 56px; max-width: 1080px; margin: 0 auto; }
+  .pay-head { text-align: left; margin-bottom: 28px; }
+  .pay-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 6px; }
+  .pay-head h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }
+  .pay-head p { font-size: 14px; color: var(--slate-500); margin: 0; }
+  .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .pay-summary { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; padding: 26px 28px; }
+  .pay-summary h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 16px; }
+  .pay-claim { padding: 14px 16px; background: var(--cream); border-radius: 10px; margin-bottom: 18px; }
+  .pay-claim .id { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; color: var(--slate-500); margin-bottom: 4px; }
+  .pay-claim .desc { font-size: 14px; font-weight: 600; color: var(--slate-900); }
+  .pay-line { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px dashed var(--cream-2); font-size: 14px; }
+  .pay-line:last-of-type { border-bottom: none; }
+  .pay-line .k { color: var(--slate-600); }
+  .pay-line .v { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--slate-900); }
+  .pay-total { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 0 4px; border-top: 1px solid var(--cream-2); margin-top: 8px; }
+  .pay-total .k { font-size: 13px; color: var(--slate-600); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+  .pay-total .v { font-size: 32px; font-weight: 700; color: var(--slate-900); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .pay-guarantee { margin-top: 22px; padding: 16px; background: linear-gradient(180deg, var(--teal-50), #fff); border: 1px solid var(--teal-100); border-radius: 12px; display: flex; gap: 12px; align-items: flex-start; }
+  .pay-guarantee .icon { width: 32px; height: 32px; border-radius: 8px; background: var(--teal-600); color: #fff; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+  .pay-guarantee .icon svg { width: 18px; height: 18px; }
+  .pay-guarantee strong { display: block; font-size: 13.5px; color: var(--slate-900); margin-bottom: 3px; }
+  .pay-guarantee p { font-size: 12.5px; color: var(--slate-600); margin: 0; line-height: 1.5; }
+  .pay-trust { margin-top: 16px; display: flex; gap: 14px; justify-content: flex-start; flex-wrap: wrap; }
+  .pay-trust span { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--slate-500); font-weight: 500; }
+  .pay-trust svg { width: 12px; height: 12px; color: var(--slate-400); }
+  .pay-stripe-card { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; padding: 26px 28px; position: sticky; top: 24px; }
+  .pay-stripe-card h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 18px; }
+  .pay-stripe-card #stripe-skeleton { max-width: none; margin: 0 0 18px; }
+  .pay-stripe-card #payment-element { max-width: none; margin: 0 0 18px; }
+  .pay-stripe-card .footer-cta { margin: 22px 0 0; padding: 0; background: transparent; border: none; box-shadow: none; position: static; }
+  .pay-stripe-card .footer-cta .btn-primary { width: 100%; padding: 14px; font-size: 15px; border-radius: 10px; }
+  .pay-stripe-foot { font-size: 12px; color: var(--slate-500); margin-top: 14px; text-align: center; line-height: 1.5; }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -931,6 +974,8 @@ html, body {
   </aside>
 
   <main class="app-main" id="main">
+
+<div class="payment-mobile-only">
 
 <div class="topbar">
   <div class="brand">
@@ -1683,7 +1728,78 @@ mountScope('desktop');
 })();
 </script>
 <script src="auto-logoff.js"></script>
-  </main>
+  </div><!-- /.payment-mobile-only -->
+
+
+<div class="pay-pc">
+  <header class="pay-head">
+    <p class="eyebrow">Step 4 of 4 &middot; Payment</p>
+    <h1>Pay $49 to file your claim</h1>
+    <p>One-time charge. We file with your insurer within 24 hours.</p>
+  </header>
+
+  <div class="pay-grid">
+    <section class="pay-summary">
+      <h3>Order summary</h3>
+      <div class="pay-claim">
+        <div class="id">CMX-2026-0A4B29</div>
+        <div class="desc">Crown + root canal &middot; Tijuana, MX</div>
+      </div>
+      <div class="pay-line"><span class="k">Plan</span><span class="v">Standard</span></div>
+      <div class="pay-line"><span class="k">Filing service</span><span class="v">$49.00</span></div>
+      <div class="pay-line"><span class="k">Estimated refund (paid by insurer)</span><span class="v">$450&ndash;$610</span></div>
+      <div class="pay-total"><span class="k">You pay today</span><span class="v">$49.00</span></div>
+      <div class="pay-guarantee">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div>
+          <strong>Money-back guarantee</strong>
+          <p>If your insurer rejects the claim outright and we can't fix it on resubmission, we refund the $49 &mdash; no questions asked.</p>
+        </div>
+      </div>
+      <div class="pay-trust">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 256-bit encrypted</span>
+        <span>Powered by Stripe</span>
+        <span>HIPAA-aligned</span>
+      </div>
+    </section>
+
+    <section class="pay-stripe-card">
+      <h3>Payment method</h3>
+      <div id="pay-stripe-mount-pc"><!-- Stripe + skeleton elements moved here at PC widths via JS below --></div>
+      <p class="pay-stripe-foot">By paying you agree to the Service Agreement you signed. Card not charged until claim is queued.</p>
+    </section>
+  </div>
+</div>
+
+<script>
+/* Payment Element relocation: at >= 960px, move the existing
+   #stripe-skeleton + #payment-element + .footer-cta from inside the
+   mobile presenter into the PC card. Runs once on DOMContentLoaded
+   BEFORE the Stripe SDK mounts (which happens after a Lambda call —
+   plenty of time). */
+(function () {
+  function relocate() {
+    if (window.innerWidth < 960) return;
+    var target = document.getElementById('pay-stripe-mount-pc');
+    if (!target || target.children.length) return;
+    var skel = document.getElementById('stripe-skeleton');
+    var pe   = document.getElementById('payment-element');
+    var cta  = document.querySelector('.payment-mobile-only .footer-cta');
+    if (skel) target.appendChild(skel);
+    if (pe)   target.appendChild(pe);
+    if (cta)  target.appendChild(cta);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', relocate);
+  } else {
+    relocate();
+  }
+})();
+</script>
+
+</main>
 
   <nav class="app-bottomnav">
     <a data-nav="dashboard" href="dashboard.html">

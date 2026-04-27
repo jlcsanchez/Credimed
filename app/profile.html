@@ -180,6 +180,40 @@ html,body{
 .btn-signout:hover { background:var(--danger-bg); border-color:#F87171; }
 
 .footnote { text-align:center; font-size:11px; color:var(--slate-400); padding:16px 0 24px; }
+
+@media (min-width: 960px) {
+  .profile-mobile-only { display: none; }
+  .prof-pc { padding: 32px 40px 56px; max-width: 1080px; margin: 0 auto; }
+  .prof-head { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--cream-2); display: flex; align-items: center; gap: 18px; }
+  .prof-avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--teal-600), var(--teal-900)); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; }
+  .prof-head h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }
+  .prof-head .meta { font-size: 13.5px; color: var(--slate-500); }
+  .prof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+  .prof-card { background: #fff; border: 1px solid var(--cream-2); border-radius: 14px; padding: 24px 26px; }
+  .prof-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .prof-card-head h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); margin: 0; }
+  .prof-edit { background: transparent; border: none; color: var(--teal-700); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; padding: 0; }
+  .prof-edit:hover { color: var(--teal-900); }
+  .prof-field { margin-bottom: 14px; }
+  .prof-field:last-child { margin-bottom: 0; }
+  .prof-field label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-500); margin-bottom: 5px; }
+  .prof-field input, .prof-field select { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--cream-2); background: var(--cream); font: inherit; font-size: 14px; color: var(--slate-900); font-family: inherit; }
+  .prof-field input:focus, .prof-field select:focus { outline: none; border-color: var(--teal-600); background: #fff; box-shadow: 0 0 0 3px rgba(13,148,136,0.1); }
+  .prof-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .prof-toggle-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--cream-2); gap: 18px; }
+  .prof-toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .prof-toggle-row:first-of-type { padding-top: 0; }
+  .prof-toggle-row .label { font-size: 14px; color: var(--slate-900); font-weight: 500; margin-bottom: 2px; }
+  .prof-toggle-row .desc { font-size: 12.5px; color: var(--slate-500); }
+  .prof-switch { appearance: none; width: 38px; height: 22px; border-radius: 999px; background: var(--cream-2); position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; margin-top: 2px; }
+  .prof-switch::before { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(15,23,42,0.2); }
+  .prof-switch:checked { background: var(--teal-600); }
+  .prof-switch:checked::before { transform: translateX(16px); }
+  .prof-bank-status { background: var(--teal-50); border: 1px solid var(--teal-100); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; color: var(--teal-900); display: flex; gap: 8px; align-items: center; }
+  .prof-bank-status svg { width: 16px; height: 16px; color: var(--teal-700); flex-shrink: 0; }
+  .prof-bank-status b { font-weight: 600; }
+}
+
 </style>
 <script src="/app/require-auth.js"></script>
 <link rel="stylesheet" href="/styles/app-shell.css">
@@ -246,6 +280,8 @@ html,body{
   </aside>
 
   <main class="app-main" id="main">
+
+<div class="profile-mobile-only">
 
 <div class="page">
   <section class="hero">
@@ -560,7 +596,64 @@ html,body{
 })();
 </script>
 <script src="auto-logoff.js"></script>
-  </main>
+  </div><!-- /.profile-mobile-only -->
+
+
+<div class="prof-pc">
+  <header class="prof-head">
+    <span class="prof-avatar" id="profAvatar">JL</span>
+    <div>
+      <h1 id="profName">Juan Luis Sanchez</h1>
+      <p class="meta" id="profMeta">ceo@credimed.us &middot; Member since 2026</p>
+    </div>
+  </header>
+  <div class="prof-grid">
+    <div>
+      <section class="prof-card">
+        <div class="prof-card-head"><h3>Contact info</h3><button class="prof-edit">Edit</button></div>
+        <div class="prof-field-row">
+          <div class="prof-field"><label>First name</label><input type="text" value=""></div>
+          <div class="prof-field"><label>Last name</label><input type="text" value=""></div>
+        </div>
+        <div class="prof-field"><label>Email</label><input type="email" value=""></div>
+        <div class="prof-field"><label>Phone (US)</label><input type="tel" placeholder="+1 (555) 555-5555"></div>
+        <div class="prof-field"><label>Date of birth</label><input type="date"></div>
+      </section>
+      <section class="prof-card" style="margin-top: 22px;">
+        <div class="prof-card-head"><h3>Mailing address</h3><button class="prof-edit">Edit</button></div>
+        <div class="prof-field"><label>Street</label><input type="text"></div>
+        <div class="prof-field-row">
+          <div class="prof-field"><label>City</label><input type="text"></div>
+          <div class="prof-field"><label>State</label><input type="text"></div>
+        </div>
+        <div class="prof-field-row">
+          <div class="prof-field"><label>ZIP</label><input type="text"></div>
+          <div class="prof-field"><label>Country</label><select><option selected>United States</option></select></div>
+        </div>
+      </section>
+    </div>
+    <div>
+      <section class="prof-card">
+        <div class="prof-card-head"><h3>Direct deposit (with insurer)</h3><button class="prof-edit">Update</button></div>
+        <div class="prof-bank-status">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Your insurer mails refunds directly to you using the deposit info on file with them.</span>
+        </div>
+        <p style="font-size:12px; color:var(--slate-500); margin:0; line-height:1.5;">
+          Credimed never touches your refund. To update your direct deposit, contact your insurer directly.
+        </p>
+      </section>
+      <section class="prof-card" style="margin-top: 22px;">
+        <div class="prof-card-head"><h3>Notifications</h3></div>
+        <div class="prof-toggle-row"><div><div class="label">Claim status updates</div><div class="desc">Email when status changes</div></div><input type="checkbox" class="prof-switch" checked></div>
+        <div class="prof-toggle-row"><div><div class="label">Insurer correspondence</div><div class="desc">When your carrier asks for documents</div></div><input type="checkbox" class="prof-switch" checked></div>
+        <div class="prof-toggle-row"><div><div class="label">Tips &amp; dental travel guides</div><div class="desc">Occasional email &mdash; never more than monthly</div></div><input type="checkbox" class="prof-switch"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+</main>
 
   <nav class="app-bottomnav">
     <a data-nav="dashboard" href="dashboard.html">
