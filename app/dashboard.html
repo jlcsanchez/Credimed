@@ -1594,9 +1594,22 @@ window.hydratePCDashboard = async function () {
     var procCount = (c.procedures && c.procedures.length) || c.procedureCount || 0;
     var location = c.clinicCity || c.location || '';
     var filedDate = c.submittedAt ? new Date(c.submittedAt).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : '';
+
+    /* Estimate range — try every field name the codebase uses, then
+       fall back to a 60-80% computation off paidAmountUSD if needed.
+       Field names appear inconsistently across documents.html (estimateMin),
+       pricingEngine output (estimated_refund_min), and legacy claim
+       records, so we accept all of them. */
+    var refundLow  = c.estimateMin || c.refundLow  || c.estimated_refund_min;
+    var refundHigh = c.estimateMax || c.refundHigh || c.estimated_refund_max;
+    if ((refundLow == null || refundHigh == null) && (c.paidAmountUSD || c.amountPaidUSD)) {
+      var paidUSD = Number(c.paidAmountUSD || c.amountPaidUSD);
+      refundLow  = Math.round(paidUSD * 0.55);
+      refundHigh = Math.round(paidUSD * 0.80);
+    }
     var amountText = '';
-    if (c.estRefundLow != null && c.estRefundHigh != null) {
-      amountText = '$' + Math.round(c.estRefundLow).toLocaleString() + '–$' + Math.round(c.estRefundHigh).toLocaleString();
+    if (refundLow != null && refundHigh != null) {
+      amountText = '$' + Math.round(refundLow).toLocaleString() + '–$' + Math.round(refundHigh).toLocaleString();
     } else if (c.refundAmount != null) {
       amountText = '$' + Number(c.refundAmount).toLocaleString();
     } else {
@@ -1617,8 +1630,14 @@ window.hydratePCDashboard = async function () {
     if ($('pc-claim-view'))   $('pc-claim-view').setAttribute('href', 'claim.html?id=' + encodeURIComponent(c.id));
     if (heroEl) heroEl.setAttribute('data-claim-id', c.id);
 
-    /* Progress bar — 0/33/66/100 by status */
-    var pct = ({ 'submitted': 25, 'in-review': 55, 'approved': 80, 'paid': 100, 'denied': 100 })[c.status] || 25;
+    /* Progress bar — fill aligns EXACTLY with the milestone label so the
+       customer sees the bar at "Under review" when status is in-review,
+       not somewhere between Under review and Approved. The 4 labels
+       (Submitted | Under review | Approved | Paid) are evenly spaced
+       across the track via flex space-between, so they sit at 0%, ~33%,
+       ~67%, and 100%. */
+    var pct = ({ 'submitted': 0, 'in-review': 33, 'approved': 67, 'paid': 100, 'denied': 100 })[c.status];
+    if (pct == null) pct = 0;
     if ($('pc-claim-progress-fill')) $('pc-claim-progress-fill').style.width = pct + '%';
 
     /* Right-side timeline based on this claim's status */
@@ -1659,9 +1678,17 @@ window.hydratePCDashboard = async function () {
   var pendingTotal = allClaims
     .filter(function (c) { return c.status === 'submitted' || c.status === 'in-review' || c.status === 'approved'; })
     .reduce(function (sum, c) {
-      var mid = (c.estRefundLow != null && c.estRefundHigh != null)
-        ? (Number(c.estRefundLow) + Number(c.estRefundHigh)) / 2
-        : Number(c.estRefundAmount || 0);
+      /* Same multi-field lookup as the hero card. */
+      var lo = c.estimateMin || c.refundLow  || c.estimated_refund_min;
+      var hi = c.estimateMax || c.refundHigh || c.estimated_refund_max;
+      if ((lo == null || hi == null) && (c.paidAmountUSD || c.amountPaidUSD)) {
+        var paid = Number(c.paidAmountUSD || c.amountPaidUSD);
+        lo = Math.round(paid * 0.55);
+        hi = Math.round(paid * 0.80);
+      }
+      var mid = (lo != null && hi != null)
+        ? (Number(lo) + Number(hi)) / 2
+        : Number(c.refundAmount || 0);
       return sum + (mid || 0);
     }, 0);
   if ($('pc-stat-filed'))    $('pc-stat-filed').textContent = String(filed);
