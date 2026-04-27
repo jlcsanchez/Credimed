@@ -397,16 +397,18 @@ html, body {
 }
 
 @media (min-width: 960px) {
-  .proc-mobile-only { display: none; }
-  body[data-page="processing"] .app-shell { background: transparent; }
-  body[data-page="processing"] .app-main {
+  .proc-mobile-only,
+  .topbar { display: none; }
+  body[data-page="processing"] {
+    margin: 0;
+    min-height: 100vh;
+    color: #fff;
     background:
       radial-gradient(ellipse at 20% 10%, rgba(94,234,212,0.18), transparent 50%),
       radial-gradient(ellipse at 80% 70%, rgba(13,148,136,0.20), transparent 55%),
       linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
-    min-height: 100vh; color: #fff;
   }
-  .proc-pc { min-height: calc(100vh - 64px); padding: 48px 40px; display: flex; align-items: center; justify-content: center; }
+  .proc-pc { min-height: 100vh; padding: 48px 40px; display: flex; align-items: center; justify-content: center; }
   .proc-card { width: 100%; max-width: 520px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 20px; padding: 44px 44px 40px; backdrop-filter: blur(16px); text-align: center; }
   .proc-icon-pc { width: 72px; height: 72px; margin: 0 auto 22px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(94,234,212,0.4); display: inline-flex; align-items: center; justify-content: center; color: var(--teal-300); animation: proc-pulse 2.4s ease-in-out infinite; }
   @keyframes proc-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(94,234,212,0.25); } 50% { box-shadow: 0 0 0 14px rgba(94,234,212,0); } }
@@ -433,7 +435,7 @@ html, body {
 </style>
 <script src="/app/require-auth.js"></script>
 </head>
-<body>
+<body data-page="processing">
 
 <div class="topbar">
   <div class="brand">
@@ -632,13 +634,7 @@ mount();
 applyMode('live');
 </script>
 
-<script src="connector.js"></script>
-<script src="auto-logoff.js"></script>
-</body>
-</html>
-
 <div class="proc-mobile-only"></div><!-- /.proc-mobile-only -->
-
 
 <div class="proc-pc">
   <div class="proc-card">
@@ -659,5 +655,10 @@ applyMode('live');
     <p class="proc-foot">This usually takes 6&ndash;8 seconds. Don't close this tab &mdash; we'll bring you to your estimate automatically.</p>
   </div>
 </div>
+
+<script src="connector.js"></script>
+<script src="auto-logoff.js"></script>
+</body>
+</html>
 
 
