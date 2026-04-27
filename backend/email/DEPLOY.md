@@ -138,7 +138,7 @@ zip -r credimed-claims.zip claims/credimed-claims.lambda.js email/
 ## Step 6 — Test the wiring
 
 1. **Self-test (sandbox)** — verify your own email in SES first
-   (`jlcsanchezavila@gmail.com`), then in the admin dashboard change a
+   (`ceo@credimed.us`), then in the admin dashboard change a
    claim's status. You should receive an email within 30 seconds.
 
 2. **Production test** — once SES is out of sandbox, change the status

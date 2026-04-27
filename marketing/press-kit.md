@@ -11,7 +11,7 @@ Credimed helps US PPO dental insurance members recover the money their plan owes
 
 ## 50-word description
 
-Credimed is a healthcare-tech service that handles US dental insurance reimbursement claims for the growing population of Americans who cross the border for affordable dental work in Mexico. Founder Juan Luis Sanchez built the service after losing $1,400 of eligible reimbursement to paperwork mistakes on his own claim.
+Credimed is a healthcare-tech service that handles US dental insurance reimbursement claims for the growing population of Americans who cross the border for affordable dental work in Mexico. Founder Juan Luis Sanchez is a practicing dentist whose colleagues at border-area clinics see US patients lose legitimate PPO reimbursement to paperwork every week.
 
 ## 150-word description
 
@@ -78,7 +78,7 @@ Credimed was built to capture that gap. The company files the claim correctly on
 
 Juan Luis Sanchez is the founder and CEO of Credimed. A practicing dentist based in Boston, Massachusetts. Built Credimed to address a problem he had observed for years through his network of colleagues at border-area clinics in Mexico: US patients losing legitimate PPO reimbursement to paperwork rather than coverage limitations. Credimed is independent of any clinic and does not refer patients to specific providers.
 
-Reachable at `jlcsanchezavila@gmail.com` for press inquiries.
+Reachable at `ceo@credimed.us` for press inquiries.
 
 ## Boilerplate
 
@@ -89,7 +89,7 @@ Reachable at `jlcsanchezavila@gmail.com` for press inquiries.
 ## For interview requests, comment requests, or product demos
 
 - **Press inquiries:** `press@credimed.us` (24-hour response window)
-- **Founder direct:** `jlcsanchezavila@gmail.com`
+- **Founder direct:** `ceo@credimed.us`
 - **General media:** `support@credimed.us`
 
 We are happy to provide:

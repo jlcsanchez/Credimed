@@ -1,7 +1,7 @@
 # Credimed — Legal & Compliance Review Bundle
 
 **Prepared for:** [Counsel name]
-**Prepared by:** Juan Luis Sanchez · jlcsanchezavila@gmail.com
+**Prepared by:** Juan Luis Sanchez · ceo@credimed.us
 **Date:** April 27, 2026
 **Version:** 1.0
 

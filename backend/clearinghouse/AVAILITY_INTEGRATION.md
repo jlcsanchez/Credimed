@@ -1,7 +1,7 @@
 # Availity Clearinghouse Integration — Setup & Operations Playbook
 
 **Last updated:** April 27, 2026
-**Owner:** Juan Luis Sanchez (`jlcsanchezavila@gmail.com`)
+**Owner:** Juan Luis Sanchez (`ceo@credimed.us`)
 **Lambda:** `credimed-clearinghouse` (region: us-west-2)
 **Status:** ⚠️ Code is built. Awaiting Trading Partner Agreement + payer enrollment to go live.
 
@@ -36,7 +36,7 @@ The patient's dashboard shows the resulting status pipeline:
    - Business type: **Billing service**
    - Tax ID (EIN): your Credimed federal EIN
    - Type 2 NPI: your organizational NPI (see Step 2 if you don't have one)
-   - Primary contact: you, with `jlcsanchezavila@gmail.com`
+   - Primary contact: you, with `ceo@credimed.us`
 3. Availity emails you within ~1 business day with login credentials.
 
 ### Step 2 — Get a Type 2 NPI for Credimed Inc. (1-2 weeks)
