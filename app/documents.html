@@ -1797,77 +1797,50 @@ setInterval(() => {
     }
   }
 
-  /* ---- Real file inputs overlayed on each dropzone (iOS Safari compatible) ---- */
+  /* ---- Real file picker on every dropzone click ----
+     Claude Design's mount() re-renders dropzones on every state change and
+     wireInteractions() re-attaches a mock simulateUpload() click handler each
+     time. Rather than fight that with a MutationObserver, we use a single
+     capture-phase delegate at document level: it fires BEFORE the per-element
+     bubble handler and stopImmediatePropagation() suppresses the mock. Then
+     we open a one-shot real <input type=file> and pipe the result into
+     handleFile(). Resilient to any number of re-renders. */
   function acceptFor(cardId) {
     if (cardId === 'insurance') return 'image/*';
     return 'image/*,.pdf,application/pdf';
   }
 
-  function injectFileInputs() {
-    document.querySelectorAll('.dropzone[data-card]').forEach(function (dz) {
-      if (dz.dataset.realInputInjected === '1') return;
+  document.addEventListener('click', function (e) {
+    var dz = e.target.closest('.dropzone[data-card]');
+    if (!dz) return;
+    /* Suppress legacy simulateUpload (mock) attached by wireInteractions(). */
+    e.stopImmediatePropagation();
+    e.preventDefault();
 
-      var cardId = dz.getAttribute('data-card');
+    var cardId = dz.getAttribute('data-card');
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = acceptFor(cardId);
+    if (cardId === 'supporting') input.multiple = true;
+    /* Override page-wide `input[type=file]{display:none}` — a display:none
+       input cannot be programmatically clicked in some browsers. */
+    input.style.cssText =
+      'display:block;position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;';
 
-      /* NUKE Claude Design's mock click handler (simulateUpload) by cloning.
-         Cloning drops all attached event listeners. */
-      var clone = dz.cloneNode(true);
-      dz.parentNode.replaceChild(clone, dz);
-      dz = clone;
-
-      /* iOS-safe pattern: convert the dropzone <div> into a <label> element so taps
-         anywhere inside it naturally open the wrapped <input type=file>'s picker
-         (labels trigger their for-input on click, no opacity hacks needed). */
-      var label = document.createElement('label');
-      /* Copy over the dropzone's classes + dataset so existing CSS still applies */
-      label.className = dz.className;
-      Object.keys(dz.dataset).forEach(function (k) { label.dataset[k] = dz.dataset[k]; });
-      label.dataset.realInputInjected = '1';
-      label.style.cssText = 'cursor:pointer;display:block;-webkit-tap-highlight-color:rgba(13,148,136,.12);';
-      while (dz.firstChild) label.appendChild(dz.firstChild);
-
-      var input = document.createElement('input');
-      input.type = 'file';
-      input.accept = acceptFor(cardId);
-      if (cardId === 'supporting') input.multiple = true;
-      /* NOTE: no capture attribute — iOS should present the full picker
-         (Photo Library / Take Photo / Choose File) so users can upload
-         existing photos or documents instead of being forced into camera. */
-      input.setAttribute('data-card-input', cardId);
-      /* `display:block` overrides the global `input[type=file]{display:none}`
-         rule on this page — a `display:none` input cannot be programmatically
-         triggered by a label click in several browsers. We still hide it
-         visually with absolute positioning + opacity:0 so it doesn't
-         interfere with the dropzone UI. */
-      input.style.cssText =
-        'display:block;position:absolute;left:-9999px;top:auto;width:1px;height:1px;opacity:0;';
-
-      input.addEventListener('change', function () {
-        var files = Array.from(input.files || []);
-        files.forEach(function (f) { handleFile(cardId, f); });
-        input.value = ''; /* allow picking same file again */
-      });
-
-      label.appendChild(input);
-
-      /* Explicit click handler as a backup for browsers/CSS combinations
-         where the implicit label→input forward fails. Programmatically
-         calling input.click() works everywhere. We skip if the click
-         originated on the input itself (avoids double-fire). */
-      label.addEventListener('click', function (e) {
-        if (e.target === input) return;
-        e.preventDefault();
-        input.click();
-      });
-
-      dz.parentNode.replaceChild(label, dz);
+    input.addEventListener('change', function () {
+      var files = Array.from(input.files || []);
+      files.forEach(function (f) { handleFile(cardId, f); });
+      input.remove();
     });
-  }
+    /* Clean up if user cancels the picker (no change event fires). */
+    window.addEventListener('focus', function cleanup() {
+      window.removeEventListener('focus', cleanup);
+      setTimeout(function () { if (input.parentNode) input.remove(); }, 1000);
+    });
 
-  /* Inject on load + whenever DOM changes (after removes, re-renders, etc.) */
-  injectFileInputs();
-  var mo = new MutationObserver(function () { injectFileInputs(); });
-  mo.observe(document.body, { childList: true, subtree: true });
+    document.body.appendChild(input);
+    input.click();
+  }, true /* capture */);
 
   /* Drag & drop on dropzones */
   ['dragover', 'dragleave', 'drop'].forEach(function (evt) {
