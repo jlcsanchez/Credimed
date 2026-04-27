@@ -11,6 +11,8 @@
   h3 { font-size: 16px; margin: 20px 0 6px; color: #0f172a; }
   .meta { color: #64748b; font-size: 13px; margin-bottom: 24px; }
   .draft-banner { background: #FEF3C7; border: 1px solid #FCD34D; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; color: #78350F; }
+  .tldr { background: #F0FDFA; border: 1px solid #CCFBF1; border-left: 4px solid #0d9488; padding: 16px 20px; border-radius: 8px; margin-bottom: 32px; font-size: 14.5px; color: #134e4a; }
+  .tldr strong { color: #0f172a; }
   a { color: #0d9488; }
   ul { padding-left: 22px; }
   li { margin-bottom: 6px; }
@@ -22,108 +24,186 @@
 
 <a href="/" class="home">← Back to Credimed</a>
 <h1>Privacy Policy</h1>
-<p class="meta">Last updated: April 26, 2026 · Version 1.0</p>
+<p class="meta">Last updated: April 27, 2026 · Version 1.2</p>
 
 <div class="draft-banner">
-  <strong>Draft template.</strong> This document is provided as a starting point and must be reviewed and customized by qualified legal counsel before Credimed accepts paying customers. The protections of HIPAA, state privacy laws (CCPA, CPRA, etc.), and international privacy laws (GDPR if applicable) impose specific disclosure requirements that vary by jurisdiction.
+  <strong>Draft template.</strong> This document is a starting point and must be reviewed and customized by qualified legal counsel before Credimed accepts paying customers.
+</div>
+
+<div class="tldr">
+  <strong>TL;DR (plain-English summary)</strong><br>
+  We collect what we need to file your dental insurance claim &mdash; your contact info, your insurance card, your receipts, and the procedures performed. We share your protected health information only with your insurer (under your written authorization) and with a small set of audited service providers under signed contracts. <strong>We do not sell your data. We do not share it for advertising.</strong> You can ask to see, correct, or delete your data at any time at <a href="mailto:privacy@credimed.us">privacy@credimed.us</a>.
+  <br><br>
+  <em>The legally precise version follows.</em>
 </div>
 
 <h2>1. Introduction</h2>
-<p>Credimed, Inc. ("Credimed," "we," "us," or "our") provides a service that helps US-based patients submit dental insurance reimbursement claims for dental work performed by licensed providers in Mexico. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website, mobile experience, and related services (collectively, the "Service").</p>
-<p>If you are a patient using Credimed to submit an insurance claim, please also read our <a href="/legal/notice-of-privacy-practices.html">Notice of Privacy Practices</a>, which describes how we handle your Protected Health Information (PHI) under the Health Insurance Portability and Accountability Act of 1996 ("HIPAA").</p>
+
+<p>Credimed, Inc. ("Credimed," "we," "us," or "our") provides a service that helps US-based patients prepare and submit dental insurance reimbursement claims for dental work performed by licensed providers in Mexico.</p>
+
+<p><strong>Credimed is not a healthcare provider, health plan, or insurance company.</strong> We provide administrative support services for claim preparation and submission.</p>
+
+<p>When we handle Protected Health Information, we do so as a service provider to you and, where applicable, as a Business Associate to covered entities pursuant to applicable agreements. We do not provide medical care or make coverage determinations.</p>
+
+<p>This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website, mobile experience, and related services (collectively, the "Service").</p>
+
+<p><strong>Legal basis:</strong> we process your information to perform the Service you request (including under your written authorization for claim submission), to comply with legal obligations, and for our legitimate interests in operating, securing, and improving the Service.</p>
+
+<p>If you use Credimed to submit an insurance claim, please also review our <a href="/legal/notice-of-privacy-practices.html">Notice of Privacy Practices</a>, which describes how we handle Protected Health Information ("PHI") in accordance with HIPAA, where applicable to our role for that claim.</p>
 
 <h2>2. Information We Collect</h2>
 
-<h3>2.1 Information you provide</h3>
+<h3>2.1 Information You Provide</h3>
 <ul>
-  <li><strong>Account information:</strong> name, email address, phone number, password (stored as a one-way hash by Amazon Cognito).</li>
-  <li><strong>Identity and insurance information:</strong> date of birth, insurance member ID, insurance carrier, policy number, group number, and an image or scan of your insurance card.</li>
-  <li><strong>Health information (PHI):</strong> dental procedures performed, dates of service, provider name, diagnostic codes, treatment notes, billing amounts, and dental receipts and records you upload.</li>
-  <li><strong>Banking information:</strong> bank account number, routing number, and account holder name (for ACH refund deposits, where applicable).</li>
-  <li><strong>Signatures:</strong> the electronic signature you provide on our service agreements.</li>
+  <li><strong>Account information:</strong> name, email address, phone number, password (stored as a one-way hash via Amazon Cognito).</li>
+  <li><strong>Identity and insurance information:</strong> date of birth, insurance member ID, insurance carrier, policy number, group number, and images of your insurance card.</li>
+  <li><strong>Health information (PHI):</strong> dental procedures, dates of service, provider details, diagnostic codes, treatment notes, billing amounts, receipts, and records you upload.</li>
+  <li><strong>Banking information (where applicable):</strong> bank account and routing information for reimbursement facilitation. Where collected, this information is transmitted directly to and processed by third-party payment providers acting on our behalf. Credimed does not store full bank account or routing numbers unless explicitly disclosed to you at the point of collection.</li>
+  <li><strong>Electronic signatures:</strong> signatures provided through our platform in connection with our Service Agreement and any required authorizations.</li>
 </ul>
 
-<h3>2.2 Information collected automatically</h3>
+<h3>2.2 Information Collected Automatically</h3>
 <ul>
-  <li><strong>Device and usage data:</strong> IP address, browser type, operating system, device identifiers, pages visited, timestamps, and referring URLs.</li>
-  <li><strong>Cookies and similar technologies:</strong> we use first-party cookies only for authentication and session management. We do not use third-party advertising or tracking cookies.</li>
-  <li><strong>Privacy-first analytics:</strong> on our public pages (homepage and legal pages, never the authenticated patient flow) we use <a href="https://plausible.io/data-policy" target="_blank" rel="noopener">Plausible Analytics</a>, a cookieless analytics tool. Plausible records aggregate page views, referrers, and approximate geography without identifying individual visitors and without setting cookies. No PHI ever flows through analytics.</li>
+  <li><strong>Device and usage data:</strong> IP address, browser type, operating system, device identifiers, pages visited, timestamps, referring URLs.</li>
+  <li><strong>Cookies:</strong> first-party cookies and browser storage used strictly for authentication, session management, and security. We do not use third-party advertising or cross-site tracking cookies. Full inventory in our <a href="/legal/cookies.html">Cookie Policy</a>.</li>
+  <li><strong>Privacy-first analytics:</strong> we use <a href="https://plausible.io/data-policy" target="_blank" rel="noopener">Plausible Analytics</a> on public pages only (never within the authenticated patient flow). Plausible collects aggregated, anonymized usage data without cookies or personal identifiers. No identifiers, claim data, or Protected Health Information are included in analytics.</li>
 </ul>
 
-<h3>2.3 Information from third parties</h3>
+<h3>2.3 Information from Third Parties</h3>
 <ul>
-  <li><strong>Payment processor (Stripe):</strong> we receive transaction confirmations and the last four digits of your payment card. Full card numbers are handled directly by Stripe and are never stored by Credimed.</li>
+  <li><strong>Payment processor (Stripe):</strong> we receive transaction confirmations and limited payment metadata (e.g., last four digits of card). Full payment details are processed directly by Stripe and are never stored by Credimed. <strong>No Protected Health Information is transmitted to or processed by Stripe.</strong></li>
 </ul>
 
 <h2>3. How We Use Your Information</h2>
-<p>We use your information to:</p>
+
+<p>We use your information for the following business purposes:</p>
 <ul>
-  <li>Prepare, review, and submit dental insurance reimbursement claims to your insurance carrier on your behalf;</li>
-  <li>Communicate with you about your claim, including status updates, requests for additional documentation, and outcome notifications;</li>
+  <li>Prepare, review, and submit insurance reimbursement claims on your behalf, under your written authorization;</li>
+  <li>Communicate with you regarding claim status, documentation requests, and outcomes;</li>
   <li>Process payments and refunds;</li>
-  <li>Verify your identity and prevent fraud;</li>
-  <li>Improve and operate the Service, including diagnosing technical issues;</li>
-  <li>Comply with legal obligations and enforce our terms.</li>
+  <li>Verify identity and prevent fraud;</li>
+  <li>Operate, maintain, secure, and improve the Service;</li>
+  <li>Comply with legal obligations and enforce agreements.</li>
 </ul>
+<p>We apply data minimization and use only the information necessary for the stated purposes.</p>
+
+<h3>3.1 Marketing Communications</h3>
+<p>With your opt-in consent (for example, when you provide an email through our refund estimator), we may send educational and marketing emails about our Service.</p>
+<p>Marketing communications are limited to general product information and will not include claim-specific details or Protected Health Information.</p>
+<p>Every marketing email includes a one-click unsubscribe link, and we honor opt-out requests promptly. We do not send marketing SMS without separate, explicit opt-in.</p>
 
 <h2>4. How We Share Your Information</h2>
 
-<h3>4.1 Insurance carriers and payers</h3>
-<p>To submit your claim, we share your PHI with your insurance carrier (or its claim processing intermediary). The information shared is limited to what is necessary for claim adjudication.</p>
+<h3>4.1 Insurance Carriers</h3>
+<p>We share necessary information, including PHI, with your insurance carrier or its claim-processing intermediaries strictly as required to prepare and submit your claim, and always under your written authorization.</p>
 
-<h3>4.2 Business associates and service providers</h3>
-<p>We share information with vendors that process information on our behalf, under written contracts that require them to safeguard your data. Current categories include:</p>
+<h3>4.2 Service Providers (Business Associates and Vendors)</h3>
+<p>We share information with vendors that process information on our behalf under contractual obligations to safeguard your data:</p>
 <ul>
-  <li><strong>Cloud infrastructure:</strong> Amazon Web Services (AWS) — bound by an executed Business Associate Agreement (BAA) for HIPAA-regulated data.</li>
-  <li><strong>Payment processing:</strong> Stripe.</li>
-  <li><strong>Communications:</strong> email and SMS providers used to send transactional notifications.</li>
+  <li><strong>Cloud infrastructure:</strong> Amazon Web Services (AWS), under a Business Associate Agreement (BAA) covering all PHI processed in our AWS environment.</li>
+  <li><strong>Payment processing:</strong> Stripe &mdash; handles only payment data; no PHI is transmitted to Stripe.</li>
+  <li><strong>Communications:</strong> transactional email and messaging providers used to deliver claim status updates and account notifications, under appropriate confidentiality and data protection obligations.</li>
+</ul>
+<p>We design our systems to segregate payment data from claim data so that Protected Health Information is not transmitted to payment processors.</p>
+
+<h3>4.3 Legal Requirements</h3>
+<p>We may disclose information:</p>
+<ul>
+  <li>to comply with applicable laws, subpoenas, or legal processes;</li>
+  <li>to protect the rights, safety, and property of Credimed, our users, or others;</li>
+  <li>in connection with corporate transactions (e.g., merger, acquisition, financing). Any successor entity will be bound by privacy commitments at least as protective as this Policy.</li>
 </ul>
 
-<h3>4.3 Legal disclosures</h3>
-<p>We may disclose information when required by law, subpoena, court order, or other legal process; to protect the rights, property, or safety of Credimed, our users, or others; or in connection with a corporate transaction such as a merger, financing, acquisition, or bankruptcy.</p>
+<h3>4.4 With Your Consent</h3>
+<p>We may share information for other purposes with your explicit, written consent, which you may revoke at any time except to the extent we have already acted in reliance on it.</p>
 
-<h3>4.4 With your consent</h3>
-<p>We share information for any other purpose with your consent.</p>
+<h3>4.5 What We Do Not Do</h3>
+<p><strong>We do not sell your personal information. We do not share your personal information for cross-context behavioral advertising.</strong></p>
+<p>We honor Global Privacy Control (GPC) signals as opt-out requests by default. For browser "Do Not Track" signals, we follow the practices described in this Policy.</p>
 
 <h2>5. Data Security</h2>
-<p>We implement administrative, technical, and physical safeguards designed to protect your information, including:</p>
+<p>We implement administrative, technical, and physical safeguards designed to protect your information:</p>
 <ul>
-  <li><strong>Encryption in transit:</strong> all communications use HTTPS/TLS 1.2 or higher.</li>
-  <li><strong>Encryption at rest:</strong> Protected Health Information stored in our database is encrypted at the field level using AWS Key Management Service (KMS).</li>
-  <li><strong>Access controls:</strong> access to PHI is restricted to authorized personnel through role-based authentication and group-based authorization.</li>
-  <li><strong>Audit logging:</strong> all access to PHI is logged to a tamper-resistant audit trail.</li>
-  <li><strong>Automatic session timeout:</strong> inactive sessions are automatically signed out after 15 minutes.</li>
+  <li><strong>Encryption in transit:</strong> HTTPS/TLS 1.2 or higher on all connections.</li>
+  <li><strong>Encryption at rest:</strong> PHI is encrypted at the field level using AWS Key Management Service (KMS).</li>
+  <li><strong>Access controls:</strong> role-based access with least-privilege authorization.</li>
+  <li><strong>Audit logging:</strong> access to PHI is logged and monitored.</li>
+  <li><strong>Session security:</strong> automatic logout after 15 minutes of inactivity.</li>
+  <li><strong>Vulnerability management:</strong> annual third-party security review and continuous dependency scanning.</li>
 </ul>
-<p>No system is perfectly secure. We cannot guarantee that your information will not be subject to unauthorized access. We will notify affected users in accordance with applicable law if we become aware of a breach involving your personal or health information.</p>
+<p>No system is completely secure. <strong>In the event of a breach involving your unsecured PHI, we will notify you within sixty (60) days as required by HIPAA's Breach Notification Rule, and sooner where required by state law.</strong> Where state law requires shorter timelines, we comply with the stricter requirement.</p>
 
 <h2>6. Data Retention</h2>
-<p>We retain your information for as long as necessary to provide the Service, comply with legal and regulatory obligations (including insurance recordkeeping requirements), resolve disputes, and enforce our agreements. When information is no longer required, we securely delete or de-identify it.</p>
+<p>We retain information for the periods required to provide the Service and to comply with legal and regulatory obligations:</p>
+<ul>
+  <li><strong>PHI:</strong> 6 years from last claim activity (HIPAA minimum)</li>
+  <li><strong>Billing and tax records:</strong> 7 years</li>
+  <li><strong>Account data:</strong> until deletion + up to 90 days backup</li>
+  <li><strong>Marketing logs:</strong> 3 years after last interaction</li>
+  <li><strong>Agreements and authorizations:</strong> 7 years</li>
+  <li><strong>Audit logs:</strong> 6 years</li>
+</ul>
+<p>We may retain information longer if required by law, an active legal hold, or an ongoing dispute.</p>
 
 <h2>7. Your Rights</h2>
-<p>Depending on where you live, you may have the right to:</p>
+<p>Depending on your jurisdiction, you may have the right to:</p>
 <ul>
-  <li>Access the personal information we hold about you;</li>
-  <li>Request correction of inaccurate information;</li>
-  <li>Request deletion of your personal information, subject to legal retention obligations;</li>
-  <li>Receive a copy of your information in a portable format;</li>
-  <li>Withdraw consent for processing where consent is the legal basis;</li>
-  <li>Lodge a complaint with a supervisory authority.</li>
+  <li>Access your data</li>
+  <li>Correct inaccuracies</li>
+  <li>Request deletion (subject to retention obligations)</li>
+  <li>Receive a copy in portable format</li>
+  <li>Withdraw consent</li>
+  <li>Opt out of marketing</li>
+  <li>File a complaint</li>
 </ul>
-<p>HIPAA grants additional rights with respect to your PHI; see our <a href="/legal/notice-of-privacy-practices.html">Notice of Privacy Practices</a>.</p>
-<p>To exercise any of these rights, contact us at <strong>privacy@credimed.us</strong>.</p>
+<p>HIPAA grants additional rights; see our <a href="/legal/notice-of-privacy-practices.html">Notice of Privacy Practices</a>.</p>
+<p>To exercise rights: <a href="mailto:privacy@credimed.us">privacy@credimed.us</a></p>
+<p>We will respond within 45 days, with one possible extension as permitted by law. We may need to verify your identity before fulfilling certain requests.</p>
+
+<h3>7.1 California Residents (CCPA / CPRA)</h3>
+<p>If you are a California resident, you have specific additional rights under the California Consumer Privacy Act, as amended by the California Privacy Rights Act.</p>
+
+<p><strong>Categories of personal information we collect:</strong> identifiers (name, email, phone), customer records (insurance information, signatures), commercial information (transaction history), internet activity (device and usage data described in &sect;2.2), and protected classification characteristics solely as required to file your claim (e.g., date of birth). We collect Protected Health Information as further described in &sect;2.1.</p>
+
+<p><strong>Sources:</strong> directly from you, automatically through your device, and from Stripe (limited payment metadata).</p>
+
+<p><strong>Business purposes for collection:</strong> claim preparation and submission, billing, fraud prevention, security, service improvement, and legal compliance.</p>
+
+<p><strong>Categories of third parties with whom we share:</strong> your insurance carrier (under your authorization), our cloud and payment-processing service providers (under contract), and government authorities (when legally required).</p>
+
+<p><strong>We do not sell personal information. We do not share personal information for cross-context behavioral advertising.</strong></p>
+
+<p>You have the right to:</p>
+<ul>
+  <li>Know what personal information we have collected, used, disclosed, and (if any) sold about you;</li>
+  <li>Delete your personal information, subject to legal retention exceptions;</li>
+  <li>Correct inaccurate personal information;</li>
+  <li>Limit the use and disclosure of "sensitive personal information" to that which is necessary to provide the Service;</li>
+  <li>Non-discrimination for exercising your rights;</li>
+  <li>Submit requests through an authorized agent under California law.</li>
+</ul>
+
+<p>We use sensitive personal information solely as necessary to provide the Service and as permitted by law.</p>
+
+<p>We honor Global Privacy Control (GPC) browser signals as opt-out requests. To exercise any right, email <a href="mailto:privacy@credimed.us">privacy@credimed.us</a> with the subject line "California Privacy Request." We may need to verify your identity before fulfilling certain requests.</p>
 
 <h2>8. Children's Privacy</h2>
-<p>The Service is not directed to children under 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us at privacy@credimed.us and we will delete it.</p>
+<p>The Service is not directed to children under thirteen (13). We do not knowingly collect personal information from children under thirteen. If we learn that we have inadvertently collected such information, we will delete it promptly.</p>
+<p>The Service is not intended for users under eighteen (18). A parent or legal guardian may use the Service on behalf of a covered minor dependent, in which case the parent or guardian represents that they have legal authority to provide the minor's information and to authorize claim submission.</p>
+<p>If you believe a child has provided us with personal information without parental consent, please contact us at <a href="mailto:privacy@credimed.us">privacy@credimed.us</a>.</p>
 
 <h2>9. International Users</h2>
-<p>Credimed operates and stores data in the United States. If you access the Service from outside the United States, your information will be transferred to, stored in, and processed in the United States.</p>
+<p>Credimed operates and stores data in the United States.</p>
+<p>Information may originate from services performed outside the US (e.g., Mexico), but all processing occurs within the US.</p>
+<p>By using the Service, you acknowledge and consent to the transfer of your information to, and processing in, the United States.</p>
 
-<h2>10. Changes to This Policy</h2>
-<p>We may update this Privacy Policy from time to time. The "Last updated" date at the top of this page indicates when the latest revision took effect. For material changes, we will provide notice through the Service or by email.</p>
+<h2>10. Changes</h2>
+<p>We may update this policy. Material changes will be communicated at least 30 days in advance.</p>
 
-<h2>11. Contact Us</h2>
+<h2>11. Contact</h2>
 <p>Credimed, Inc.<br>
-Email: privacy@credimed.us<br>
+Privacy Officer<br>
+Email: <a href="mailto:privacy@credimed.us">privacy@credimed.us</a><br>
 Mailing address: [TO BE PROVIDED]</p>
 
 <p style="margin-top:32px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:13px;color:#64748b;">
