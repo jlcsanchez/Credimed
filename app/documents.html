@@ -986,13 +986,24 @@ function renderCard(card, state, deviceKey) {
   const stateClass = `state-${state.status}`;
   let inner = '';
 
+  /* Native label-wraps-input pattern: clicking anywhere on the label
+     (icon / text / padding) triggers the wrapped input's file picker
+     via standard HTML behavior — no JS click delegation needed.
+     Inline display:block + position-offscreen overrides the page-wide
+     `input[type=file]{display:none}` rule (display:none inputs can't
+     be activated by label-click in some browsers). */
+  const accept = card.id === 'insurance' ? 'image/*' : 'image/*,.pdf,application/pdf';
+  const multiple = card.id === 'supporting' ? 'multiple' : '';
+  const fileInputHtml = `<input type="file" data-card-input="${card.id}" accept="${accept}" ${multiple} style="display:block;position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">`;
+
   if (state.status === 'empty') {
     inner = `
-      <div class="dropzone" data-card="${card.id}" data-device="${deviceKey}">
+      <label class="dropzone" data-card="${card.id}" data-device="${deviceKey}" style="cursor:pointer;display:block;">
+        ${fileInputHtml}
         <div class="dropzone-icon">${ICONS.upload}</div>
         <div class="dropzone-primary">${card.dropzonePrimary}</div>
         <div class="dropzone-secondary">${card.dropzoneSecondary}</div>
-      </div>
+      </label>
       ${card.hasAmount ? amountField(state) : ''}
       <button type="button" class="secondary-link" data-help="${card.id}">
         I don't have this →
@@ -1031,11 +1042,12 @@ function renderCard(card, state, deviceKey) {
     `;
   } else if (state.status === 'error') {
     inner = `
-      <div class="dropzone" data-card="${card.id}" data-device="${deviceKey}">
+      <label class="dropzone" data-card="${card.id}" data-device="${deviceKey}" style="cursor:pointer;display:block;">
+        ${fileInputHtml}
         <div class="dropzone-icon">${ICONS.upload}</div>
         <div class="dropzone-primary">Try again</div>
         <div class="dropzone-secondary">${card.dropzoneSecondary}</div>
-      </div>
+      </label>
       <div class="error-row">${ICONS.alert} Upload failed. ${state.error || 'Please try again.'}</div>
       ${card.hasAmount ? amountField(state) : ''}
       <button type="button" class="secondary-link" data-help="${card.id}">
@@ -1486,10 +1498,11 @@ setInterval(() => {
     content.outerHTML =
       '<div class="supporting-stack">' +
         rowsHtml +
-        '<div class="dropzone" data-card="supporting" style="padding:14px;border-style:dashed;margin-top:4px">' +
+        '<label class="dropzone" data-card="supporting" style="padding:14px;border-style:dashed;margin-top:4px;cursor:pointer;display:block;">' +
+          '<input type="file" data-card-input="supporting" accept="image/*,.pdf,application/pdf" multiple style="display:block;position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">' +
           '<div class="dropzone-primary" style="font-size:14px"><span class="em">' + addMoreLabel + '</span></div>' +
           '<div class="dropzone-secondary">' + addMoreSub + '</div>' +
-        '</div>' +
+        '</label>' +
       '</div>';
     tryEnableContinue();
   }
@@ -1500,11 +1513,14 @@ setInterval(() => {
     root.className = 'upload-card state-error';
     var content = root.querySelector('.dropzone, .uploading-row, .uploaded-row, .error-row');
     if (content) {
+      var errAccept = cardId === 'insurance' ? 'image/*' : 'image/*,.pdf,application/pdf';
+      var errMulti = cardId === 'supporting' ? 'multiple' : '';
       content.outerHTML =
-        '<div class="dropzone" data-card="' + cardId + '">' +
+        '<label class="dropzone" data-card="' + cardId + '" style="cursor:pointer;display:block;">' +
+          '<input type="file" data-card-input="' + cardId + '" accept="' + errAccept + '" ' + errMulti + ' style="display:block;position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">' +
           '<div class="dropzone-primary" style="color:#B91C1C"><b>' + msg + '</b></div>' +
           '<div class="dropzone-secondary">Tap to try again</div>' +
-        '</div>';
+        '</label>';
     }
   }
 
@@ -1775,49 +1791,28 @@ setInterval(() => {
     return 'image/*,.pdf,application/pdf';
   }
 
-  /* Expose handleFile globally so dev-tools / connector code can pipe
-     files in for debugging. */
+  /* Expose handleFile globally for dev-tools debugging. */
   window.__credimedHandleFile = handleFile;
 
-  console.info('[docs] real-upload delegate installed (capture phase)');
+  console.info('[docs] real-upload handler installed (native label+input)');
 
-  document.addEventListener('click', function (e) {
-    var dz = e.target.closest('.dropzone[data-card]');
-    if (!dz) return;
-    /* Suppress legacy simulateUpload (mock) attached by wireInteractions(). */
-    e.stopImmediatePropagation();
-    e.preventDefault();
-
-    var cardId = dz.getAttribute('data-card');
-    console.info('[docs] dropzone click → opening picker for', cardId);
-
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.accept = acceptFor(cardId);
-    if (cardId === 'supporting') input.multiple = true;
-    /* Override page-wide `input[type=file]{display:none}` — a display:none
-       input cannot be programmatically clicked in some browsers. */
-    input.style.cssText =
-      'display:block;position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;';
-
-    input.addEventListener('change', function () {
-      var files = Array.from(input.files || []);
-      console.info('[docs] picker selected', files.length, 'file(s) for', cardId);
-      files.forEach(function (f) {
-        console.info('[docs] handleFile →', cardId, f.name, f.size, 'bytes');
-        handleFile(cardId, f);
-      });
-      input.remove();
+  /* Native label+input pattern is the primary path: each dropzone is now
+     a <label> wrapping an <input type="file">, so clicking anywhere on
+     the label opens the picker via standard HTML behavior. We just
+     listen for the change event on those inputs and pipe the chosen
+     files into handleFile(). */
+  document.addEventListener('change', function (e) {
+    var input = e.target.closest('input[data-card-input]');
+    if (!input) return;
+    var cardId = input.getAttribute('data-card-input');
+    var files = Array.from(input.files || []);
+    console.info('[docs] picker selected', files.length, 'file(s) for', cardId);
+    files.forEach(function (f) {
+      console.info('[docs] handleFile →', cardId, f.name, f.size, 'bytes');
+      handleFile(cardId, f);
     });
-    /* Clean up if user cancels the picker (no change event fires). */
-    window.addEventListener('focus', function cleanup() {
-      window.removeEventListener('focus', cleanup);
-      setTimeout(function () { if (input.parentNode) input.remove(); }, 1000);
-    });
-
-    document.body.appendChild(input);
-    input.click();
-  }, true /* capture */);
+    input.value = ''; /* allow re-picking the same file */
+  });
 
   /* Drag & drop on dropzones */
   ['dragover', 'dragleave', 'drop'].forEach(function (evt) {
@@ -1862,11 +1857,14 @@ setInterval(() => {
     var inner = root.querySelector('.uploaded-row, .extracted-preview, .error-row');
     if (inner) {
       root.querySelectorAll('.extracted-preview').forEach(function (n) { n.remove(); });
+      var rmAccept = cardId === 'insurance' ? 'image/*' : 'image/*,.pdf,application/pdf';
+      var rmMulti = cardId === 'supporting' ? 'multiple' : '';
       inner.outerHTML =
-        '<div class="dropzone" data-card="' + cardId + '">' +
+        '<label class="dropzone" data-card="' + cardId + '" style="cursor:pointer;display:block;">' +
+          '<input type="file" data-card-input="' + cardId + '" accept="' + rmAccept + '" ' + rmMulti + ' style="display:block;position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">' +
           '<div class="dropzone-primary"><span class="em">Drop a file</span> or tap to upload</div>' +
           '<div class="dropzone-secondary">Re-upload to replace</div>' +
-        '</div>';
+        '</label>';
     }
     if (cardId === 'insurance') window.CredimedState && window.CredimedState.set('insurance', {});
     if (cardId === 'receipt')   window.CredimedState && window.CredimedState.set('receipt', {});
