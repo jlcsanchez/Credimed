@@ -1503,6 +1503,13 @@ mountScope('desktop');
      ran (and any later DOM-relocation of the iframe broke its connection
      to Stripe Elements). */
   async function injectStripeElement() {
+    /* Track which scope we ended up using so other code in this function
+       (active-tab toggling, panel show/hide, CTA-by-scope lookups) can
+       still target the right ancestor. On PC we inject into the visible
+       PC mount but keep `scope = 'mobile'` because the tab/panel/cta
+       attributes only exist with data-scope="mobile" or "desktop" — the
+       PC mount has neither, so 'mobile' is the closest match. */
+    var scope = 'mobile';
     var cardPanel;
     if (window.innerWidth >= 960) {
       cardPanel = document.getElementById('pay-stripe-mount-pc');
