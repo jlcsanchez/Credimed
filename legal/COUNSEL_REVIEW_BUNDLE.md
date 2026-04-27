@@ -590,87 +590,12 @@ A cookie is a small text file a website stores on your browser. Similar technolo
 
 ## 3. Cookies and storage we use
 
-
-
-
-
-Name / key
-
-Type
-
-Purpose
-
-Duration
-
-
-
-
-
-
-
-
-CognitoIdentityServiceProvider.*
-
-
-First-party · localStorage
-
-
-Keeps you signed in via AWS Cognito (JWT tokens).
-
-
-Until you sign out
-
-
-
-
-
-
-credimed.*
-
-
-First-party · localStorage
-
-
-Stores your claim draft (insurance card, receipt, plan selection) so you can return without losing progress.
-
-
-Until you submit or clear it
-
-
-
-
-
-
-credimed.consent
-
-
-First-party · localStorage
-
-
-Records your acknowledgement of this cookie banner.
-
-
-1 year
-
-
-
-
-
-
-Stripe (__stripe_mid, __stripe_sid)
-
-
-Third-party · Stripe.com
-
-
-Fraud prevention on the payment form (Stripe loads these from js.stripe.com (https://js.stripe.com) when you reach checkout).
-
-
-1 year (mid) · 30 min (sid)
-
-
-
-
+| Name / key | Type | Purpose | Duration |
+|---|---|---|---|
+| `CognitoIdentityServiceProvider.*` | First-party · localStorage | Keeps you signed in via AWS Cognito (JWT tokens). | Until you sign out |
+| `credimed.*` | First-party · localStorage | Stores your claim draft (insurance card, receipt, plan selection) so you can return without losing progress. | Until you submit or clear it |
+| `credimed.consent` | First-party · localStorage | Records your acknowledgement of this cookie banner. | 1 year |
+| Stripe (`__stripe_mid`, `__stripe_sid`) | Third-party · Stripe.com | Fraud prevention on the payment form (Stripe loads these from js.stripe.com when you reach checkout). | 1 year (mid) · 30 min (sid) |
 
 ## 4. What we do NOT use
 
@@ -758,6 +683,9 @@ Marketing copy on our public site (homepage, blog) may include forward-looking s
 ## Contact
 
 Questions about these disclosures: legal@credimed.us (mailto:legal@credimed.us).
+
+---
+
 # 7. Marketing claims that need legal sign-off
 
 Below are the actual lines of marketing copy we use across the site. Each one is
