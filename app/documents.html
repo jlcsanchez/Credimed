@@ -1235,46 +1235,11 @@ function wireInteractions() {
   });
 }
 
-function simulateUpload(cardId, suggestedName) {
-  const defaultNames = {
-    insurance: 'ppo-card-front.jpg',
-    receipt: 'cancun-receipt.pdf',
-    supporting: 'xray-treatment-plan.pdf',
-  };
-  const name = suggestedName || defaultNames[cardId] || 'document.pdf';
-
-  VARIANT_STATES[activeVariant][cardId] = {
-    status: 'uploading',
-    filename: name,
-    progress: 0,
-  };
-  mount();
-
-  let p = 0;
-  const tick = () => {
-    p += Math.random() * 18 + 8;
-    if (p >= 100) {
-      VARIANT_STATES[activeVariant][cardId] = {
-        status: 'done',
-        filename: name,
-        meta: `${(Math.random() * 2 + 0.8).toFixed(1)} MB · Uploaded just now`,
-        thumbKind: cardId === 'insurance' ? 'card' : cardId === 'receipt' ? 'receipt' : 'pdf',
-      };
-      mount();
-    } else {
-      VARIANT_STATES[activeVariant][cardId].progress = Math.round(p);
-      // Only update the progress bar in place, not re-render whole thing
-      document.querySelectorAll(`[data-card-root="${cardId}"] .uploading-bar-fill`).forEach(el => {
-        el.style.width = Math.round(p) + '%';
-      });
-      document.querySelectorAll(`[data-card-root="${cardId}"] .uploading-pct`).forEach(el => {
-        el.textContent = Math.round(p) + '%';
-      });
-      setTimeout(tick, 260);
-    }
-  };
-  setTimeout(tick, 280);
-}
+/* Claude Design's mock — neutered. Real uploads run through the IIFE
+   below (capture-phase click delegate → handleFile → /ocr Lambda).
+   Leaving this as a no-op (rather than removing the symbol) so any
+   stray dev-mode call site doesn't ReferenceError. */
+function simulateUpload() { /* no-op — see IIFE below for real flow */ }
 
 /* ---- tab switching ---- */
 document.querySelectorAll('.tab').forEach(t => {
@@ -1810,6 +1775,12 @@ setInterval(() => {
     return 'image/*,.pdf,application/pdf';
   }
 
+  /* Expose handleFile globally so dev-tools / connector code can pipe
+     files in for debugging. */
+  window.__credimedHandleFile = handleFile;
+
+  console.info('[docs] real-upload delegate installed (capture phase)');
+
   document.addEventListener('click', function (e) {
     var dz = e.target.closest('.dropzone[data-card]');
     if (!dz) return;
@@ -1818,6 +1789,8 @@ setInterval(() => {
     e.preventDefault();
 
     var cardId = dz.getAttribute('data-card');
+    console.info('[docs] dropzone click → opening picker for', cardId);
+
     var input = document.createElement('input');
     input.type = 'file';
     input.accept = acceptFor(cardId);
@@ -1829,7 +1802,11 @@ setInterval(() => {
 
     input.addEventListener('change', function () {
       var files = Array.from(input.files || []);
-      files.forEach(function (f) { handleFile(cardId, f); });
+      console.info('[docs] picker selected', files.length, 'file(s) for', cardId);
+      files.forEach(function (f) {
+        console.info('[docs] handleFile →', cardId, f.name, f.size, 'bytes');
+        handleFile(cardId, f);
+      });
       input.remove();
     });
     /* Clean up if user cancels the picker (no change event fires). */

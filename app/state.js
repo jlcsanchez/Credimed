@@ -7,7 +7,10 @@
      doesn't match so old in-flight claims don't show up rendered
      against new keys. Bump in the same commit that introduces the
      new shape, never separately. */
-  var SCHEMA_VERSION = 1;
+  /* v2 — drops Claude Design demo data (CMX-2026-DEMO9 / Alex Rivera /
+     ceo@credimed.us) that lingered in localStorage from previous demo
+     logins, so a fresh signup starts with a clean slate. */
+  var SCHEMA_VERSION = 2;
   var listeners = {};
 
   function read() {

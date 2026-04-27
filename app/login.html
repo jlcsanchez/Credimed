@@ -552,14 +552,14 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     setLoading('btnSignup', true);
     clearBanners();
 
-    /* Purge any residual demo session so the new account starts clean
-       (otherwise the new user inherits CMX-2026-DEMO9 / Alex Rivera). */
-    try {
-      if (localStorage.getItem('credimed.demo')) {
-        localStorage.removeItem('credimed.demo');
-        if (window.CredimedState) window.CredimedState.clear();
-      }
-    } catch (e) {}
+    /* Purge any residual session before creating a new account — covers
+       both demo session footprint and any half-finished prior signup so
+       the new user never inherits CMX-2026-DEMO9, Alex Rivera, or stale
+       claim data. Backend /claims is the source of truth for real data;
+       wiping local cache just means a brief re-fetch on first dashboard
+       load. */
+    try { localStorage.removeItem('credimed.demo'); } catch (e) {}
+    try { if (window.CredimedState) window.CredimedState.clear(); } catch (e) {}
 
     try {
       await window.cognitoSignUp(email, pw, first, last);
@@ -830,13 +830,11 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     setLoading('btnLogin', true);
     clearBanners();
 
-    /* Purge demo session before signing in as a real user. */
-    try {
-      if (localStorage.getItem('credimed.demo')) {
-        localStorage.removeItem('credimed.demo');
-        if (window.CredimedState) window.CredimedState.clear();
-      }
-    } catch (e) {}
+    /* Wipe any residual session before signing in — catches demo
+       leftovers and stale state from a different account on this
+       browser. Backend /claims rehydrates the real data. */
+    try { localStorage.removeItem('credimed.demo'); } catch (e) {}
+    try { if (window.CredimedState) window.CredimedState.clear(); } catch (e) {}
 
     try {
       await window.cognitoSignIn(email, pw);
@@ -870,6 +868,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
        user can authenticate with a different account. */
     if (params.get('logout') === '1' || window.location.hash === '#logout') {
       try { localStorage.removeItem('credimed.demo'); } catch (e) {}
+      try { if (window.CredimedState) window.CredimedState.clear(); } catch (e) {}
       try { window.cognitoSignOut(); } catch (e) {}
       history.replaceState(null, '', '/app/login.html?mode=login');
       show('screen-login');
