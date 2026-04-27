@@ -78,7 +78,7 @@ Last updated: April 26, 2026.
 - [ ] Privacy Policy reviewed (`legal/privacy.html`)
 - [ ] Terms of Service reviewed (`legal/terms.html`)
 - [ ] Notice of Privacy Practices reviewed (`legal/notice-of-privacy-practices.html`)
-- [ ] Service Agreement v1.2 reviewed (`legal/AGREEMENT_v1.2.md`)
+- [ ] Service Agreement v1.9 reviewed (`legal/AGREEMENT_v1.9.html`)
 - [ ] Determine: is Credimed a Covered Entity, Business Associate,
       or both, under HIPAA? (Affects what compliance regime applies.)
 - [ ] HIPAA Risk Analysis document (formal, written)
@@ -261,7 +261,7 @@ Last updated: April 26, 2026.
 │       └── status-timeline.js # available, not yet wired
 │
 ├── legal/
-│   ├── AGREEMENT_v1.2.md      # signed by patient at /app/agreement.html
+│   ├── AGREEMENT_v1.9.html      # signed by patient at /app/agreement.html
 │   ├── privacy.html
 │   ├── terms.html
 │   └── notice-of-privacy-practices.html

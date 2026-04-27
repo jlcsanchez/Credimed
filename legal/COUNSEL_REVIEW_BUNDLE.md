@@ -20,7 +20,7 @@ We need a healthcare attorney (HIPAA-experienced, ideally with consumer-facing t
 | 1 | Privacy Policy | Public-facing, governs all data | Confirm CCPA/CPRA + GDPR-light coverage; flag anything we're missing |
 | 2 | Terms of Service | Public-facing, governs the service | Confirm enforceability, dispute resolution, limitation of liability |
 | 3 | Notice of Privacy Practices (HIPAA) | Patient-facing, required under HIPAA Privacy Rule | Confirm we are correctly positioned as Business Associate vs. Covered Entity |
-| 4 | Service Agreement v1.2 | Patient-facing, governs each filing engagement | Confirm "limited claims representative" language, money-back guarantee scope, dispute process |
+| 4 | Service Agreement v1.9 | Patient-facing, governs each filing engagement | Confirm "limited claims representative" language, money-back guarantee scope, dispute process |
 | 5 | Cookie Policy | Public-facing, supplements Privacy | Confirm CCPA disclosure + cookie inventory accuracy |
 | 6 | Disclosures | Public-facing, FTC/UDAP-act disclosures | Confirm refund-estimate caveats, processing-time language, "not insurance" claims |
 | 7 | Marketing claims (homepage copy) | See section at the end | Confirm forward-looking statements + "up to $1,500" language |
@@ -206,7 +206,7 @@ Credimed assists Members with the preparation, review, and submission of dental 
 
 ## 4. Service Agreement
 
-In addition to these Terms, your use of the claim-submission service is governed by the Credimed Member Service Agreement (currently version 1.2), which you electronically sign before payment. The Service Agreement covers fees, refund eligibility, the conditional money-back guarantee, exclusions, and the limited scope of Credimed's role. Read the current version: AGREEMENT v1.2 (/legal/AGREEMENT_v1.2.md).
+In addition to these Terms, your use of the claim-submission service is governed by the Credimed Member Service Agreement (currently version 1.2), which you electronically sign before payment. The Service Agreement covers fees, refund eligibility, the conditional money-back guarantee, exclusions, and the limited scope of Credimed's role. Read the current version: AGREEMENT v1.9 (/legal/AGREEMENT_v1.9.html).
 
 ## 5. Fees and Payment
 
@@ -392,15 +392,15 @@ Mailing address: [TO BE PROVIDED]
 
 ---
 
-# 4. Service Agreement v1.2
+# 4. Service Agreement v1.9
 
-*Source file:* `legal/AGREEMENT_v1.2.md`
+*Source file:* `legal/AGREEMENT_v1.9.html`
 
-# CREDIMED SERVICE AGREEMENT (v1.2)
+# CREDIMED SERVICE AGREEMENT (v1.9)
 
 **Effective Date:** [AUTO-GENERATED UPON ACCEPTANCE]
 
-This version (v1.2) supersedes prior versions for all claims initiated on or after the Effective Date. Claims initiated under prior versions of this Agreement continue to be governed by the version in effect at the time of acceptance.
+This version (v1.9) supersedes prior versions for all claims initiated on or after the Effective Date. Claims initiated under prior versions of this Agreement continue to be governed by the version in effect at the time of acceptance.
 
 ## 1. Scope of Service
 
@@ -662,7 +662,7 @@ The estimates shown on credimed.us are calculated from publicly available averag
 
 ## Money-back guarantee
 
-If your insurer rejects your claim outright on grounds that we cannot remedy through one free resubmission, we refund the service fee within 5–10 business days. The guarantee covers our service fee only, not any unrecoverable amount of your out-of-network expense. Full terms are in the Service Agreement (/legal/AGREEMENT_v1.2.md) you sign before paying.
+If your insurer rejects your claim outright on grounds that we cannot remedy through one free resubmission, we refund the service fee within 5–10 business days. The guarantee covers our service fee only, not any unrecoverable amount of your out-of-network expense. Full terms are in the Service Agreement (/legal/AGREEMENT_v1.9.html) you sign before paying.
 
 ## Processing time
 
