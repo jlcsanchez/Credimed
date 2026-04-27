@@ -326,11 +326,25 @@ html,body{
 (function () {
   'use strict';
   var STATUS_PILL = {
-    'submitted':  { label: 'Submitted',  cls: 'pill-teal' },
-    'in-review':  { label: 'In review',  cls: 'pill-indigo' },
-    'approved':   { label: 'Approved',   cls: 'pill-success' },
-    'paid':       { label: 'Paid',       cls: 'pill-success' },
-    'denied':     { label: 'Denied',     cls: 'pill-danger' },
+    // Original patient-facing statuses (kept for backward compat)
+    'submitted':                 { label: 'Submitted',          cls: 'pill-teal' },
+    'in-review':                 { label: 'In review',          cls: 'pill-indigo' },
+    'approved':                  { label: 'Approved',           cls: 'pill-success' },
+    'paid':                      { label: 'Paid',               cls: 'pill-success' },
+    'denied':                    { label: 'Denied',             cls: 'pill-danger' },
+    'refunded':                  { label: 'Refunded',           cls: 'pill-amber' },
+
+    // Clearinghouse status pipeline (set by credimed-clearinghouse Lambda
+    // via parse277 -> mapToInternalStatus or parse835)
+    'generated':                 { label: 'Claim ready',        cls: 'pill-teal' },
+    'accepted_by_clearinghouse': { label: 'Accepted',           cls: 'pill-teal' },
+    'forwarded_to_payer':        { label: 'With your insurer',  cls: 'pill-indigo' },
+    'payer_in_review':           { label: 'In review',          cls: 'pill-indigo' },
+    'pending_info':              { label: 'Insurer needs info', cls: 'pill-amber' },
+    'rejected':                  { label: 'Needs correction',   cls: 'pill-amber' },
+    'payer_paid':                { label: 'Refund paid',        cls: 'pill-success' },
+    'payer_denied':              { label: 'Denied',             cls: 'pill-danger' },
+    'payer_denied_outright':     { label: 'Denied (refund eligible)', cls: 'pill-danger' },
   };
 
   var ALL = [];
@@ -369,7 +383,10 @@ html,body{
       return;
     }
     $('list').innerHTML = list.map(function (c) {
-      var pill = STATUS_PILL[c.status] || { label: '—', cls: 'pill-slate' };
+      // Prefer the clearinghouse status (more granular) when present;
+      // fall back to the legacy patient-facing status from credimed-claims.
+      var effectiveStatus = c.clearinghouseStatus || c.status;
+      var pill = STATUS_PILL[effectiveStatus] || { label: '—', cls: 'pill-slate' };
       var procsRaw = Array.isArray(c.procedures) ? c.procedures.join(', ')
                    : (c.procedure || 'Dental claim');
       var procs = window.translateProcedure ? window.translateProcedure(procsRaw) : procsRaw;

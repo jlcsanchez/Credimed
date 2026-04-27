@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credimed — Cookie Policy</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; color: #1e293b; line-height: 1.65; background: #FAF6EF; }
+  h1 { font-size: 28px; margin: 0 0 4px; color: #0f172a; }
+  h2 { font-size: 20px; margin: 32px 0 8px; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+  h3 { font-size: 16px; margin: 20px 0 6px; color: #0f172a; }
+  h4 { font-size: 14px; margin: 18px 0 6px; color: #334155; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .meta { color: #64748b; font-size: 13px; margin-bottom: 24px; }
+  .draft-banner { background: #FEF3C7; border: 1px solid #FCD34D; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; color: #78350F; }
+  a { color: #0d9488; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border: 1px solid #e2e8f0; vertical-align: top; }
+  th { background: #f1f5f9; }
+  ul { padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  .home { display: inline-block; margin-top: 8px; color: #475569; font-size: 13px; text-decoration: none; }
+  .home:hover { color: #0d9488; }
+</style>
+</head>
+<body>
+
+<a href="/" class="home">← Back to Credimed</a>
+<h1>Cookie Policy</h1>
+<p class="meta">Last updated: April 27, 2026 · Version 1.2</p>
+
+<div class="draft-banner">
+  <strong>Draft template.</strong> This document is provided as a starting point and must be reviewed by qualified legal counsel before Credimed accepts paying customers, particularly to ensure compliance with the California Consumer Privacy Act (CCPA/CPRA), the EU ePrivacy Directive, and any other applicable jurisdictional requirements.
+</div>
+
+<h2>1. What this policy covers</h2>
+<p>This Cookie Policy explains how Credimed, Inc. ("Credimed," "we," "us") uses cookies and similar storage technologies on <a href="https://credimed.us">credimed.us</a>. It supplements our <a href="/legal/privacy.html">Privacy Policy</a>.</p>
+
+<h2>2. What is a cookie?</h2>
+<p>A cookie is a small text file that a website stores on your browser. Similar technologies include browser storage mechanisms such as <em>localStorage</em> and <em>sessionStorage</em>, which store data directly in your browser to support application functionality.</p>
+
+<h2>3. Cookies and storage we use</h2>
+<p>All cookies and storage used by Credimed fall into the category of <strong>"Strictly Necessary"</strong> technologies &mdash; they are required for the Service to function, including authentication, security, fraud prevention, and claim-draft recovery.</p>
+<p>We do not use any advertising, marketing, or cross-site tracking cookies.</p>
+
+<h4>Strictly Necessary (Required for Service)</h4>
+
+<table>
+  <thead>
+    <tr><th>Name / key</th><th>Type</th><th>Purpose</th><th>Duration</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>CognitoIdentityServiceProvider.*</code></td>
+      <td>First-party · cookies/storage</td>
+      <td>Maintains authentication session via AWS Cognito (tokens and session state).</td>
+      <td>Until session expiry or sign-out</td>
+    </tr>
+    <tr>
+      <td><code>credimed.*</code></td>
+      <td>First-party · localStorage</td>
+      <td>Stores claim draft data so users can resume progress without losing information.</td>
+      <td>Until submission or manual clear</td>
+    </tr>
+    <tr>
+      <td><code>credimed.consent</code></td>
+      <td>First-party · localStorage</td>
+      <td>Records acknowledgement of this Cookie Policy notice.</td>
+      <td>1 year</td>
+    </tr>
+    <tr>
+      <td>Stripe (<code>__stripe_mid</code>, <code>__stripe_sid</code>)</td>
+      <td>Third-party · stripe.com</td>
+      <td>Fraud prevention and security during payment processing (set by Stripe when loaded).</td>
+      <td>1 year (mid) &middot; 30 min (sid)</td>
+    </tr>
+    <tr>
+      <td><code>__cf_bm</code> (if enabled)</td>
+      <td>Third-party · Cloudflare</td>
+      <td>Bot detection and abuse prevention where Cloudflare protection is active.</td>
+      <td>~30 minutes per session</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>4. What we do NOT use</h2>
+<p>We do not use:</p>
+<ul>
+  <li>Advertising cookies</li>
+  <li>Marketing or retargeting pixels</li>
+  <li>Cross-site tracking technologies</li>
+  <li>Third-party data brokers</li>
+  <li>Behavioral profiling tools</li>
+</ul>
+<p>We do not place cookies containing Protected Health Information (PHI).</p>
+<p>We do not use analytics that identify individual users. On public pages, we use <a href="https://plausible.io/data-policy" target="_blank" rel="noopener">Plausible Analytics</a>, which is cookieless and collects only aggregated, anonymized traffic data.</p>
+
+<h2>5. Your choices</h2>
+
+<h3>5.1 Blocking or deleting cookies</h3>
+<p>You can control cookies through your browser settings:</p>
+<ul>
+  <li>Chrome: <code>chrome://settings/cookies</code></li>
+  <li>Safari (macOS): Safari → Settings → Privacy</li>
+  <li>Safari (iOS): Settings → Safari → Privacy</li>
+  <li>Firefox: Settings → Privacy &amp; Security</li>
+  <li>Edge: <code>edge://settings/content/cookies</code></li>
+</ul>
+<p>Blocking or deleting cookies will:</p>
+<ul>
+  <li>Sign you out of your account</li>
+  <li>Remove any unsaved claim data</li>
+</ul>
+<p>The Service will remain functional, but you may need to re-enter information.</p>
+
+<h3>5.2 Global Privacy Control (GPC) and Do Not Track</h3>
+<p>We do not sell or share personal information for advertising purposes.</p>
+<p>We honor:</p>
+<ul>
+  <li><strong>Global Privacy Control (GPC)</strong> signals as required under California and other U.S. state privacy laws</li>
+  <li><strong>Do Not Track</strong> signals by following the practices described in this Policy and our Privacy Policy</li>
+</ul>
+
+<h3>5.3 California Residents (CCPA / CPRA)</h3>
+<p>California residents have the right to:</p>
+<ul>
+  <li>Know what personal information we collect</li>
+  <li>Request deletion or correction</li>
+  <li>Opt out of sale or sharing</li>
+</ul>
+<p>We do not sell or share personal information for cross-context behavioral advertising.</p>
+<p>To exercise rights: <a href="mailto:privacy@credimed.us">privacy@credimed.us</a></p>
+<p>See our <a href="/legal/privacy.html">Privacy Policy</a> §7.1 for full details.</p>
+
+<h3>5.4 Cookie Banner</h3>
+<p>When you first visit our public pages, we display a notice informing you of our use of strictly necessary cookies.</p>
+<p>Because all cookies we use are strictly necessary for the operation of the Service, no consent mechanism or opt-in toggle is required under applicable law.</p>
+<p>The banner serves as a transparency notice only. Dismissing it does not change which cookies are used.</p>
+
+<h2>6. Changes to this policy</h2>
+<p>We may update this Cookie Policy from time to time.</p>
+<p>Material changes will be:</p>
+<ul>
+  <li>Posted on this page</li>
+  <li>Communicated to active users by email at least <strong>thirty (30) days in advance</strong></li>
+</ul>
+
+<h2>7. Contact</h2>
+<p>For questions about this Cookie Policy:</p>
+<p><a href="mailto:privacy@credimed.us">privacy@credimed.us</a></p>
+<p>Credimed, Inc.<br>
+Boston, MA<br>
+Mailing address: [TO BE PROVIDED]</p>
+
+<p style="margin-top:32px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:13px;color:#64748b;">
+  Related: <a href="/legal/privacy.html">Privacy Policy</a> &middot;
+  <a href="/legal/terms.html">Terms of Service</a> &middot;
+  <a href="/legal/disclosures.html">Disclosures</a> &middot;
+  <a href="/legal/notice-of-privacy-practices.html">HIPAA Notice</a> &middot;
+  <a href="/contact.html">Contact</a>
+</p>
+
+<a href="/" class="home">← Back to Credimed</a>
+
+<script src="/cookie-banner.js" defer></script>
+<script defer data-domain="credimed.us" src="https://plausible.io/js/script.js"></script>
+</body>
+</html>

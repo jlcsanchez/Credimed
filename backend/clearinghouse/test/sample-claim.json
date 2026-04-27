@@ -1,0 +1,50 @@
+{
+  "claimId": "CMX-2026-DEMO01",
+  "userId": "demo-user-sub-1234",
+
+  "_comment": "Synthetic patient — DO NOT use for production. Names and IDs are fake.",
+
+  "firstName": "MARIA",
+  "lastName": "GONZALEZ",
+  "dob": "1985-05-15",
+  "gender": "F",
+
+  "address1": "123 BEACON ST",
+  "address2": "APT 4B",
+  "city": "BOSTON",
+  "state": "MA",
+  "zip": "02108",
+
+  "memberId": "W123456789",
+  "groupNumber": "0012345",
+  "insurer": "AETNA DENTAL",
+  "payerId": "60054",
+
+  "providerName": "CLINICA DENTAL TIJUANA SA DE CV",
+  "providerNPI": "",
+  "providerRFC": "CDT123456ABC",
+  "providerAddress": "AV REVOLUCION 123",
+  "providerCity": "TIJUANA",
+  "providerState": "BC",
+  "providerZip": "22000",
+  "providerTaxonomy": "1223G0001X",
+
+  "dateOfService": "2026-03-14",
+
+  "procedures": [
+    {
+      "cdtCode": "D2740",
+      "amount": 450.00,
+      "toothNumber": "14",
+      "dateOfService": "2026-03-14"
+    },
+    {
+      "cdtCode": "D3330",
+      "amount": 350.00,
+      "toothNumber": "14",
+      "dateOfService": "2026-03-14"
+    }
+  ],
+
+  "diagnosisCode": "K021"
+}
