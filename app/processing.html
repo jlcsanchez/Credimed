@@ -397,8 +397,14 @@ html, body {
 }
 
 @media (min-width: 960px) {
+  /* Hide ALL of Claude Design's iPhone-mockup chrome on PC, not just
+     the .proc-mobile-only stub. The .stage div has its own cream
+     background + min-height:100vh, so it was covering the body gradient
+     entirely and pushing .proc-pc below the fold — the user saw only
+     the centered phone-shaped iPhone-mockup with white space around it. */
   .proc-mobile-only,
-  .topbar { display: none; }
+  .topbar,
+  .stage { display: none !important; }
   body[data-page="processing"] {
     margin: 0;
     min-height: 100vh;
