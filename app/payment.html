@@ -1635,55 +1635,9 @@ mountScope('desktop');
       /* Mount directly into the pre-existing #payment-element div
          (already in the DOM from the skeleton structure). Stripe will
          inject its iframe there; we keep it display:none until the
-         element fires its own 'ready' event.
-
-         If the user lands here for a claim whose PaymentIntent is
-         ALREADY succeeded (testing flow re-uses the same claimId →
-         Lambda's idempotency returns the same intent → Stripe rejects
-         the elements/sessions call with 400 because intent status is
-         'succeeded'), bounce them to submission-confirmed instead of
-         showing a stuck skeleton. We sniff Stripe's loaderror event
-         after a short window — if mount never produces a 'ready' AND
-         we've seen the loaderror signature, redirect.
-
-         Wrap mount in try/catch so the load failure doesn't kill the
-         whole IIFE silently. */
-      var paymentEl = null;
-      try {
-        paymentEl = await window.mountStripePaymentElement(pi.clientSecret, 'payment-element');
-        state.mounted = true;
-      } catch (mountErr) {
-        console.warn('[payment] mount failed:', mountErr && (mountErr.message || mountErr));
-        /* If the message hints the intent is already succeeded /
-           consumed, redirect to confirmation. Stripe error codes vary
-           but 'payment_intent_unexpected_state' and the message text
-           '... cannot be confirmed ... already succeeded' are the
-           usual signals. */
-        var msg = (mountErr && (mountErr.message || mountErr.code) || '') + '';
-        if (/succeed|consumed|unexpected[_ ]state|already[_ ]/i.test(msg)) {
-          var prevClaim = (window.CredimedState && window.CredimedState.get('claim.id')) || claimId || '';
-          window.location.href = '/app/submission-confirmed.html?paid=1' + (prevClaim ? '&claim=' + encodeURIComponent(prevClaim) : '');
-          return;
-        }
-        /* Other errors: fall through and let the user see the skeleton
-           with the inline error message the Stripe SDK already paints. */
-      }
-
-      /* Belt-and-suspenders: if mount appeared to succeed but Stripe
-         fires a global loaderror within 1.5s (the 400 path), redirect.
-         Listening on window.addEventListener for Stripe's element-level
-         events isn't supported, so we observe the side effect — the
-         #payment-element stays empty (no iframe child) for too long. */
-      setTimeout(function () {
-        if (state.mounted) return;
-        var pe = document.getElementById('payment-element');
-        if (pe && pe.querySelector('iframe')) return; // healthy mount
-        var prevClaim = (window.CredimedState && window.CredimedState.get('claim.id')) || claimId || '';
-        if (prevClaim) {
-          console.warn('[payment] no iframe after 4s — redirecting to confirmation');
-          window.location.href = '/app/submission-confirmed.html?paid=1&claim=' + encodeURIComponent(prevClaim);
-        }
-      }, 4000);
+         element fires its own 'ready' event. */
+      var paymentEl = await window.mountStripePaymentElement(pi.clientSecret, 'payment-element');
+      state.mounted = true;
 
       /* Swap skeleton → real form the moment Stripe's iframe signals
          it has finished rendering. Cross-fade (not hard display:none)
