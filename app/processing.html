@@ -413,10 +413,13 @@ html, body {
     margin: 0;
     min-height: 100vh;
     color: #fff;
+    /* `!important` is needed to defeat the global "html, body { background:
+       #FAF6EF !important }" rule at the top of the file, which otherwise
+       wins on specificity-tied !important and washes the page out white. */
     background:
       radial-gradient(ellipse at 20% 10%, rgba(94,234,212,0.18), transparent 50%),
       radial-gradient(ellipse at 80% 70%, rgba(13,148,136,0.20), transparent 55%),
-      linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
+      linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%) !important;
   }
   .proc-pc { min-height: 100vh; padding: 48px 40px; display: flex; align-items: center; justify-content: center; }
   .proc-card { width: 100%; max-width: 520px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 20px; padding: 44px 44px 40px; backdrop-filter: blur(16px); text-align: center; }

@@ -1028,8 +1028,11 @@ mount();
   }
   breakdown.push(
     { label: 'Out-of-network coverage', value: oonLabel },
-    { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted from MXN)' : ' USD') },
-    { label: procLabel,                 value: procValue }
+    { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted from MXN)' : ' USD') }
+    /* Procedures intentionally NOT pushed here — they're already
+       shown more prominently above in the green "What we found in
+       your receipt" callout (injectValueBlocks). Listing them again
+       in the breakdown table read as duplication to users. */
   );
 
   var real = {

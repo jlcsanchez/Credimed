@@ -1908,6 +1908,22 @@ mountScope('desktop');
     return true;
   }
 
+  /* Mailing address must be complete before the user can authorize
+     payment — the insurer mails 1099 tax documents and any written
+     correspondence to this address regardless of refund delivery
+     method, and an incomplete address is a real source of customer
+     disputes. Mirrors `addrComplete(scope)` defined for the other
+     scope. */
+  function addressFieldsValid() {
+    var keys = ['name', 'street', 'city', 'state', 'zip'];
+    for (var i = 0; i < keys.length; i++) {
+      var el = document.querySelector('[data-addr-input][data-scope="' + SCOPE + '"][data-key="' + keys[i] + '"]');
+      var v = (el && el.value || '').trim();
+      if (!v) return false;
+    }
+    return true;
+  }
+
   function syncBankingToState() {
     var method = currentPayMethod();
     var bank = { paymentMethod: method };
@@ -1938,7 +1954,7 @@ mountScope('desktop');
   function updateCtaState() {
     var cta = document.querySelector('[data-cta][data-scope="' + SCOPE + '"]');
     if (!cta) return;
-    var ok = hasSignature() && hasChecked() && bankFieldsValid();
+    var ok = hasSignature() && hasChecked() && bankFieldsValid() && addressFieldsValid();
     if (ok) cta.removeAttribute('disabled');
     else cta.setAttribute('disabled', 'disabled');
   }
