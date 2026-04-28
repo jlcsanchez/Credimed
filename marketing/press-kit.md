@@ -7,7 +7,7 @@
 
 ## One-line description
 
-Credimed helps US PPO dental insurance members recover the money their plan owes them for dental work performed in Mexico — by filing the out-of-network reimbursement claim correctly the first time, for a one-time fee from $29 with a money-back guarantee.
+Credimed helps US PPO dental insurance members recover the money their plan owes them for dental work performed in Mexico — by filing the out-of-network reimbursement claim correctly the first time, for a one-time fee from $19 with a money-back guarantee.
 
 ## 50-word description
 
@@ -17,7 +17,7 @@ Credimed is a healthcare-tech service that handles US dental insurance reimburse
 
 Credimed is a healthcare-tech service that helps US dental PPO members recover out-of-network reimbursements for dental work performed by licensed providers in Mexico. The company files the insurance claim on the patient's behalf — translating Mexican procedure codes to the ADA CDT codes US insurers require, converting peso amounts to USD using the date-of-service exchange rate, and submitting the formatted claim to the insurer within 24 hours of payment.
 
-The service is positioned for the estimated 1.4 million US dental tourists who travel to Mexico each year, half of whom pay out of pocket and never file for the partial reimbursement they're entitled to under their PPO plan. Credimed charges a one-time service fee that scales with the size of the expected refund (from $29 for low-value claims up to $99 for complex high-value ones — never more than 20% of the recovery), with a money-back guarantee — patients pay nothing if the claim is eligible and Credimed cannot recover the reimbursement.
+The service is positioned for the estimated 1.4 million US dental tourists who travel to Mexico each year, half of whom pay out of pocket and never file for the partial reimbursement they're entitled to under their PPO plan. Credimed charges a one-time service fee that scales with the size of the expected refund (from $19 for low-value claims up to $99 for complex high-value ones — never more than 20% of the recovery), with a money-back guarantee — patients pay nothing if the claim is eligible and Credimed cannot recover the reimbursement.
 
 The company is US-incorporated, HIPAA-aligned, and based in Boston, Massachusetts.
 
@@ -27,7 +27,7 @@ The company is US-incorporated, HIPAA-aligned, and based in Boston, Massachusett
 - **Headquarters:** Boston, Massachusetts (US-incorporated)
 - **Founder & CEO:** Juan Luis Sanchez
 - **Service area:** All 50 US states. Patients can have had dental work performed at any licensed clinic in Mexico.
-- **Pricing:** $29 (Lite), $49 (Standard), $79 (Plus), $99 (Premium). Tier is set automatically by claim complexity and capped at 20% of the expected refund — patients with smaller refunds pay smaller fees. One-time charge per claim, no subscription.
+- **Pricing:** $19 (Micro), $29 (Lite), $49 (Standard), $79 (Plus), $99 (Premium). Tier is set automatically by claim complexity and capped at 20% of the expected refund — patients with smaller refunds pay smaller fees. One-time charge per claim, no subscription.
 - **Money-back guarantee:** Full refund of the service fee if the claim is eligible and Credimed cannot recover the reimbursement after one free resubmission.
 - **Compliance:** HIPAA-aligned workflow, Business Associate Agreements signed with AWS and Google Workspace, AES-256 at rest, TLS 1.3 in transit.
 - **Insurance carriers supported:** All major US dental PPOs (Aetna, Cigna, Delta Dental, MetLife, Guardian, Humana, United Concordia, Principal, Ameritas, others). Credimed is not affiliated with or endorsed by any insurer.
@@ -55,7 +55,7 @@ Credimed was built to capture that gap. The company files the claim correctly on
 
 > "Roughly half of all eligible Mexico-dental claims go unclaimed against US PPO plans. That's not because the claims are denied — it's because patients give up before they ever submit. Most of these refunds are six hundred to fifteen hundred dollars. We're trying to make sure that money stops being left on the table."
 
-> "We don't take a cut of the refund. The patient gets the full reimbursement, paid directly by their insurer. Our fee starts at $29 and is capped at 20% of the expected refund — so a small claim never gets charged a fee that feels unfair. If we can't recover it, that fee goes back to the patient."
+> "We don't take a cut of the refund. The patient gets the full reimbursement, paid directly by their insurer. Our fee starts at $19 and is capped at 20% of the expected refund — so a small claim never gets charged a fee that feels unfair. If we can't recover it, that fee goes back to the patient."
 
 ## Selected stats (cite carefully — these are illustrative and based on internal modeling, not externally audited data)
 
@@ -82,7 +82,7 @@ Reachable at `ceo@credimed.us` for press inquiries.
 
 ## Boilerplate
 
-> Credimed (credimed.us) is a Boston-based healthcare-tech company that files US dental insurance reimbursement claims for patients who had dental work done in Mexico. The service charges a one-time fee from $29 (capped at 20% of the expected refund) with a money-back guarantee and is HIPAA-aligned. Credimed is US-incorporated and is not affiliated with any insurance carrier or dental clinic.
+> Credimed (credimed.us) is a Boston-based healthcare-tech company that files US dental insurance reimbursement claims for patients who had dental work done in Mexico. The service charges a one-time fee from $19 (capped at 20% of the expected refund) with a money-back guarantee and is HIPAA-aligned. Credimed is US-incorporated and is not affiliated with any insurance carrier or dental clinic.
 
 ---
 

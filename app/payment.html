@@ -1593,7 +1593,8 @@ mountScope('desktop');
       } catch (e) { /* fall through */ }
     }
     if (amount == null) {
-      amount = plan === 'lite'    ? 2900
+      amount = plan === 'micro'   ? 1900
+             : plan === 'lite'    ? 2900
              : plan === 'premium' ? 9900
              : plan === 'plus'    ? 7900
              :                      4900;
@@ -1903,7 +1904,11 @@ mountScope('desktop');
       }
     } catch (e) {}
     var sel = (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard';
-    var price = sel === 'lite' ? 29 : sel === 'plus' ? 79 : sel === 'premium' ? 99 : 49;
+    var price = sel === 'micro' ? 19
+              : sel === 'lite'  ? 29
+              : sel === 'plus'  ? 79
+              : sel === 'premium' ? 99
+              : 49;
     return { name: sel.charAt(0).toUpperCase() + sel.slice(1), price: price };
   }
 

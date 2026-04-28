@@ -10,11 +10,23 @@ Credimed helps US PPO dental insurance members recover the money their plan owes
 
 ---
 
-## The four pricing tiers
+## The five pricing tiers
 
-The patient does NOT choose the tier. Our system assigns it automatically based on claim complexity (number of procedures, document count, OCR confidence) and the size of the expected refund. The fee is then capped at 20% of the expected refund — so smaller refunds always get smaller fees. The Lite tier ($29) is the floor and covers the cost of submission.
+The patient does NOT choose the tier. Our system assigns it automatically based on claim complexity (number of procedures, document count, OCR confidence) and the size of the expected refund. The fee is then capped at 20% of the expected refund — so smaller refunds always get smaller fees. The Micro tier ($19) is the floor and covers the cost of submission.
 
 The patient sees only the tier they were assigned. The other tiers and the engine logic are not visible. Each tier card on the patient's screen reads exactly as below.
+
+---
+
+### MICRO — $19
+
+Best for very small claims.
+
+We file your claim quickly and correctly, the same way we handle any other.
+
+Same care, smaller fee.
+
+**If we don't recover your refund, you don't pay.**
 
 ---
 
@@ -88,14 +100,14 @@ We make sure everything is complete and submitted correctly — so nothing delay
 
 ## Edge case — refund too small for the 20% cap
 
-When a patient's expected refund is small enough that even our $29 floor exceeds 20% of the recovery (refund_avg < $145), the engine flags `fee_exceeds_cap = true` and `fee_pct_of_refund = N`. The `plan.html` overlay renders a "Heads up" banner ABOVE the tier card so the patient sees the situation honestly before committing. They can still proceed (the money-back guarantee still applies), but they make the decision with full information.
+When a patient's expected refund is small enough that even our $19 floor exceeds 20% of the recovery (refund_avg < $95), the engine flags `fee_exceeds_cap = true` and `fee_pct_of_refund = N`. The `plan.html` overlay renders a "Heads up" banner ABOVE the tier card so the patient sees the situation honestly before committing. They can still proceed (the money-back guarantee still applies), but they make the decision with full information.
 
 **The banner copy (renders in amber, only when triggered):**
 
 ```
 Heads up — your refund is small
 
-Our $29 fee is about [N]% of your estimated refund.
+Our $[fee] fee is about [N]% of your estimated refund.
 Most patients pay closer to 15–20%.
 
 You can still file — your insurer still owes this to
@@ -103,6 +115,8 @@ you, and our money-back guarantee covers you if we
 can't recover it. We just want to be upfront: on a
 small refund like yours, the math is tighter than usual.
 ```
+
+`[fee]` is whatever tier ended up being assigned (almost always $19 MICRO at this point, since the engine walks down to MICRO floor when the cap can't be honored at any higher tier).
 
 Why this exists: keeps the marketing claim *"we limit our fee so you always keep most of what you recover"* honest in 100% of cases — when the math doesn't allow it, we tell the patient explicitly.
 

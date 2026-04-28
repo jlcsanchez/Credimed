@@ -46,11 +46,11 @@ function calculatePricing(input = {}) {
   /* ------ Step 2: 20% cap by expected refund average ------
      The fee should never exceed 20% of the refund the patient
      actually expects to recover. The cap is a TRUST mechanism, not
-     a monetization mechanism — the flat tier prices ($29/$49/$79/$99)
-     already do the monetization work. The cap exists to make the
-     fee feel fair instantly to the patient, and to give us a clean
-     defensible promise ("we never take more than 1/5 of your refund")
-     vs claims agents who charge 30-40%.
+     a monetization mechanism — the flat tier prices ($19/$29/$49/
+     $79/$99) already do the monetization work. The cap exists to
+     make the fee feel fair instantly to the patient, and to give
+     us a clean defensible promise ("we never take more than 1/5 of
+     your refund") vs claims agents who charge 30-40%.
 
      Computed against the AVERAGE of the refund range (min + max / 2)
      so we don't penalize the patient for our own conservative low
@@ -58,15 +58,21 @@ function calculatePricing(input = {}) {
      (older callers).
 
      Tier ladder for the cap, fee-ascending:
-       LITE      $29  → refund_avg >= $145  (fee = 20% of refund)
+       MICRO     $19  → refund_avg >= $95   (fee = 20% of refund)
+       LITE      $29  → refund_avg >= $145
        STANDARD  $49  → refund_avg >= $245
        PLUS      $79  → refund_avg >= $395
        PREMIUM   $99  → refund_avg >= $495
 
-     LITE is the new floor — claims with refund_avg < $145 still get
-     LITE $29 (we never go below). The $29 covers our marginal cost
-     (Stripe fee, OCR Lambda, Sofia review minutes) so we don't lose
-     money even on the smallest refund. */
+     MICRO is the new floor — claims with refund_avg < $95 still get
+     MICRO $19 (we never go below). $19 comfortably covers our
+     marginal cost per claim (Stripe ~$0.87, Lambda + infra
+     negligible, money-back guarantee provision ~$1.90 at a 10%
+     fail rate) — leaving healthy margin even on the smallest
+     refund. Adding MICRO lets us honor the 20% cap as a marketing
+     claim in 99.9% of cases (vs ~99% with LITE alone) — and
+     unlocks 'from $19' as a stronger landing-page anchor than
+     'from $29'. */
   const refundMin = sanitizeNumber(input.estimated_refund_min, null);
   const refundMax = sanitizeNumber(input.estimated_refund_max, null);
   let refundAvg = null;
@@ -81,13 +87,14 @@ function calculatePricing(input = {}) {
   if (refundAvg != null && refundAvg > 0) {
     const maxFeeFromCap = refundAvg * 0.20;
     /* Walk the tier ladder DOWN until the price fits under the cap.
-       Floor at LITE $29 — never drop below, even if the cap would
+       Floor at MICRO $19 — never drop below, even if the cap would
        require it (otherwise we'd lose money on the claim). */
     if (price > maxFeeFromCap) {
       if (maxFeeFromCap >= 99)      { tier = "PREMIUM";  price = 99; }
       else if (maxFeeFromCap >= 79) { tier = "PLUS";     price = 79; }
       else if (maxFeeFromCap >= 49) { tier = "STANDARD"; price = 49; }
-      else                          { tier = "LITE";     price = 29; }
+      else if (maxFeeFromCap >= 29) { tier = "LITE";     price = 29; }
+      else                          { tier = "MICRO";    price = 19; }
     }
   }
 
