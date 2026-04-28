@@ -1683,9 +1683,17 @@ window.hydratePCDashboard = async function () {
   var refundedTotal = allClaims
     .filter(function (c) { return c.status === 'paid' && (c.refundAmount || c.paidAmount); })
     .reduce(function (sum, c) { return sum + Number(c.refundAmount || c.paidAmount || 0); }, 0);
-  var pendingTotal = allClaims
+  /* Pending total — show the range (sum of lows … sum of highs)
+     across all in-flight claims, NOT the midpoint. Showing a single
+     dollar number creates a hard expectation; the insurer pays
+     somewhere inside the range, so a customer who sees "$338" and
+     gets a $310 check feels short-changed. The hero card already
+     uses a range and the dashboard stat should match. */
+  var pendingLow = 0;
+  var pendingHigh = 0;
+  allClaims
     .filter(function (c) { return c.status === 'submitted' || c.status === 'in-review' || c.status === 'approved'; })
-    .reduce(function (sum, c) {
+    .forEach(function (c) {
       /* Same multi-field lookup as the hero card. */
       var lo = c.estimateMin || c.refundLow  || c.estimated_refund_min;
       var hi = c.estimateMax || c.refundHigh || c.estimated_refund_max;
@@ -1694,15 +1702,22 @@ window.hydratePCDashboard = async function () {
         lo = Math.round(paid * 0.55);
         hi = Math.round(paid * 0.80);
       }
-      var mid = (lo != null && hi != null)
-        ? (Number(lo) + Number(hi)) / 2
-        : Number(c.refundAmount || 0);
-      return sum + (mid || 0);
-    }, 0);
+      if (lo != null && hi != null) {
+        pendingLow  += Number(lo);
+        pendingHigh += Number(hi);
+      } else if (c.refundAmount) {
+        pendingLow  += Number(c.refundAmount);
+        pendingHigh += Number(c.refundAmount);
+      }
+    });
+  function fmtMoney(n) { return '$' + Math.round(n).toLocaleString(); }
+  var pendingText = pendingHigh > 0
+    ? (pendingLow === pendingHigh ? fmtMoney(pendingLow) : fmtMoney(pendingLow) + '–' + fmtMoney(pendingHigh))
+    : '$0';
   if ($('pc-stat-filed'))    $('pc-stat-filed').textContent = String(filed);
   if ($('pc-stat-approved')) $('pc-stat-approved').textContent = String(approved);
-  if ($('pc-stat-refunded')) $('pc-stat-refunded').textContent = '$' + Math.round(refundedTotal).toLocaleString();
-  if ($('pc-stat-pending'))  $('pc-stat-pending').textContent = '$' + Math.round(pendingTotal).toLocaleString();
+  if ($('pc-stat-refunded')) $('pc-stat-refunded').textContent = fmtMoney(refundedTotal);
+  if ($('pc-stat-pending'))  $('pc-stat-pending').textContent = pendingText;
 
   /* ---- Activity feed (max 4 most recent items) ---- */
   var actEl = $('pc-activity');
