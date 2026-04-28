@@ -1805,7 +1805,9 @@ setInterval(() => {
           var pricingRecord = {
             plan: String(pricing.tier).toLowerCase(),
             price: pricing.price,
-            explanation: pricing.explanation
+            explanation: pricing.explanation,
+            fee_exceeds_cap: !!pricing.fee_exceeds_cap,
+            fee_pct_of_refund: pricing.fee_pct_of_refund || null
           };
           /* Persist to CredimedState (localStorage) — survives tab close,
              Safari background cleanup, and cross-tab navigation that
@@ -1816,8 +1818,14 @@ setInterval(() => {
             sessionStorage.setItem('credimed_plan', pricingRecord.plan);
             sessionStorage.setItem('credimed_price', String(pricingRecord.price));
             sessionStorage.setItem('credimed_explanation', JSON.stringify(pricingRecord.explanation));
+            sessionStorage.setItem('credimed_fee_exceeds_cap', pricingRecord.fee_exceeds_cap ? '1' : '0');
+            if (pricingRecord.fee_pct_of_refund != null) {
+              sessionStorage.setItem('credimed_fee_pct', String(pricingRecord.fee_pct_of_refund));
+            }
           } catch (ssErr) { /* Safari private mode etc. — non-fatal */ }
-          console.log('[pricing]', pricing.tier, '$' + pricing.price, 'input:', pricingInput);
+          console.log('[pricing]', pricing.tier, '$' + pricing.price,
+                      pricing.fee_exceeds_cap ? '(' + pricing.fee_pct_of_refund + '% of refund — over 20% cap)' : '',
+                      'input:', pricingInput);
         }
       } catch (priceErr) {
         console.warn('[pricing] compute failed:', priceErr);

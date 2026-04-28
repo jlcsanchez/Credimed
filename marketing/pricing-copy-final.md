@@ -86,6 +86,28 @@ We make sure everything is complete and submitted correctly — so nothing delay
 
 ---
 
+## Edge case — refund too small for the 20% cap
+
+When a patient's expected refund is small enough that even our $29 floor exceeds 20% of the recovery (refund_avg < $145), the engine flags `fee_exceeds_cap = true` and `fee_pct_of_refund = N`. The `plan.html` overlay renders a "Heads up" banner ABOVE the tier card so the patient sees the situation honestly before committing. They can still proceed (the money-back guarantee still applies), but they make the decision with full information.
+
+**The banner copy (renders in amber, only when triggered):**
+
+```
+Heads up — your refund is small
+
+Our $29 fee is about [N]% of your estimated refund.
+Most patients pay closer to 15–20%.
+
+You can still file — your insurer still owes this to
+you, and our money-back guarantee covers you if we
+can't recover it. We just want to be upfront: on a
+small refund like yours, the math is tighter than usual.
+```
+
+Why this exists: keeps the marketing claim *"we limit our fee so you always keep most of what you recover"* honest in 100% of cases — when the math doesn't allow it, we tell the patient explicitly.
+
+---
+
 ## Where this copy renders
 
 | Surface | Which tier shows | Notes |

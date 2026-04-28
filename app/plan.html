@@ -1304,17 +1304,21 @@ mount();
   var GUARANTEE = "If we don't recover your refund, you don't pay.";
   var CAP_PROMISE = 'For larger refunds, we limit our fee so you always keep most of what you recover.';
 
-  var plan, price;
+  var plan, price, feeExceedsCap, feePctOfRefund;
   /* Prefer CredimedState (localStorage, persistent). Fall back to
      sessionStorage only if CredimedState doesn't have it yet. */
   var cs = (window.CredimedState && window.CredimedState.get('pricing', null)) || null;
   if (cs && cs.plan && cs.price > 0) {
     plan = cs.plan;
     price = cs.price;
+    feeExceedsCap = !!cs.fee_exceeds_cap;
+    feePctOfRefund = cs.fee_pct_of_refund;
   } else {
     try {
       plan = sessionStorage.getItem('credimed_plan');
       price = parseInt(sessionStorage.getItem('credimed_price'), 10);
+      feeExceedsCap = sessionStorage.getItem('credimed_fee_exceeds_cap') === '1';
+      feePctOfRefund = parseInt(sessionStorage.getItem('credimed_fee_pct'), 10) || null;
     } catch (e) { return; }
   }
   if (!plan || !(price > 0)) return;
@@ -1394,6 +1398,27 @@ mount();
       '</div>' +
     '</div>';
 
+  /* Heads-up banner when the LITE fee exceeds 20% of the refund —
+     i.e. the refund is small enough that even our $29 floor is a
+     bigger % of the recovery than our usual cap. Honest disclosure;
+     the patient still chooses. Renders ABOVE the tier card so they
+     read it before they commit. */
+  var headsUpBanner = '';
+  if (feeExceedsCap && feePctOfRefund) {
+    headsUpBanner =
+      '<div style="margin:14px 16px 0;padding:16px 18px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:14px">' +
+        '<div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#92400E;margin-bottom:8px">' +
+          'Heads up — your refund is small' +
+        '</div>' +
+        '<div style="font-size:14px;line-height:1.55;color:#78350F;margin-bottom:8px">' +
+          'Our $' + price + ' fee is about ' + feePctOfRefund + '% of your estimated refund. Most patients pay closer to 15&ndash;20%.' +
+        '</div>' +
+        '<div style="font-size:13px;line-height:1.55;color:#78350F">' +
+          'You can still file &mdash; your insurer still owes this to you, and our money-back guarantee covers you if we can't recover it. We just want to be upfront: on a small refund like yours, the math is tighter than usual.' +
+        '</div>' +
+      '</div>';
+  }
+
   /* Locked tier card — Best for / What we do / Reassurance / Guarantee.
      Mirrors marketing/pricing-copy-final.md verbatim. */
   function tierCardHtml() {
@@ -1435,6 +1460,7 @@ mount();
       '</div>' +
       youKeepHero +
       proceduresBlock +
+      headsUpBanner +
       tierCardHtml() +
       includesHtml +
       '<div class="footer-cta">' +

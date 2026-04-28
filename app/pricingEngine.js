@@ -117,10 +117,27 @@ function calculatePricing(input = {}) {
     i++;
   }
 
+  /* ------ Step 4: edge-case flag for refund-too-small-for-cap ------
+     When refund_avg × 20% is less than our $29 floor, the LITE fee
+     ends up at a higher % of the patient's refund than our usual cap.
+     Founder's call: don't decline the claim, but TELL the patient
+     transparently and let them choose. The plan.html overlay reads
+     `fee_exceeds_cap` and renders a "heads up" banner. The patient
+     can still proceed (and is covered by the money-back guarantee
+     either way) — they just make the decision with full information. */
+  let fee_exceeds_cap = false;
+  let fee_pct_of_refund = null;
+  if (refundAvg != null && refundAvg > 0) {
+    fee_pct_of_refund = Math.round((price / refundAvg) * 100);
+    fee_exceeds_cap = price > refundAvg * 0.20;
+  }
+
   return {
     tier,
     price,
-    explanation: bullets.slice(0, 4)
+    explanation: bullets.slice(0, 4),
+    fee_exceeds_cap,
+    fee_pct_of_refund
   };
 }
 
