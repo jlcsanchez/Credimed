@@ -89,6 +89,7 @@ html,body{
 .claim-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
 .claim-card .ref { font-size:11.5px; font-weight:700; letter-spacing:0.06em; color:var(--slate-500); text-transform:uppercase; font-family:"SF Mono", ui-monospace, "Menlo", monospace; }
 .claim-card .proc { font-size:16px; font-weight:700; color:var(--slate-900); margin-top:2px; }
+.claim-card .proc .proc-line { line-height: 1.35; padding: 1px 0; }
 .claim-card .meta { font-size:12.5px; color:var(--slate-500); }
 .claim-card-bottom { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:10px; border-top:1px solid var(--slate-100); }
 .claim-card .amount { font-size:14px; font-weight:700; color:var(--slate-900); }
@@ -167,7 +168,8 @@ html,body{
   .claims-table tbody tr:hover { background: var(--cream); }
   .claims-table .id { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; font-weight: 600; color: var(--slate-900); }
   .claims-table .procs { color: var(--slate-700); }
-  .claims-table .procs small { color: var(--slate-500); display: block; font-size: 12px; margin-top: 2px; }
+  .claims-table .procs .proc-line { line-height: 1.45; padding: 1px 0; }
+  .claims-table .procs small { color: var(--slate-500); display: block; font-size: 12px; margin-top: 4px; }
   .claims-table .amt { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--slate-900); }
   .claims-table .date { color: var(--slate-500); font-size: 13px; white-space: nowrap; }
   .claims-table .action a { color: var(--teal-700); font-weight: 600; text-decoration: none; font-size: 13px; }
@@ -391,9 +393,16 @@ html,body{
 
     body.innerHTML = visible.map(function (c) {
       var st = STATUS_TABLE[c.status] || { label: c.status || '—', cls: 'review' };
-      var procsRaw = Array.isArray(c.procedures) ? c.procedures.join(' · ')
-                   : (c.procedure || 'Dental claim');
-      var procs = window.translateProcedure ? window.translateProcedure(procsRaw) : procsRaw;
+      /* Render procedures stacked vertically (one per line) instead of
+         joined with " · " — much easier to scan when there are 4-5
+         procedures on a single claim. */
+      var procsArr = Array.isArray(c.procedures) && c.procedures.length
+        ? c.procedures
+        : [c.procedure || 'Dental claim'];
+      var procs = procsArr
+        .map(function (p) { return window.translateProcedure ? window.translateProcedure(p) : p; })
+        .map(function (p) { return '<div class="proc-line">' + p + '</div>'; })
+        .join('');
       var procCount = Array.isArray(c.procedures) ? c.procedures.length : 1;
       var refundLow  = c.estimateMin || c.refundLow;
       var refundHigh = c.estimateMax || c.refundHigh;
@@ -430,9 +439,14 @@ html,body{
       // fall back to the legacy patient-facing status from credimed-claims.
       var effectiveStatus = c.clearinghouseStatus || c.status;
       var pill = STATUS_PILL[effectiveStatus] || { label: '—', cls: 'pill-slate' };
-      var procsRaw = Array.isArray(c.procedures) ? c.procedures.join(', ')
-                   : (c.procedure || 'Dental claim');
-      var procs = window.translateProcedure ? window.translateProcedure(procsRaw) : procsRaw;
+      /* Mobile: stack procedures vertically too — same readability win. */
+      var procsArr = Array.isArray(c.procedures) && c.procedures.length
+        ? c.procedures
+        : [c.procedure || 'Dental claim'];
+      var procs = procsArr
+        .map(function (p) { return window.translateProcedure ? window.translateProcedure(p) : p; })
+        .map(function (p) { return '<div class="proc-line">' + p + '</div>'; })
+        .join('');
       var refundLow  = c.estimateMin || c.refundLow;
       var refundHigh = c.estimateMax || c.refundHigh;
       var refundLine = (refundLow && refundHigh)
