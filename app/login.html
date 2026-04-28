@@ -588,15 +588,27 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
         setTimeout(function () { window.location.href = getPostAuthUrl('signup'); }, 600);
         return;
       } catch (signinErr) {
-        var msg = (signinErr && (signinErr.message || signinErr.code) || '') + '';
-        if (!/UserNotConfirmed/i.test(msg)) {
+        /* Cognito surfaces the same condition through several fields
+           depending on which version of the SDK / Amplify is in use:
+             - err.code:    'UserNotConfirmedException'
+             - err.name:    'UserNotConfirmedException'
+             - err.message: 'User is not confirmed.'
+           Check all three so we don't false-negative on any of them.
+           Without this, the user sees a red 'User is not confirmed.'
+           banner and gets stuck on the signup screen instead of
+           progressing to the verify-code screen. */
+        var errCode = (signinErr && (signinErr.code || signinErr.name)) || '';
+        var errMsg  = (signinErr && signinErr.message) || '';
+        var isNotConfirmed = /UserNotConfirmed/i.test(errCode) ||
+                             /not[ _]confirmed/i.test(errMsg);
+        if (!isNotConfirmed) {
           /* Different error — surface it instead of pretending verify
              flow is the answer. */
           showError(friendlyCognitoErr(signinErr));
           return;
         }
-        /* User pool still in old "require email verification" mode —
-           show the legacy verify screen. */
+        /* User pool still in legacy "require email verification" mode —
+           fall through to the verify-code screen. */
         console.info('[signup] auto-confirm not configured, falling back to verify-code screen');
       }
 
