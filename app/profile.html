@@ -457,8 +457,51 @@ html,body{
   function flash(statusId) {
     var el = $(statusId);
     if (!el) return;
+    el.textContent = 'Saved ✓';
+    el.style.color = '';
     el.classList.add('show');
     setTimeout(function () { el.classList.remove('show'); }, 1800);
+  }
+
+  /* Override the status pill text + color, used for Cognito sync feedback
+     after the local-save flash has already fired. Keeps the pill visible
+     a bit longer so the user reads it. */
+  function flashStatus(statusId, message, isError) {
+    var el = $(statusId);
+    if (!el) return;
+    el.textContent = message;
+    el.style.color = isError ? 'var(--danger-fg, #b91c1c)' : '';
+    el.classList.add('show');
+    setTimeout(function () { el.classList.remove('show'); el.style.color = ''; }, 3200);
+  }
+
+  /* Push contact info to Cognito so it survives sign-out and follows
+     the user across devices. Local save already happened — this is
+     best-effort sync. Surfaces phone-format errors and Cognito API
+     errors via the status pill so the user knows their account-side
+     copy didn't update. */
+  function pushContactToCognito(payload, statusId) {
+    if (typeof window.cognitoUpdateAttributes !== 'function') return;
+    var attrs = {};
+    if (payload.firstName) attrs.given_name  = payload.firstName;
+    if (payload.lastName)  attrs.family_name = payload.lastName;
+    if (payload.dob)       attrs.birthdate   = payload.dob;
+    if (payload.phoneRaw) {
+      var e164 = window.formatPhoneE164 ? window.formatPhoneE164(payload.phoneRaw) : null;
+      if (e164) {
+        attrs.phone_number = e164;
+      } else {
+        flashStatus(statusId, 'Saved locally — phone needs 10-digit US format to sync', true);
+        return;
+      }
+    }
+    if (Object.keys(attrs).length === 0) return;
+    window.cognitoUpdateAttributes(attrs).then(function () {
+      flashStatus(statusId, 'Saved & synced to your account ✓');
+    }).catch(function (err) {
+      console.warn('[profile] Cognito sync failed:', err && (err.message || err));
+      flashStatus(statusId, 'Saved locally — account sync failed', true);
+    });
   }
 
   /* ────── Hydrate form from Cognito + CredimedState ────── */
@@ -568,16 +611,13 @@ html,body{
 
   /* ────── Save handlers ────── */
   $('saveContact').addEventListener('click', function () {
-    S.merge('user', {
-      firstName: $('firstName').value.trim(),
-      lastName:  $('lastName').value.trim(),
-      phone:     $('phone').value.trim(),
-    });
-    // Optional: push to Cognito attributes. Requires cognitoUpdateAttributes
-    // helper — leave as a TODO until we add it to backend.js.
+    var firstName = $('firstName').value.trim();
+    var lastName  = $('lastName').value.trim();
+    var phoneRaw  = $('phone').value.trim();
+    S.merge('user', { firstName: firstName, lastName: lastName, phone: phoneRaw });
     flash('statusContact');
-    // Refresh avatar + display
     hydrate();
+    pushContactToCognito({ firstName: firstName, lastName: lastName, phoneRaw: phoneRaw }, 'statusContact');
   });
 
   $('saveAddr').addEventListener('click', function () {
@@ -595,14 +635,14 @@ html,body{
   /* PC save handlers — share state with the mobile inputs via CredimedState. */
   if ($('pcSaveContact')) {
     $('pcSaveContact').addEventListener('click', function () {
-      S.merge('user', {
-        firstName: ($('pcFirstName') || {}).value && $('pcFirstName').value.trim(),
-        lastName:  ($('pcLastName')  || {}).value && $('pcLastName').value.trim(),
-        phone:     ($('pcPhone')     || {}).value && $('pcPhone').value.trim(),
-        dob:       ($('pcDob')       || {}).value || '',
-      });
+      var firstName = ($('pcFirstName') || {}).value ? $('pcFirstName').value.trim() : '';
+      var lastName  = ($('pcLastName')  || {}).value ? $('pcLastName').value.trim()  : '';
+      var phoneRaw  = ($('pcPhone')     || {}).value ? $('pcPhone').value.trim()     : '';
+      var dob       = ($('pcDob')       || {}).value || '';
+      S.merge('user', { firstName: firstName, lastName: lastName, phone: phoneRaw, dob: dob });
       flash('pcStatusContact');
       hydrate();
+      pushContactToCognito({ firstName: firstName, lastName: lastName, phoneRaw: phoneRaw, dob: dob }, 'pcStatusContact');
     });
   }
   if ($('pcSaveAddress')) {

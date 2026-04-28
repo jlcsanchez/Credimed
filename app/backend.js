@@ -175,6 +175,50 @@ window.authFetch = async function (url, opts) {
     if (user) user.signOut();
   };
 
+  /* Push profile attributes to Cognito so they survive sign-out and
+     follow the user across devices. Caller passes a plain object keyed
+     by Cognito attribute name (given_name, family_name, phone_number,
+     birthdate, address). Empty / null values are skipped — no-op if
+     nothing to send.
+
+     phone_number MUST be E.164 (e.g. "+16178033831"). Use
+     window.formatPhoneE164() to convert a US-style raw input first.
+     birthdate MUST be YYYY-MM-DD; the HTML <input type="date"> already
+     emits that format. */
+  window.cognitoUpdateAttributes = function (attrs) {
+    return new Promise(function (resolve, reject) {
+      var user = pool.getCurrentUser();
+      if (!user) return reject(new Error('No active Cognito session'));
+      user.getSession(function (err, session) {
+        if (err) return reject(err);
+        if (!session.isValid()) return reject(new Error('Session invalid'));
+        var list = Object.keys(attrs || {})
+          .filter(function (k) { return attrs[k] != null && String(attrs[k]).trim() !== ''; })
+          .map(function (k) {
+            return new AmazonCognitoIdentity.CognitoUserAttribute({
+              Name:  k,
+              Value: String(attrs[k]).trim()
+            });
+          });
+        if (list.length === 0) return resolve({ updated: 0 });
+        user.updateAttributes(list, function (uerr, result) {
+          if (uerr) return reject(uerr);
+          resolve({ updated: list.length, result: result });
+        });
+      });
+    });
+  };
+
+  /* Convert a free-form US phone string into E.164 ("+1XXXXXXXXXX").
+     Returns null when the input doesn't look like a US number — caller
+     can decide whether to abort the Cognito push or surface an error. */
+  window.formatPhoneE164 = function (raw) {
+    var digits = String(raw || '').replace(/\D/g, '');
+    if (digits.length === 10) return '+1' + digits;
+    if (digits.length === 11 && digits.charAt(0) === '1') return '+' + digits;
+    return null;
+  };
+
   /* Kick off password reset: emails a code to the user. */
   window.cognitoForgotPassword = function (email) {
     return new Promise(function (resolve, reject) {
