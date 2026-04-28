@@ -12,7 +12,7 @@ If you have a US PPO dental plan and you got dental work done in Mexico, **you c
 
 The problem isn't eligibility. The problem is the paperwork. Almost every plan accepts the claim — they just won't tell you which form, which codes, or which exact format will get it through their first-pass review without a denial.
 
-This guide walks through the actual process, end to end, for filing one of these claims yourself. (Or, full disclosure: this is exactly what we built [Credimed](https://credimed.us) to handle for you, for $49 flat. But if you'd rather DIY, here's the playbook.)
+This guide walks through the actual process, end to end, for filing one of these claims yourself. (Or, full disclosure: this is exactly what we built [Credimed](https://credimed.us) to handle for you, from $19 with a money-back guarantee. But if you'd rather DIY, here's the playbook.)
 
 ## The short version
 
@@ -139,7 +139,7 @@ Resubmit within 30 days of the denial with the corrected info and a note explain
 
 If you've read this far and thought "this sounds like a lot," you're not wrong. The whole process takes most people 4–8 hours plus a few weeks of back-and-forth.
 
-That's exactly why we built [Credimed](https://credimed.us). You upload your factura and your insurance card. We do the CDT mapping, the FX conversion, the claim form, the resubmission if it gets denied. Flat $49. If we can't recover it, you don't pay.
+That's exactly why we built [Credimed](https://credimed.us). You upload your factura and your insurance card. We do the CDT mapping, the FX conversion, the claim form, the resubmission if it gets denied. From $19, capped at 20% of your refund. If we don't recover it, you don't pay.
 
 → [Try the refund estimator](https://credimed.us)
 

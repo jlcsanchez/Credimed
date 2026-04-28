@@ -1739,30 +1739,39 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
     /* Complexity-based pricing model (set by app/payment.html and the
        pricingEngine):
-       - Standard $49 — 1 procedure
-       - Plus     $79 — 2–3 procedures
+       - Micro    $19 — cap floor (refund_avg < $145)
+       - Lite     $29 — cap-driven (refund_avg < $245)
+       - Standard $49 — 1 procedure, refund_avg ≥ $245
+       - Plus     $79 — 2–3 procedures, refund_avg ≥ $395
        - Premium  $99 — 4+ procedures (or any claim flagged for code review)
-       - Additional resubmissions: $19 (Standard/Plus only — Premium gets unlimited)
+       - Additional resubmissions: $19 (Lite/Standard/Plus — Premium unlimited)
        - 0% commission on reimbursement (never charged) */
-    var standardFees, plusFees, premiumFees, resubFees;
+    var microFees, liteFees, standardFees, plusFees, premiumFees, resubFees;
     if (demo) {
-      // 50% Standard / 30% Plus / 20% Premium on 458 annual claims;
+      // Demo distribution after MICRO addition:
+      // 5% Micro / 10% Lite / 50% Standard / 25% Plus / 10% Premium on 458 claims;
       // ~5% of non-Premium pay one extra resub.
+      var mClaims = Math.round(458 * 0.05);
+      var liClaims = Math.round(458 * 0.10);
       var sClaims = Math.round(458 * 0.50);
-      var lClaims = Math.round(458 * 0.30);
-      var pClaims = Math.round(458 * 0.20);
-      var paidResubs = Math.round((sClaims + lClaims) * 0.05);
+      var lClaims = Math.round(458 * 0.25);
+      var pClaims = Math.round(458 * 0.10);
+      var paidResubs = Math.round((mClaims + liClaims + sClaims + lClaims) * 0.05);
+      microFees    = mClaims * 19;
+      liteFees     = liClaims * 29;
       standardFees = sClaims * 49;
       plusFees     = lClaims * 79;
       premiumFees  = pClaims * 99;
       resubFees    = paidResubs * 19;
     } else {
+      microFees    = (claims || []).filter(function (c) { return c.plan === 'micro'; }).length * 19;
+      liteFees     = (claims || []).filter(function (c) { return c.plan === 'lite'; }).length * 29;
       standardFees = (claims || []).filter(function (c) { return c.plan === 'standard'; }).length * 49;
       plusFees     = (claims || []).filter(function (c) { return c.plan === 'plus'; }).length * 79;
       premiumFees  = (claims || []).filter(function (c) { return c.plan === 'premium'; }).length * 99;
       resubFees    = (claims || []).reduce(function (s, c) { return s + ((c.paidResubs || 0) * 19); }, 0);
     }
-    var planFees = standardFees + plusFees + premiumFees;
+    var planFees = microFees + liteFees + standardFees + plusFees + premiumFees;
     var grossRev = planFees + resubFees;
 
     /* Refunds — money out per v1.2 §2.3 money-back guarantee. */
@@ -2094,7 +2103,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       if (c.insurer)   p.insurer = c.insurer;
       if (c.memberId)  p.memberId = c.memberId;
       if (c.plan)      p.plan = c.plan;
-      var fee = c.plan === 'premium' ? 39 : (c.plan === 'plus' ? 79 : 29);
+      var fee = c.plan === 'premium'  ? 99
+              : c.plan === 'plus'     ? 79
+              : c.plan === 'standard' ? 49
+              : c.plan === 'lite'     ? 29
+              : c.plan === 'micro'    ? 19
+              :                         49;  /* default to Standard if missing */
       p.revenue += fee;
       var t = c.submittedAt ? new Date(c.submittedAt).getTime() : 0;
       if (!p.lastActivity || t > p.lastActivity) p.lastActivity = t;
@@ -2105,9 +2119,11 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   }
 
   function planLabel(p) {
-    if (p === 'premium') return 'Premium';
-    if (p === 'plus')    return 'Plus';
-    if (p === 'standard')return 'Standard';
+    if (p === 'premium')  return 'Premium';
+    if (p === 'plus')     return 'Plus';
+    if (p === 'standard') return 'Standard';
+    if (p === 'lite')     return 'Lite';
+    if (p === 'micro')    return 'Micro';
     return '—';
   }
 

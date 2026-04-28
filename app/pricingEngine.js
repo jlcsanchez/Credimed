@@ -125,8 +125,9 @@ function calculatePricing(input = {}) {
   }
 
   /* ------ Step 4: edge-case flag for refund-too-small-for-cap ------
-     When refund_avg × 20% is less than our $29 floor, the LITE fee
-     ends up at a higher % of the patient's refund than our usual cap.
+     When refund_avg × 20% is less than our $19 floor (i.e.
+     refund_avg < $95), the MICRO fee ends up at a higher % of the
+     patient's refund than our usual cap.
      Founder's call: don't decline the claim, but TELL the patient
      transparently and let them choose. The plan.html overlay reads
      `fee_exceeds_cap` and renders a "heads up" banner. The patient

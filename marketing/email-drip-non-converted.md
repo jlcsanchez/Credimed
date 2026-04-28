@@ -30,7 +30,7 @@ Quick note — your refund estimate of **$[ESTIMATE_LOW]–$[ESTIMATE_HIGH]** is
 A few things people ask me right after the estimator:
 
 - **Is the estimate accurate?** It's an average across thousands of similar PPO claims for the same procedures. Your actual refund depends on your specific plan's allowed amounts and remaining annual maximum — your insurer makes the final call.
-- **What if my insurer says no?** If your claim is eligible and our team can't recover it after one free resubmission, we refund the $49. No paperwork, no fight.
+- **What if my insurer says no?** If your claim is eligible and our team can't recover it after one free resubmission, your fee comes back. No paperwork, no fight.
 - **How long does it take?** We file within 24 hours of payment. Insurers typically respond in 14–45 days.
 
 Hit reply if anything's blocking you. I read every email.

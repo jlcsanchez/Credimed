@@ -2058,6 +2058,8 @@ mountScope('desktop');
     var amountForPlan =
       pricing.plan === 'premium' ? 9900 :
       pricing.plan === 'plus'    ? 7900 :
+      pricing.plan === 'lite'    ? 2900 :
+      pricing.plan === 'micro'   ? 1900 :
                                    4900;
 
     console.log('[prefetch] triggering PaymentIntent for', pricing.plan, amountForPlan);
