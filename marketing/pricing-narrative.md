@@ -126,85 +126,180 @@ The user doesn't want a model output. They want money that's owed to them.
 
 **User question:** "How much do I pay?"
 
-The highest-leverage screen. One card per tier. The structure for every card:
+The highest-leverage screen. One card per tier — the user only sees the one the engine assigned them, never the other three. Locked structure:
 
 ```
-[Hook: what they're owed]
-[You-keep math]
-[Why this tier — competitor framing]
-[Risk inversion]
-[CTA — verb is "refund" not "claim"]
+┌─────────────────────────────────────────┐
+│ YOUR INSURER OWES YOU                   │   ← Loss frame, eyebrow
+│                                         │
+│ $X – $Y                                 │   ← Headline number, biggest
+│                                         │
+│ Pay $Z to file → keep $A – $B           │   ← You-keep arithmetic
+│                                         │
+│ [ Start my refund — $Z ]                │   ← CTA, refund verb
+│                                         │
+│ If we don't recover your refund,        │   ← Risk inversion inline
+│ you don't pay.                          │
+└─────────────────────────────────────────┘
+
+
+What we do for you                            ← Header (not "why this price")
+─────────────────────────────────────────
+[Tier-specific opening — sets context]
+
+We organize your documents, code each
+procedure correctly, and submit your
+claim from start to finish.
+
+Nothing gets missed — we make sure you
+get every dollar your plan covers.
+
+[Tier-specific closing — competitor framing or cap callout]
 ```
+
+The middle two paragraphs are constant across all four tiers. Only the opening line and the closing line change. This is intentional — same product, same diligence, only the tier-specific anchor differs.
 
 #### LITE — $29 — vs doing nothing
 
 ```
-Your insurer owes you $135-$160.
-Pay $29 to file → keep $106-$131.
+┌─────────────────────────────────────────┐
+│ YOUR INSURER OWES YOU                   │
+│                                         │
+│ $135 – $160                             │
+│                                         │
+│ Pay $29 to file → keep $106 – $131      │
+│                                         │
+│ [ Start my refund — $29 ]               │
+│                                         │
+│ If we don't recover your refund,        │
+│ you don't pay.                          │
+└─────────────────────────────────────────┘
 
-We made the fee small so you actually keep most of it. Without us
-you'd leave this on the table — most patients with claims under
-$200 never bother filing.
 
-If we can't recover it, your $29 comes back. No questions.
+What we do for you
+─────────────────────────────────────────
+Smaller claims still take real work to
+file correctly.
 
-[ Start my refund — $29 ]
+We organize your documents, code each
+procedure correctly, and submit your
+claim from start to finish.
+
+Nothing gets missed — we make sure you
+get every dollar your plan covers.
+
+We cap our fee at 25% of your refund.
+On smaller claims like yours, that's $29
+— the smallest we can charge.
 ```
-
-**Helper:** "We capped this at 25% of your expected refund. $29 is the smallest fee we can charge to file the paperwork end-to-end."
 
 #### STANDARD — $49 — vs filing yourself
 
 ```
-Your insurer owes you $300-$400.
-Pay $49 to file → keep $251-$351.
+┌─────────────────────────────────────────┐
+│ YOUR INSURER OWES YOU                   │
+│                                         │
+│ $300 – $400                             │
+│                                         │
+│ Pay $49 to file → keep $251 – $351      │
+│                                         │
+│ [ Start my refund — $49 ]               │
+│                                         │
+│ If we don't recover your refund,        │
+│ you don't pay.                          │
+└─────────────────────────────────────────┘
 
-This is the typical case. We file with the right ADA CDT codes
-the first time — so you skip the 4-rejection loop most patients
-run into when they file alone.
 
-If we can't recover it, your $49 comes back.
+What we do for you
+─────────────────────────────────────────
+A typical claim filed the right way.
 
-[ Start my refund — $49 ]
+We organize your documents, code each
+procedure correctly, and submit your
+claim from start to finish.
+
+Nothing gets missed — we make sure you
+get every dollar your plan covers.
+
+About 1 in 6 self-filed claims gets
+rejected on the first pass. Ours go
+through clean.
 ```
-
-**Helper:** "About 1 in 6 out-of-network claims gets rejected on the first pass for paperwork errors. Each rejection adds 2-3 weeks. Ours go through clean."
 
 #### PLUS — $79 — vs multi-procedure DIY
 
 ```
-Your insurer owes you $450-$610.
-Pay $79 to file → keep $371-$531.
+┌─────────────────────────────────────────┐
+│ YOUR INSURER OWES YOU                   │
+│                                         │
+│ $191 – $255                             │
+│                                         │
+│ Pay $79 to file → keep $112 – $176      │
+│                                         │
+│ [ Start my refund — $79 ]               │
+│                                         │
+│ If we don't recover your refund,        │
+│ you don't pay.                          │
+└─────────────────────────────────────────┘
 
-Your claim has 4 procedures. Each needs its own ADA CDT code.
-Getting one wrong is the #1 reason insurers reject — and they
-don't tell you which one was wrong, just "denied." We map all
-four correctly the first time.
 
-If we can't recover it, your $79 comes back.
+What we do for you
+─────────────────────────────────────────
+Your claim includes multiple procedures
+that need careful review.
 
-[ Start my refund — $79 ]
+We organize your documents, code each
+procedure correctly, and submit your
+claim from start to finish.
+
+Nothing gets missed — we make sure you
+get every dollar your plan covers.
+
+For larger refunds, we cap our fee so you
+always keep most of what you recover.
 ```
-
-**Helper:** "Our fee is ~16% of your expected refund — well under our 25% cap. On bigger refunds the % drops further."
 
 #### PREMIUM — $99 — vs hiring an agent
 
 ```
-Your insurer owes you $1,200-$1,500.
-Pay $99 to file → keep $1,101-$1,401.
+┌─────────────────────────────────────────┐
+│ YOUR INSURER OWES YOU                   │
+│                                         │
+│ $1,200 – $1,500                         │
+│                                         │
+│ Pay $99 to file → keep $1,101 – $1,401  │
+│                                         │
+│ [ Start my refund — $99 ]               │
+│                                         │
+│ If we don't recover your refund,        │
+│ you don't pay.                          │
+└─────────────────────────────────────────┘
 
-Big claims need maximum review depth — every procedure code,
-every coverage rule, every plan exception. A claims agent or
-lawyer would charge 30-40% of the recovery. Our fee is capped
-at 25% — and on this claim it's only 7%.
 
-If we can't recover it, your $99 comes back.
+What we do for you
+─────────────────────────────────────────
+Big claims need maximum review — every
+procedure, every coverage rule, every
+plan exception.
 
-[ Start my refund — $99 ]
+We organize your documents, code each
+procedure correctly, and submit your
+claim from start to finish.
+
+Nothing gets missed — we make sure you
+get every dollar your plan covers.
+
+A claims agent would take 30-40% of your
+recovery. Our fee is capped at 25% —
+and on this claim, only about 7%.
 ```
 
-**Helper:** "A claims agent on a $1,500 refund: $450-$600 commission. Us: $99. Same outcome."
+**Voice rules locked in this version (your tweaks applied):**
+- "includes" not "has"
+- "code each procedure" not "code every line"
+- "make sure you get" not "push for"
+- "If we don't recover your refund, you don't pay" (final form of risk inversion)
+- Header is "What we do for you" not "Why this price"
 
 ---
 
