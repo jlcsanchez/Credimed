@@ -1632,12 +1632,14 @@ mountScope('desktop');
       var pi = null;
       var pending = (window.CredimedState && window.CredimedState.get('pendingPaymentIntent', null)) || null;
       var TEN_MIN = 10 * 60 * 1000;
+      var usedPrefetch = false;
       if (pending && pending.clientSecret
           && pending.plan === plan
           && pending.claimId === claimId
           && typeof pending.createdAt === 'number'
           && (Date.now() - pending.createdAt) < TEN_MIN) {
         pi = { clientSecret: pending.clientSecret };
+        usedPrefetch = true;
         console.log('[payment] using prefetched clientSecret from agreement.html');
       } else {
         pi = await window.createPaymentIntent({
@@ -1654,8 +1656,28 @@ mountScope('desktop');
          (already in the DOM from the skeleton structure). Stripe will
          inject its iframe there; we keep it display:none until the
          element fires its own 'ready' event. */
-      var paymentEl = await window.mountStripePaymentElement(pi.clientSecret, 'payment-element');
-      state.mounted = true;
+      var paymentEl;
+      try {
+        paymentEl = await window.mountStripePaymentElement(pi.clientSecret, 'payment-element');
+        state.mounted = true;
+      } catch (mountErr) {
+        /* Stripe rejected the clientSecret (commonly: prefetched intent
+           is stale, or the user hit Stripe's elements/sessions endpoint
+           with an intent that's already consumed). If we used the
+           prefetch, throw it away and retry once with a fresh Lambda
+           call. Don't loop — single retry. */
+        if (usedPrefetch) {
+          console.warn('[payment] prefetched clientSecret rejected by Stripe — clearing cache and retrying with fresh intent:', mountErr && (mountErr.message || mountErr));
+          if (window.CredimedState) window.CredimedState.set('pendingPaymentIntent', null);
+          pi = await window.createPaymentIntent({
+            plan: plan, amount: amount, currency: 'usd', email: user.email, claimId: claimId
+          });
+          paymentEl = await window.mountStripePaymentElement(pi.clientSecret, 'payment-element');
+          state.mounted = true;
+        } else {
+          throw mountErr;
+        }
+      }
 
       /* Swap skeleton → real form the moment Stripe's iframe signals
          it has finished rendering. Cross-fade (not hard display:none)
