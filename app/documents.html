@@ -1786,7 +1786,10 @@ setInterval(() => {
           var hasMissing = !rec.amountPaid || !rec.procedure || !rec.treatmentDate;
           var hasAmbiguity = !!(rec.cdtCode && !/^D\d{4}$/.test(String(rec.cdtCode)));
           var estimatedRefundMin = (paidUSD != null && paidUSD > 0)
-            ? Math.round(paidUSD * 0.60)
+            ? Math.round(paidUSD * 0.55)
+            : null;
+          var estimatedRefundMax = (paidUSD != null && paidUSD > 0)
+            ? Math.round(paidUSD * 0.80)
             : null;
 
           var pricingInput = {
@@ -1795,7 +1798,8 @@ setInterval(() => {
             ocr_confidence: confidence,
             has_missing_fields: hasMissing,
             has_code_ambiguity: hasAmbiguity,
-            estimated_refund_min: estimatedRefundMin
+            estimated_refund_min: estimatedRefundMin,
+            estimated_refund_max: estimatedRefundMax
           };
           var pricing = window.calculatePricing(pricingInput);
           var pricingRecord = {

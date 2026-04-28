@@ -1575,11 +1575,10 @@ mountScope('desktop');
     /* Figure out plan + amount. Read order:
          1. CredimedState.pricing (localStorage, persistent)
          2. sessionStorage.credimed_price (tab-scoped, can be lost)
-         3. Tier-based fallback using ENGINE prices (49/79/99) — NOT the
-            Claude Design mockup prices (29/39). A user who somehow
-            lands on payment.html without pricing data should at worst
-            be charged the correct tier price, never the stale mockup
-            amount that surfaced the $39-instead-of-$79 bug. */
+         3. Tier-based fallback using ENGINE prices (29/49/79/99). A user
+            who somehow lands on payment.html without pricing data should
+            at worst be charged the correct tier price, never a stale
+            mockup amount. */
     var plan = (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard';
     var amount = null;
     var csPricing = (window.CredimedState && window.CredimedState.get('pricing', null)) || null;
@@ -1594,7 +1593,10 @@ mountScope('desktop');
       } catch (e) { /* fall through */ }
     }
     if (amount == null) {
-      amount = plan === 'premium' ? 9900 : plan === 'plus' ? 7900 : 4900;
+      amount = plan === 'lite'    ? 2900
+             : plan === 'premium' ? 9900
+             : plan === 'plus'    ? 7900
+             :                      4900;
     }
 
     var user = {};
@@ -1901,7 +1903,7 @@ mountScope('desktop');
       }
     } catch (e) {}
     var sel = (window.CredimedState && window.CredimedState.get('plan.selected')) || 'standard';
-    var price = sel === 'plus' ? 79 : sel === 'premium' ? 99 : 49;
+    var price = sel === 'lite' ? 29 : sel === 'plus' ? 79 : sel === 'premium' ? 99 : 49;
     return { name: sel.charAt(0).toUpperCase() + sel.slice(1), price: price };
   }
 

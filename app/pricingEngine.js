@@ -16,6 +16,11 @@ function calculatePricing(input = {}) {
   num_procedures = Math.min(num_procedures, 10);
   num_documents = Math.min(num_documents, 10);
 
+  /* ------ Step 1: pick tier by complexity ------
+     Same logic as before — work-required signals (procedures, docs,
+     OCR confidence, code ambiguity, missing fields) decide which tier
+     fits the claim's effort. The refund-amount cap below trims down
+     when fees would be an unreasonable share of the refund. */
   const isPremium =
     num_procedures >= 4 ||
     ocr < 0.5 ||
@@ -38,6 +43,49 @@ function calculatePricing(input = {}) {
     price = 99;
   }
 
+  /* ------ Step 2: 25% cap by expected refund average ------
+     The fee should never exceed 25% of the refund the patient
+     actually expects to recover. Computed against the AVERAGE of the
+     refund range (min + max / 2) so we don't penalize the patient
+     for our own conservative low end. Falls back gracefully to the
+     legacy `< $300 drops a tier` rule when only `_min` is provided
+     (older callers).
+
+     Tier ladder for the cap, fee-ascending:
+       LITE      $29  → refund_avg >= $116  (fee = 25% of refund)
+       STANDARD  $49  → refund_avg >= $196
+       PLUS      $79  → refund_avg >= $316
+       PREMIUM   $99  → refund_avg >= $396
+
+     LITE is the new floor — claims with refund_avg < $116 still get
+     LITE $29 (we never go below). The $29 covers our marginal cost
+     (Stripe fee, OCR Lambda, Sofia review minutes) so we don't lose
+     money even on the smallest refund. */
+  const refundMin = sanitizeNumber(input.estimated_refund_min, null);
+  const refundMax = sanitizeNumber(input.estimated_refund_max, null);
+  let refundAvg = null;
+  if (refundMin != null && refundMax != null) {
+    refundAvg = (refundMin + refundMax) / 2;
+  } else if (refundMin != null) {
+    /* Caller didn't pass max — assume max ≈ min × 1.33 (matches the
+       55-80% of paidUSD range used by documents.html). */
+    refundAvg = refundMin * 1.165;
+  }
+
+  if (refundAvg != null && refundAvg > 0) {
+    const maxFeeFromCap = refundAvg * 0.25;
+    /* Walk the tier ladder DOWN until the price fits under the cap.
+       Floor at LITE $29 — never drop below, even if the cap would
+       require it (otherwise we'd lose money on the claim). */
+    if (price > maxFeeFromCap) {
+      if (maxFeeFromCap >= 99)      { tier = "PREMIUM";  price = 99; }
+      else if (maxFeeFromCap >= 79) { tier = "PLUS";     price = 79; }
+      else if (maxFeeFromCap >= 49) { tier = "STANDARD"; price = 49; }
+      else                          { tier = "LITE";     price = 29; }
+    }
+  }
+
+  /* ------ Step 3: bullets (same as before, plus a Lite-aware copy) ------ */
   const bullets = [];
 
   if (has_code_ambiguity)
@@ -61,22 +109,6 @@ function calculatePricing(input = {}) {
   while (bullets.length < 3 && i < FALLBACK_BULLETS.length) {
     if (!bullets.includes(FALLBACK_BULLETS[i])) bullets.push(FALLBACK_BULLETS[i]);
     i++;
-  }
-
-  /* Downgrade protection: if the estimated refund is below $300, drop
-     one tier so the fee never represents an unreasonable fraction of
-     the refund. PLUS check runs before PREMIUM so a PREMIUM downgraded
-     to PLUS is NOT cascaded down to STANDARD in the same call. */
-  if (input.estimated_refund_min &&
-      input.estimated_refund_min < 300) {
-    if (tier === "PLUS") {
-      tier = "STANDARD";
-      price = 49;
-    }
-    if (tier === "PREMIUM") {
-      tier = "PLUS";
-      price = 79;
-    }
   }
 
   return {
