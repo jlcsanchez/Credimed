@@ -870,22 +870,36 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     setLoading('btnLogin', true);
     clearBanners();
 
-    /* Wipe any residual session before signing in — catches demo
-       leftovers and stale state from a different account on this
-       browser. Backend /claims rehydrates the real data. */
+    /* Demo footprint is always safe to wipe on sign-in. The real
+       CredimedState (uploaded receipts, in-flight claims, mailing
+       address, etc.) is intentionally NOT cleared up-front — that was
+       the cause of "everything gets erased when I sign back in". We
+       conditionally clear it AFTER sign-in succeeds, only when the
+       signed-in Cognito sub differs from the one stored in state
+       (i.e., a different user is signing in on this browser). */
     try { localStorage.removeItem('credimed.demo'); } catch (e) {}
-    try { if (window.CredimedState) window.CredimedState.clear(); } catch (e) {}
 
     try {
       await window.cognitoSignIn(email, pw);
       try {
         var cu = await window.cognitoGetCurrentUser();
-        if (cu && cu.attributes) {
-          window.CredimedState && window.CredimedState.merge('user', {
-            firstName: cu.attributes.given_name || '',
-            lastName:  cu.attributes.family_name || '',
-            email:     cu.attributes.email || email
-          });
+        if (cu && cu.sub && window.CredimedState) {
+          var prevSub = window.CredimedState.get('user.sub', null);
+          if (prevSub && prevSub !== cu.sub) {
+            /* Different user is signing in — purge the previous user's
+               in-flight claim data so it doesn't leak across accounts. */
+            window.CredimedState.clear();
+          }
+          if (cu.attributes) {
+            window.CredimedState.merge('user', {
+              sub:       cu.sub,
+              firstName: cu.attributes.given_name || '',
+              lastName:  cu.attributes.family_name || '',
+              email:     cu.attributes.email || email
+            });
+          } else {
+            window.CredimedState.merge('user', { sub: cu.sub });
+          }
         }
       } catch (e) {}
       // Fresh sign-in: show the Welcome back interstitial before routing
@@ -904,11 +918,13 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
   (async function () {
     var params = new URLSearchParams(window.location.search);
 
-    /* Explicit logout: sign out first, then show the signup/login form so the
-       user can authenticate with a different account. */
+    /* Explicit logout: sign out from Cognito but DO NOT wipe CredimedState.
+       The state is keyed to the user.sub and the next sign-in handler clears
+       it only when a DIFFERENT user signs in on this browser. Wiping here
+       caused "everything gets erased after I sign out and sign back in" with
+       the same account. Demo footprint is always safe to wipe. */
     if (params.get('logout') === '1' || window.location.hash === '#logout') {
       try { localStorage.removeItem('credimed.demo'); } catch (e) {}
-      try { if (window.CredimedState) window.CredimedState.clear(); } catch (e) {}
       try { window.cognitoSignOut(); } catch (e) {}
       history.replaceState(null, '', '/app/login.html?mode=login');
       show('screen-login');
