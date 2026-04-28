@@ -152,6 +152,12 @@ html,body{
 }
 .copy-btn.copied { background:rgba(255,255,255,0.16); }
 
+/* Hide the PC mockup at every viewport — it's a decorative-only block
+   (hardcoded CMX-2026-0A4B29, Aetna PPO, etc.) that's never meant to
+   render. Mobile flow stretches to PC. Without this default the unstyled
+   mockup leaked under .claim-mobile-only on phone widths. */
+.claim-pc { display: none; }
+
 /* ============================================================
    DESKTOP CLAIM DETAIL (>= 960px) — Claude Design page 3.
    ============================================================ */

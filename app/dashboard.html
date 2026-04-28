@@ -561,10 +561,18 @@ html,body{
    Mobile (< 768px) is untouched — uses .dashboard-mobile-only
    wrapper which hides at >= 960px.
    ============================================================ */
+/* Hide the PC dashboard by default — it's only meant to render at >= 960px.
+   Without this, mobile users saw an unstyled .dash block stacked under
+   the working .dashboard-mobile-only view (duplicate "Welcome back" banner +
+   giant unstyled SVGs + bare blue links). .app-panel is already hidden
+   below 1280px by /styles/app-shell.css. */
+.dash { display: none; }
+
 @media (min-width: 960px) {
   .dashboard-mobile-only { display: none; }
 
   .dash {
+    display: block;
     padding: 40px 40px 64px;
     max-width: 1080px;
     margin: 0 auto;

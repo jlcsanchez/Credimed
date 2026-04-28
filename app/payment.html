@@ -871,9 +871,13 @@ html, body {
    Stripe #payment-element + #stripe-skeleton are moved into the
    PC card at runtime via JS so they only mount once.
    ============================================================ */
+/* Hide PC layout on mobile — its styles only exist inside the @media
+   below, so without this default it leaked unstyled under .payment-mobile-only. */
+.pay-pc { display: none; }
+
 @media (min-width: 960px) {
   .payment-mobile-only { display: none; }
-  .pay-pc { padding: 40px 40px 56px; max-width: 1080px; margin: 0 auto; }
+  .pay-pc { display: block; padding: 40px 40px 56px; max-width: 1080px; margin: 0 auto; }
   .pay-head { text-align: left; margin-bottom: 28px; }
   .pay-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 6px; }
   .pay-head h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }

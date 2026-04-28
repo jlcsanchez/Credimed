@@ -724,6 +724,12 @@ html, body {
   .desktop { display: none; }
 }
 
+/* Hide the PC mockup at every viewport — it's a hardcoded design preview
+   that's never meant to render. Without this default, mobile users saw
+   it stack unstyled below .plan-mobile-only. The !important rule inside
+   the @media block below stays as a belt-and-suspenders. */
+.plan-pc { display: none; }
+
 @media (min-width: 960px) {
   /* Same Claude Design pattern as estimate/claim/agreement: .plan-pc
      was a hardcoded mockup (D2740 Crown, D3330 Root canal, fixed
@@ -1419,7 +1425,7 @@ mount();
           'Our $' + price + ' fee is about ' + feePctOfRefund + '% of your estimated refund. Most patients pay closer to 15&ndash;20%.' +
         '</div>' +
         '<div style="font-size:13px;line-height:1.55;color:#78350F">' +
-          'You can still file &mdash; your insurer still owes this to you, and our money-back guarantee covers you if we can't recover it. We just want to be upfront: on a small refund like yours, the math is tighter than usual.' +
+          "You can still file &mdash; your insurer still owes this to you, and our money-back guarantee covers you if we can't recover it. We just want to be upfront: on a small refund like yours, the math is tighter than usual." +
         '</div>' +
       '</div>';
   }

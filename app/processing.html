@@ -396,6 +396,10 @@ html, body {
   .desktop { display: none; }
 }
 
+/* Hide PC layout on mobile — its styles only exist inside the @media
+   below, so without this default it leaked unstyled under .proc-mobile-only. */
+.proc-pc { display: none; }
+
 @media (min-width: 960px) {
   /* Hide ALL of Claude Design's iPhone-mockup chrome on PC, not just
      the .proc-mobile-only stub. The .stage div has its own cream

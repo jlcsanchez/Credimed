@@ -292,6 +292,10 @@ html, body {
   }
 }
 
+/* Hide PC layout on mobile — its styles only exist inside the @media
+   below, so without this default it leaked unstyled under .page. */
+.conf-pc { display: none; }
+
 @media (min-width: 960px) {
   /* The mobile UI (the green-card 'You're all set' page) lives in
      <div class="page"> directly inside body — the .conf-mobile-only
@@ -303,7 +307,7 @@ html, body {
   .page,
   body[data-page="submission-confirmed"] > .page,
   body[data-page="submission-confirmed"] .app-bottomnav { display: none !important; }
-  .conf-pc { padding: 56px 40px; min-height: calc(100vh - 64px); display: flex; align-items: center; justify-content: center; }
+  .conf-pc { display: flex; padding: 56px 40px; min-height: calc(100vh - 64px); align-items: center; justify-content: center; }
   .conf-card { width: 100%; max-width: 600px; background: #fff; border: 1px solid var(--cream-2); border-radius: 20px; padding: 44px 48px 40px; text-align: center; position: relative; box-shadow: 0 30px 80px -30px rgba(13,148,136,0.18); }
   .conf-confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: 20px; }
   .conf-confetti span { position: absolute; width: 8px; height: 8px; background: var(--teal-300); opacity: 0.6; animation: conf-fall 3s ease-out forwards; }

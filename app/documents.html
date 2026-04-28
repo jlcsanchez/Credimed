@@ -641,8 +641,13 @@ input[type=file] { display: none; }
    renderCard() so dropzones + .footer-cta .btn-primary still
    work and connector.js finds its hook.
    ============================================================ */
+/* Hide PC layout on mobile — its styles only exist inside the @media
+   below, so without this default it leaked unstyled under .documents-mobile-only. */
+.docs-pc { display: none; }
+
 @media (min-width: 960px) {
   .documents-mobile-only { display: none; }
+  .docs-pc { display: block; }
 
   .docs-pc { padding: 40px 40px 64px; max-width: 1180px; margin: 0 auto; }
 

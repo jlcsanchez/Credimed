@@ -586,6 +586,12 @@ html, body {
   .desktop { display: none; }
 }
 
+/* Hide the PC mockup at every viewport — it's a decorative-only block
+   that's never meant to render. Mobile flow stretches to PC. Without
+   this default the unstyled mockup leaked under .est-mobile-only at
+   phone widths. */
+.est-pc { display: none; }
+
 @media (min-width: 960px) {
   /* The .est-pc layout was a fully hardcoded mockup (Aetna PPO, Crown
      D2740 \$300-\$420, Root canal D3330 \$150-\$190, total \$450-\$610) — none

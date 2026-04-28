@@ -181,9 +181,13 @@ html,body{
 
 .footnote { text-align:center; font-size:11px; color:var(--slate-400); padding:16px 0 24px; }
 
+/* Hide PC layout on mobile — its styles only exist inside the @media
+   below, so without this default it leaked unstyled under .profile-mobile-only. */
+.prof-pc { display: none; }
+
 @media (min-width: 960px) {
   .profile-mobile-only { display: none; }
-  .prof-pc { padding: 32px 40px 56px; max-width: 1080px; margin: 0 auto; }
+  .prof-pc { display: block; padding: 32px 40px 56px; max-width: 1080px; margin: 0 auto; }
   .prof-head { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--cream-2); display: flex; align-items: center; gap: 18px; }
   .prof-avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--teal-600), var(--teal-900)); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; }
   .prof-head h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--slate-900); }

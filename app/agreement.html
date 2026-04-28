@@ -1034,6 +1034,11 @@ html, body {
   grid-template-columns: 2fr 1fr 1fr;
 }
 
+/* Hide the PC mockup at every viewport — decorative-only, never meant
+   to render. Without this default, mobile users saw it stack unstyled
+   below .agreement-mobile-only. */
+.agr-pc { display: none; }
+
 @media (min-width: 960px) {
   /* The .agr-pc layout that lived here was a hardcoded v1.2 summary
      (Aetna PPO mock, fake $450-$610 estimate, "use the mobile flow

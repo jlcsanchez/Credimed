@@ -653,9 +653,13 @@ body.drawer-open .desktop-inner { overflow: hidden !important; }
   .desktop { display: none; }
 }
 
+/* Hide PC layout on mobile — its styles only exist inside the @media
+   below, so without this default it leaked unstyled under .bsign-mobile-only. */
+.bsign-pc { display: none; }
+
 @media (min-width: 960px) {
   .bsign-mobile-only { display: none; }
-  .bsign-pc { padding: 48px 40px 56px; max-width: 720px; margin: 0 auto; }
+  .bsign-pc { display: block; padding: 48px 40px 56px; max-width: 720px; margin: 0 auto; }
   .bsign-progress { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-500); }
   .bsign-progress-segs { display: flex; gap: 4px; flex: 1; max-width: 240px; }
   .bsign-progress-seg { flex: 1; height: 4px; border-radius: 2px; background: var(--cream-2); }

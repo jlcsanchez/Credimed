@@ -133,6 +133,10 @@ html,body{
 /* ============================================================
    DESKTOP CLAIMS LIST (>= 960px) — Claude Design page 4.
    ============================================================ */
+/* Hide PC-only block on mobile so it doesn't render unstyled
+   under .claims-mobile-only. Same fix pattern as dashboard.html. */
+.claims-pc { display: none; }
+
 @media (min-width: 960px) {
   /* Restore Claude Design's PC-native admin-style table — matches the
      dashboard / profile shell and lets us show many claims at a glance. */
