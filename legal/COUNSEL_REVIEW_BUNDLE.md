@@ -210,7 +210,7 @@ In addition to these Terms, your use of the claim-submission service is governed
 
 ## 5. Fees and Payment
 
-Service fees are based on claim complexity (Standard $49, Plus $79, Premium $99) plus $19 per additional resubmission beyond what your plan includes. Payment is required before submission. Refund eligibility is governed by Section 2 of the Member Service Agreement.
+Service fees are based on claim complexity (Micro $19, Lite $29, Standard $49, Plus $79, Premium $99), capped at 20% of the Member's expected refund, plus $19 per additional resubmission beyond what your plan includes. Payment is required before submission. Refund eligibility is governed by Section 2 of the Member Service Agreement.
 
 ## 6. Your Responsibilities
 
@@ -414,11 +414,15 @@ All claims are prepared using standard CDT codes and submitted to your insurer's
 
 ### 2.1 Pricing (System-Determined by Claim Complexity)
 
-Credimed uses an automated pricing engine to analyze the Member's uploaded documentation and determine the complexity of the claim. Based on this analysis, the system assigns one of three pricing tiers:
+Credimed uses an automated pricing engine to analyze the Member's uploaded documentation and determine the complexity of the claim. Based on this analysis, the system assigns one of five pricing tiers:
 
+- Micro Plan — $19 USD. Floor tier; applies when the 20% cap walks the price down below all other tiers, or for very small claims.
+- Lite Plan — $29 USD. Typically applies to simple single-procedure claims with very clean documentation.
 - Standard Plan — $49 USD. Typically applies to claims with a single procedure.
 - Plus Plan — $79 USD. Typically applies to claims with two (2) to three (3) procedures.
 - Premium Plan — $99 USD. Applies to claims with four (4) or more procedures, or where the system detects coding ambiguity that requires human specialist review prior to submission.
+
+The plan fee is capped at twenty percent (20%) of the Member's expected refund. If the system-determined tier would exceed 20% of the expected refund, Credimed walks the price down to the highest tier within that cap, with $19 USD (Micro) as the absolute floor.
 
 The assigned price is presented to the Member before payment. The Member must explicitly authorize the final price before any charge is made. The Member does not select a tier; pricing is determined solely based on claim characteristics.
 
@@ -430,6 +434,8 @@ Credimed does not charge any commission, percentage, or fee tied to the reimburs
 
 If a claim is denied or requires correction, Credimed may perform resubmissions on the Member's behalf:
 
+- Micro Plan ($19): includes one (1) resubmission. Additional resubmissions are available at a fee of $19 USD per attempt and require the Member's express authorization.
+- Lite Plan ($29): includes one (1) resubmission. Additional resubmissions are available at a fee of $19 USD per attempt and require the Member's express authorization.
 - Standard Plan ($49): includes one (1) resubmission. Additional resubmissions are available at a fee of $19 USD per attempt and require the Member's express authorization.
 - Plus Plan ($79): includes one (1) resubmission. Additional resubmissions are available at a fee of $19 USD per attempt and require the Member's express authorization.
 - Premium Plan ($99): includes unlimited resubmissions for the same claim within a twelve (12) month period from the original submission date, at no additional cost.
@@ -444,7 +450,7 @@ Resubmissions are performed only when Credimed determines, in its reasonable jud
 
 Credimed offers a conditional refund guarantee across all pricing tiers. If a claim is eligible for reimbursement under the Member's insurance policy but is not paid after all Credimed-supported resubmissions, Credimed will refund 100% of the plan fee paid.
 
-This guarantee applies only to the original plan fee (Standard $49 USD / Plus $79 USD / Premium $99 USD) and does not include additional resubmission fees.
+This guarantee applies only to the original plan fee (Micro $19 USD / Lite $29 USD / Standard $49 USD / Plus $79 USD / Premium $99 USD) and does not include additional resubmission fees.
 
 #### Eligibility Conditions
 
@@ -694,7 +700,7 @@ launch.
 
 ## Homepage hero (index.html)
 - "Your insurance may owe you money." (current headline)
-- "Most members recover $600–$1,500. From $49 with 100% money-back guarantee."
+- "Most members recover $600–$1,500. From $19, capped at 20% of your refund, with 100% money-back guarantee."
 - "Filed within 24 hours of payment, directly with your US insurer."
 
 ## About page

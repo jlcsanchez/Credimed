@@ -423,7 +423,7 @@ html,body{
     var paidOrigSymbol = paidOrigCurrency === 'MXN' ? 'MX$' : '$';
     var paidOrigText = c.paidAmount ? (paidOrigSymbol + Number(c.paidAmount).toLocaleString() + ' ' + paidOrigCurrency) : '—';
 
-    var planMap = { standard: 'Standard ($29)', plus: 'Plus ($79)', premium: 'Premium ($39)' };
+    var planMap = { micro: 'Micro ($19)', lite: 'Lite ($29)', standard: 'Standard ($49)', plus: 'Plus ($79)', premium: 'Premium ($99)' };
     var planLabel = planMap[c.plan] || (c.plan ? c.plan : '—');
 
     var timeline = buildTimeline(c);

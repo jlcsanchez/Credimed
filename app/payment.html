@@ -1104,8 +1104,8 @@ function planInfo(variant) {
   } catch (e) { /* fall through */ }
   const isBasic = variant === 'basic';
   return isBasic
-    ? { name: 'Standard', price: 49, priceStr: '$49.00', ctaPrice: '$49' }
-    : { name: 'Premium',  price: 99, priceStr: '$99.00', ctaPrice: '$99' };
+    ? { name: 'Lite',    price: 29, priceStr: '$29.00', ctaPrice: '$29' }
+    : { name: 'Premium', price: 99, priceStr: '$99.00', ctaPrice: '$99' };
 }
 
 function variantFlags(variant) {
@@ -1811,7 +1811,7 @@ mountScope('desktop');
 <div class="pay-pc">
   <header class="pay-head">
     <p class="eyebrow">Step 4 of 4 &middot; Payment</p>
-    <h1 id="pcPayHeadline">Pay $49 to file your claim</h1>
+    <h1 id="pcPayHeadline">Pay your fee to file your claim</h1>
     <p>One-time charge. We file with your insurer within 24 hours.</p>
   </header>
 
@@ -1822,17 +1822,17 @@ mountScope('desktop');
         <div class="id" id="pcClaimId">—</div>
         <div class="desc" id="pcClaimDesc">Dental claim</div>
       </div>
-      <div class="pay-line"><span class="k">Plan</span><span class="v" id="pcPlanName">Standard</span></div>
-      <div class="pay-line"><span class="k">Filing service</span><span class="v" id="pcPlanPrice">$49.00</span></div>
+      <div class="pay-line"><span class="k">Plan</span><span class="v" id="pcPlanName">—</span></div>
+      <div class="pay-line"><span class="k">Filing service</span><span class="v" id="pcPlanPrice">—</span></div>
       <div class="pay-line"><span class="k">Estimated refund (paid by insurer)</span><span class="v" id="pcRefundRange">—</span></div>
-      <div class="pay-total"><span class="k">You pay today</span><span class="v" id="pcPayToday">$49.00</span></div>
+      <div class="pay-total"><span class="k">You pay today</span><span class="v" id="pcPayToday">—</span></div>
       <div class="pay-guarantee">
         <div class="icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
         </div>
         <div>
           <strong>If we don't recover your refund, you don't pay.</strong>
-          <p>If your insurer rejects the claim outright and we can't fix it on resubmission, we refund your <span id="pcGuaranteeAmount">$49</span> &mdash; no questions asked.</p>
+          <p>If your insurer rejects the claim outright and we can't fix it on resubmission, we refund your <span id="pcGuaranteeAmount">fee</span> &mdash; no questions asked.</p>
         </div>
       </div>
       <div class="pay-trust">

@@ -764,6 +764,16 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
           <div class="stat-lbl">Recovered for patients</div>
         </div>
         <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon amber">m</div><div class="stat-trend">+6%</div></div>
+          <div class="stat-val" id="fkMicro" style="color:#b45309">—</div>
+          <div class="stat-lbl">Micro $19 · cap-walked</div>
+        </div>
+        <div class="stat-card-rich">
+          <div class="stat-top"><div class="stat-icon amber">L</div><div class="stat-trend">+7%</div></div>
+          <div class="stat-val" id="fkLite" style="color:#b45309">—</div>
+          <div class="stat-lbl">Lite $29 · simple</div>
+        </div>
+        <div class="stat-card-rich">
           <div class="stat-top"><div class="stat-icon teal">S</div><div class="stat-trend">+9%</div></div>
           <div class="stat-val" id="fkStandard">—</div>
           <div class="stat-lbl">Standard $49 · 1 proc</div>
@@ -1587,8 +1597,18 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
         case 'in-review': dot = 'a'; txt = '<strong>' + name + '</strong> — Insurer requested review of ' + (c.procedure || 'claim') + '.'; break;
         default:
           dot = 'b';
-          var planFee = c.plan === 'premium' ? 99 : (c.plan === 'plus' ? 79 : 49);
-          var planTag = c.plan === 'premium' ? 'Premium' : (c.plan === 'plus' ? 'Plus' : 'Standard');
+          var planFee = c.plan === 'premium' ? 99
+                      : c.plan === 'plus'    ? 79
+                      : c.plan === 'standard'? 49
+                      : c.plan === 'lite'    ? 29
+                      : c.plan === 'micro'   ? 19
+                                             : 49;
+          var planTag = c.plan === 'premium' ? 'Premium'
+                      : c.plan === 'plus'    ? 'Plus'
+                      : c.plan === 'standard'? 'Standard'
+                      : c.plan === 'lite'    ? 'Lite'
+                      : c.plan === 'micro'   ? 'Micro'
+                                             : 'Standard';
           txt = '<strong>' + name + '</strong> — New claim submitted. ' + planTag + ' plan fee $' + planFee + ' collected.';
           break;
       }
@@ -1643,7 +1663,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     var refunded = 0, refundedCount = 0;
     var pending = 0, eligible = 0, notEligible = 0;
     (claims || []).forEach(function (c) {
-      var fee = c.planFee || (c.plan === 'premium' ? 99 : c.plan === 'plus' ? 79 : 49);
+      var fee = c.planFee || (c.plan === 'premium' ? 99
+                            : c.plan === 'plus'    ? 79
+                            : c.plan === 'standard'? 49
+                            : c.plan === 'lite'    ? 29
+                            : c.plan === 'micro'   ? 19
+                                                   : 49);
       var rs = c.refundStatus;
       if (rs === 'refunded') {
         refunded += (c.refundAmount || fee);
@@ -1780,6 +1805,8 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     var netRev = grossRev - refundsOut;
 
     $('fkRecovered').textContent = moneyShort(recovered);
+    if ($('fkMicro')) $('fkMicro').textContent = moneyShort(microFees);
+    if ($('fkLite'))  $('fkLite').textContent  = moneyShort(liteFees);
     $('fkStandard').textContent  = moneyShort(standardFees);
     $('fkPlus').textContent      = moneyShort(plusFees);
     $('fkPremium').textContent   = moneyShort(premiumFees);
@@ -1802,8 +1829,8 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
     /* Recent transactions: one row per claim (plan fee paid at checkout)
        + one row per paid resubmission. Sorted by date desc. */
-    var TIER_LABEL = { standard: 'Standard $49', plus: 'Plus $79', premium: 'Premium $99' };
-    var TIER_FEE   = { standard: 49, plus: 79, premium: 99 };
+    var TIER_LABEL = { micro: 'Micro $19', lite: 'Lite $29', standard: 'Standard $49', plus: 'Plus $79', premium: 'Premium $99' };
+    var TIER_FEE   = { micro: 19, lite: 29, standard: 49, plus: 79, premium: 99 };
     var txs = [];
     (claims || []).forEach(function (c) {
       var name = ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || 'Patient';
@@ -2326,6 +2353,9 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     if (c.planFee) return c.planFee;
     if (c.plan === 'premium') return 99;
     if (c.plan === 'plus')    return 79;
+    if (c.plan === 'standard')return 49;
+    if (c.plan === 'lite')    return 29;
+    if (c.plan === 'micro')   return 19;
     return 49;
   }
 
@@ -2345,7 +2375,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     var name = ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || '—';
     var pill = REFUND_STATUS_LABEL[c.refundStatus] || REFUND_STATUS_LABEL.pending;
     var fee  = planFeeFor(c);
-    var planLbl = c.plan === 'premium' ? 'Premium $99' : c.plan === 'plus' ? 'Plus $79' : 'Standard $49';
+    var planLbl = c.plan === 'premium' ? 'Premium $99'
+                : c.plan === 'plus'    ? 'Plus $79'
+                : c.plan === 'standard'? 'Standard $49'
+                : c.plan === 'lite'    ? 'Lite $29'
+                : c.plan === 'micro'   ? 'Micro $19'
+                                       : 'Plan fee';
     var deniedAgo = c.deniedAt ? relTime(c.deniedAt) : '—';
     return '' +
       '<div class="claims-row" data-refund-id="' + (c.id || '') + '">' +
@@ -2446,7 +2481,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   function openRefundDrawer(c) {
     var name = ((c.firstName || '') + ' ' + (c.lastName || '')).trim() || c.email || '—';
     var fee = planFeeFor(c);
-    var planLbl = c.plan === 'premium' ? 'Premium $99' : c.plan === 'plus' ? 'Plus $79' : 'Standard $49';
+    var planLbl = c.plan === 'premium' ? 'Premium $99'
+                : c.plan === 'plus'    ? 'Plus $79'
+                : c.plan === 'standard'? 'Standard $49'
+                : c.plan === 'lite'    ? 'Lite $29'
+                : c.plan === 'micro'   ? 'Micro $19'
+                                       : 'Plan fee';
     $('rfId').textContent = c.id;
     $('rfName').textContent = name + ' · ' + planLbl;
 

@@ -943,7 +943,7 @@ function hydrateClaimFromState() {
 
   // Plan tier + price — prefer the pricing engine's actual pick over the
   // legacy string stored in claim.plan
-  var planMap = { standard: { tier: 'Standard', price: 49 }, plus: { tier: 'Plus', price: 79 }, premium: { tier: 'Premium', price: 99 } };
+  var planMap = { micro: { tier: 'Micro', price: 19 }, lite: { tier: 'Lite', price: 29 }, standard: { tier: 'Standard', price: 49 }, plus: { tier: 'Plus', price: 79 }, premium: { tier: 'Premium', price: 99 } };
   var planKey = (pricing && pricing.tier) || (claim && claim.plan) || 'standard';
   if (planMap[planKey]) CLAIM.plan = planMap[planKey];
 
