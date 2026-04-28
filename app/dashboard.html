@@ -1741,7 +1741,16 @@ window.hydratePCDashboard = async function () {
 window.hydratePCDashboard();
 
 /* Pull the user's claim list from the backend so cross-device users see
-   their history. Falls through silently for demo sessions or offline. */
+   their history. Falls through silently for demo sessions or offline.
+
+   IMPORTANT: only OVERWRITE the local claims array when the backend
+   actually returns claims. The backend /claims endpoint will 404 or
+   return [] for users whose latest claim was persisted only locally
+   (no server write yet — common during the AWS rollout while the
+   submit-claim Lambda is still being wired). Without this guard, an
+   empty backend response silently wipes the user's local history,
+   and the dashboard flickers from 'Welcome back, with claim' to 'No
+   claims yet' a second after page load. */
 (async function fetchClaimList() {
   try {
     if (localStorage.getItem('credimed.demo')) return;
@@ -1750,8 +1759,24 @@ window.hydratePCDashboard();
     if (!resp || !resp.ok) return;
     var data = await resp.json();
     var list = (data && data.claims) || data || [];
-    if (!Array.isArray(list)) return;
-    if (window.CredimedState) window.CredimedState.set('claims', list);
+    if (!Array.isArray(list) || list.length === 0) {
+      /* Backend has nothing for this user — keep whatever local state
+         already has. The next time the user submits a claim that
+         actually persists server-side, this fetch will return data
+         and we'll sync. */
+      return;
+    }
+    /* Merge: backend claims take precedence, but keep any local-only
+       claims (id present locally but not in backend response) so the
+       user doesn't lose their just-submitted claim if the server
+       write was async/queued. */
+    if (window.CredimedState) {
+      var local = window.CredimedState.getAllClaims() || [];
+      var backendIds = {};
+      list.forEach(function (c) { if (c && c.id) backendIds[c.id] = true; });
+      var localOnly = local.filter(function (c) { return c && c.id && !backendIds[c.id]; });
+      window.CredimedState.set('claims', list.concat(localOnly));
+    }
     window.hydratePCDashboard();
   } catch (e) {
     console.info('[dashboard] /claims fetch skipped:', e.message || e);
