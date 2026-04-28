@@ -1,137 +1,123 @@
-# Session notes — autonomous work while you were at the gym
+# Session notes — Apr 27-28, 2026
 
-Everything pushed to `main`. Below is what's done, what needs your AWS
-console, and what's still in the backlog.
+End-to-end claim flow now works on PC. Everything pushed to `main`.
 
-## ✅ Done in this session (no action needed from you)
+## ✅ What's done
 
-### 1. Admin auth — Cognito groups (`a42b143` etc.)
-`app/admin.html` no longer trusts a hardcoded email allowlist. It reads
-the `cognito:groups` claim from the user's JWT and only enters the shell
-if `admin` is in the list. Legacy email allowlist stays as a fallback so
-nobody locks themselves out before the AWS group is created — clear
-`LEGACY_EMAILS = []` in admin.html once you verify the group works.
+### Auth + state hygiene
+- `app/state.js` schema version bumped 1 → 2 — drops Claude Design demo data (CMX-2026-DEMO9 / Alex Rivera) on first read
+- `app/login.html` signup / signin / signout now `CredimedState.clear()` + `localStorage.removeItem('credimed.demo')` unconditionally — new accounts can never inherit old session data
+- `app/login.html` signup attempts `cognitoSignIn` immediately after `cognitoSignUp` — auto-confirms when the Pre-Sign-Up Lambda is wired (see `emails/AWS-SETUP.md`); falls back to the verify-code screen otherwise
+- `app/login.html` verify screen now hints at spam / junk folder while users wait on the generic Cognito sender (until SES is up)
 
-### 2. Admin Claims tab — filters + drawer + CSV (`660845e`)
-Above the claims table:
-- Status / date-range / free-text filters that update on every keystroke
-- Summary line ("17 of 58 claims (filters active)")
-- Clear + Export-CSV buttons (CSV exports the currently filtered view
-  with 14 columns including original + USD paid amounts)
+### PC layout parity (12 pages)
+Every page in the customer-facing flow now reads real session data on PC instead of Claude Design's hardcoded mockups. Pattern in most cases: hide the decorative `.{page}-pc` block, stretch the working mobile mockup to the PC viewport, OR replace mockup HTML with state-driven elements + a hydrator IIFE.
 
-Click any claim row → slide-in drawer with:
-- Full claim metadata (plan, paid at clinic in original currency, refund
-  estimate, procedures list, insurer, member ID)
-- Action buttons: Mark approved / Mark paid / Mark denied
-- Email-patient link
-- Closes on Esc / backdrop / X
+| Page | Fix shipped in |
+|---|---|
+| `app/documents.html` | native label+input upload, querySelectorAll across mobile+PC roots, OCR id sanitize |
+| `app/processing.html` | hide `.stage` iPhone wrapper, full-viewport teal gradient |
+| `app/estimate.html` | hide hardcoded `.est-pc` mockup |
+| `app/plan.html` | hide hardcoded D2740/D3330 mockup |
+| `app/before-sign.html` | "Read full agreement" link wired to `/legal/AGREEMENT_v1.9.html` |
+| `app/agreement.html` | hide broken `.agr-pc`, stretch mobile (v1.9 TERMS_HTML + signature pad) |
+| `app/payment.html` | hydrate order summary + retry mount on stale prefetch + already-paid redirect |
+| `app/submission-confirmed.html` | hide duplicated mobile mockup on PC, hydrate `#confClaimId` |
+| `app/dashboard.html` | hydrator reads claim from CredimedState + backend `/claims`, progress bar aligns to milestones, pending stat with multi-field fallback |
+| `app/claim.html` | hide decorative `.claim-pc`, stretch mobile with backend `/claims/:id` fetch |
+| `app/claims.html` | hydrate PC table from same `ALL` array as mobile cards |
+| `app/profile.html` | hydrate name / email / avatar / inputs from `cognitoGetCurrentUser` |
 
-### 3. Admin Insurers tab — edit carrier DB from UI (`a575e54`)
-New `Insurers` tab. Lists every carrier from `app/insurers.js`. Click any
-row → edit drawer with display name, OON % range, annual max range,
-risk score (A/B/C/D), avg payout days, confirmed claims count, notes.
+### Stripe payment loop fixes
+Multiple iterations chasing a `400 on /v1/elements/sessions` that turned out to be Lambda's idempotency cache returning an already-succeeded PaymentIntent. Final defense:
+- `payment.html` redirects to `submission-confirmed` if `payment.status === 'paid'` is set in CredimedState
+- `documents.html` clears stale `claim.id` / `pendingPaymentIntent` when starting a fresh flow
+- `payment.html` retries mount with a fresh Lambda call if the prefetched clientSecret is rejected once
+- ReferenceError fixes (`cs is not defined`, `scope is not defined`) that were cascading into Stripe element loaderror
 
-- "+ Add insurer" → prompts for a key, creates a new override row
-- "Export overrides as JSON" → opens a tab with paste-ready JSON for
-  `app/insurers.js`
-- "Reset all overrides" → wipes local edits, reverts to baseline
+### Transactional email templates (7)
+`/emails/` folder with branded HTML templates ready for SES wiring. Same color palette as press kit (`#0D9488` / `#134E4A` / `#FAF6EF`). Mustache-style placeholders, table-based for email-client compatibility, system-font stack.
 
-Storage is `localStorage` (per-device) until we have a backend table.
-Admin edits show an `OVERRIDE` badge on the row so it's visible which
-carriers have been touched.
+| File | Trigger |
+|---|---|
+| `01-welcome.html` | Post-signup |
+| `02-payment-receipt.html` | `payment_intent.succeeded` |
+| `03-claim-filed.html` | EDI 837D submitted |
+| `04-claim-approved.html` | EDI 835 carrier approved |
+| `05-claim-denied.html` | EDI 835 carrier denied |
+| `06-refund-paid.html` | Carrier paid the patient |
+| `07-need-more-docs.html` | Carrier requested additional documentation |
 
-### 4. Claims Lambda + DEPLOY guide (`7fe8e1d`)
-`backend/claims/credimed-claims.lambda.js` — single Node 20 ESM handler
-serving:
-- `GET /claims` — user's claims
-- `GET /claims/:id` — single claim, double-verified against the JWT sub
-- `GET /admin/claims` — full list (admin group)
-- `PATCH /admin/claims/:id` — status update (admin group)
+`emails/README.md` documents brand specs / placeholders / testing.
+`emails/AWS-SETUP.md` is a 25-minute checklist for SES domain identity, DKIM/SPF/DMARC DNS, SES production access request, bounce/complaint webhooks.
 
-`backend/claims/DEPLOY.md` is the step-by-step for AWS. Roughly 20 min
-of console work.
+### OCR robustness
+- `app/documents.html` `handleFile()` strips `\s+` from extracted `memberId` and `groupId` before storing — receipts / cards visually pad numbers (`'0023550 33'`) and carriers reject claims when the spaced version is submitted
 
-## ⏭️ Your turn when you sit down at the computer
+### Quick UX fixes
+- Estimate page bottom row now shows full procedure list when receipt has multiple line items, not just legacy singular field
+- Dashboard PC progress bar percentages aligned to label positions (0/33/67/100, not 25/55/80/100)
 
-In rough priority order:
+## ⏳ Waiting on you (offline tasks)
 
-### A. Cognito `admin` group (5 min, unblocks #1 + #4)
-Cognito → User pools → `us-west-2_8GgqReC58` → Groups → Create:
-- Name: `admin`
-- Add yourself + any operators to it
+In recommended order:
 
-After that, your next-issued ID token carries
-`cognito:groups: ["admin"]` and the new admin auth + Lambda admin routes
-all start working. Once verified, clear `LEGACY_EMAILS = []` in
-`app/admin.html`.
+1. **Northwest** — Delaware C-corp filing. Output: Certificate of Incorporation. Cost ~$89-$214 year 1. **Start here.**
+2. **IRS SS-4** — EIN. Free, instant if you have SSN. Needs paso 1 first.
+3. **Mercury Bank** — business account. Needs EIN + Cert of Inc.
+4. **MA Foreign Qualification** — ~$275, register Delaware corp in MA.
+5. **NPI Type 2** — organizational NPI. Free, needs EIN.
+6. **Business insurance** — Hiscox/Coalition/Vouch. ~$2,500/year.
+7. **Stripe production** — flip from test mode. Needs EIN + bank.
+8. **Availity registration** — needs EIN + NPI + bank.
+9. **SES domain identity + DNS** — 25 min checklist in `emails/AWS-SETUP.md`.
+10. **Cognito → SES email provider** — change FROM to `verification@credimed.us`.
 
-### B. Deploy the claims Lambda (15 min, unblocks dashboard real data + admin claim list)
-Follow `backend/claims/DEPLOY.md`:
-1. Create / verify the DynamoDB `credimed-claims` table with PK=userSub, SK=claimId
-2. Bundle `cd backend/claims && npm install && zip -r credimed-claims.zip ...`
-3. Create Lambda `credimed-claims`, upload zip, set env vars
-4. Add four routes to API Gateway with the JWT authorizer
-5. Smoke test with curl
+## 🔄 In my backlog (not done, waiting for your green light)
 
-### C. Deploy the agents Lambda (10 min, turns Sofia/Ana/Elena/Marco on)
-Follow `backend/agents/DEPLOY.md`. Already wrote prompts + the lambda
-code in a previous part of this session.
+- **Pricing engine 25% cap + Lite tier $29** — fix in `pricingEngine.js` (~10 lines) + cascading updates to plan.html, payment.html, press-kit. ~30 min when you say go.
+- **Procedure translation EN / CDT codes** — `app/procedures.js` dictionary + Claude API fallback for unknown items. ~1 hour.
+- **Fase 1 funnel refactor** — move login gate from `documents.html` to `plan.html`. Anonymous upload → estimate → signup gate. Cloudflare Turnstile + IP rate limit on OCR Lambda. ~3-4 hours, will need you online so we can test together.
+- **Playwright E2E tests** — automated smoke test for the full claim flow. Currently next on my autonomous queue.
 
-### D. Wire frontend → real backend (5 min, after B is live)
-- `app/dashboard.html` — `hydrateClaimFromState()` should fall through
-  to `authFetch(CREDIMED_API + '/claims/' + claim.id)` and override
-  `CLAIM` with the response. I'll write that as a small follow-up edit
-  once you confirm B is deployed and the URL responds.
-- `app/admin.html` — change `'/claims?admin=1'` to `'/admin/claims'` to
-  match the new Lambda route. One-liner.
+## 🚫 What I cannot do from here
 
-## 🔭 Backlog (not started — call out what you want next)
+- AWS console (Lambda deploy, Cognito triggers, SES identities, DynamoDB)
+- Cloudflare DNS / Turnstile widget setup
+- Stripe production keys / webhook URLs
+- Availity credentials
+- Northwest / IRS / Mercury filings
+- Test on a real phone or different devices
 
-- **Hard scroll-gate on agreement.html** (we discussed; you decided
-  current 3-gate model is sufficient)
-- **More insurers in `app/insurers.js`** (we agreed: organic growth
-  as you see them in real receipts)
-- **End-to-end live test from a phone** — needs you driving, I can't
-  open the live site
-- **Sofia chat widget on the landing** — code is ready in
-  `app/widgets/agent-chat.js`, just needs the agents Lambda live
-  before we inject the `<script>` tag
-- **Submission-to-clearinghouse flow** — Lambda + EDI 837D is a
-  separate project; manual processing via the admin queue works
-  in the meantime
+Everything else is fair game. When you're back, point me at the next thing.
 
-## Smoke test (every URL HTTP 200)
+## File index — what got touched today
 
 ```
-landing       index.html              ✓
-app screens   login → submission-confirmed (10 screens) ✓
-              dashboard, admin        ✓
-app scripts   state, backend, insurers, connector, ana ✓
-photos        all 7                  ✓
-backend       agents Lambda + claims Lambda + prompts ✓
+app/agreement.html
+app/before-sign.html
+app/claim.html
+app/claims.html
+app/dashboard.html
+app/documents.html
+app/estimate.html
+app/login.html
+app/payment.html
+app/plan.html
+app/processing.html
+app/profile.html
+app/state.js
+app/submission-confirmed.html
+
+emails/01-welcome.html              (new)
+emails/02-payment-receipt.html      (new)
+emails/03-claim-filed.html          (new)
+emails/04-claim-approved.html       (new)
+emails/05-claim-denied.html         (new)
+emails/06-refund-paid.html          (new)
+emails/07-need-more-docs.html       (new)
+emails/README.md                    (new)
+emails/AWS-SETUP.md                 (new)
+
+SESSION-NOTES.md                    (this file, replacing prior session's)
 ```
-
-## Files added this session
-
-```
-app/insurers.js                                 (16-carrier seed DB)
-backend/agents/credimed-agents.lambda.js        (4 chat agents)
-backend/agents/package.json
-backend/agents/DEPLOY.md
-backend/agents/prompts/{sofia,ana,elena,marco}.md
-backend/claims/credimed-claims.lambda.js        (claims read + admin)
-backend/claims/package.json
-backend/claims/DEPLOY.md
-app/widgets/agent-chat.js                       (chat widget)
-SESSION-NOTES.md                                (this file)
-```
-
-## What I cannot do from this side
-
-- Push to AWS (Lambda upload, API Gateway routes, Cognito group, DynamoDB)
-- Test the live site interactively from a real phone
-- Read your localStorage to debug device-specific issues
-- Buy / configure DNS, certs, third-party services
-
-Everything else is fair game. When you're back, point me at the next
-thing.
