@@ -16,7 +16,7 @@ If a piece of copy doesn't carry that energy, rewrite it.
 - **Concrete.** Real dollar amounts beat ranges where possible.
 - **You-keep math.** Show what stays in their pocket, not what we take.
 - **Loss-aversion.** The money is already theirs — somewhere else, waiting.
-- **Cap is a promise, not a feature.** "Never more than 25%" is a guarantee.
+- **Cap is a promise, not a feature.** "Never more than 20%" is a guarantee.
 - **Tiers are circumstantial, not aspirational.** No upsell. The engine picks. Treat each user's tier as the right one for them.
 
 ---
@@ -30,7 +30,7 @@ Each tier fights a different alternative. The copy should make that competitor v
 | **Lite** | $29 | Doing nothing | "$29 unlocks $X. Otherwise $0." |
 | **Standard** | $49 | Filing yourself | "We file right. You skip the rejection loop." |
 | **Plus** | $79 | DIY with multiple procedures | "Each procedure needs its own code. Getting one wrong is why insurers reject." |
-| **Premium** | $99 | Claims agent / lawyer | "Same outcome. 25% cap, never the 35-40% an agent takes." |
+| **Premium** | $99 | Claims agent / lawyer | "Same outcome. 20% cap, never the 35-40% an agent takes." |
 
 Why this matters: a $79 fee feels expensive in isolation but cheap vs the $400 commission a claims agent charges. The competitor reframes the number.
 
@@ -42,7 +42,7 @@ Every pricing surface — landing hero, estimate page, plan card, payment summar
 
 1. **You-keep arithmetic.** "Pay $79 → keep $176" beats "Service fee: $79."
 2. **Risk inversion inline.** Money-back guarantee right next to the price, not in a footer.
-3. **Cap promise visible.** "Never more than 25% of your refund."
+3. **Cap promise visible.** "Never more than 20% of your refund."
 
 Failing to carry one of these = lower conversion at that step. Carry all three at every step.
 
@@ -59,7 +59,7 @@ The customer hits 5 distinct pricing moments. Each has a different question. Eac
 #### Hero pricing line
 
 ```
-From $29. Never more than 25% of your refund.
+From $29. Never more than 20% of your refund.
 If we can't recover it, you pay nothing.
 ```
 
@@ -84,11 +84,11 @@ Smaller refund = smaller fee.
 
 **Option B (most concrete — numbers up front):**
 > You paid cash in Mexico. Your US insurance owes you back.
-> $29-$99 to file. Capped at 25% of your refund.
+> $29-$99 to file. Capped at 20% of your refund.
 
 **Option C (most punchy — slight conspiracy energy):**
 > File the claim your insurance is hoping you don't.
-> $29-$99. We never take more than 25% of what we recover.
+> $29-$99. We never take more than 20% of what we recover.
 
 ---
 
@@ -188,7 +188,7 @@ claim from start to finish.
 Nothing gets missed — we make sure you
 get every dollar your plan covers.
 
-We cap our fee at 25% of your refund.
+We cap our fee at 20% of your refund.
 On smaller claims like yours, that's $29
 — the smallest we can charge.
 ```
@@ -232,9 +232,9 @@ through clean.
 ┌─────────────────────────────────────────┐
 │ YOUR INSURER OWES YOU                   │
 │                                         │
-│ $191 – $255                             │
+│ $400 – $520                             │
 │                                         │
-│ Pay $79 to file → keep $112 – $176      │
+│ Pay $79 to file → keep $321 – $441      │
 │                                         │
 │ [ Start my refund — $79 ]               │
 │                                         │
@@ -258,6 +258,8 @@ get every dollar your plan covers.
 For larger refunds, we cap our fee so you
 always keep most of what you recover.
 ```
+
+(With this example, our $79 fee is ~17% of the expected refund — under our 20% cap.)
 
 #### PREMIUM — $99 — vs hiring an agent
 
@@ -290,7 +292,7 @@ Nothing gets missed — we make sure you
 get every dollar your plan covers.
 
 A claims agent would take 30-40% of your
-recovery. Our fee is capped at 25% —
+recovery. Our fee is capped at 20% —
 and on this claim, only about 7%.
 ```
 
@@ -438,13 +440,13 @@ For email signatures:
 
 ## 6. Cap callout — when to specify the %
 
-The 25% cap is the headline rule. But on tiers where the actual % is dramatically lower, **show the actual %** for impact:
+The 20% cap is the headline rule. But on tiers where the actual % is dramatically lower, **show the actual %** for impact:
 
 | Tier | Cap copy |
 |---|---|
-| Lite | "We capped this at 25% of your refund — $29 is the smallest fee that covers the work." |
-| Standard | "Capped at 25% of your refund." |
-| Plus | "Our fee is ~16% of your expected refund. Cap is 25%." |
+| Lite | "We capped this at 20% of your refund — $29 is the smallest fee that covers the work." |
+| Standard | "Capped at 20% of your refund." |
+| Plus | "Our fee is ~17% of your expected refund. Cap is 20%." |
 | Premium | "Our fee is ~7% of your expected refund. A claims agent would charge 30-40%." |
 
 The Premium copy doubles as competitor framing. It's the strongest persuasion in the deck.
@@ -516,8 +518,8 @@ Five forks. Pick one stance per fork and the rest follows mechanically.
 
 **1. Hero tagline — A, B, or C?**
 - A: "Your dental insurance owes you money. We file the paperwork. If we can't recover it, you pay nothing."
-- B: "You paid cash in Mexico. Your US insurance owes you back. $29-$99 to file. Capped at 25%."
-- C: "File the claim your insurance is hoping you don't. $29-$99. We never take more than 25% of what we recover."
+- B: "You paid cash in Mexico. Your US insurance owes you back. $29-$99 to file. Capped at 20%."
+- C: "File the claim your insurance is hoping you don't. $29-$99. We never take more than 20% of what we recover."
 
 **2. Button verb — "file" or "submit" or "claim"?**
 Recommended: **file**. ("File my refund." Active, ownership.)
@@ -525,8 +527,8 @@ Recommended: **file**. ("File my refund." Active, ownership.)
 **3. Refund framing — "owes you" or "could recover"?**
 Recommended: **owes you**. (Loss frame. The money is already theirs.)
 
-**4. Cap callout — show actual % per tier or keep flat 25%?**
-Recommended: **show actual %**. ($99 = 7% reads better than "$99 capped at 25%". Anchor against the agent's 30-40%.)
+**4. Cap callout — show actual % per tier or keep flat 20%?**
+Recommended: **show actual %**. ($99 = 7% reads better than "$99 capped at 20%". Anchor against the agent's 30-40%.)
 
 **5. Social proof on plan.html — include made-up numbers now or wait until we have real data?**
 Recommended: **wait**. Made-up social proof is a trust hazard. Ship without; add when we have real numbers.

@@ -43,21 +43,27 @@ function calculatePricing(input = {}) {
     price = 99;
   }
 
-  /* ------ Step 2: 25% cap by expected refund average ------
-     The fee should never exceed 25% of the refund the patient
-     actually expects to recover. Computed against the AVERAGE of the
-     refund range (min + max / 2) so we don't penalize the patient
-     for our own conservative low end. Falls back gracefully to the
-     legacy `< $300 drops a tier` rule when only `_min` is provided
+  /* ------ Step 2: 20% cap by expected refund average ------
+     The fee should never exceed 20% of the refund the patient
+     actually expects to recover. The cap is a TRUST mechanism, not
+     a monetization mechanism — the flat tier prices ($29/$49/$79/$99)
+     already do the monetization work. The cap exists to make the
+     fee feel fair instantly to the patient, and to give us a clean
+     defensible promise ("we never take more than 1/5 of your refund")
+     vs claims agents who charge 30-40%.
+
+     Computed against the AVERAGE of the refund range (min + max / 2)
+     so we don't penalize the patient for our own conservative low
+     end. Falls back gracefully when only `_min` is provided
      (older callers).
 
      Tier ladder for the cap, fee-ascending:
-       LITE      $29  → refund_avg >= $116  (fee = 25% of refund)
-       STANDARD  $49  → refund_avg >= $196
-       PLUS      $79  → refund_avg >= $316
-       PREMIUM   $99  → refund_avg >= $396
+       LITE      $29  → refund_avg >= $145  (fee = 20% of refund)
+       STANDARD  $49  → refund_avg >= $245
+       PLUS      $79  → refund_avg >= $395
+       PREMIUM   $99  → refund_avg >= $495
 
-     LITE is the new floor — claims with refund_avg < $116 still get
+     LITE is the new floor — claims with refund_avg < $145 still get
      LITE $29 (we never go below). The $29 covers our marginal cost
      (Stripe fee, OCR Lambda, Sofia review minutes) so we don't lose
      money even on the smallest refund. */
@@ -73,7 +79,7 @@ function calculatePricing(input = {}) {
   }
 
   if (refundAvg != null && refundAvg > 0) {
-    const maxFeeFromCap = refundAvg * 0.25;
+    const maxFeeFromCap = refundAvg * 0.20;
     /* Walk the tier ladder DOWN until the price fits under the cap.
        Floor at LITE $29 — never drop below, even if the cap would
        require it (otherwise we'd lose money on the claim). */
