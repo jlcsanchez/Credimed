@@ -601,6 +601,7 @@ html,body{
         phone:     ($('pcPhone')     || {}).value && $('pcPhone').value.trim(),
         dob:       ($('pcDob')       || {}).value || '',
       });
+      flash('pcStatusContact');
       hydrate();
     });
   }
@@ -615,6 +616,7 @@ html,body{
         state:  ($('pcAddrState')  || {}).value && $('pcAddrState').value.trim().toUpperCase() || '',
         zip:    ($('pcAddrZip')    || {}).value && $('pcAddrZip').value.trim()    || '',
       });
+      flash('pcStatusAddress');
       hydrate();
     });
   }
@@ -671,7 +673,7 @@ html,body{
   <div class="prof-grid">
     <div>
       <section class="prof-card">
-        <div class="prof-card-head"><h3>Contact info</h3><button class="prof-edit" id="pcSaveContact">Save</button></div>
+        <div class="prof-card-head"><h3>Contact info</h3><div style="display:flex;align-items:center;gap:10px"><span class="save-status" id="pcStatusContact">Saved ✓</span><button class="prof-edit" id="pcSaveContact">Save</button></div></div>
         <div class="prof-field-row">
           <div class="prof-field"><label>First name</label><input type="text" id="pcFirstName"></div>
           <div class="prof-field"><label>Last name</label><input type="text" id="pcLastName"></div>
@@ -681,7 +683,7 @@ html,body{
         <div class="prof-field"><label>Date of birth</label><input type="date" id="pcDob"></div>
       </section>
       <section class="prof-card" style="margin-top: 22px;">
-        <div class="prof-card-head"><h3>Mailing address</h3><button class="prof-edit" id="pcSaveAddress">Save</button></div>
+        <div class="prof-card-head"><h3>Mailing address</h3><div style="display:flex;align-items:center;gap:10px"><span class="save-status" id="pcStatusAddress">Saved ✓</span><button class="prof-edit" id="pcSaveAddress">Save</button></div></div>
         <div class="prof-field"><label>Street</label><input type="text" id="pcAddrStreet"></div>
         <div class="prof-field-row">
           <div class="prof-field"><label>City</label><input type="text" id="pcAddrCity"></div>
