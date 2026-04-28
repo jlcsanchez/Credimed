@@ -573,6 +573,33 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
         });
       } catch (e) {}
 
+      /* Try to sign in immediately. Works when the Cognito User Pool
+         has a Pre-Sign-Up Lambda trigger that auto-confirms (see
+         emails/AWS-SETUP.md, Part 1, Option A) — the user skips the
+         verification code screen entirely.
+
+         If the pool still requires confirmation, the sign-in throws
+         UserNotConfirmedException and we fall back to the legacy
+         verify-code flow so the page still works during the AWS
+         migration window. */
+      try {
+        await window.cognitoSignIn(email, pw);
+        showSuccess('Account created. Redirecting...');
+        setTimeout(function () { window.location.href = getPostAuthUrl('signup'); }, 600);
+        return;
+      } catch (signinErr) {
+        var msg = (signinErr && (signinErr.message || signinErr.code) || '') + '';
+        if (!/UserNotConfirmed/i.test(msg)) {
+          /* Different error — surface it instead of pretending verify
+             flow is the answer. */
+          showError(friendlyCognitoErr(signinErr));
+          return;
+        }
+        /* User pool still in old "require email verification" mode —
+           show the legacy verify screen. */
+        console.info('[signup] auto-confirm not configured, falling back to verify-code screen');
+      }
+
       show('screen-verify');
       showSuccess('We emailed you a 6-digit code. Enter it below to verify your account.');
       startResendCountdown();

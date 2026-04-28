@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<title>Your claim was approved — Credimed</title>
+<!--
+  Claim approved — sent when EDI 835 ERA shows carrier approval
+  with a positive remit amount, BEFORE the actual payment ships.
+  Placeholders: {{firstName}} {{claimId}} {{insurerName}}
+                {{approvedAmount}} {{approvedAt}} {{paymentMethod}}
+                {{expectedPaymentDate}}
+  Subject:    {{insurerName}} approved your claim &mdash; {{approvedAmount}} on the way
+  Pre-header: Refund of {{approvedAmount}} approved. Payment expected by {{expectedPaymentDate}}.
+-->
+</head>
+<body style="margin:0;padding:0;background:#FAF6EF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#334155;">
+  <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+    Refund of {{approvedAmount}} approved. Payment expected by {{expectedPaymentDate}}.
+  </div>
+
+  <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background:#FAF6EF;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="600" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
+
+          <tr>
+            <td style="padding:28px 32px 20px;border-bottom:1px solid #F1ECE0;">
+              <span style="display:inline-block;width:32px;height:32px;background:#0D9488;border-radius:8px;vertical-align:middle;text-align:center;line-height:32px;color:#ffffff;font-weight:700;font-size:14px;letter-spacing:-0.02em;">C</span>
+              <span style="display:inline-block;margin-left:10px;font-size:13px;font-weight:700;letter-spacing:0.16em;color:#0D9488;text-transform:uppercase;vertical-align:middle;">Credimed</span>
+            </td>
+          </tr>
+
+          <!-- Hero with check icon -->
+          <tr>
+            <td align="center" style="padding:36px 32px 8px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="width:64px;height:64px;background:#10B981;border-radius:50%;color:#ffffff;font-size:32px;font-weight:700;line-height:64px;">&#10003;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="padding:18px 32px 6px;">
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#059669;">Approved</p>
+              <h1 style="margin:0 0 12px;font-size:28px;font-weight:700;letter-spacing:-0.02em;color:#0F172A;line-height:1.2;">
+                Your refund is on the way.
+              </h1>
+              <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;max-width:440px;">
+                {{insurerName}} approved claim <b style="color:#0F172A;">{{claimId}}</b> on {{approvedAt}}. The refund will reach you {{paymentMethod}} by {{expectedPaymentDate}}.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Big amount card -->
+          <tr>
+            <td align="center" style="padding:0 32px 24px;">
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#10B981 0%,#0D9488 100%);border-radius:14px;">
+                <tr>
+                  <td align="center" style="padding:28px 22px;">
+                    <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.85);">Approved refund</p>
+                    <p style="margin:0;font-size:42px;font-weight:700;letter-spacing:-0.02em;color:#ffffff;line-height:1.1;">{{approvedAmount}}</p>
+                    <p style="margin:8px 0 0;font-size:12px;color:rgba(255,255,255,0.85);">Paid by {{insurerName}} directly to you</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Details -->
+          <tr>
+            <td style="padding:0 32px 24px;">
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background:#FAF6EF;border:1px solid #F1ECE0;border-radius:12px;">
+                <tr>
+                  <td style="padding:18px 22px;">
+                    <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding:6px 0;font-size:14px;color:#64748B;">Claim ID</td>
+                        <td align="right" style="padding:6px 0;font-size:14px;color:#0F172A;font-weight:600;font-family:ui-monospace,Menlo,Consolas,monospace;">{{claimId}}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-size:14px;color:#64748B;">Insurer</td>
+                        <td align="right" style="padding:6px 0;font-size:14px;color:#0F172A;font-weight:600;">{{insurerName}}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-size:14px;color:#64748B;">Approved on</td>
+                        <td align="right" style="padding:6px 0;font-size:14px;color:#0F172A;font-weight:600;">{{approvedAt}}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-size:14px;color:#64748B;">Payment method</td>
+                        <td align="right" style="padding:6px 0;font-size:14px;color:#0F172A;font-weight:600;">{{paymentMethod}}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0;font-size:14px;color:#64748B;">Expected by</td>
+                        <td align="right" style="padding:6px 0;font-size:14px;color:#0F172A;font-weight:600;">{{expectedPaymentDate}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Reminder -->
+          <tr>
+            <td style="padding:0 32px 24px;">
+              <p style="margin:0;font-size:13px;line-height:1.6;color:#64748B;">
+                <b style="color:#0F172A;">Important:</b> the refund goes from {{insurerName}} directly to you using the deposit info you have on file with them. Credimed never touches your refund.
+              </p>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td align="center" style="padding:0 32px 28px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:#0D9488;border-radius:10px;">
+                    <a href="https://credimed.us/app/claim.html?id={{claimId}}" style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:-0.01em;">View your claim &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:16px 32px 24px;border-top:1px solid #F1ECE0;">
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="font-size:11px;color:#64748B;letter-spacing:0.04em;">
+                    <span style="color:#0A7A70;">&#10003;</span> HIPAA-aligned &nbsp;&middot;&nbsp;
+                    <span style="color:#0A7A70;">&#10003;</span> 256-bit encryption &nbsp;&middot;&nbsp;
+                    <span style="color:#0A7A70;">&#10003;</span> US-incorporated
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <table role="presentation" width="600" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;margin-top:20px;">
+          <tr>
+            <td align="center" style="padding:0 16px;font-size:11px;line-height:1.6;color:#94A3B8;">
+              Credimed &middot; Boston, MA &middot; US-incorporated<br>
+              <a href="https://credimed.us/legal/privacy.html" style="color:#94A3B8;text-decoration:underline;">Privacy</a> &middot;
+              <a href="https://credimed.us/legal/terms.html" style="color:#94A3B8;text-decoration:underline;">Terms</a> &middot;
+              <a href="mailto:support@credimed.us" style="color:#94A3B8;text-decoration:underline;">support@credimed.us</a>
+              <br><br>
+              Status update for claim {{claimId}}. <a href="mailto:support@credimed.us?subject=Unsubscribe" style="color:#94A3B8;text-decoration:underline;">Manage notifications</a>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

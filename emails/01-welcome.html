@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<title>Welcome to Credimed</title>
+<!--
+  Welcome email — sent immediately after a real Cognito signup
+  (no verification code; user is auto-confirmed).
+  Placeholders: {{firstName}}
+  Subject:   Welcome to Credimed — your account is ready
+  Pre-header: Upload your dental receipt and we'll file your PPO claim within 24 hours.
+-->
+</head>
+<body style="margin:0;padding:0;background:#FAF6EF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#334155;">
+  <!-- Pre-header (hidden, shown by some clients in the inbox preview) -->
+  <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+    Upload your dental receipt and we'll file your PPO claim within 24 hours.
+  </div>
+
+  <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background:#FAF6EF;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="600" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
+
+          <!-- Header -->
+          <tr>
+            <td style="padding:28px 32px 20px;border-bottom:1px solid #F1ECE0;">
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    <span style="display:inline-block;width:32px;height:32px;background:#0D9488;border-radius:8px;vertical-align:middle;text-align:center;line-height:32px;color:#ffffff;font-weight:700;font-size:14px;letter-spacing:-0.02em;">C</span>
+                    <span style="display:inline-block;margin-left:10px;font-size:13px;font-weight:700;letter-spacing:0.16em;color:#0D9488;text-transform:uppercase;vertical-align:middle;">Credimed</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 32px 8px;">
+              <h1 style="margin:0 0 12px;font-size:26px;font-weight:700;letter-spacing:-0.02em;color:#0F172A;line-height:1.25;">
+                Welcome to Credimed, {{firstName}}.
+              </h1>
+              <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">
+                Your account is ready. We help US PPO members recover the money their dental insurance owes them for work performed in Mexico — by filing the out-of-network reimbursement claim correctly the first time.
+              </p>
+            </td>
+          </tr>
+
+          <!-- How it works (3 steps) -->
+          <tr>
+            <td style="padding:8px 32px 24px;">
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;">
+                <tr>
+                  <td style="padding:20px 22px;">
+                    <p style="margin:0 0 14px;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#0A7A70;">How it works</p>
+
+                    <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="vertical-align:top;width:32px;padding:6px 12px 6px 0;">
+                          <span style="display:inline-block;width:24px;height:24px;background:#0D9488;border-radius:50%;color:#ffffff;font-weight:700;font-size:12px;text-align:center;line-height:24px;">1</span>
+                        </td>
+                        <td style="vertical-align:top;padding:6px 0;font-size:14px;line-height:1.5;color:#334155;">
+                          <b style="color:#0F172A;">Upload your receipt and insurance card.</b> Takes about 2 minutes — we extract the procedures and amounts automatically.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="vertical-align:top;width:32px;padding:6px 12px 6px 0;">
+                          <span style="display:inline-block;width:24px;height:24px;background:#0D9488;border-radius:50%;color:#ffffff;font-weight:700;font-size:12px;text-align:center;line-height:24px;">2</span>
+                        </td>
+                        <td style="vertical-align:top;padding:6px 0;font-size:14px;line-height:1.5;color:#334155;">
+                          <b style="color:#0F172A;">We translate, code, and file the claim</b> with your insurer using current ADA CDT codes — typically within 24 hours of payment.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="vertical-align:top;width:32px;padding:6px 12px 6px 0;">
+                          <span style="display:inline-block;width:24px;height:24px;background:#0D9488;border-radius:50%;color:#ffffff;font-weight:700;font-size:12px;text-align:center;line-height:24px;">3</span>
+                        </td>
+                        <td style="vertical-align:top;padding:6px 0;font-size:14px;line-height:1.5;color:#334155;">
+                          <b style="color:#0F172A;">Your insurer pays you directly.</b> Credimed never touches your refund — the check or direct deposit goes from your carrier to you.
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td align="center" style="padding:8px 32px 28px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:#0D9488;border-radius:10px;">
+                    <a href="https://credimed.us/app/documents.html" style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:-0.01em;">Start your first claim &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:14px 0 0;font-size:12px;color:#64748B;line-height:1.5;">
+                Flat fee. Money-back guarantee if your claim is eligible and we can't recover it.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Trust bar -->
+          <tr>
+            <td style="padding:16px 32px 24px;border-top:1px solid #F1ECE0;">
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="font-size:11px;color:#64748B;letter-spacing:0.04em;">
+                    <span style="color:#0A7A70;">&#10003;</span> HIPAA-aligned &nbsp;&middot;&nbsp;
+                    <span style="color:#0A7A70;">&#10003;</span> 256-bit encryption &nbsp;&middot;&nbsp;
+                    <span style="color:#0A7A70;">&#10003;</span> US-incorporated
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+
+        <!-- Footer -->
+        <table role="presentation" width="600" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;margin-top:20px;">
+          <tr>
+            <td align="center" style="padding:0 16px;font-size:11px;line-height:1.6;color:#94A3B8;">
+              Credimed &middot; Boston, MA &middot; US-incorporated<br>
+              <a href="https://credimed.us/legal/privacy.html" style="color:#94A3B8;text-decoration:underline;">Privacy</a> &middot;
+              <a href="https://credimed.us/legal/terms.html" style="color:#94A3B8;text-decoration:underline;">Terms</a> &middot;
+              <a href="mailto:support@credimed.us" style="color:#94A3B8;text-decoration:underline;">support@credimed.us</a>
+              <br><br>
+              You're getting this because you created a Credimed account.
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
