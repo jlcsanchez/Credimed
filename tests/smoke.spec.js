@@ -28,8 +28,9 @@ test.describe('Public pages render', () => {
   test('about page loads with founder section', async ({ page }) => {
     await page.goto('/about.html');
     await expect(page).toHaveTitle(/About|Credimed/i);
-    await expect(page.locator('body')).toContainText(/Juan Luis Sanchez/);
-    /* Don't leak the personal email */
+    await expect(page.locator('body')).toContainText(/Founder.*Credimed/i);
+    /* Privacy: founder's full name and personal email must not appear */
+    await expect(page.locator('body')).not.toContainText(/Juan Luis Sanchez/);
     await expect(page.locator('body')).not.toContainText(/jlcsanchezavila@gmail/);
   });
 
