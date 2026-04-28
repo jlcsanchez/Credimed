@@ -177,7 +177,7 @@ app.post('/payments/create-intent', (req, res) => {
   if (!isValidClaimIdFormat(claim_id)) {
     return res.status(404).json({ error: 'claim_not_found', claim_id });
   }
-  const PLAN_PRICES = { standard: 49, plus: 79, premium: 99 };
+  const PLAN_PRICES = { micro: 19, lite: 29, standard: 49, plus: 79, premium: 99 };
   const amount = PLAN_PRICES[String(plan).toLowerCase()];
   if (typeof amount !== 'number') {
     return res.status(400).json({ error: 'invalid_plan', plan });

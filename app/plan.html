@@ -861,12 +861,7 @@ html, body {
     <span class="dot"></span>
     CREDIMED · Plan
   </div>
-  <div class="tabs">
-    <button class="tab active" data-variant="default">Default</button>
-    <button class="tab" data-variant="selected">Plus selected</button>
-    <button class="tab" data-variant="compare">Comparison expanded</button>
-  </div>
-  <div class="meta">Step 3 of 4 · Choose plan</div>
+  <div class="meta">Step 3 of 4 · Your plan</div>
 </div>
 
 <div class="stage">
@@ -896,380 +891,18 @@ html, body {
   </div>
 </div>
 
-<script>
-const ICONS = {
-  back: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
-  mark: '<svg width="18" height="18" viewBox="0 0 32 32"><path d="M 11 10 L 11 21 M 21 10 L 21 21" fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#0D9488"/></svg>',
-  check: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  checkSm: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  minus: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-  star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L14 9 L22 12 L14 15 L12 22 L10 15 L2 12 L10 9 Z"/></svg>',
-  chev: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
-  shield: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  lock: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
-};
-
-const PLANS = {
-  basic: {
-    id: 'basic',
-    title: 'Basic',
-    subtitle: 'For straightforward claims',
-    price: 29,
-    features: [
-      { text: '1 claim submission' },
-      { text: 'Up-front written refund estimate' },
-      { text: 'Spanish receipt translation' },
-      { text: 'Insurer pays you directly' },
-      { text: 'Resubmissions handled manually by our team', muted: true, icon: 'minus' },
-    ],
-    bestIf: "You have all your docs — receipt, itemized procedures, x-rays if any.",
-    cta: 'Choose Basic',
-  },
-  plus: {
-    id: 'plus',
-    title: 'Plus',
-    subtitle: 'Peace of mind · recommended',
-    price: 39,
-    features: [
-      { text: '<b>Unlimited</b> claim resubmissions' },
-      { text: 'Up-front written refund estimate' },
-      { text: 'Spanish receipt translation' },
-      { text: 'Insurer pays you directly' },
-      { text: 'If denied or needs more docs, <b>we handle it at no extra cost</b>' },
-      { text: 'HIPAA-compliant document handling' },
-    ],
-    bestIf: "You want zero risk of paying more.",
-    cta: 'Choose Plus',
-  },
-};
-
-const COMPARISON_ROWS = [
-  { feat: 'Claim submissions',             basic: '1',     plus: 'Unlimited', emphasize: true },
-  { feat: 'Up-front refund estimate',      basic: 'check', plus: 'check' },
-  { feat: 'Spanish receipt translation',   basic: 'check', plus: 'check' },
-  { feat: 'Direct insurer payment',        basic: 'check', plus: 'check' },
-  { feat: 'Resubmission if denied',        basic: 'One included', plus: 'Unlimited' },
-  { feat: 'Missing-document support',      basic: 'dash',  plus: 'check' },
-  { feat: 'HIPAA-compliant handling',      basic: 'check', plus: 'check' },
-  { feat: 'Priority claim handling',       basic: 'dash',  plus: 'check' },
-  { feat: 'Support via Sofia (WhatsApp)',  basic: 'check', plus: 'check' },
-];
-
-function featureListHtml(plan, variantClass) {
-  return `
-    <ul class="feature-list">
-      ${plan.features.map(f => {
-        const icon = f.icon === 'minus'
-          ? `<span class="check-circle">${ICONS.minus}</span>`
-          : `<span class="check-circle">${ICONS.check}</span>`;
-        return `<li class="feature-item ${f.muted ? 'muted' : ''}">${icon}<span>${f.text}</span></li>`;
-      }).join('')}
-    </ul>
-  `;
-}
-
-function planCardHtml(plan, opts) {
-  const { selected, dimmed, isPlus } = opts;
-  const classes = [
-    'plan-card',
-    isPlus ? 'plus' : '',
-    selected ? 'selected' : '',
-    dimmed ? 'dimmed' : '',
-  ].filter(Boolean).join(' ');
-
-  // Badge: "Most popular" on Plus when nothing selected;
-  // "Selected" on whichever card is selected.
-  let badge = '';
-  if (selected) {
-    badge = `<span class="badge-selected">${ICONS.checkSm} Selected</span>`;
-  } else if (isPlus) {
-    badge = `<span class="badge-pop"><span class="star">${ICONS.star}</span> Most popular</span>`;
-  }
-
-  // CTA label + style depends on state
-  let ctaLabel, ctaClass;
-  if (selected) {
-    ctaLabel = `Continue with ${plan.title}`;
-    ctaClass = 'plan-cta primary';
-  } else if (isPlus) {
-    ctaLabel = plan.cta;
-    ctaClass = 'plan-cta primary';
-  } else {
-    ctaLabel = plan.cta;
-    ctaClass = 'plan-cta';
-  }
-
-  return `
-    <div class="${classes}" data-plan="${plan.id}">
-      ${badge}
-      <div class="plan-header">
-        <h3 class="plan-title">${plan.title}</h3>
-        <p class="plan-subtitle">${plan.subtitle}</p>
-      </div>
-      <div class="plan-price-row">
-        <span class="plan-price"><span class="currency">$</span>${plan.price}</span>
-        <span class="plan-price-label">one-time</span>
-      </div>
-      ${featureListHtml(plan)}
-      <div class="best-if">
-        <b>Best if</b>
-        ${plan.bestIf}
-      </div>
-      <button class="${ctaClass}" data-plan-cta="${plan.id}">
-        <span>${ctaLabel}</span>
-        ${ selected ? '<span class="arrow">→</span>' : '' }
-      </button>
-    </div>
-  `;
-}
-
-function compareTableHtml() {
-  const cell = (v, isPlus) => {
-    if (v === 'check') return `<span class="check-green">${ICONS.checkSm}</span>`;
-    if (v === 'dash')  return `<span class="dash-muted">—</span>`;
-    return v;
-  };
-  return `
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th class="feat-col">Feature</th>
-          <th class="basic-col">Lite · $29</th>
-          <th class="plus-col">Premium · $99</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${COMPARISON_ROWS.map(r => `
-          <tr>
-            <td class="feat">${r.feat}</td>
-            <td class="val">${cell(r.basic, false)}</td>
-            <td class="val plus-val">${cell(r.plus, true)}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
-}
-
-function renderScreen(variantKey) {
-  const selected = variantKey === 'selected' ? 'plus' : null;
-  const compareOpen = variantKey === 'compare';
-
-  const progressSegs = [
-    '<div class="progress-seg active"></div>',
-    '<div class="progress-seg active"></div>',
-    '<div class="progress-seg active"></div>',
-    '<div class="progress-seg"></div>',
-  ].join('');
-
-  const basicCard = planCardHtml(PLANS.basic, {
-    selected: selected === 'basic',
-    dimmed: selected && selected !== 'basic',
-    isPlus: false,
-  });
-  const plusCard = planCardHtml(PLANS.plus, {
-    selected: selected === 'plus',
-    dimmed: selected && selected !== 'plus',
-    isPlus: true,
-  });
-
-  const footerCta = selected
-    ? `
-      <div class="footer-cta">
-        <div class="inline-summary">
-          <b>${PLANS[selected].title}</b> · $${PLANS[selected].price} · one-time charge
-        </div>
-        <button class="btn-primary">
-          <span>Continue with ${PLANS[selected].title}</span>
-          <span class="arrow">→</span>
-        </button>
-      </div>
-    `
-    : '';
-
-  return `
-    <div class="hero">
-      <div class="hero-top">
-        <button class="back-btn" aria-label="Back">${ICONS.back}</button>
-        <div class="logo-badge">
-          <span class="circle">${ICONS.mark}</span>
-          <span class="text">CREDIMED</span>
-        </div>
-        <span style="width:36px"></span>
-      </div>
-      <div class="hero-eyebrow">Choose your plan</div>
-      <h1 class="hero-title">Pick the plan that fits your claim</h1>
-      <p class="hero-sub">One-time fee · your insurer pays you directly · we never take a cut of your refund.</p>
-      <div class="progress">${progressSegs}</div>
-      <div class="progress-label">Step 3 of 4 · Choose plan</div>
-    </div>
-    <div class="body-wrap">
-      <div class="plan-grid">
-        ${basicCard}
-        ${plusCard}
-      </div>
-
-      <div class="compare-block ${compareOpen ? 'open' : ''}" data-compare>
-        <button class="compare-trigger" data-compare-trigger>
-          <span>See full comparison</span>
-          <span class="chev">${ICONS.chev}</span>
-        </button>
-        <div class="compare-body">
-          <div class="compare-body-inner">
-            ${compareTableHtml()}
-          </div>
-        </div>
-      </div>
-
-      <div class="trust-row">
-        ${ICONS.shield} HIPAA-ready
-        <span class="dot-sep">·</span>
-        ${ICONS.lock} 256-bit encrypted
-        <span class="dot-sep">·</span>
-        US-incorporated
-      </div>
-    </div>
-    ${footerCta}
-  `;
-}
-
-let activeVariant = 'default';
-
-function mount() {
-  document.getElementById('screen-mobile').innerHTML = renderScreen(activeVariant);
-  document.getElementById('screen-desktop').innerHTML = renderScreen(activeVariant);
-  wire();
-}
-
-function wire() {
-  // Toggling a plan card from "default" to that plan's selected state
-  document.querySelectorAll('[data-plan-cta]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const id = btn.getAttribute('data-plan-cta');
-      // Persist plan selection so payment.html can read it.
-      // Map legacy ids: plus -> premium, basic -> standard
-      try {
-        var planKey = (id === 'plus' || id === 'premium') ? 'premium' : 'standard';
-        if (window.CredimedState) window.CredimedState.set('plan.selected', planKey);
-      } catch (err) {}
-      // Only "Plus selected" is a predefined tab; if the user clicks Basic's CTA,
-      // we still visualize a selected Basic state for preview.
-      activeVariant = 'selected';
-      // Swap the selected plan by rebinding a one-off render
-      const customHtmlMobile = renderScreenCustom(id, false);
-      const customHtmlDesktop = renderScreenCustom(id, false);
-      document.getElementById('screen-mobile').innerHTML = customHtmlMobile;
-      document.getElementById('screen-desktop').innerHTML = customHtmlDesktop;
-      // Update tab state
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-      document.querySelector('[data-variant="selected"]').classList.add('active');
-      wire();
-    });
-  });
-
-  document.querySelectorAll('[data-compare-trigger]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const block = btn.closest('[data-compare]');
-      block.classList.toggle('open');
-    });
-  });
-}
-
-function renderScreenCustom(selectedId, compareOpen) {
-  const progressSegs = [
-    '<div class="progress-seg active"></div>',
-    '<div class="progress-seg active"></div>',
-    '<div class="progress-seg active"></div>',
-    '<div class="progress-seg"></div>',
-  ].join('');
-
-  const basicCard = planCardHtml(PLANS.basic, {
-    selected: selectedId === 'basic',
-    dimmed: selectedId && selectedId !== 'basic',
-    isPlus: false,
-  });
-  const plusCard = planCardHtml(PLANS.plus, {
-    selected: selectedId === 'plus',
-    dimmed: selectedId && selectedId !== 'plus',
-    isPlus: true,
-  });
-
-  const footerCta = selectedId
-    ? `
-      <div class="footer-cta">
-        <div class="inline-summary">
-          <b>${PLANS[selectedId].title}</b> · $${PLANS[selectedId].price} · one-time charge
-        </div>
-        <button class="btn-primary">
-          <span>Continue with ${PLANS[selectedId].title}</span>
-          <span class="arrow">→</span>
-        </button>
-      </div>
-    `
-    : '';
-
-  return `
-    <div class="hero">
-      <div class="hero-top">
-        <button class="back-btn" aria-label="Back">${ICONS.back}</button>
-        <div class="logo-badge">
-          <span class="circle">${ICONS.mark}</span>
-          <span class="text">CREDIMED</span>
-        </div>
-        <span style="width:36px"></span>
-      </div>
-      <div class="hero-eyebrow">Choose your plan</div>
-      <h1 class="hero-title">Pick the plan that fits your claim</h1>
-      <p class="hero-sub">One-time fee · your insurer pays you directly · we never take a cut of your refund.</p>
-      <div class="progress">${progressSegs}</div>
-      <div class="progress-label">Step 3 of 4 · Choose plan</div>
-    </div>
-    <div class="body-wrap">
-      <div class="plan-grid">${basicCard}${plusCard}</div>
-      <div class="compare-block ${compareOpen ? 'open' : ''}" data-compare>
-        <button class="compare-trigger" data-compare-trigger>
-          <span>See full comparison</span>
-          <span class="chev">${ICONS.chev}</span>
-        </button>
-        <div class="compare-body">
-          <div class="compare-body-inner">
-            ${compareTableHtml()}
-          </div>
-        </div>
-      </div>
-      <div class="trust-row">
-        ${ICONS.shield} HIPAA-ready
-        <span class="dot-sep">·</span>
-        ${ICONS.lock} 256-bit encrypted
-        <span class="dot-sep">·</span>
-        US-incorporated
-      </div>
-    </div>
-    ${footerCta}
-  `;
-}
-
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    activeVariant = t.getAttribute('data-variant');
-    mount();
-  });
-});
-
-mount();
-</script>
 
 <script>
-/* ---- Pricing overlay (renders the locked tier copy) ----
+/* ---- Pricing render (the only render on this page) ----
    documents.html writes credimed_plan / credimed_price to the state
-   after the real OCR + engine run. This overlay waits for the Claude
-   Design mount() to finish rendering the Basic/Plus mockup, then
-   replaces #screen-mobile and #screen-desktop with the locked tier
-   copy from marketing/pricing-copy-final.md. The patient sees only
-   the tier the engine assigned them — never the other three.
+   after the real OCR + engine run. This script fills #screen-mobile
+   and #screen-desktop with the engine-assigned tier card from
+   marketing/pricing-copy-final.md. The patient sees only the tier
+   the engine assigned them — never a picker.
+
+   The legacy Basic/Plus picker that used to live above this script
+   was deleted on 2026-04-28 — it would render whenever this script
+   threw before reaching innerHTML, leading to wrong prices on screen.
 
    Source of truth for the strings below: marketing/pricing-copy-final.md
    v1.0. Update both files in lockstep. */
@@ -1330,9 +963,32 @@ mount();
       price = parseInt(sessionStorage.getItem('credimed_price'), 10);
       feeExceedsCap = sessionStorage.getItem('credimed_fee_exceeds_cap') === '1';
       feePctOfRefund = parseInt(sessionStorage.getItem('credimed_fee_pct'), 10) || null;
-    } catch (e) { return; }
+    } catch (e) { /* fall through to the missing-pricing fallback */ }
   }
-  if (!plan || !(price > 0)) return;
+
+  /* Pricing missing — engine never ran, OCR failed, or the user landed
+     here directly without uploading. Render an honest fallback that
+     points them back to documents.html instead of leaving the screen
+     blank or, worse, falling back to a stale picker. */
+  if (!plan || !(price > 0)) {
+    var fallback =
+      '<div class="hero">' +
+        '<div class="hero-eyebrow">Your plan</div>' +
+        '<h1 class="hero-title">We need your receipt first</h1>' +
+        '<p class="hero-sub">We pick the right plan for your claim based on your receipt and PPO. Upload your dental receipt and insurance card so we can compute a price.</p>' +
+      '</div>' +
+      '<div style="padding:24px 16px">' +
+        '<a href="documents.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">' +
+          '<span>Upload my receipt</span>' +
+          '<span class="arrow">&rarr;</span>' +
+        '</a>' +
+      '</div>';
+    var mobEmpty = document.getElementById('screen-mobile');
+    var deskEmpty = document.getElementById('screen-desktop');
+    if (mobEmpty) mobEmpty.innerHTML = fallback;
+    if (deskEmpty) deskEmpty.innerHTML = fallback;
+    return;
+  }
 
   var tierKey = String(plan).toLowerCase();
   var copy = TIER_COPY[tierKey] || TIER_COPY.standard;

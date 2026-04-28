@@ -216,7 +216,7 @@ async function listAllClaims() {
 
 // Plan-fee mapping for the money-back refund amount. Mirror with the
 // PLANS const in the payment Lambda — these must stay in sync.
-const PLAN_FEE_USD = { standard: 49, plus: 79, premium: 99 };
+const PLAN_FEE_USD = { micro: 19, lite: 29, standard: 49, plus: 79, premium: 99 };
 
 /**
  * Issue a Stripe refund for the patient's submission fee.

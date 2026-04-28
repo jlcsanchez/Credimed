@@ -262,6 +262,8 @@ window.authFetch = async function (url, opts) {
 
      Amount is computed from `plan` to match the credimed-payment Lambda's
      PLANS table in AWS, which now uses engine-aligned keys and prices:
+       micro:    1900
+       lite:     2900
        standard: 4900
        plus:     7900
        premium:  9900
@@ -275,7 +277,7 @@ window.authFetch = async function (url, opts) {
        creating the PaymentIntent, so a tampered `amount` in this body
        is ignored. We still send a sane number to fail fast in the rare
        case the Lambda is misconfigured. */
-    var PLAN_AMOUNTS = { standard: 4900, plus: 7900, premium: 9900 };
+    var PLAN_AMOUNTS = { micro: 1900, lite: 2900, standard: 4900, plus: 7900, premium: 9900 };
     if (!PLAN_AMOUNTS[plan]) {
       throw new Error('Unknown plan: ' + plan);
     }
