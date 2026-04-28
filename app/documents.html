@@ -1674,10 +1674,18 @@ setInterval(() => {
     updateCardUploading(cardId, file.name, 95);
 
     if (ocrType === 'insurance') {
+      /* Strip whitespace artifacts from OCR-extracted IDs before storing.
+         Receipts/cards often have visual padding the OCR mis-reads as a
+         space (e.g. groupId: '0023550 33' -> '002355033'). Insurance
+         carriers' systems treat these as different IDs and reject the
+         claim with 'member not found'. */
+      var sanitizeId = function (v) {
+         return (typeof v === 'string') ? v.replace(/[\s ]+/g, '').trim() : v;
+      };
       var ins = {
         insurer:    (ocrData && (ocrData.insurer || ocrData.provider || ocrData.carrier || ocrData.insurance || ocrData.company)) || null,
-        memberId:   (ocrData && (ocrData.memberId || ocrData.member || ocrData.id)) || null,
-        groupId:    (ocrData && (ocrData.groupId || ocrData.group)) || null,
+        memberId:   sanitizeId((ocrData && (ocrData.memberId || ocrData.member || ocrData.id)) || null),
+        groupId:    sanitizeId((ocrData && (ocrData.groupId || ocrData.group)) || null),
         memberName: (ocrData && (ocrData.memberName || ocrData.name)) || null,
         fileName:   file.name,
         fileSize:   file.size,
