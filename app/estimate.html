@@ -1008,10 +1008,22 @@ mount();
     { label: 'Insurer',                value: insurerName || '—', highlight: !!insurerName }
   ];
   if (ins.memberId) breakdown.push({ label: 'Member ID', value: ins.memberId });
+  /* Build the procedure label: prefer the OCR'd procedures array
+     (current format — multiple per receipt), fall back to the
+     singular .procedure field (legacy / single-procedure receipts).
+     "Procedure" → "Procedures" when plural, with the count shown. */
+  var procLabel = 'Procedure';
+  var procValue = '—';
+  if (Array.isArray(r.procedures) && r.procedures.length) {
+    procLabel = r.procedures.length === 1 ? 'Procedure' : 'Procedures (' + r.procedures.length + ')';
+    procValue = r.procedures.join(' · ');
+  } else if (r.procedure) {
+    procValue = r.procedure;
+  }
   breakdown.push(
     { label: 'Out-of-network coverage', value: oonLabel },
     { label: 'Receipt amount',         value: '$' + paidUSD.toLocaleString() + (r.currency === 'MXN' ? ' USD (converted from MXN)' : ' USD') },
-    { label: 'Procedure',              value: r.procedure || '—' }
+    { label: procLabel,                 value: procValue }
   );
 
   var real = {
