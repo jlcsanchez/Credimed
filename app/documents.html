@@ -1296,6 +1296,29 @@ setInterval(() => {
 
   if (location.search.indexOf('dev=1') >= 0) return;
 
+  /* Reset stale claim/payment state if we arrived here AFTER a previously
+     successful claim. Without this, the Lambda's idempotency-by-claimId
+     would return the same already-paid PaymentIntent on the next visit
+     to payment.html, and Stripe would 400 on /v1/elements/sessions
+     because the intent is in 'succeeded' state.
+     We only clear payment + claim id (not the receipt/insurance fields,
+     which the user is about to overwrite by uploading new files anyway). */
+  try {
+    var S = window.CredimedState;
+    if (S && S.get && S.get('payment.status') === 'paid') {
+      console.info('[docs] starting fresh flow — clearing stale claim/payment state');
+      S.set('payment.status', null);
+      S.set('payment.paidAt', null);
+      S.set('claim.id', null);
+      S.set('claim', null);
+      S.set('pendingPaymentIntent', null);
+      /* Also clear per-card upload state so dropzones start empty. */
+      S.set('insurance', null);
+      S.set('receipt', null);
+      S.set('supportingDocs', []);
+    }
+  } catch (e) { /* state.js may not be loaded — fall through */ }
+
   /* Hide Claude Design dev chrome (top tabs, secondary device preview) */
   var devStyle = document.createElement('style');
   devStyle.textContent =

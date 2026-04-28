@@ -1457,6 +1457,24 @@ mountScope('desktop');
 
   if (location.search.indexOf('dev=1') >= 0) return;  // design preview mode, leave mock
 
+  /* Guard: if the user lands here for a claim that has ALREADY been paid
+     in this session, route them to confirmation instead of letting Lambda
+     return the same (already-succeeded) PaymentIntent — which would make
+     Stripe 400 on /v1/elements/sessions and leave the page stuck on a
+     skeleton. Signal: state.js submitClaim() sets payment.status='paid'
+     and payment.paidAt the moment Stripe confirms a charge. */
+  try {
+    var S = window.CredimedState;
+    var paidStatus = S && S.get && S.get('payment.status');
+    var paidAt     = S && S.get && S.get('payment.paidAt');
+    var paidClaim  = S && S.get && S.get('claim.id');
+    if (paidStatus === 'paid' && paidAt && paidClaim) {
+      console.info('[payment] claim', paidClaim, 'already paid at', paidAt, '— routing to confirmation');
+      window.location.replace('/app/submission-confirmed.html?paid=1&claim=' + encodeURIComponent(paidClaim));
+      return;
+    }
+  } catch (e) { /* state.js may not be loaded yet — fall through */ }
+
   /* Hide the top dev tabs (Default/Basic/Ready/etc.) in prod */
   var devStyle = document.createElement('style');
   devStyle.textContent =
