@@ -448,7 +448,15 @@ html,body{
 <script src="backend.js"></script>
 <script src="state.js"></script>
 <script>
-(function () {
+/* Defer the entire profile bootstrap to DOMContentLoaded so the PC
+   layout (rendered LATER in the document at lines 761+) is in the DOM
+   by the time we try to query its buttons. Without this, the inline
+   script ran while the head/mobile section was parsed but the PC
+   section didn't exist yet — every $('pcSaveContact'),
+   $('pcSaveAddress'), $('pcSaveBank') call returned null and the
+   handlers were silently never attached. Symptom: PC users clicking
+   Save saw nothing happen because the button had no listener. */
+function _credimedProfileBoot() {
   'use strict';
   var S = window.CredimedState;
   var $ = function (id) { return document.getElementById(id); };
@@ -752,7 +760,13 @@ html,body{
   });
 
   hydrate();
-})();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _credimedProfileBoot);
+} else {
+  _credimedProfileBoot();
+}
 </script>
 <script src="auto-logoff.js"></script>
   </div><!-- /.profile-mobile-only -->
