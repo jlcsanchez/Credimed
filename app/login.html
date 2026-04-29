@@ -512,6 +512,18 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     if (/NotAuthorizedException/.test(m) || /Incorrect username or password/i.test(m)) return 'Email or password is incorrect.';
     if (/UserNotConfirmedException/.test(m)) return 'Please verify your email first. Check your inbox for the code.';
     if (/PasswordResetRequiredException/.test(m)) return 'You need to reset your password. Use "Forgot password?" below.';
+    /* Edge case for legacy accounts (created before the Pre-Sign-Up Lambda
+       set email_verified=true) or users whose email got unverified somehow.
+       Cognito refuses to send the reset code because it has no verified
+       contact method. This is unrecoverable from the patient side without
+       admin intervention — surface a clear "email us" path instead of the
+       raw Cognito message. Plain text so showError's textContent renders
+       it as written; the email is hand-copyable. */
+    if (/no registered\/verified email/i.test(m) ||
+        /no verified email/i.test(m) ||
+        /Cannot reset password for the user/i.test(m)) {
+      return 'We can’t send your reset code because your email isn’t verified yet. Email support@credimed.us with the address on your account and we’ll fix it within 24 hours.';
+    }
     if (/CodeMismatchException/.test(m)) return 'That code is incorrect. Try again.';
     if (/ExpiredCodeException/.test(m)) return 'That code expired. Tap Resend to get a new one.';
     if (/LimitExceededException/.test(m) || /Attempt limit exceeded/i.test(m)) return 'Too many attempts. Please wait a few minutes and try again.';
