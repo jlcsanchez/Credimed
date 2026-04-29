@@ -577,6 +577,23 @@ html,body{
     $('bankAccount').value = bank.account    || '';
     $('bankType').value    = bank.accountType || 'checking';
 
+    // Banking — PC layout
+    if ($('pcBankHolder'))  $('pcBankHolder').value  = bank.holderName || (firstName + ' ' + lastName).trim();
+    if ($('pcBankName'))    $('pcBankName').value    = bank.bankName   || '';
+    if ($('pcBankRouting')) $('pcBankRouting').value = bank.routing    || '';
+    if ($('pcBankAccount')) $('pcBankAccount').value = bank.account    || '';
+    if ($('pcBankType'))    $('pcBankType').value    = bank.accountType || 'checking';
+
+    /* Notifications — default to ON if state is missing, so first-time
+       users see all three switches in "subscribed" position (matches
+       common SaaS expectation; user can always opt out). */
+    var notifs = S.get('notifications', {}) || {};
+    document.querySelectorAll('[data-notif-key]').forEach(function (cb) {
+      var key = cb.getAttribute('data-notif-key');
+      var stored = notifs[key];
+      cb.checked = (stored == null) ? (key !== 'tipsAndGuides') : !!stored;
+    });
+
     renderClaims();
   }
 
@@ -661,6 +678,45 @@ html,body{
     });
   }
 
+  /* PC Direct Deposit — toggleable form, mirrors mobile saveBank handler. */
+  if ($('pcBankToggle')) {
+    $('pcBankToggle').addEventListener('click', function () {
+      var form = $('pcBankForm');
+      if (!form) return;
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      $('pcBankToggle').textContent = form.style.display === 'none' ? 'Edit' : 'Hide';
+    });
+  }
+  if ($('pcSaveBank')) {
+    $('pcSaveBank').addEventListener('click', function () {
+      var holder  = ($('pcBankHolder')  || {}).value ? $('pcBankHolder').value.trim()  : '';
+      var bankNm  = ($('pcBankName')    || {}).value ? $('pcBankName').value.trim()    : '';
+      var routing = ($('pcBankRouting') || {}).value ? $('pcBankRouting').value.replace(/\D/g, '') : '';
+      var account = ($('pcBankAccount') || {}).value ? $('pcBankAccount').value.replace(/\D/g, '') : '';
+      var type    = ($('pcBankType')    || {}).value || 'checking';
+      if (routing && routing.length !== 9) {
+        flashStatus('pcStatusBank', 'Routing # must be 9 digits', true);
+        return;
+      }
+      S.set('banking', {
+        holderName: holder, bankName: bankNm, routing: routing,
+        account: account, accountType: type
+      });
+      flash('pcStatusBank');
+    });
+  }
+
+  /* PC Notifications — wire checkboxes by data-notif-key, save to state on change.
+     Default to all-on so first-time users see toggles in their expected position
+     (most users want updates by default). */
+  document.querySelectorAll('[data-notif-key]').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      var key = cb.getAttribute('data-notif-key');
+      S.set('notifications.' + key, !!cb.checked);
+      flash('pcStatusNotif');
+    });
+  });
+
   $('saveBank').addEventListener('click', function () {
     var holder  = $('bankHolder').value.trim();
     var bankNm  = $('bankName').value.trim();
@@ -737,20 +793,26 @@ html,body{
     </div>
     <div>
       <section class="prof-card">
-        <div class="prof-card-head"><h3>Direct deposit (with insurer)</h3><button class="prof-edit">Update</button></div>
-        <div class="prof-bank-status">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Your insurer mails refunds directly to you using the deposit info on file with them.</span>
-        </div>
-        <p style="font-size:12px; color:var(--slate-500); margin:0; line-height:1.5;">
-          Credimed never touches your refund. To update your direct deposit, contact your insurer directly.
+        <div class="prof-card-head"><h3>Direct deposit (optional)</h3><div style="display:flex;align-items:center;gap:10px"><span class="save-status" id="pcStatusBank">Saved ✓</span><button class="prof-edit" id="pcBankToggle">Edit</button></div></div>
+        <p style="font-size:13px; color:var(--slate-600); margin:0 0 12px; line-height:1.5;">
+          We share this with your insurer so they can deposit your refund directly. If left blank, your insurer mails a paper check to your address.
         </p>
+        <div id="pcBankForm" style="display:none;">
+          <div class="prof-field"><label>Account holder name</label><input type="text" id="pcBankHolder" autocomplete="cc-name"></div>
+          <div class="prof-field"><label>Bank name</label><input type="text" id="pcBankName"></div>
+          <div class="prof-field-row">
+            <div class="prof-field"><label>Routing #</label><input type="text" id="pcBankRouting" inputmode="numeric" maxlength="9"></div>
+            <div class="prof-field"><label>Account #</label><input type="text" id="pcBankAccount" inputmode="numeric"></div>
+          </div>
+          <div class="prof-field"><label>Account type</label><select id="pcBankType"><option value="checking">Checking</option><option value="savings">Savings</option></select></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px;"><button class="btn-save" id="pcSaveBank" style="padding:8px 14px;border-radius:8px;background:var(--teal-700);color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:600;">Save banking</button></div>
+        </div>
       </section>
       <section class="prof-card" style="margin-top: 22px;">
-        <div class="prof-card-head"><h3>Notifications</h3></div>
-        <div class="prof-toggle-row"><div><div class="label">Claim status updates</div><div class="desc">Email when status changes</div></div><input type="checkbox" class="prof-switch" checked></div>
-        <div class="prof-toggle-row"><div><div class="label">Insurer correspondence</div><div class="desc">When your carrier asks for documents</div></div><input type="checkbox" class="prof-switch" checked></div>
-        <div class="prof-toggle-row"><div><div class="label">Tips &amp; dental travel guides</div><div class="desc">Occasional email &mdash; never more than monthly</div></div><input type="checkbox" class="prof-switch"></div>
+        <div class="prof-card-head"><h3>Notifications</h3><span class="save-status" id="pcStatusNotif">Saved ✓</span></div>
+        <div class="prof-toggle-row"><div><div class="label">Claim status updates</div><div class="desc">Email when status changes</div></div><input type="checkbox" class="prof-switch" data-notif-key="claimStatus"></div>
+        <div class="prof-toggle-row"><div><div class="label">Insurer correspondence</div><div class="desc">When your carrier asks for documents</div></div><input type="checkbox" class="prof-switch" data-notif-key="insurerCorrespondence"></div>
+        <div class="prof-toggle-row"><div><div class="label">Tips &amp; dental travel guides</div><div class="desc">Occasional email &mdash; never more than monthly</div></div><input type="checkbox" class="prof-switch" data-notif-key="tipsAndGuides"></div>
       </section>
     </div>
   </div>
