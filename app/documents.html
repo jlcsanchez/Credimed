@@ -2029,16 +2029,113 @@ setInterval(() => {
 </div>
 
 <script>
+/* In-flight claim resume.
+   If the user uploaded for a claim, navigated away, and returned to
+   this page, CredimedState still holds the OCR-extracted data for
+   that claim under state.receipt and state.insurance. The original
+   mount() always renders empty dropzones; this hydrate runs after
+   mount() and replaces each dropzone with a "resume" banner
+   showing the extracted data + a Replace button so they can either
+   continue or re-upload from scratch.
+
+   Only fires when a claim is genuinely in flight (pendingClaimId
+   exists AND state.claim is unset OR state.claim.id != pendingClaimId,
+   meaning the previous claim was already submitted and a new one
+   started). Avoids leaking last-claim data into a fresh upload flow. */
+function hydrateInFlightDocuments() {
+  if (!window.CredimedState) return;
+  var S = window.CredimedState;
+
+  var pendingClaimId = S.get('pendingClaimId', null);
+  if (!pendingClaimId) return;  /* No claim in flight — fresh upload */
+
+  /* If a claim with submittedAt exists with the same id, we're not in
+     flight — that claim already shipped and the user landed here to
+     start a new one. Don't hydrate; let them upload fresh. */
+  var lastClaim = S.get('claim', null);
+  if (lastClaim && lastClaim.id === pendingClaimId && lastClaim.submittedAt) {
+    return;
+  }
+
+  var receipt   = S.get('receipt', null);
+  var insurance = S.get('insurance', null);
+  if (!receipt && !insurance) return;
+
+  function replaceCard(cardId, label, summaryLines) {
+    document.querySelectorAll('[data-card-root="' + cardId + '"]').forEach(function (root) {
+      root.classList.remove('state-empty');
+      root.classList.add('state-done');
+      var dropzone = root.querySelector('.dropzone, .uploaded-row, .uploading-row, .error-row');
+      if (!dropzone) return;
+      var html =
+        '<div class="uploaded-row" style="padding:14px 12px">' +
+          '<div class="uploaded-thumb" style="background:var(--teal-100,#CCFBF1);color:var(--teal-700,#0B8278)">' +
+            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+          '</div>' +
+          '<div class="uploaded-body" style="flex:1">' +
+            '<div class="uploaded-filename">' + label + '</div>' +
+            '<div class="uploaded-meta" style="color:var(--slate-500);font-size:12px;margin-top:2px">' +
+              '<span style="color:var(--teal-700,#0B8278);font-weight:600">On file from your in-flight claim</span>' +
+              (summaryLines.length ? '<span> · </span><span>' + summaryLines.join(' · ') + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<button type="button" class="replace-btn" data-replace-card="' + cardId + '" ' +
+            'style="margin-left:auto;padding:7px 12px;border:1px solid var(--slate-300,#cbd5e1);background:#fff;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--slate-700,#334155);cursor:pointer;font-family:inherit">Replace</button>' +
+        '</div>';
+      dropzone.outerHTML = html;
+    });
+  }
+
+  if (receipt && (receipt.amountPaid || receipt.dentist || receipt.procedure || (receipt.procedures && receipt.procedures.length))) {
+    var lines = [];
+    var amt = receipt.amountPaidUSD || receipt.amountPaid;
+    if (amt) lines.push('$' + Number(amt).toLocaleString() + ' USD');
+    if (receipt.dentist) lines.push(receipt.dentist);
+    if (receipt.treatmentDate) lines.push(receipt.treatmentDate);
+    var procCount = Array.isArray(receipt.procedures) ? receipt.procedures.length : (receipt.procedure ? 1 : 0);
+    if (procCount > 0) lines.push(procCount + ' procedure' + (procCount === 1 ? '' : 's'));
+    replaceCard('receipt', 'Dental receipt — already extracted', lines);
+  }
+
+  if (insurance && (insurance.insurer || insurance.memberId)) {
+    var lines2 = [];
+    if (insurance.insurer) lines2.push(insurance.insurer);
+    if (insurance.memberId) lines2.push('Member ID ' + insurance.memberId);
+    replaceCard('insurance', 'Insurance card — already extracted', lines2);
+  }
+
+  /* "Replace" button: clear that card's data from state and re-mount so
+     the user gets a fresh dropzone. */
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-replace-card]');
+    if (!btn) return;
+    var cardId = btn.getAttribute('data-replace-card');
+    if (cardId === 'receipt') {
+      S.set('receipt', {});
+    } else if (cardId === 'insurance') {
+      S.set('insurance', {});
+    }
+    if (typeof mount === 'function') mount();
+  });
+
+  /* Tally: refresh the "0 of 2 required documents uploaded" counter,
+     since the original counter only counted DOM .state-done cards
+     placed by simulateUpload, not by us. */
+  if (typeof updateRequiredCounter === 'function') updateRequiredCounter();
+}
+
 /* Re-fire mount() after #screen-pc + #screen-pc-cta are in the DOM.
    The original mount() in the inline JS above runs at parse time,
    BEFORE the parser reaches this section, so the PC slots end up
    empty. This re-fire fills them once the full DOM is parsed. */
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function () {
-    if (typeof mount === 'function') mount();
-  });
-} else {
+function bootstrapDocuments() {
   if (typeof mount === 'function') mount();
+  hydrateInFlightDocuments();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapDocuments);
+} else {
+  bootstrapDocuments();
 }
 </script>
 
