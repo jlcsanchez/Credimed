@@ -436,6 +436,35 @@ html,body{
 
     var docs = '';
     var docList = c.documents || [];
+
+    /* Fallback: if the backend didn't return c.documents but this claim
+       is the most recent in-flight one (matches state.claim.id), derive
+       a documents list from local CredimedState. Keeps the docs visible
+       while the backend POST /claims endpoint that stores `documents`
+       is still pending — see submission-confirmed.html for the same
+       shape we'd send the backend. */
+    if (!docList.length && window.CredimedState) {
+      var stateClaim = window.CredimedState.get('claim', null);
+      if (stateClaim && stateClaim.id === c.id) {
+        var receipt   = window.CredimedState.get('receipt', {})   || {};
+        var insurance = window.CredimedState.get('insurance', {}) || {};
+        var supDocs   = window.CredimedState.get('supportingDocs', []) || [];
+        var derived = [];
+        if (receipt && (receipt.amountPaid || receipt.dentist || receipt.procedure || (receipt.procedures && receipt.procedures.length))) {
+          derived.push({ kind: 'receipt',  label: 'Dental receipt' });
+        }
+        if (insurance && (insurance.insurer || insurance.memberId)) {
+          derived.push({ kind: 'insurance', label: 'Insurance card' });
+        }
+        if (Array.isArray(supDocs)) {
+          supDocs.forEach(function (d) {
+            derived.push({ kind: 'supporting', label: d.label || d.name || 'Supporting document' });
+          });
+        }
+        if (derived.length) docList = derived;
+      }
+    }
+
     if (docList.length) {
       docs = '<div class="card"><h2>Documents on file</h2><div class="docs-row">' +
         docList.map(function (d) {

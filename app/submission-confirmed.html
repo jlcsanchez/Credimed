@@ -463,6 +463,42 @@ html, body {
          re-detect currency. Also forward the original amount + currency
          as a secondary record for audit / reconciliation. */
       var S = window.CredimedState || { get: function(){ return null; } };
+      var receipt   = S.get('receipt', {})   || {};
+      var insurance = S.get('insurance', {}) || {};
+      var supportingDocs = S.get('supportingDocs', []) || [];
+
+      /* Document metadata array — what the patient uploaded for this claim.
+         Just the kind + label + extracted-at timestamp; no file bytes,
+         no PHI in the array itself (the underlying receipt/insurance
+         objects are already PHI and live in their own state slices).
+         claim.html reads this on the detail page to show "Documents on
+         file" — so even though the backend POST endpoint isn't built
+         yet, the shape is locked so it'll Just Work once it lands. */
+      var documents = [];
+      if (receipt && (receipt.amountPaid || receipt.dentist || receipt.procedure || (receipt.procedures && receipt.procedures.length))) {
+        documents.push({
+          kind: 'receipt',
+          label: 'Dental receipt',
+          extractedAt: receipt.extractedAt || new Date().toISOString()
+        });
+      }
+      if (insurance && (insurance.insurer || insurance.memberId)) {
+        documents.push({
+          kind: 'insurance',
+          label: 'Insurance card',
+          extractedAt: insurance.extractedAt || new Date().toISOString()
+        });
+      }
+      if (Array.isArray(supportingDocs)) {
+        supportingDocs.forEach(function (d) {
+          documents.push({
+            kind: 'supporting',
+            label: d.label || d.name || 'Supporting document',
+            extractedAt: d.uploadedAt || new Date().toISOString()
+          });
+        });
+      }
+
       var body = {
         claimId: claimId,
         plan: S.get('plan.selected') || 'standard',
@@ -474,6 +510,7 @@ html, body {
         city: S.get('receipt.city') || null,
         procedures: S.get('receipt.procedures') || null,
         procedure: S.get('receipt.procedure') || null,
+        documents: documents,
         submittedAt: new Date().toISOString()
       };
       if (window.authFetch && window.CREDIMED_API) {
