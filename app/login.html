@@ -507,12 +507,14 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
   function friendlyCognitoErr(err) {
     var m = (err && (err.message || err.code)) || String(err);
     if (/UsernameExistsException/.test(m) || /already exists/i.test(m)) return 'An account with this email already exists. Try signing in instead.';
-    if (/InvalidPasswordException/.test(m) || /password/i.test(m)) return 'Password must be at least 8 characters with a mix of upper, lower, and a number.';
-    if (/UserNotFoundException/.test(m) || /NotAuthorizedException/.test(m) || /Incorrect username or password/i.test(m)) return 'Email or password is incorrect.';
+    if (/InvalidPasswordException/.test(m)) return 'Password must be at least 8 characters with a mix of upper, lower, and a number.';
+    if (/UserNotFoundException/.test(m)) return 'No account with that email. Try creating one instead.';
+    if (/NotAuthorizedException/.test(m) || /Incorrect username or password/i.test(m)) return 'Email or password is incorrect.';
     if (/UserNotConfirmedException/.test(m)) return 'Please verify your email first. Check your inbox for the code.';
+    if (/PasswordResetRequiredException/.test(m)) return 'You need to reset your password. Use "Forgot password?" below.';
     if (/CodeMismatchException/.test(m)) return 'That code is incorrect. Try again.';
     if (/ExpiredCodeException/.test(m)) return 'That code expired. Tap Resend to get a new one.';
-    if (/LimitExceededException/.test(m)) return 'Too many attempts. Please wait a few minutes and try again.';
+    if (/LimitExceededException/.test(m) || /Attempt limit exceeded/i.test(m)) return 'Too many attempts. Please wait a few minutes and try again.';
     if (/NetworkingError/.test(m) || /Failed to fetch/.test(m)) return 'Network error. Check your connection and try again.';
     return m || 'Something went wrong. Please try again.';
   }
