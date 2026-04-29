@@ -209,12 +209,15 @@ html,body{
   .prof-toggle-row:first-of-type { padding-top: 0; }
   .prof-toggle-row .label { font-size: 14px; color: var(--slate-900); font-weight: 500; margin-bottom: 2px; }
   .prof-toggle-row .desc { font-size: 12.5px; color: var(--slate-500); }
-  /* Off = white background with dark grey border + grey thumb (clearly "off")
-     On  = saturated green background + white thumb (clearly "on") */
-  .prof-switch { appearance: none; -webkit-appearance: none; width: 46px; height: 26px; border-radius: 999px; background: #fff; border: 2px solid var(--slate-400, #94a3b8); position: relative; cursor: pointer; transition: background 0.2s, border-color 0.2s; flex-shrink: 0; margin-top: 2px; }
+  /* Off = white bg, grey border, grey thumb on the LEFT
+     On  = white bg, green border, GREEN thumb on the RIGHT
+     The thumb's color change (grey ⇄ green) is the primary on/off signal,
+     plus the position swap. Background stays white in both states so the
+     contrast is clean against any page background. */
+  .prof-switch { appearance: none; -webkit-appearance: none; width: 46px; height: 26px; border-radius: 999px; background: #fff; border: 2px solid var(--slate-400, #94a3b8); position: relative; cursor: pointer; transition: border-color 0.2s; flex-shrink: 0; margin-top: 2px; }
   .prof-switch::before { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--slate-400, #94a3b8); transition: transform 0.2s, background 0.2s; box-shadow: 0 1px 3px rgba(15,23,42,0.2); }
-  .prof-switch:checked { background: #10b981; border-color: #059669; }
-  .prof-switch:checked::before { transform: translateX(20px); background: #fff; }
+  .prof-switch:checked { border-color: #10b981; }
+  .prof-switch:checked::before { transform: translateX(20px); background: #10b981; }
   .prof-switch:focus-visible { outline: 2px solid #10b981; outline-offset: 2px; }
   .prof-bank-status { background: var(--teal-50); border: 1px solid var(--teal-100); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; color: var(--teal-900); display: flex; gap: 8px; align-items: center; }
   .prof-bank-status svg { width: 16px; height: 16px; color: var(--teal-700); flex-shrink: 0; }
