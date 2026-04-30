@@ -1621,29 +1621,36 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
      being deployed. */
   async function updateStatus(claimId, newStatus) {
     var API = window.CREDIMED_API;
-    var primaryDetail = null;
+    // Try the new PATCH endpoint. If it returns a real Lambda error
+    // (anything other than 404/405 "route not deployed"), surface that
+    // exact message — don't fall through to the legacy path which masks
+    // the real cause.
+    var primaryStatus = null, primaryDetail = '';
     try {
       var resp = await window.authFetch(API + '/admin/claims/' + encodeURIComponent(claimId), {
         method: 'PATCH',
         body: { status: newStatus }
       });
       if (resp.ok) return true;
-      // Surface the Lambda's actual error message instead of a bare HTTP code.
-      var bodyText = '';
+      primaryStatus = resp.status;
       try {
-        var clone = resp.clone();
-        var asJson = await clone.json();
-        bodyText = (asJson && asJson.error) ? asJson.error : JSON.stringify(asJson);
+        var asJson = await resp.clone().json();
+        primaryDetail = (asJson && asJson.error) ? asJson.error : JSON.stringify(asJson);
       } catch (_e) {
-        try { bodyText = await resp.text(); } catch (_e2) {}
+        try { primaryDetail = await resp.text(); } catch (_e2) {}
       }
-      console.warn('[admin] PATCH /admin/claims/' + claimId + ' -> HTTP ' + resp.status + ': ' + bodyText);
-      primaryDetail = bodyText;
-      if (resp.status !== 404 && resp.status !== 405) {
-        throw new Error('HTTP ' + resp.status + (bodyText ? ' — ' + bodyText : ''));
-      }
+      console.warn('[admin] PATCH /admin/claims/' + claimId + ' -> HTTP ' + resp.status + ': ' + primaryDetail);
     } catch (e) {
-      console.info('[admin] PATCH /admin/claims unavailable, trying legacy POST:', e.message || e);
+      console.warn('[admin] PATCH network error:', e.message || e);
+      primaryDetail = e.message || 'network error';
+    }
+    // Don't fall back to legacy if the new endpoint gave a real answer
+    // (anything but 404/405). Show its error directly so the operator can
+    // act on it (e.g. "Invalid status" tells them which value to fix).
+    if (primaryStatus && primaryStatus !== 404 && primaryStatus !== 405) {
+      alert('Failed to update status: HTTP ' + primaryStatus +
+            (primaryDetail ? ' — ' + primaryDetail : ''));
+      return false;
     }
     try {
       var legacy = await window.authFetch(API + '/claims', {
