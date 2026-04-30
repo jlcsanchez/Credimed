@@ -396,7 +396,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     var card = document.querySelector('.card');
     if (!card) {
       // If the card was already replaced or the DOM changed, just route.
-      window.location.href = getPostAuthUrl('login');
+      window.location.href = await getPostAuthUrl('login');
       return;
     }
     card.innerHTML =
@@ -411,7 +411,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
         '<button id="welcome-signout" style="width:100%;height:52px;background:transparent;color:var(--slate-700);border:1px solid var(--slate-300);border-radius:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit">Sign out</button>' +
       '</div>';
     var cont = document.getElementById('welcome-continue');
-    if (cont) cont.addEventListener('click', function () { window.location.href = getPostAuthUrl('login'); });
+    if (cont) cont.addEventListener('click', async function () { window.location.href = await getPostAuthUrl('login'); });
     var so = document.getElementById('welcome-signout');
     if (so) so.addEventListener('click', function () {
       try { window.cognitoSignOut(); } catch (e) {}
@@ -426,7 +426,33 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
                    e.g. user signed up but never finished a claim)
      - default (unknown flow) → check local claim state, then fall back
        to documents for safety. */
-  function getPostAuthUrl(mode) {
+  /* Decode a JWT payload without verifying the signature. Cognito's ID
+     token carries `cognito:groups` which we use to gate post-login
+     routing for admin users. The actual server-side admin check still
+     happens in the credimed-claims Lambda — this is just for UX
+     routing convenience. */
+  function decodeJwtPayload(token) {
+    try {
+      var b64 = token.split('.')[1];
+      var pad = b64.length % 4;
+      if (pad) b64 += '='.repeat(4 - pad);
+      var json = atob(b64.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decodeURIComponent(escape(json)));
+    } catch (e) { return null; }
+  }
+
+  async function userIsAdmin() {
+    try {
+      var token = await (window.cognitoGetIdToken && window.cognitoGetIdToken()).catch(function () { return null; });
+      if (!token) return false;
+      var p = decodeJwtPayload(token);
+      var groups = (p && p['cognito:groups']) || [];
+      if (!Array.isArray(groups)) return false;
+      return groups.map(function (g) { return String(g).toLowerCase(); }).indexOf('admin') !== -1;
+    } catch (e) { return false; }
+  }
+
+  async function getPostAuthUrl(mode) {
     /* If the user was redirected here from a deep link (auto-logoff or
        authFetch 401), return them to where they were. Validate the path
        is internal to /app/ so a hostile ?return=https://evil.com link
@@ -435,6 +461,12 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
       var ret = new URLSearchParams(window.location.search).get('return');
       if (ret && /^\/app\/[\w\-./]+$/.test(ret)) return ret;
     } catch (e) {}
+
+    /* Admin users go straight to /app/admin.html regardless of mode.
+       Server-side admin check still gates the data; this is just to
+       avoid the "land on user dashboard, manually navigate to admin"
+       extra step. */
+    if (await userIsAdmin()) return '/app/admin.html';
 
     if (mode === 'login') return '/app/dashboard.html';
     if (mode === 'signup') return '/app/documents.html';
@@ -605,7 +637,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
       try {
         await window.cognitoSignIn(email, pw);
         showSuccess('Account created. Redirecting...');
-        setTimeout(function () { window.location.href = getPostAuthUrl('signup'); }, 600);
+        setTimeout(async function () { window.location.href = await getPostAuthUrl('signup'); }, 600);
         return;
       } catch (signinErr) {
         /* Cognito surfaces the same condition through several fields
@@ -700,7 +732,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
         try {
           await window.cognitoSignIn(pendingEmail, pw);
           showSuccess('Account verified. Redirecting...');
-          setTimeout(function () { window.location.href = getPostAuthUrl('signup'); }, 800);
+          setTimeout(async function () { window.location.href = await getPostAuthUrl('signup'); }, 800);
           return;
         } catch (e) {
           // Fall through to login screen
@@ -795,7 +827,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
       try {
         await window.cognitoSignIn(fpEmail, newPw);
         showSuccess('Password updated. Redirecting...');
-        setTimeout(function () { window.location.href = getPostAuthUrl('login'); }, 600);
+        setTimeout(async function () { window.location.href = await getPostAuthUrl('login'); }, 600);
         return;
       } catch (e) {}
       showSuccess('Password updated. Please sign in with your new password.');

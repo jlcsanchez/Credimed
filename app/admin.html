@@ -1376,7 +1376,13 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       var token = await window.cognitoGetIdToken().catch(function () { return null; });
       var claims = token ? decodeJwt(token) : null;
       var groups = (claims && claims['cognito:groups']) || [];
-      if (Array.isArray(groups) && groups.indexOf(REQUIRED_GROUP) !== -1) {
+      // Case-insensitive comparison — Cognito groups are user-defined and
+      // historically the group has been created as "Admin" (capital A).
+      // The Lambda already lowercases on the server side; mirror that here.
+      var normalized = Array.isArray(groups)
+        ? groups.map(function (g) { return String(g).toLowerCase(); })
+        : [];
+      if (normalized.indexOf(REQUIRED_GROUP) !== -1) {
         return { ok: true, reason: 'group', user: cu };
       }
       return { ok: false, reason: 'not-admin', user: cu };
