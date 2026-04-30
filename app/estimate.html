@@ -950,6 +950,7 @@ mount();
 </script>
 
 <script src="connector.js"></script>
+<script src="widgets/procedure-translate.js"></script>
 <script src="widgets/faq-data.js"></script>
 <script src="ana.js" data-topic="docs"></script>
 
@@ -1093,7 +1094,15 @@ mount();
   }
 
   function injectValueBlocks() {
-    var procedures = Array.isArray(r.procedures) ? r.procedures : [];
+    /* Translate Spanish OCR procedures to bilingual form
+       ("Endodoncia pieza 14" → "Root canal tooth #14") so the estimate
+       page reads in English just like claims.html does. The translator
+       (widgets/procedure-translate.js) is loaded site-wide; fall back
+       to raw if the helper isn't on window for any reason. */
+    var rawProcedures = Array.isArray(r.procedures) ? r.procedures : [];
+    var procedures = window.translateProcedure
+      ? rawProcedures.map(function (p) { return window.translateProcedure(p); })
+      : rawProcedures;
     var insurerDisplay = insurerName || 'your insurer';
 
     function checkRow(text) {
