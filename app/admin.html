@@ -497,7 +497,13 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
    Dark navy theme intentionally kept for staff differentiation.
    ============================================================ */
 @media (min-width: 960px) {
-  .admin-mobile-only { display: none; }
+  /* Show the real JS-driven shell on desktop (was hidden behind a static
+     mockup that shipped pre-launch as a design showcase). The mockup
+     `.admin-pc` block lower in the file confused users who saw fake
+     claims and dead buttons; hide it instead so desktop and mobile both
+     render the same functional UI with real DynamoDB data. */
+  .admin-mobile-only { display: block; }
+  .admin-pc { display: none !important; }
   :root {
     --navy-900: #0B1220; --navy-800: #111A2E; --navy-700: #1A263F;
     --navy-600: #243250; --navy-500: #354667;
