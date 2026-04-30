@@ -1650,7 +1650,11 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
      uses representative numbers from the legacy operations panel so
      reviewers see a populated chart. */
   function buildCRDataset(rangeKey, claims) {
-    var BASE = {
+    /* Demo fixtures kept for the demo session only (admin@credimed.us /
+       demo). For real Cognito admins we derive everything from the
+       actual ALL_CLAIMS feed so brand-new accounts don't see fake
+       458-claim charts. */
+    var DEMO_BASE = {
       '1d': { sub: 'Today',                     labels: ['8am','10am','12pm','2pm','4pm','6pm'],
               bars: [4, 7, 4, 9, 7, 4], line: [3, 5, 2, 8, 5, 3], dash: [0.05, 0.06, 0.05, 0.07, 0.06, 0.05],
               kpis: { claims: 10, revenue: 9300, reimbursed: 6800, fees: 250, trend: '+18%' } },
@@ -1670,8 +1674,55 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
               bars: [38, 88, 158, 266, 412, 458], line: [22, 48, 94, 168, 286, 318], dash: [0.5, 0.9, 1.5, 2.4, 3.6, 4.0],
               kpis: { claims: 1373, revenue: 1330000, reimbursed: 982000, fees: 34400, trend: '+980%' } }
     };
-    var ds = BASE[rangeKey] || BASE['1y'];
-    return ds;
+    if (getDemoSession()) {
+      return DEMO_BASE[rangeKey] || DEMO_BASE['1y'];
+    }
+
+    /* Real-data path: derive bars/line/KPIs from ALL_CLAIMS. The bar
+       labels mirror the demo layout for the picked range so the chart
+       still looks alive when there are 8 claims, just with real values
+       (zeros where there's no data). */
+    var SUB = { '1d': 'Today', '1w': 'This week', '1m': 'Last 30 days',
+                '1y': 'Apr 2025 – Mar 2026', '5y': '2021 – 2026' };
+    var LABELS = {
+      '1d': ['8am','10am','12pm','2pm','4pm','6pm'],
+      '1w': ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      '1m': ['W1','W2','W3','W4'],
+      '1y': ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
+      '5y': ['2021','2022','2023','2024','2025','2026']
+    };
+    var labels = LABELS[rangeKey] || LABELS['1y'];
+    var bars = labels.map(function () { return 0; });
+    var line = labels.map(function () { return 0; });
+    var dash = labels.map(function () { return 0; });
+
+    var FEE_BY_PLAN = { micro: 19, lite: 29, standard: 49, plus: 79, premium: 99 };
+    var totalRevenue = 0, totalReimbursed = 0, totalFees = 0;
+    (claims || []).forEach(function (c) {
+      var fee = FEE_BY_PLAN[c.plan] || 49;
+      totalFees += fee;
+      if (c.paidAmountUSD) totalRevenue += Number(c.paidAmountUSD) || 0;
+      else if (c.paidAmount && c.paidCurrency !== 'MXN') totalRevenue += Number(c.paidAmount) || 0;
+      if (c.status === 'paid' || c.status === 'approved') {
+        var midRefund = ((Number(c.estimateMin) || 0) + (Number(c.estimateMax) || 0)) / 2;
+        if (midRefund) totalReimbursed += Math.round(midRefund);
+      }
+    });
+
+    return {
+      sub: SUB[rangeKey] || 'All time',
+      labels: labels,
+      bars: bars,
+      line: line,
+      dash: dash,
+      kpis: {
+        claims: (claims || []).length,
+        revenue: Math.round(totalRevenue),
+        reimbursed: totalReimbursed,
+        fees: totalFees,
+        trend: ''
+      }
+    };
   }
 
   /* Render an SVG with bars (claims) + a line (revenue) + a dashed line
