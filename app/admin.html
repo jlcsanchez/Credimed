@@ -48,19 +48,21 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 .shell { display:none; min-height:100vh; background:var(--slate-50); }
 .shell.show { display:block; }
 
-/* When the admin Staff console is active, hide the patient app shell
-   (topbar, sidebar, bottom nav) so the admin doesn't see "My claims",
-   "Documents", "Profile" links that would log them out / send them
-   to the patient flow. The admin console is a different app context. */
-body.admin-active .app-topbar,
-body.admin-active .app-sidebar,
-body.admin-active .app-bottomnav { display: none !important; }
-body.admin-active .app-main {
+/* admin.html should NEVER render the patient app shell (topbar, sidebar,
+   bottom nav with Dashboard / My claims / Documents / Profile links).
+   The admin console is a separate app context. We hide them
+   unconditionally to avoid the flash-of-patient-nav before the JS
+   adds the admin-active class — there's no scenario where the admin
+   page should ever show patient navigation. */
+.app-topbar,
+.app-sidebar,
+.app-bottomnav { display: none !important; }
+.app-main {
   padding: 0 !important;
   margin: 0 !important;
   max-width: none !important;
 }
-body.admin-active .app-shell {
+.app-shell {
   display: block !important;
   padding: 0 !important;
   margin: 0 !important;
