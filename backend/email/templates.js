@@ -260,45 +260,33 @@ const templates = {
     };
   },
 
-  claimSubmitted({ firstName, claimId }) {
+  /* Combined receipt + filed confirmation — fires once from the Stripe
+     webhook the moment payment succeeds. Replaces the old paymentReceived
+     and claimSubmitted pair (they fired back-to-back from the same event,
+     which felt like noise to the patient). The 24h-later "in review"
+     email is scheduled separately via EventBridge.
+     amountPaid is the fee charged (string, formatted); optional. */
+  paymentReceivedAndFiled({ firstName, claimId, amountPaid }) {
+    const amt = amountPaid || null;
     return {
-      subject: `We received your claim · ${claimId}`,
+      subject: `Payment received and claim filed · ${claimId}`,
       html: shell({
-        subject: `We received your claim · ${claimId}`,
-        preheader: "We received your claim — we'll start preparing it for submission.",
-        statusLabel: 'Submitted',
-        headline: 'Your claim is in.',
-        subhead: "We've received your claim and our team will start preparing it for submission to your insurer. You'll get an email each time the status changes.",
-        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0;">No action needed from you right now. We'll handle the paperwork and keep you posted at every stage.</p>`,
+        subject: `Payment received and claim filed · ${claimId}`,
+        preheader: 'Your fee is locked in and your claim is on its way to your insurer.',
+        statusLabel: 'Filed',
+        headline: 'Payment received. Claim filed.',
+        subhead: "Your fee is locked in and your claim has been filed with your insurer. You don't need to do anything else right now.",
+        amount: amt,
+        amountLabel: amt ? 'Fee paid' : undefined,
+        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0 0 12px;">What happens next:</p><ol style="margin:0 0 12px;padding-left:18px;line-height:1.6;"><li>Your insurer reviews your claim (usually 3–6 weeks)</li><li>If they approve it, the refund check is mailed directly to you</li><li>We email you at every status change so you're never wondering</li></ol><p style="margin:0;">No action needed. We'll be in touch within 24 hours when your insurer acknowledges receipt.</p>`,
         claimId,
         ctaLabel: 'View claim',
         ctaUrl: dashboardUrl,
-        helperText: 'You can track the status anytime from your dashboard.',
+        helperText: 'Track status anytime from your dashboard. Reply to this email if anything looks off.',
         unsubToken: claimId
       }),
       text:
-        `${greet(firstName)}\n\nWe've received your claim and our team will start preparing it for submission to your insurer. You'll get an email each time the status changes.\n\nReference: ${claimId}\nView in app: ${dashboardUrl}\n\nQuestions? ${SUPPORT_EMAIL}`
-    };
-  },
-
-  paymentReceived({ firstName, claimId }) {
-    return {
-      subject: `Payment received · ${claimId}`,
-      html: shell({
-        subject: `Payment received · ${claimId}`,
-        preheader: "Payment received — we'll file your claim within 24 hours.",
-        statusLabel: 'Payment received',
-        headline: 'Payment confirmed.',
-        subhead: "Your fee is locked in. We'll prepare and submit your claim to your insurer within 24 hours.",
-        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0;">Thanks for trusting us with this. The next email you get from us will be when your claim is on its way to the insurer.</p>`,
-        claimId,
-        ctaLabel: 'View claim',
-        ctaUrl: dashboardUrl,
-        helperText: 'If anything looks off, reply to this email — we read every message.',
-        unsubToken: claimId
-      }),
-      text:
-        `${greet(firstName)}\n\nWe received your payment and your claim is locked in. We'll prepare it and submit it to your insurer within 24 hours.\n\nReference: ${claimId}\nView: ${dashboardUrl}`
+        `${greet(firstName)}\n\nPayment received and your claim is filed with your insurer.${amt ? `\n\nFee paid: ${amt}` : ''}\n\nWhat happens next:\n1. Your insurer reviews the claim (3–6 weeks typical)\n2. If approved, the refund is mailed directly to you\n3. We email you at every status change\n\nReference: ${claimId}\nView: ${dashboardUrl}\n\nQuestions? ${SUPPORT_EMAIL}`
     };
   },
 
@@ -386,6 +374,42 @@ const templates = {
     };
   },
 
+  /* Sent when admin (or AI) flags a claim as needing one more document
+     before it can be submitted (or after the carrier requests more info).
+     docTypeNeeded is a short label shown in the body; safe values are
+     vetted in the admin dashboard dropdown. The CTA deep-links to
+     claim.html with action=upload so the patient lands on the right
+     upload affordance.
+
+     This is the ONLY template (besides welcome and the combined Stripe
+     one) that fires automatically. Approved/paid/denied/refunded all
+     stay manual triggers from the admin dashboard while we operate
+     with fax-only submission and lack real-time carrier callbacks. */
+  needMoreDocs({ firstName, claimId, docTypeNeeded, docDescription }) {
+    const what = docTypeNeeded || 'an additional document';
+    const why  = docDescription
+      ? `<p style="margin:0 0 12px;">Why we need it: ${docDescription}</p>`
+      : '';
+    return {
+      subject: `Action needed — please upload ${what} · ${claimId}`,
+      html: shell({
+        subject: `Action needed — please upload ${what} · ${claimId}`,
+        preheader: `We need ${what} to keep your claim moving.`,
+        statusLabel: 'Action needed',
+        headline: 'One more thing.',
+        subhead: `To keep your claim on track, we need ${what} from you. It only takes a minute to upload.`,
+        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p>${why}<p style="margin:0;">Click the button below to upload directly. Your claim stays paused until we receive it — once it's in, we resume immediately and you don't have to do anything else.</p>`,
+        claimId,
+        ctaLabel: `Upload ${what}`,
+        ctaUrl: `${APP_BASE}/claim.html?id=${encodeURIComponent(claimId)}&action=upload`,
+        helperText: "Reply to this email if you're not sure what we need or why — we'll walk you through it.",
+        unsubToken: claimId
+      }),
+      text:
+        `${greet(firstName)}\n\nTo keep your claim on track, we need ${what} from you.${docDescription ? `\n\nWhy: ${docDescription}` : ''}\n\nUpload here: ${APP_BASE}/claim.html?id=${encodeURIComponent(claimId)}&action=upload\n\nReference: ${claimId}\n\nReply to this email if you're not sure what we need.`
+    };
+  },
+
   refundIssued({ firstName, claimId, amountUsd }) {
     const amt = amountUsd ? `$${amountUsd}` : 'your fee';
     return {
@@ -421,6 +445,18 @@ export function buildEmail(eventType, data) {
 // admin updates a claim status. Returns null if no email should be
 // sent for that transition.
 //
+// 'submitted' intentionally returns null: the patient already received
+// the combined "payment received + filed" email from the Stripe webhook
+// at the moment of payment. Re-emailing them when the claim is
+// internally marked "submitted" would be duplicate noise.
+//
+// 'in-review' is auto-fired 24h after payment by the EventBridge
+// Scheduler set up in the Stripe webhook — but is also still valid as
+// an admin-triggered transition (e.g., "carrier acknowledged early").
+//
+// 'needs-docs' is the new active touchpoint for back-and-forth with
+// the patient when admin (or AI) flags missing documentation.
+//
 // 'refunded' is the Credimed-side fee refund (money-back guarantee
 // processed). It's a terminal state: the claim journey is over and
 // we've returned the patient's fee. Insurer-side 'paid' is different
@@ -428,11 +464,12 @@ export function buildEmail(eventType, data) {
 // happy-path success state.
 export function templateForStatus(status) {
   return {
-    'submitted':  'claimSubmitted',
-    'in-review':  'statusInReview',
-    'approved':   'statusApproved',
-    'paid':       'statusPaid',
-    'denied':     'statusDenied',
-    'refunded':   'refundIssued'
+    'submitted':   null,
+    'in-review':   'statusInReview',
+    'needs-docs':  'needMoreDocs',
+    'approved':    'statusApproved',
+    'paid':        'statusPaid',
+    'denied':      'statusDenied',
+    'refunded':    'refundIssued'
   }[status] || null;
 }

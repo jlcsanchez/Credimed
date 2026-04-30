@@ -64,7 +64,8 @@ const ENCRYPTED_FIELDS = [
 ];
 
 const ALLOWED_STATUSES = new Set([
-  "submitted", "in-review", "approved", "paid", "denied", "refunded"
+  "submitted", "in-review", "needs-docs",
+  "approved", "paid", "denied", "refunded"
 ]);
 
 // ---------- helpers ----------
@@ -280,7 +281,7 @@ async function processStripeRefund({ paymentIntentId, amountUsd, claimId }) {
   }
 }
 
-async function updateStatus(claimId, newStatus) {
+async function updateStatus(claimId, newStatus, extras = {}) {
   if (!ALLOWED_STATUSES.has(newStatus)) {
     return {
       error: "Invalid status. Allowed: " + [...ALLOWED_STATUSES].join(", "),
@@ -360,6 +361,10 @@ async function updateStatus(claimId, newStatus) {
       if (email && email !== "[DECRYPTION_ERROR]") {
         const data = { firstName: firstName || "", claimId };
         if (isRefund) data.amountUsd = refundAmount;
+        if (newStatus === "needs-docs") {
+          if (extras.docTypeNeeded)  data.docTypeNeeded  = extras.docTypeNeeded;
+          if (extras.docDescription) data.docDescription = extras.docDescription;
+        }
         await sendEmailSafely({
           to: email,
           eventType: tplName,
@@ -452,7 +457,10 @@ export const handler = async (event) => {
       let body;
       try { body = event.body ? JSON.parse(event.body) : {}; }
       catch { return response(400, { error: "Invalid JSON body" }); }
-      const result = await updateStatus(id, body.status);
+      const result = await updateStatus(id, body.status, {
+        docTypeNeeded:  body.docTypeNeeded,
+        docDescription: body.docDescription
+      });
       if (result.error) return response(result.code || 400, { error: result.error });
       audit(event, {
         event: "admin_update_claim",
