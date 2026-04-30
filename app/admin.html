@@ -985,12 +985,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
           <div class="stat-lbl">Plus $79 · 2–3 procs</div>
         </div>
         <div class="stat-card-rich">
-          <div class="stat-top"><div class="stat-icon blue">P</div><div class="stat-trend">+14%</div></div>
+          <div class="stat-top"><div class="stat-icon blue">P</div><div class="stat-trend"></div></div>
           <div class="stat-val" id="fkPremium" style="color:#7c3aed">—</div>
           <div class="stat-lbl">Premium $99 · 4+ procs</div>
         </div>
         <div class="stat-card-rich">
-          <div class="stat-top"><div class="stat-icon amber">↻</div><div class="stat-trend">+5%</div></div>
+          <div class="stat-top"><div class="stat-icon amber">↻</div><div class="stat-trend"></div></div>
           <div class="stat-val" id="fkResub" style="color:#b45309">—</div>
           <div class="stat-lbl">Resubmissions ($19)</div>
         </div>
@@ -2129,11 +2129,15 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       premiumFees  = pClaims * 99;
       resubFees    = paidResubs * 19;
     } else {
-      microFees    = (claims || []).filter(function (c) { return c.plan === 'micro'; }).length * 19;
-      liteFees     = (claims || []).filter(function (c) { return c.plan === 'lite'; }).length * 29;
-      standardFees = (claims || []).filter(function (c) { return c.plan === 'standard'; }).length * 49;
-      plusFees     = (claims || []).filter(function (c) { return c.plan === 'plus'; }).length * 79;
-      premiumFees  = (claims || []).filter(function (c) { return c.plan === 'premium'; }).length * 99;
+      // Real claims default to "standard" when c.plan is missing — this
+      // mirrors the Overview tab's planRevenue math (TIER_PRICE[c.plan]
+      // || TIER_PRICE.standard) so both views stay consistent.
+      var planOf = function (c) { return c.plan || 'standard'; };
+      microFees    = (claims || []).filter(function (c) { return planOf(c) === 'micro'; }).length * 19;
+      liteFees     = (claims || []).filter(function (c) { return planOf(c) === 'lite'; }).length * 29;
+      standardFees = (claims || []).filter(function (c) { return planOf(c) === 'standard'; }).length * 49;
+      plusFees     = (claims || []).filter(function (c) { return planOf(c) === 'plus'; }).length * 79;
+      premiumFees  = (claims || []).filter(function (c) { return planOf(c) === 'premium'; }).length * 99;
       resubFees    = (claims || []).reduce(function (s, c) { return s + ((c.paidResubs || 0) * 19); }, 0);
     }
     var planFees = microFees + liteFees + standardFees + plusFees + premiumFees;
