@@ -140,7 +140,7 @@ const newResult = `        {/* Result — TurboTax-style: value first, what-you-
               ~\${youKeepLow.toLocaleString()} – \${youKeepHigh.toLocaleString()}
             </div>
             <div style={{ fontSize: 12, color: 'var(--slate-500)', marginTop: 10 }}>
-              We take <span className="tnum" style={{ fontWeight: 500, color: 'var(--slate-700)' }}>{feeDisplay}</span> ({tierName} tier) once your claim is ready · capped at 20%
+              We take <span className="tnum" style={{ fontWeight: 500, color: 'var(--slate-700)' }}>{feeDisplay}</span> ({tierName} tier) once your claim is ready
             </div>
           </div>
           <button className="cta-primary" style={{ whiteSpace: 'nowrap' }}>
@@ -156,7 +156,7 @@ code = code.replace(oldResult, newResult);
 // 4) Update the disclaimer text — old says "$49–$99" which is wrong
 //    now that we have 5 tiers starting at $19.
 const oldDisclaim = `Estimate based on typical PPO out-of-network reimbursement rates. Actual amount depends on your plan's annual maximum, deductible, and remaining benefits. We'll confirm before you pay the fee ($49–$99).`;
-const newDisclaim = `Estimate based on typical PPO out-of-network reimbursement rates. Actual amount depends on your plan's annual maximum, deductible, and remaining benefits. Our fee ($19–$99 by complexity) is always capped at 20% of what you recover.`;
+const newDisclaim = `Estimate based on typical PPO out-of-network reimbursement rates. Actual amount depends on your plan's annual maximum, deductible, and remaining benefits. Our flat fee ($19–$99) varies by claim complexity and only applies once your claim is filed.`;
 
 if (!code.includes(oldDisclaim)) {
   console.warn('warn: disclaimer text changed upstream — leaving as-is');
