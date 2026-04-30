@@ -1621,14 +1621,26 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
      being deployed. */
   async function updateStatus(claimId, newStatus) {
     var API = window.CREDIMED_API;
+    var primaryDetail = null;
     try {
       var resp = await window.authFetch(API + '/admin/claims/' + encodeURIComponent(claimId), {
         method: 'PATCH',
         body: { status: newStatus }
       });
       if (resp.ok) return true;
+      // Surface the Lambda's actual error message instead of a bare HTTP code.
+      var bodyText = '';
+      try {
+        var clone = resp.clone();
+        var asJson = await clone.json();
+        bodyText = (asJson && asJson.error) ? asJson.error : JSON.stringify(asJson);
+      } catch (_e) {
+        try { bodyText = await resp.text(); } catch (_e2) {}
+      }
+      console.warn('[admin] PATCH /admin/claims/' + claimId + ' -> HTTP ' + resp.status + ': ' + bodyText);
+      primaryDetail = bodyText;
       if (resp.status !== 404 && resp.status !== 405) {
-        throw new Error('HTTP ' + resp.status);
+        throw new Error('HTTP ' + resp.status + (bodyText ? ' — ' + bodyText : ''));
       }
     } catch (e) {
       console.info('[admin] PATCH /admin/claims unavailable, trying legacy POST:', e.message || e);
@@ -1641,7 +1653,7 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       if (!legacy.ok) throw new Error('HTTP ' + legacy.status);
       return true;
     } catch (e2) {
-      alert('Failed to update status: ' + (e2.message || 'unknown'));
+      alert('Failed to update status: ' + (e2.message || primaryDetail || 'unknown'));
       return false;
     }
   }
