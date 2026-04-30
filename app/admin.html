@@ -159,6 +159,94 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 .claim-row-link { cursor:pointer; }
 .claim-row-link:hover { background:var(--slate-50); }
 
+/* ---- Review modal (training-data capture) ---- */
+.rm-backdrop {
+  position:fixed; inset:0; background:rgba(15,23,42,.55);
+  z-index:90; opacity:0; pointer-events:none;
+  transition:opacity .18s ease;
+}
+.rm-backdrop.open { opacity:1; pointer-events:auto; }
+.rm-modal {
+  position:fixed; top:50%; left:50%; transform:translate(-50%, -50%) scale(.96);
+  width:min(880px, calc(100vw - 32px)); max-height:calc(100vh - 48px);
+  background:var(--white); border-radius:16px; border:1px solid var(--slate-200);
+  box-shadow:0 24px 64px rgba(15,23,42,.18), 0 8px 16px rgba(15,23,42,.08);
+  z-index:91; display:none; flex-direction:column; overflow:hidden;
+  transition:transform .18s ease, opacity .18s ease; opacity:0;
+}
+.rm-modal.open { display:flex; transform:translate(-50%, -50%) scale(1); opacity:1; }
+.rm-head {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding:18px 22px; border-bottom:1px solid var(--slate-100);
+  background:var(--slate-50);
+}
+.rm-eyebrow { font-size:11px; font-weight:600; color:var(--slate-500);
+  letter-spacing:.06em; text-transform:uppercase; }
+.rm-title { font-size:18px; font-weight:700; color:var(--slate-900); margin-top:2px; }
+.rm-head-right { display:flex; align-items:center; gap:14px; }
+.rm-timer {
+  font-family:"SF Mono", Menlo, monospace; font-size:13px;
+  color:var(--slate-600); background:var(--white);
+  padding:4px 10px; border:1px solid var(--slate-200); border-radius:8px;
+}
+.rm-close {
+  background:transparent; border:none; cursor:pointer; font-size:22px;
+  color:var(--slate-500); width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+}
+.rm-close:hover { background:var(--slate-100); color:var(--slate-900); }
+.rm-body { padding:22px; overflow-y:auto; flex:1; }
+.rm-section { margin-bottom:22px; }
+.rm-section h3 { font-size:13px; font-weight:600; color:var(--slate-900);
+  text-transform:uppercase; letter-spacing:.05em; margin:0 0 8px; }
+.rm-hint { font-size:12px; color:var(--slate-500); margin:0 0 12px; }
+.rm-docs { list-style:none; padding:0; margin:0;
+  border:1px solid var(--slate-200); border-radius:10px; overflow:hidden; }
+.rm-docs li { padding:10px 14px; border-bottom:1px solid var(--slate-100);
+  font-size:14px; display:flex; justify-content:space-between; align-items:center; }
+.rm-docs li:last-child { border-bottom:none; }
+.rm-docs a { color:var(--teal-700); text-decoration:none; font-weight:500; }
+.rm-docs a:hover { text-decoration:underline; }
+.rm-doc-empty { color:var(--slate-400); font-style:italic; }
+.rm-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+}
+.rm-grid-2 { grid-template-columns:1fr 1fr; }
+@media (max-width: 640px) {
+  .rm-grid, .rm-grid-2 { grid-template-columns:1fr; }
+}
+.rm-field { display:flex; flex-direction:column; gap:4px; }
+.rm-field span { font-size:12px; font-weight:500; color:var(--slate-700); }
+.rm-field input, .rm-field select, .rm-field textarea {
+  font-family:inherit; font-size:14px; padding:9px 12px;
+  border-radius:9px; border:1px solid var(--slate-300); background:var(--white);
+  color:var(--slate-900); outline:none; resize:vertical;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.rm-field input:focus, .rm-field select:focus, .rm-field textarea:focus {
+  border-color:var(--teal-600); box-shadow:0 0 0 3px var(--teal-alpha-15);
+}
+.rm-field input.rm-edited, .rm-field select.rm-edited {
+  background:#FFFBEB; border-color:#F59E0B;
+}
+.rm-field-full { grid-column:1/-1; }
+.rm-foot {
+  padding:14px 22px; border-top:1px solid var(--slate-100);
+  background:var(--slate-50);
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+}
+.rm-foot-hint { font-size:12px; color:var(--slate-500); }
+.rm-foot-actions { display:flex; gap:8px; }
+.rm-btn {
+  background:var(--white); color:var(--slate-700); border:1px solid var(--slate-300);
+  padding:9px 16px; border-radius:9px; font-size:14px; font-weight:600;
+  cursor:pointer; transition:background .12s ease;
+}
+.rm-btn:hover { background:var(--slate-100); }
+.rm-btn-primary { background:var(--teal-600); color:var(--white); border-color:var(--teal-600); }
+.rm-btn-primary:hover { background:var(--teal-700); }
+.rm-btn-primary:disabled { background:var(--slate-300); cursor:not-allowed; }
+
 /* ---- Insurers tab ---- */
 .ins-toolbar { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
 .ins-table-header, .ins-row {
@@ -706,6 +794,93 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
         <div class="loading"><div class="spin"></div>Loading...</div>
       </div>
     </aside>
+
+    <!-- REVIEW MODAL (training-data capture for every admin claim review)
+         Opens from the claim drawer's "Review & capture decision" button.
+         Edits to the fields below become labeled corrections; combined with
+         the structured decisionReason they feed the future Stage 2/3 AI
+         model that auto-approves high-confidence claims. -->
+    <div class="rm-backdrop" id="rmBackdrop" hidden></div>
+    <div class="rm-modal" id="rmModal" hidden role="dialog" aria-labelledby="rmTitle">
+      <header class="rm-head">
+        <div>
+          <div class="rm-eyebrow">Reviewing</div>
+          <div class="rm-title" id="rmTitle">Claim —</div>
+        </div>
+        <div class="rm-head-right">
+          <span class="rm-timer" id="rmTimer" title="Time spent on this review">0s</span>
+          <button class="rm-close" id="rmClose" aria-label="Close">×</button>
+        </div>
+      </header>
+
+      <div class="rm-body">
+        <section class="rm-section">
+          <h3>Documents</h3>
+          <ul class="rm-docs" id="rmDocsList">
+            <li class="rm-doc-empty">No documents attached. Open them from the patient's drawer if they exist on S3.</li>
+          </ul>
+        </section>
+
+        <section class="rm-section">
+          <h3>Extracted fields</h3>
+          <p class="rm-hint">Edit anything the AI got wrong. Your corrections become labeled training data.</p>
+          <div class="rm-grid">
+            <label class="rm-field"><span>First name</span><input data-rm-field="firstName" type="text" /></label>
+            <label class="rm-field"><span>Last name</span><input data-rm-field="lastName" type="text" /></label>
+            <label class="rm-field"><span>Insurer</span><input data-rm-field="insurer" type="text" /></label>
+            <label class="rm-field"><span>Member ID</span><input data-rm-field="memberId" type="text" /></label>
+            <label class="rm-field"><span>Procedure</span><input data-rm-field="procedure" type="text" /></label>
+            <label class="rm-field"><span>Amount paid (USD)</span><input data-rm-field="amount" type="text" inputmode="decimal" /></label>
+            <label class="rm-field"><span>City in Mexico</span><input data-rm-field="city" type="text" /></label>
+            <label class="rm-field"><span>Plan tier</span><input data-rm-field="plan" type="text" /></label>
+          </div>
+        </section>
+
+        <section class="rm-section">
+          <h3>Decision</h3>
+          <div class="rm-grid rm-grid-2">
+            <label class="rm-field"><span>Outcome</span>
+              <select id="rmDecision">
+                <option value="">— Select —</option>
+                <option value="approved">Approve — ready to file</option>
+                <option value="needs_more_docs">Needs more docs</option>
+                <option value="rejected_ineligible">Reject — ineligible</option>
+                <option value="rejected_fraud_suspicion">Reject — fraud suspicion</option>
+              </select>
+            </label>
+            <label class="rm-field"><span>Reason</span>
+              <select id="rmReason">
+                <option value="">— Select —</option>
+                <option value="ok_as_is">OK as-is</option>
+                <option value="missing_rfc">Missing RFC on receipt</option>
+                <option value="missing_narrative">Missing dentist narrative</option>
+                <option value="missing_xray">Missing X-ray</option>
+                <option value="missing_receipt_detail">Receipt detail incomplete</option>
+                <option value="low_quality_image">Low-quality image</option>
+                <option value="wrong_cdt_codes">Wrong CDT codes</option>
+                <option value="amount_mismatch">Amount mismatch</option>
+                <option value="fraud_suspicion">Fraud suspicion</option>
+                <option value="plan_inactive">Plan inactive</option>
+                <option value="oon_not_covered">OON not covered</option>
+                <option value="other">Other (note required)</option>
+              </select>
+            </label>
+          </div>
+          <label class="rm-field rm-field-full">
+            <span>Note (optional, required if Reason is "Other")</span>
+            <textarea id="rmNote" rows="2" placeholder="Anything that doesn't fit a structured reason…"></textarea>
+          </label>
+        </section>
+      </div>
+
+      <footer class="rm-foot">
+        <div class="rm-foot-hint" id="rmDiffHint">No changes made yet</div>
+        <div class="rm-foot-actions">
+          <button class="rm-btn" id="rmCancel">Cancel</button>
+          <button class="rm-btn rm-btn-primary" id="rmSave">Save decision</button>
+        </div>
+      </footer>
+    </div>
 
     <!-- PATIENTS -->
     <section class="sec" id="sec-patients">
@@ -1310,13 +1485,14 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
   /* --- Data loaders --- */
   var STATUS_LABELS = {
-    'submitted': 'Submitted',
-    'in-review': 'In review',
-    'approved':  'Approved',
-    'paid':      'Paid',
-    'denied':    'Denied'
+    'submitted':  'Submitted',
+    'in-review':  'In review',
+    'needs-docs': 'Needs docs',
+    'approved':   'Approved',
+    'paid':       'Paid',
+    'denied':     'Denied'
   };
-  var STATUS_OPTIONS = ['submitted', 'in-review', 'approved', 'paid', 'denied'];
+  var STATUS_OPTIONS = ['submitted', 'in-review', 'needs-docs', 'approved', 'paid', 'denied'];
 
   function money(n) {
     if (n == null) return '—';
@@ -1988,8 +2164,233 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   $('cdClose').addEventListener('click', closeDrawer);
   $('drawerBackdrop').addEventListener('click', closeDrawer);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeDrawer();
+    if (e.key === 'Escape') { closeDrawer(); closeReviewModal(); }
   });
+
+  /* ────────────────────────────────────────────────────────────────────
+     REVIEW MODAL — captures every admin review decision as labeled
+     training data. Snapshots the AI extraction at open time, diffs it
+     against the reviewer's edits at save time, and POSTs the structured
+     decision (+ reason + timer) to /admin/claims/{id}/review.
+
+     Schema captured per save:
+       { aiExtraction, humanCorrection, fieldDiff, decision,
+         decisionReason, decisionNote, timeSpentSeconds, documentsViewed }
+     ──────────────────────────────────────────────────────────────────── */
+  var REVIEW_FIELDS = ['firstName', 'lastName', 'insurer', 'memberId', 'procedure', 'amount', 'city', 'plan'];
+  var rmState = null;
+  var rmTimerInterval = null;
+
+  function openReviewModal(claimId) {
+    var claim = ALL_CLAIMS.find(function (x) { return x && x.id === claimId; });
+    if (!claim) { alert('Claim not loaded — refresh and try again.'); return; }
+
+    // Snapshot what the AI / current data store has — this becomes the
+    // "before" half of the labeled diff. If the OCR Lambda eventually
+    // writes a separate aiExtraction object onto the claim, prefer it
+    // over the current top-level fields.
+    var ai = (claim.aiExtraction && typeof claim.aiExtraction === 'object')
+      ? claim.aiExtraction
+      : REVIEW_FIELDS.reduce(function (acc, f) {
+          acc[f] = claim[f] != null ? String(claim[f]) : '';
+          return acc;
+        }, {});
+
+    rmState = {
+      claimId: claimId,
+      claim: claim,
+      aiSnapshot: ai,
+      startTs: Date.now(),
+      docsViewed: [],
+      saving: false
+    };
+
+    $('rmTitle').textContent = 'Claim ' + claimId;
+    REVIEW_FIELDS.forEach(function (f) {
+      var inp = document.querySelector('[data-rm-field="' + f + '"]');
+      if (inp) {
+        inp.value = ai[f] != null ? String(ai[f]) : '';
+        inp.classList.remove('rm-edited');
+        inp.addEventListener('input', onRmFieldEdit);
+      }
+    });
+    $('rmDecision').value = '';
+    $('rmReason').value = '';
+    $('rmNote').value = '';
+    $('rmDiffHint').textContent = 'No changes made yet';
+    $('rmSave').disabled = false;
+
+    // Hydrate documents list — pulls from claim.documents if backed by S3,
+    // else shows an empty state. Each click flags the doc as viewed for
+    // the analytics row.
+    var docs = Array.isArray(claim.documents) ? claim.documents : [];
+    var docsList = $('rmDocsList');
+    if (docs.length === 0) {
+      docsList.innerHTML = '<li class="rm-doc-empty">No documents attached on this claim record.</li>';
+    } else {
+      docsList.innerHTML = docs.map(function (d) {
+        var label = d.label || d.type || d.filename || 'document';
+        var url = d.url || d.s3Url || '#';
+        return '<li>'
+          + '<span>' + label + '</span>'
+          + '<a href="' + url + '" target="_blank" rel="noopener" data-rm-doc="' + (d.s3Key || url) + '">Open ↗</a>'
+          + '</li>';
+      }).join('');
+    }
+
+    $('rmBackdrop').hidden = false;
+    $('rmModal').hidden = false;
+    requestAnimationFrame(function () {
+      $('rmBackdrop').classList.add('open');
+      $('rmModal').classList.add('open');
+    });
+
+    // Timer ticks once per second so the reviewer can self-pace.
+    if (rmTimerInterval) clearInterval(rmTimerInterval);
+    rmTimerInterval = setInterval(function () {
+      var s = Math.round((Date.now() - rmState.startTs) / 1000);
+      $('rmTimer').textContent = s < 60 ? s + 's' : Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+    }, 1000);
+  }
+
+  function closeReviewModal() {
+    if (!$('rmModal') || $('rmModal').hidden) return;
+    $('rmBackdrop').classList.remove('open');
+    $('rmModal').classList.remove('open');
+    setTimeout(function () {
+      $('rmBackdrop').hidden = true;
+      $('rmModal').hidden = true;
+    }, 200);
+    if (rmTimerInterval) { clearInterval(rmTimerInterval); rmTimerInterval = null; }
+    REVIEW_FIELDS.forEach(function (f) {
+      var inp = document.querySelector('[data-rm-field="' + f + '"]');
+      if (inp) inp.removeEventListener('input', onRmFieldEdit);
+    });
+    rmState = null;
+  }
+
+  function onRmFieldEdit(e) {
+    if (!rmState) return;
+    var f = e.target.getAttribute('data-rm-field');
+    var ai = rmState.aiSnapshot[f] != null ? String(rmState.aiSnapshot[f]) : '';
+    if (e.target.value !== ai) {
+      e.target.classList.add('rm-edited');
+    } else {
+      e.target.classList.remove('rm-edited');
+    }
+    var changed = REVIEW_FIELDS.filter(function (ff) {
+      var inp = document.querySelector('[data-rm-field="' + ff + '"]');
+      var ai2 = rmState.aiSnapshot[ff] != null ? String(rmState.aiSnapshot[ff]) : '';
+      return inp && inp.value !== ai2;
+    });
+    $('rmDiffHint').textContent = changed.length === 0
+      ? 'No changes made yet'
+      : changed.length + ' field' + (changed.length === 1 ? '' : 's') + ' edited';
+  }
+
+  // Track docs the reviewer actually opened.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-rm-doc]');
+    if (!a || !rmState) return;
+    var key = a.getAttribute('data-rm-doc');
+    if (key && rmState.docsViewed.indexOf(key) < 0) rmState.docsViewed.push(key);
+  });
+
+  async function saveReviewDecision() {
+    if (!rmState || rmState.saving) return;
+    var decision = $('rmDecision').value;
+    var reason   = $('rmReason').value;
+    var note     = $('rmNote').value.trim();
+    if (!decision) { alert('Pick an outcome first.'); return; }
+    if (!reason)   { alert('Pick a reason.'); return; }
+    if (reason === 'other' && !note) { alert('Note is required when reason is "Other".'); return; }
+
+    var human = REVIEW_FIELDS.reduce(function (acc, f) {
+      var inp = document.querySelector('[data-rm-field="' + f + '"]');
+      acc[f] = inp ? inp.value : '';
+      return acc;
+    }, {});
+
+    var payload = {
+      decision: decision,
+      decisionReason: reason,
+      decisionNote: note,
+      aiExtraction: rmState.aiSnapshot,
+      humanCorrection: human,
+      timeSpentSeconds: Math.round((Date.now() - rmState.startTs) / 1000),
+      documentsViewed: rmState.docsViewed.slice()
+    };
+
+    rmState.saving = true;
+    $('rmSave').disabled = true;
+    $('rmSave').textContent = 'Saving…';
+
+    // Demo session: just log + close. The capture flow exists but the
+    // POST never reaches the backend (we have no Cognito session in demo).
+    if (getDemoSession()) {
+      console.log('[review][demo] decision payload:', payload);
+      setTimeout(function () {
+        closeReviewModal();
+        alert('Demo: review captured locally (would POST to /admin/claims/' + rmState.claimId + '/review).');
+        rmState && (rmState.saving = false);
+      }, 250);
+      return;
+    }
+
+    try {
+      var API = window.CREDIMED_API;
+      var resp = await window.authFetch(API + '/admin/claims/' + encodeURIComponent(rmState.claimId) + '/review', {
+        method: 'POST',
+        body: payload
+      });
+      if (!resp.ok) {
+        var msg = 'Save failed: HTTP ' + resp.status;
+        try { var err = await resp.json(); if (err && err.error) msg += ' — ' + err.error; } catch (e) {}
+        alert(msg);
+        $('rmSave').disabled = false;
+        $('rmSave').textContent = 'Save decision';
+        rmState.saving = false;
+        return;
+      }
+      var data = await resp.json();
+      console.log('[review] saved:', data);
+
+      // If the decision implies a status change, also flip the claim.
+      var statusMap = {
+        approved: 'approved',
+        needs_more_docs: 'needs-docs',
+        rejected_ineligible: 'denied',
+        rejected_fraud_suspicion: 'denied'
+      };
+      var nextStatus = statusMap[decision];
+      if (nextStatus && rmState.claim.status !== nextStatus) {
+        await updateStatus(rmState.claimId, nextStatus);
+        rmState.claim.status = nextStatus;
+      }
+
+      closeReviewModal();
+      applyFilters();
+    } catch (err) {
+      alert('Save failed: ' + (err.message || 'unknown'));
+      $('rmSave').disabled = false;
+      $('rmSave').textContent = 'Save decision';
+      rmState && (rmState.saving = false);
+    }
+  }
+
+  // Wire the open trigger (the "Review & capture decision" button inside
+  // the claim detail drawer).
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-cd-review]');
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    var claimId = btn.getAttribute('data-cd-review');
+    if (claimId) openReviewModal(claimId);
+  });
+  $('rmClose')   && $('rmClose').addEventListener('click', closeReviewModal);
+  $('rmCancel') && $('rmCancel').addEventListener('click', closeReviewModal);
+  $('rmBackdrop') && $('rmBackdrop').addEventListener('click', closeReviewModal);
+  $('rmSave')    && $('rmSave').addEventListener('click', saveReviewDecision);
 
   function renderDetail(c) {
     var paidLine = c.paidAmount
@@ -2027,7 +2428,10 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       + '<div class="cd-section">'
       +   '<h3>Actions</h3>'
       +   '<div class="cd-actions">'
-      +     '<button class="cd-action primary" data-cd-mark="approved" data-cd-claim="' + c.id + '">Mark approved</button>'
+      +     '<button class="cd-action primary review-open-btn" data-cd-review="' + c.id + '">Review &amp; capture decision →</button>'
+      +   '</div>'
+      +   '<div class="cd-actions" style="margin-top:6px">'
+      +     '<button class="cd-action" data-cd-mark="approved" data-cd-claim="' + c.id + '">Mark approved</button>'
       +     '<button class="cd-action" data-cd-mark="paid" data-cd-claim="' + c.id + '">Mark paid</button>'
       +     '<button class="cd-action danger" data-cd-mark="denied" data-cd-claim="' + c.id + '">Mark denied</button>'
       +   '</div>'

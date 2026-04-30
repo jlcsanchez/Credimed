@@ -28,7 +28,8 @@ import {
   QueryCommand,
   GetItemCommand,
   ScanCommand,
-  UpdateItemCommand
+  UpdateItemCommand,
+  PutItemCommand
 } from "@aws-sdk/client-dynamodb";
 import { KMSClient, DecryptCommand } from "@aws-sdk/client-kms";
 import { sendEmailSafely } from "../email/sendEmail.js";
@@ -47,6 +48,11 @@ const ALLOWED_ORIGINS = new Set([
 const ADMIN_GROUP    = "admin";
 const TABLE          = "credimed-claims";
 const USER_INDEX     = "userId-createdAt-index";
+// Training-data capture: every admin review decision is logged here
+// so that future model training (Stage 2 AI-assisted, Stage 3 auto-
+// approve) can replay the diff between aiExtraction and humanCorrection
+// alongside the structured decisionReason.
+const REVIEW_TABLE   = "credimed-review-decisions";
 
 // Stripe — used when admin marks a claim 'refunded' and the money-back
 // guarantee fee should be returned to the patient's card. Feature-flagged
@@ -66,6 +72,31 @@ const ENCRYPTED_FIELDS = [
 const ALLOWED_STATUSES = new Set([
   "submitted", "in-review", "needs-docs",
   "approved", "paid", "denied", "refunded"
+]);
+
+// Structured decisionReason values. Free-text "Other" requires a
+// non-empty `decisionNote`. Adding new values is fine — keep the
+// keys snake_case so the data is queryable by category in CloudWatch
+// / Athena later.
+const ALLOWED_REVIEW_DECISIONS = new Set([
+  "approved",                  // green-lit, ready to file
+  "needs_more_docs",           // missing receipt detail / x-ray / narrative
+  "rejected_ineligible",       // plan doesn't cover this
+  "rejected_fraud_suspicion"   // looks suspicious, escalate
+]);
+const ALLOWED_DECISION_REASONS = new Set([
+  "ok_as_is",
+  "missing_rfc",
+  "missing_narrative",
+  "missing_xray",
+  "missing_receipt_detail",
+  "low_quality_image",
+  "wrong_cdt_codes",
+  "amount_mismatch",
+  "fraud_suspicion",
+  "plan_inactive",
+  "oon_not_covered",
+  "other"
 ]);
 
 // ---------- helpers ----------
@@ -390,6 +421,87 @@ async function updateStatus(claimId, newStatus, extras = {}) {
   return result;
 }
 
+/**
+ * Persist an admin review decision for later training data analysis.
+ * Schema:
+ *   { reviewId (PK), claimId, reviewerId, reviewedAt,
+ *     decision, decisionReason, decisionNote (optional),
+ *     aiExtraction, humanCorrection, fieldDiff,
+ *     timeSpentSeconds, documentsViewed }
+ *
+ * fieldDiff is computed server-side as a quick {field: [aiValue, humanValue]}
+ * map so analytics queries don't have to re-derive it. We accept the raw
+ * blobs from the client because the AI extraction lives in the claim row
+ * (or wherever the OCR Lambda eventually writes it) and the corrections
+ * come from the reviewer's edits in the dashboard.
+ */
+async function saveReviewDecision(claimId, reviewerId, body) {
+  const decision = String(body.decision || "");
+  const decisionReason = String(body.decisionReason || "");
+
+  if (!ALLOWED_REVIEW_DECISIONS.has(decision)) {
+    return {
+      error: "Invalid decision. Allowed: " + [...ALLOWED_REVIEW_DECISIONS].join(", "),
+      code: 400
+    };
+  }
+  if (!ALLOWED_DECISION_REASONS.has(decisionReason)) {
+    return {
+      error: "Invalid decisionReason. Allowed: " + [...ALLOWED_DECISION_REASONS].join(", "),
+      code: 400
+    };
+  }
+  if (decisionReason === "other" && !String(body.decisionNote || "").trim()) {
+    return { error: "decisionNote is required when decisionReason='other'", code: 400 };
+  }
+
+  // Diff what the AI proposed vs what the reviewer saved. Only fields
+  // that actually differ end up in the diff — keeps the row compact.
+  const ai = body.aiExtraction    || {};
+  const hu = body.humanCorrection || {};
+  const fieldDiff = {};
+  const allFields = new Set([...Object.keys(ai), ...Object.keys(hu)]);
+  for (const f of allFields) {
+    const a = ai[f]; const h = hu[f];
+    if (String(a ?? "") !== String(h ?? "")) {
+      fieldDiff[f] = [a == null ? null : String(a), h == null ? null : String(h)];
+    }
+  }
+
+  const reviewId = `rev-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const now = new Date().toISOString();
+  const timeSpent = Number(body.timeSpentSeconds) || 0;
+  const docsViewed = Array.isArray(body.documentsViewed) ? body.documentsViewed : [];
+
+  await db.send(new PutItemCommand({
+    TableName: REVIEW_TABLE,
+    Item: {
+      reviewId:        { S: reviewId },
+      claimId:         { S: claimId },
+      reviewerId:      { S: reviewerId },
+      reviewedAt:      { S: now },
+      decision:        { S: decision },
+      decisionReason:  { S: decisionReason },
+      decisionNote:    { S: String(body.decisionNote || "") },
+      aiExtraction:    { S: JSON.stringify(ai) },
+      humanCorrection: { S: JSON.stringify(hu) },
+      fieldDiff:       { S: JSON.stringify(fieldDiff) },
+      timeSpentSeconds:{ N: String(Math.max(0, Math.round(timeSpent))) },
+      documentsViewed: { S: JSON.stringify(docsViewed) }
+    }
+  }));
+
+  return {
+    ok: true,
+    reviewId,
+    claimId,
+    decision,
+    decisionReason,
+    diffFieldCount: Object.keys(fieldDiff).length,
+    reviewedAt: now
+  };
+}
+
 // ---------- main handler ----------
 
 /**
@@ -470,6 +582,33 @@ export const handler = async (event) => {
         stripeRefundId: result.stripeRefundId,
         stripeRefundStatus: result.stripeRefundStatus,
         stripeRefundSkipped: result.stripeRefundSkipped
+      });
+      return response(200, result);
+    }
+
+    if (routeKey === "POST /admin/claims/{id}/review"
+        || (method === "POST" && /^\/admin\/claims\/[^\/]+\/review\/?$/.test(path))) {
+      if (!adminUser) {
+        audit(event, { event: "admin_forbidden", userId, path });
+        return response(403, { error: "Admin group required" });
+      }
+      // The id comes from pathParameters when route is matched directly, but
+      // when matched by regex (legacy proxy) we pull it from the path.
+      const reviewClaimId = id || (path.match(/^\/admin\/claims\/([^\/]+)\/review/) || [])[1];
+      if (!reviewClaimId) return response(400, { error: "Missing claim id" });
+      let body;
+      try { body = event.body ? JSON.parse(event.body) : {}; }
+      catch { return response(400, { error: "Invalid JSON body" }); }
+      const result = await saveReviewDecision(reviewClaimId, userId, body);
+      if (result.error) return response(result.code || 400, { error: result.error });
+      audit(event, {
+        event: "admin_review_decision",
+        adminUserId: userId,
+        claimId: reviewClaimId,
+        reviewId: result.reviewId,
+        decision: result.decision,
+        decisionReason: result.decisionReason,
+        diffFieldCount: result.diffFieldCount
       });
       return response(200, result);
     }
