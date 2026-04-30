@@ -1457,16 +1457,27 @@ body.admin-active .app-shell {
     location.reload();
   });
 
-  /* --- Auto-enter if already signed in as admin --- */
+  /* --- Auto-enter if already signed in as admin ---
+     Real Cognito admin ALWAYS wins over a stale demo flag. If a real
+     admin session exists in localStorage from a prior /app/admin.html
+     visit, we proactively clear it before entering the real shell so
+     the rest of the page (fetchClaims, review save, etc.) doesn't
+     accidentally fall back to the demo code paths that early-return
+     locally without hitting the backend. */
   (async function () {
-    // Demo session wins — bypass Cognito for reviewers.
+    var check = await isAdmin();
+    if (check.ok) {
+      try { localStorage.removeItem('credimed.demo'); } catch (e) {}
+      enterShell(check.user);
+      return;
+    }
+    // No real Cognito admin — accept the demo flag if present so
+    // reviewers without an AWS account can still showcase the UI.
     var demo = getDemoSession();
     if (demo) {
       enterShell({ attributes: { email: demo.email, given_name: 'Admin', family_name: 'Demo' } });
       return;
     }
-    var check = await isAdmin();
-    if (check.ok) enterShell(check.user);
     // else: stay on the gate — don't surface 'not-admin' yet, user might
     // just want to sign in with a different account.
   })();
