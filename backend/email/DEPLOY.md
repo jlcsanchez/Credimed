@@ -149,7 +149,112 @@ zip -r credimed-claims.zip claims/credimed-claims.lambda.js email/
    endpoint → **Send test webhook** → choose `payment_intent.succeeded`.
    Check `credimed-stripe-webhook` logs.
 
-## Step 7 — DMARC / SPF / DKIM (anti-spam)
+## Step 7 — EventBridge Scheduler (24h "in review" follow-up)
+
+The Stripe webhook now creates a one-time scheduled task each time a
+payment succeeds: 24 hours later the scheduler invokes
+`credimed-status-followup` which sends the "in review" email. Setup is
+a one-time AWS console exercise.
+
+### 7a. Create the schedule group
+
+EventBridge → Scheduler → **Schedule groups** → **Create**
+- Name: `credimed-claim-followups`
+- Tags: `app=credimed`
+
+The group is a logical container so you can list / wipe schedules in
+bulk later if you ever need to re-test.
+
+### 7b. Create the IAM role the scheduler assumes
+
+IAM → Roles → **Create role**
+- Trusted entity: **Custom trust policy**, paste:
+  ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Effect": "Allow",
+      "Principal": { "Service": "scheduler.amazonaws.com" },
+      "Action": "sts:AssumeRole"
+    }]
+  }
+  ```
+- Permissions policy (inline), name it `invoke-status-followup`:
+  ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Effect": "Allow",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:lambda:us-west-2:*:function:credimed-status-followup"
+    }]
+  }
+  ```
+- Role name: `credimed-scheduler-invoke-role`
+- Copy the role ARN — needed for the webhook env var.
+
+### 7c. Deploy the `credimed-status-followup` Lambda
+
+Lambda → Create function
+- Name: `credimed-status-followup`
+- Runtime: Node.js 20.x
+- Architecture: arm64
+- Execution role: create new with these inline permissions:
+  - `dynamodb:GetItem` on `arn:aws:dynamodb:us-west-2:*:table/credimed-claims`
+  - `kms:Decrypt` on the customer-managed KMS key used to encrypt PII
+  - `ses:SendEmail`, `ses:SendRawEmail` on the verified domain
+  - `logs:CreateLogStream`, `logs:PutLogEvents`
+
+In the code editor:
+1. Paste `backend/email/credimed-status-followup.js` into `index.mjs`
+2. Add `email/` folder with `sendEmail.js` and `templates.js` (same as Step 5 Option A)
+3. Update the import in `index.mjs`: `from './sendEmail.js'` → `from './email/sendEmail.js'`
+4. Deploy
+
+Env vars on this Lambda:
+- `AWS_REGION` = `us-west-2`
+- `FROM_EMAIL` = `Credimed <ceo@credimed.us>` (or whichever verified sender)
+
+### 7d. Wire the webhook to the scheduler
+
+Add three env vars to `credimed-stripe-webhook`:
+- `IN_REVIEW_LAMBDA_ARN` — full ARN of `credimed-status-followup`
+- `SCHEDULER_ROLE_ARN`   — ARN of `credimed-scheduler-invoke-role`
+- `SCHEDULER_GROUP`      — `credimed-claim-followups`
+
+Add to the webhook's IAM role:
+```json
+{
+  "Effect": "Allow",
+  "Action": "scheduler:CreateSchedule",
+  "Resource": "arn:aws:scheduler:us-west-2:*:schedule/credimed-claim-followups/*"
+},
+{
+  "Effect": "Allow",
+  "Action": "iam:PassRole",
+  "Resource": "<ARN of credimed-scheduler-invoke-role>"
+}
+```
+
+### 7e. Test end-to-end
+
+1. Run a `payment_intent.succeeded` test from the Stripe dashboard
+2. EventBridge → Scheduler → Schedules → `credimed-claim-followups` → confirm
+   one schedule appears named `inreview-<claimId>` with fire time = now + 24h
+3. To shortcut testing, edit that schedule's fire time to `now + 2 minutes`,
+   then watch CloudWatch logs of `credimed-status-followup`
+4. Email should arrive shortly after fire time
+
+The schedule auto-deletes after firing (`ActionAfterCompletion: DELETE`).
+
+### Cost
+
+EventBridge Scheduler: $1.00 per million scheduled events. At 1k claims/mo
+the scheduler bill is well under $0.01/mo.
+
+---
+
+## Step 8 — DMARC / SPF / DKIM (anti-spam)
 
 Once the SES domain is verified, also add to credimed.us DNS:
 
@@ -165,14 +270,16 @@ inbox delivery is reliable.
 
 ## What gets sent and when
 
-| Trigger                                                          | Template          | Subject                              |
-| ---------------------------------------------------------------- | ----------------- | ------------------------------------ |
-| Patient completes payment (Stripe webhook)                       | `paymentReceived` | Payment received · {claimId}         |
-| Admin changes status to `submitted` (rare — usually auto on save)| `claimSubmitted`  | We received your claim · {claimId}   |
-| Admin changes status to `in-review`                              | `statusInReview`  | Your claim is in review · {claimId}  |
-| Admin changes status to `approved`                               | `statusApproved`  | Claim approved · {claimId}           |
-| Admin changes status to `paid`                                   | `statusPaid`      | Refund issued · {claimId}            |
-| Admin changes status to `denied`                                 | `statusDenied`    | Update on your claim · {claimId}     |
+| Trigger                                                          | Template                  | Subject                                      |
+| ---------------------------------------------------------------- | ------------------------- | -------------------------------------------- |
+| Cognito Post-Confirmation (signup)                               | `welcome`                 | Welcome to Credimed — your account is ready  |
+| Patient completes payment (Stripe webhook)                       | `paymentReceivedAndFiled` | Payment received and claim filed · {claimId} |
+| 24h after payment (EventBridge Scheduler → status-followup λ)    | `statusInReview`          | Your claim is in review · {claimId}          |
+| Admin marks claim as `needs-docs`                                | `needMoreDocs`            | Action needed — please upload {what} · {id}  |
+| Admin marks claim `approved` (manual, after EOB arrives by fax)  | `statusApproved`          | Claim approved · {claimId}                   |
+| Admin marks claim `paid` (manual)                                | `statusPaid`              | Refund issued · {claimId}                    |
+| Admin marks claim `denied` (manual)                              | `statusDenied`            | Update on your claim · {claimId}             |
+| Admin marks claim `refunded` (money-back guarantee triggered)    | `refundIssued`            | Money-back refund processed · {claimId}      |
 
 All emails contain only:
 - Patient's first name (already known to them)

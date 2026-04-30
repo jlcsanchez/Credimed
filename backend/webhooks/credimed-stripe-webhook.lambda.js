@@ -35,6 +35,10 @@ import {
   UpdateItemCommand
 } from '@aws-sdk/client-dynamodb';
 import { KMSClient, DecryptCommand } from '@aws-sdk/client-kms';
+import {
+  SchedulerClient,
+  CreateScheduleCommand
+} from '@aws-sdk/client-scheduler';
 import { sendEmailSafely } from '../email/sendEmail.js';
 
 const REGION = process.env.AWS_REGION || 'us-west-2';
@@ -43,8 +47,53 @@ const TABLE  = 'credimed-claims';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-11-20.acacia'
 });
-const db  = new DynamoDBClient({ region: REGION });
-const kms = new KMSClient({ region: REGION });
+const db        = new DynamoDBClient({ region: REGION });
+const kms       = new KMSClient({ region: REGION });
+const scheduler = new SchedulerClient({ region: REGION });
+
+// Set on the Lambda env. The scheduler invokes a target Lambda 24h after
+// payment to send the "in review" email. Both must exist before this
+// scheduling call will succeed.
+const IN_REVIEW_LAMBDA_ARN  = process.env.IN_REVIEW_LAMBDA_ARN;
+const SCHEDULER_ROLE_ARN    = process.env.SCHEDULER_ROLE_ARN;
+const SCHEDULE_GROUP        = process.env.SCHEDULER_GROUP || 'credimed-claim-followups';
+
+/**
+ * Schedule the "in review" follow-up email 24h after payment. Uses
+ * EventBridge Scheduler one-time `at(...)` schedule. Idempotent by
+ * Name (claimId) — duplicate calls fail silently.
+ */
+async function scheduleInReviewEmail(claimId) {
+  if (!IN_REVIEW_LAMBDA_ARN || !SCHEDULER_ROLE_ARN) {
+    audit({ event: 'scheduler_skipped_no_config', claimId });
+    return;
+  }
+  const fireAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const scheduleExpression =
+    `at(${fireAt.toISOString().replace(/\.\d+Z$/, '')})`;
+  try {
+    await scheduler.send(new CreateScheduleCommand({
+      Name: `inreview-${claimId}`,
+      GroupName: SCHEDULE_GROUP,
+      ScheduleExpression: scheduleExpression,
+      FlexibleTimeWindow: { Mode: 'OFF' },
+      ActionAfterCompletion: 'DELETE',
+      Target: {
+        Arn: IN_REVIEW_LAMBDA_ARN,
+        RoleArn: SCHEDULER_ROLE_ARN,
+        Input: JSON.stringify({ claimId })
+      }
+    }));
+    audit({ event: 'scheduler_inreview_created', claimId, fireAt: fireAt.toISOString() });
+  } catch (err) {
+    if (err.name === 'ConflictException') {
+      audit({ event: 'scheduler_inreview_already_exists', claimId });
+      return;
+    }
+    console.error('[scheduler error]', err);
+    audit({ event: 'scheduler_inreview_failed', claimId, error: err.message });
+  }
+}
 
 async function decryptField(encryptedValue) {
   if (!encryptedValue) return '';
@@ -204,7 +253,11 @@ export const handler = async (event) => {
             dbUpdated: updated
           });
           // Notify the patient. Only send if this was a fresh transition
-          // (updated=true). Stripe retries shouldn't double-send.
+          // (updated=true). Stripe retries shouldn't double-send. The
+          // combined "payment received + filed" email replaces the old
+          // pair (paymentReceived + claimSubmitted) which fired back-to-
+          // back from this same event. The follow-up "in review" email
+          // is scheduled 24h later via EventBridge Scheduler.
           if (updated) {
             const claimRow = await db.send(new GetItemCommand({
               TableName: TABLE,
@@ -213,13 +266,19 @@ export const handler = async (event) => {
             if (claimRow.Item) {
               const email = await decryptField(claimRow.Item.email?.S);
               const firstName = await decryptField(claimRow.Item.firstName?.S);
+              const amountPaid = pi.amount
+                ? `$${(pi.amount / 100).toFixed(2)}`
+                : null;
               if (email) {
                 await sendEmailSafely({
                   to: email,
-                  eventType: 'paymentReceived',
-                  data: { firstName: firstName || '', claimId }
+                  eventType: 'paymentReceivedAndFiled',
+                  data: { firstName: firstName || '', claimId, amountPaid }
                 });
               }
+              // Fire-and-forget; failure is non-blocking on the webhook
+              // response (Stripe must still see 200).
+              await scheduleInReviewEmail(claimId);
             }
           }
         }

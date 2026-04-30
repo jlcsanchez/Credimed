@@ -235,45 +235,58 @@ const dashboardUrl = `${APP_BASE}/dashboard.html`;
 const greet = (firstName) => firstName ? `Hi ${firstName},` : 'Hi,';
 
 const templates = {
-  claimSubmitted({ firstName, claimId }) {
+  /* Sent immediately after Cognito Post-Confirmation fires (the user
+     just signed up and was auto-confirmed by the Pre-Sign-Up Lambda).
+     No claimId yet — they haven't started a claim. CTA points to the
+     upload page so they can get going. */
+  welcome({ firstName }) {
     return {
-      subject: `We received your claim · ${claimId}`,
+      subject: 'Welcome to Credimed — your account is ready',
       html: shell({
-        subject: `We received your claim · ${claimId}`,
-        preheader: "We received your claim — we'll start preparing it for submission.",
-        statusLabel: 'Submitted',
-        headline: 'Your claim is in.',
-        subhead: "We've received your claim and our team will start preparing it for submission to your insurer. You'll get an email each time the status changes.",
-        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0;">No action needed from you right now. We'll handle the paperwork and keep you posted at every stage.</p>`,
-        claimId,
-        ctaLabel: 'View claim',
-        ctaUrl: dashboardUrl,
-        helperText: 'You can track the status anytime from your dashboard.',
-        unsubToken: claimId
+        subject: 'Welcome to Credimed — your account is ready',
+        preheader: "Upload your dental receipt and we'll file your PPO claim within 24 hours.",
+        statusLabel: 'Account created',
+        headline: 'Welcome to Credimed.',
+        subhead: "Your account is ready. Upload your dental receipt and we'll file your out-of-network reimbursement claim with your insurer within 24 hours.",
+        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0 0 12px;">Here's what happens next:</p><ol style="margin:0 0 12px;padding-left:18px;line-height:1.6;"><li>Upload your dental receipt + insurance card (~2 minutes)</li><li>We translate it, code it correctly, and prepare the ADA claim form</li><li>You confirm and pay our one-time fee (\$19–\$99 based on complexity, capped at 20% of your refund)</li><li>We file with your insurer the same day</li><li>Your insurer mails the refund check directly to you in 3–6 weeks</li></ol><p style="margin:0;"><b>You only pay if we recover your refund.</b> If your claim is eligible and we can't get it paid after one free resubmission, we refund your fee — full money-back guarantee.</p>`,
+        claimId: 'New member',
+        ctaLabel: 'Upload my receipt',
+        ctaUrl: `${APP_BASE}/documents.html`,
+        helperText: 'Reply to this email if you have any questions — we read every message.',
+        unsubToken: 'welcome'
       }),
       text:
-        `${greet(firstName)}\n\nWe've received your claim and our team will start preparing it for submission to your insurer. You'll get an email each time the status changes.\n\nReference: ${claimId}\nView in app: ${dashboardUrl}\n\nQuestions? ${SUPPORT_EMAIL}`
+        `${greet(firstName)}\n\nWelcome to Credimed. Your account is ready.\n\nNext step: upload your dental receipt + insurance card. We'll translate it, prepare the claim form, and file it with your insurer within 24 hours.\n\nFee: \$19–\$99 one-time (depends on claim complexity, capped at 20% of your refund). Money-back guarantee — if we can't recover your refund, we refund your fee.\n\nGet started: ${APP_BASE}/documents.html\n\nQuestions? Reply to this email.`
     };
   },
 
-  paymentReceived({ firstName, claimId }) {
+  /* Combined receipt + filed confirmation — fires once from the Stripe
+     webhook the moment payment succeeds. Replaces the old paymentReceived
+     and claimSubmitted pair (they fired back-to-back from the same event,
+     which felt like noise to the patient). The 24h-later "in review"
+     email is scheduled separately via EventBridge.
+     amountPaid is the fee charged (string, formatted); optional. */
+  paymentReceivedAndFiled({ firstName, claimId, amountPaid }) {
+    const amt = amountPaid || null;
     return {
-      subject: `Payment received · ${claimId}`,
+      subject: `Payment received and claim filed · ${claimId}`,
       html: shell({
-        subject: `Payment received · ${claimId}`,
-        preheader: "Payment received — we'll file your claim within 24 hours.",
-        statusLabel: 'Payment received',
-        headline: 'Payment confirmed.',
-        subhead: "Your fee is locked in. We'll prepare and submit your claim to your insurer within 24 hours.",
-        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0;">Thanks for trusting us with this. The next email you get from us will be when your claim is on its way to the insurer.</p>`,
+        subject: `Payment received and claim filed · ${claimId}`,
+        preheader: 'Your fee is locked in and your claim is on its way to your insurer.',
+        statusLabel: 'Filed',
+        headline: 'Payment received. Claim filed.',
+        subhead: "Your fee is locked in and your claim has been filed with your insurer. You don't need to do anything else right now.",
+        amount: amt,
+        amountLabel: amt ? 'Fee paid' : undefined,
+        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0 0 12px;">What happens next:</p><ol style="margin:0 0 12px;padding-left:18px;line-height:1.6;"><li>Your insurer reviews your claim (usually 3–6 weeks)</li><li>If they approve it, the refund check is mailed directly to you</li><li>We email you at every status change so you're never wondering</li></ol><p style="margin:0;">No action needed. We'll be in touch within 24 hours when your insurer acknowledges receipt.</p>`,
         claimId,
         ctaLabel: 'View claim',
         ctaUrl: dashboardUrl,
-        helperText: 'If anything looks off, reply to this email — we read every message.',
+        helperText: 'Track status anytime from your dashboard. Reply to this email if anything looks off.',
         unsubToken: claimId
       }),
       text:
-        `${greet(firstName)}\n\nWe received your payment and your claim is locked in. We'll prepare it and submit it to your insurer within 24 hours.\n\nReference: ${claimId}\nView: ${dashboardUrl}`
+        `${greet(firstName)}\n\nPayment received and your claim is filed with your insurer.${amt ? `\n\nFee paid: ${amt}` : ''}\n\nWhat happens next:\n1. Your insurer reviews the claim (3–6 weeks typical)\n2. If approved, the refund is mailed directly to you\n3. We email you at every status change\n\nReference: ${claimId}\nView: ${dashboardUrl}\n\nQuestions? ${SUPPORT_EMAIL}`
     };
   },
 
@@ -361,6 +374,42 @@ const templates = {
     };
   },
 
+  /* Sent when admin (or AI) flags a claim as needing one more document
+     before it can be submitted (or after the carrier requests more info).
+     docTypeNeeded is a short label shown in the body; safe values are
+     vetted in the admin dashboard dropdown. The CTA deep-links to
+     claim.html with action=upload so the patient lands on the right
+     upload affordance.
+
+     This is the ONLY template (besides welcome and the combined Stripe
+     one) that fires automatically. Approved/paid/denied/refunded all
+     stay manual triggers from the admin dashboard while we operate
+     with fax-only submission and lack real-time carrier callbacks. */
+  needMoreDocs({ firstName, claimId, docTypeNeeded, docDescription }) {
+    const what = docTypeNeeded || 'an additional document';
+    const why  = docDescription
+      ? `<p style="margin:0 0 12px;">Why we need it: ${docDescription}</p>`
+      : '';
+    return {
+      subject: `Action needed — please upload ${what} · ${claimId}`,
+      html: shell({
+        subject: `Action needed — please upload ${what} · ${claimId}`,
+        preheader: `We need ${what} to keep your claim moving.`,
+        statusLabel: 'Action needed',
+        headline: 'One more thing.',
+        subhead: `To keep your claim on track, we need ${what} from you. It only takes a minute to upload.`,
+        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p>${why}<p style="margin:0;">Click the button below to upload directly. Your claim stays paused until we receive it — once it's in, we resume immediately and you don't have to do anything else.</p>`,
+        claimId,
+        ctaLabel: `Upload ${what}`,
+        ctaUrl: `${APP_BASE}/claim.html?id=${encodeURIComponent(claimId)}&action=upload`,
+        helperText: "Reply to this email if you're not sure what we need or why — we'll walk you through it.",
+        unsubToken: claimId
+      }),
+      text:
+        `${greet(firstName)}\n\nTo keep your claim on track, we need ${what} from you.${docDescription ? `\n\nWhy: ${docDescription}` : ''}\n\nUpload here: ${APP_BASE}/claim.html?id=${encodeURIComponent(claimId)}&action=upload\n\nReference: ${claimId}\n\nReply to this email if you're not sure what we need.`
+    };
+  },
+
   refundIssued({ firstName, claimId, amountUsd }) {
     const amt = amountUsd ? `$${amountUsd}` : 'your fee';
     return {
@@ -396,6 +445,18 @@ export function buildEmail(eventType, data) {
 // admin updates a claim status. Returns null if no email should be
 // sent for that transition.
 //
+// 'submitted' intentionally returns null: the patient already received
+// the combined "payment received + filed" email from the Stripe webhook
+// at the moment of payment. Re-emailing them when the claim is
+// internally marked "submitted" would be duplicate noise.
+//
+// 'in-review' is auto-fired 24h after payment by the EventBridge
+// Scheduler set up in the Stripe webhook — but is also still valid as
+// an admin-triggered transition (e.g., "carrier acknowledged early").
+//
+// 'needs-docs' is the new active touchpoint for back-and-forth with
+// the patient when admin (or AI) flags missing documentation.
+//
 // 'refunded' is the Credimed-side fee refund (money-back guarantee
 // processed). It's a terminal state: the claim journey is over and
 // we've returned the patient's fee. Insurer-side 'paid' is different
@@ -403,11 +464,12 @@ export function buildEmail(eventType, data) {
 // happy-path success state.
 export function templateForStatus(status) {
   return {
-    'submitted':  'claimSubmitted',
-    'in-review':  'statusInReview',
-    'approved':   'statusApproved',
-    'paid':       'statusPaid',
-    'denied':     'statusDenied',
-    'refunded':   'refundIssued'
+    'submitted':   null,
+    'in-review':   'statusInReview',
+    'needs-docs':  'needMoreDocs',
+    'approved':    'statusApproved',
+    'paid':        'statusPaid',
+    'denied':      'statusDenied',
+    'refunded':    'refundIssued'
   }[status] || null;
 }
