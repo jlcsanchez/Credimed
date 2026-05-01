@@ -499,8 +499,27 @@ html, body {
         });
       }
 
+      /* The save-claim Lambda needs PHI-encryptable fields (email,
+         firstName, lastName, memberId, insurer, amount) PLUS the
+         passthrough fields (plan, city, paidAmount, estimate range,
+         procedures, etc). We pull them from CredimedState slices
+         that the documents/estimate/agreement screens populated. */
+      var user = S.get('user', {}) || {};
+      var amountForBackend =
+        S.get('receipt.amountPaidUSD') ||
+        S.get('receipt.amountPaid')    ||
+        null;
+
       var body = {
         claimId: claimId,
+        // Required PHI fields (encrypted by Lambda)
+        email:     user.email     || null,
+        firstName: user.firstName || null,
+        lastName:  user.lastName  || null,
+        memberId:  insurance.memberId || null,
+        insurer:   insurance.insurer  || null,
+        amount:    amountForBackend,
+        // Passthrough (plain) fields
         plan: S.get('plan.selected') || 'standard',
         paidAmountUSD: S.get('receipt.amountPaidUSD') || null,
         paidAmountOriginal: S.get('receipt.amountPaid') || null,
