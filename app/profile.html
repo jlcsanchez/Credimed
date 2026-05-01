@@ -542,7 +542,13 @@ function _credimedProfileBoot() {
     var firstName = attrs.given_name || S.get('user.firstName', '') || '';
     var lastName  = attrs.family_name || S.get('user.lastName', '')  || '';
     var email     = attrs.email || S.get('user.email', '') || '';
-    var phone     = S.get('user.phone', '') || '';
+    /* phone + dob: Cognito is the source of truth (pushContactToCognito
+       writes them as phone_number + birthdate). Read Cognito first so the
+       form re-populates after localStorage gets cleared — iOS Safari ITP
+       purges after 7 days, sign-out on a different device wipes the
+       per-device state, etc. */
+    var phone     = attrs.phone_number || S.get('user.phone', '') || '';
+    var dob       = attrs.birthdate    || S.get('user.dob',   '') || '';
 
     $('firstName').value = firstName;
     $('lastName').value  = lastName;
@@ -564,7 +570,7 @@ function _credimedProfileBoot() {
     if ($('pcLastName'))  $('pcLastName').value  = lastName;
     if ($('pcEmail'))     $('pcEmail').value     = email;
     if ($('pcPhone'))     $('pcPhone').value     = phone;
-    if ($('pcDob'))       $('pcDob').value       = S.get('user.dob', '') || '';
+    if ($('pcDob'))       $('pcDob').value       = dob;
 
     // Mailing address — populated by agreement.html's syncAddressToState.
     var addr = S.get('mailingAddress', {}) || {};
