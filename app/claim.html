@@ -571,6 +571,9 @@ html,body{
         if (resp && resp.ok) {
           var data = await resp.json();
           claim = (data && data.claim) || data;
+          /* Backend uses claimId; this page uses claim.id. Alias so the
+             render code stays unchanged. */
+          if (claim && !claim.id && claim.claimId) claim.id = claim.claimId;
         }
       }
     } catch (e) {
