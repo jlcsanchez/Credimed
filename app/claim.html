@@ -92,10 +92,10 @@ html,body{
   }
   /* Refund hero spans full width at the top */
   .body-wrap > .refund-hero { grid-column: 1 / -1; }
-  /* Need help? — last card on the page — spans full width so it
-     doesn't sit alone in the left column with empty space to the
-     right. Reads as a clean footer band. */
-  .body-wrap > .card:last-child { grid-column: 1 / -1; }
+  /* Need help? sits in the right column under Documents on file —
+     same width as the small cards on the right side, no orphan band
+     at the bottom. */
+  .body-wrap > .card:last-child { grid-column: 2 / 3; }
 }
 /* Hide the stale right side panel ("Loading claim status…" etc.) —
    the body-wrap already renders the timeline. The app shell's
@@ -545,7 +545,7 @@ html,body{
       docs +
       '<div class="card"><h2>Need help?</h2>' +
         '<div class="actions">' +
-          '<a class="btn" href="/app/support.html">Contact support</a>' +
+          '<a class="btn btn-primary" href="/app/support.html">Contact support</a>' +
           (c.status === 'denied' ? '<a class="btn btn-primary" href="/app/documents.html">Resubmit claim</a>' : '') +
         '</div>' +
       '</div>';
