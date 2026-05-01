@@ -484,11 +484,22 @@ html,body{
   }
 
   /* Backend uses claimId as the canonical key (matches the DynamoDB
-     PK); the rest of this file uses the shorter c.id. Normalize at
-     the API boundary so render code stays unchanged. */
+     PK); the rest of this file uses the shorter c.id. Also bridge
+     proceduresList (the array column the save-claim Lambda writes)
+     to procedures (what the render code expects), and finally fall
+     back to splitting a comma-joined `procedure` string so the count
+     and stacked-line render are accurate when only the encrypted
+     singular field comes back from the backend. */
   function normalizeClaim(c) {
     if (!c || typeof c !== 'object') return c;
     if (!c.id && c.claimId) c.id = c.claimId;
+    if (!Array.isArray(c.procedures)) {
+      if (Array.isArray(c.proceduresList) && c.proceduresList.length) {
+        c.procedures = c.proceduresList;
+      } else if (typeof c.procedure === 'string' && c.procedure.indexOf(',') !== -1) {
+        c.procedures = c.procedure.split(/\s*,\s*/).filter(Boolean);
+      }
+    }
     return c;
   }
 
