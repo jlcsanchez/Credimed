@@ -1,9 +1,10 @@
 /**
- * credimed-get-claims (Lambda) — extended for admin
+ * credimed-claims (Lambda) — read + admin + create
  *
- * Single Lambda that handles ALL claim-read + admin endpoints. Routes:
+ * Single Lambda that handles ALL claim endpoints. Routes:
  *
- *   GET   /claims              — list user's own claims (preserves existing behavior)
+ *   POST  /claims              — create a claim (authenticated patient)
+ *   GET   /claims              — list user's own claims
  *   GET   /claims/{id}         — get one claim (verifies ownership; admin can read any)
  *   GET   /admin/claims        — list ALL claims (admin only)
  *   PATCH /admin/claims/{id}   — update claim status (admin only)
@@ -16,9 +17,9 @@
  *     SK: createdAt (S, ISO)
  *
  * PHI encryption: email, firstName, lastName, memberId, insurer, procedure,
- * amount are KMS-encrypted at rest by credimed-save-claim. They are
- * decrypted on read using the same key. The Lambda's IAM role must have
- * kms:Decrypt on that key.
+ * amount are KMS-encrypted at rest on POST and decrypted on GET. The
+ * Lambda's IAM role must have kms:Encrypt + kms:Decrypt on the key
+ * referenced by the KMS_KEY_ID env var.
  *
  * Admin gate: the JWT's cognito:groups claim must include "admin".
  */
@@ -31,7 +32,7 @@ import {
   UpdateItemCommand,
   PutItemCommand
 } from "@aws-sdk/client-dynamodb";
-import { KMSClient, DecryptCommand } from "@aws-sdk/client-kms";
+import { KMSClient, DecryptCommand, EncryptCommand } from "@aws-sdk/client-kms";
 import { sendEmailSafely } from "../email/sendEmail.js";
 import { templateForStatus } from "../email/templates.js";
 
@@ -115,11 +116,30 @@ function corsHeaders(event) {
     : "https://credimed.us";
   return {
     "Access-Control-Allow-Origin":  allowed,
-    "Access-Control-Allow-Methods": "GET, PATCH, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
     "Access-Control-Allow-Headers": "Authorization, Content-Type",
     "Vary": "Origin",
     "Content-Type": "application/json"
   };
+}
+
+const KMS_KEY_ID = process.env.KMS_KEY_ID || "";
+
+/**
+ * KMS-encrypt a plaintext PHI field. Returns base64 ciphertext suitable
+ * for DynamoDB S storage. Returns null for empty/missing input so we
+ * don't waste a KMS call (and don't write a meaningless attribute).
+ */
+async function encryptField(plaintext) {
+  if (plaintext == null || plaintext === "") return null;
+  if (!KMS_KEY_ID) {
+    throw new Error("KMS_KEY_ID env var not set — cannot encrypt PHI");
+  }
+  const result = await kms.send(new EncryptCommand({
+    KeyId: KMS_KEY_ID,
+    Plaintext: Buffer.from(String(plaintext), "utf8")
+  }));
+  return Buffer.from(result.CiphertextBlob).toString("base64");
 }
 
 function buildResponse(statusCode, body, event) {
@@ -164,6 +184,14 @@ async function decryptItem(item) {
   for (const f of PASSTHROUGH) {
     if (item[f]?.S != null) claim[f] = item[f].S;
     else if (item[f]?.N != null) claim[f] = Number(item[f].N);
+  }
+
+  // procedures is an array of strings, stored as JSON-encoded S so the
+  // existing scalar decoder works for everything else. Try to parse;
+  // fall back to the raw string if it isn't JSON (legacy rows).
+  if (item.procedures?.S != null) {
+    try { claim.procedures = JSON.parse(item.procedures.S); }
+    catch { claim.procedures = item.procedures.S; }
   }
 
   await Promise.all(ENCRYPTED_FIELDS.map(async (field) => {
@@ -225,6 +253,99 @@ async function getOneClaim(claimId, userId, isAdminUser) {
   if (!r.Item) return null;
   if (!isAdminUser && r.Item.userId?.S !== userId) return "forbidden";
   return await decryptItem(r.Item);
+}
+
+/**
+ * Create a new claim row. PHI fields are encrypted with KMS before
+ * write. The PK is the claimId minted by the frontend (CMX-YYYY-XXXXXX),
+ * which lets the same submitClaim() retry safely after a network blip:
+ *   - First attempt: ConditionExpression succeeds, row is created.
+ *   - Retry with same id by same user: returns the existing row (200).
+ *   - Collision (different user reusing an id): 409.
+ *
+ * Required body fields: claimId. Everything else is optional and stamped
+ * only when present so the row stays narrow if the frontend ships
+ * partial data. status defaults to 'in-review' since the patient just
+ * paid and submitted — admins move it forward from there.
+ */
+async function createClaim(userId, body) {
+  if (!body || typeof body !== "object") {
+    return { error: "Missing JSON body", code: 400 };
+  }
+  const claimId = body.claimId;
+  if (!claimId || typeof claimId !== "string") {
+    return { error: "claimId required", code: 400 };
+  }
+  // Format check — match the frontend's CMX-YYYY-XXXXXX pattern. Reject
+  // anything else so a hostile client can't pollute the table with
+  // arbitrary keys (e.g., admin/* or other users' ids).
+  if (!/^CMX-\d{4}-[A-Z0-9]{4,12}$/i.test(claimId)) {
+    return { error: "Invalid claimId format", code: 400 };
+  }
+
+  const now = new Date().toISOString();
+  const item = {
+    claimId:   { S: claimId },
+    userId:    { S: userId },
+    status:    { S: body.status && ALLOWED_STATUSES.has(body.status) ? body.status : "in-review" },
+    createdAt: { S: now },
+    updatedAt: { S: now }
+  };
+
+  // Non-PHI scalars — copy through with the same S/N typing the reader
+  // already understands.
+  const STRING_FIELDS = ["plan", "city", "paidCurrency", "submittedAt", "paidAt", "deniedAt"];
+  for (const f of STRING_FIELDS) {
+    if (body[f] != null && body[f] !== "") item[f] = { S: String(body[f]) };
+  }
+  const NUMBER_FIELDS = ["paidAmount", "paidAmountUSD", "estimateMin", "estimateMax"];
+  for (const f of NUMBER_FIELDS) {
+    if (body[f] != null && !Number.isNaN(Number(body[f]))) {
+      item[f] = { N: String(Number(body[f])) };
+    }
+  }
+  if (Array.isArray(body.procedures) && body.procedures.length > 0) {
+    item.procedures = { S: JSON.stringify(body.procedures) };
+  }
+
+  // PHI — encrypt in parallel. Empty/missing fields return null and are
+  // simply not written, keeping the row minimal.
+  const phi = await Promise.all(ENCRYPTED_FIELDS.map(async (field) => {
+    const val = body[field];
+    const enc = await encryptField(val);
+    return [field, enc];
+  }));
+  for (const [field, enc] of phi) {
+    if (enc) item[field] = { S: enc };
+  }
+
+  try {
+    await db.send(new PutItemCommand({
+      TableName: TABLE,
+      Item: item,
+      ConditionExpression: "attribute_not_exists(claimId)"
+    }));
+    return { ok: true, claimId, createdAt: now, status: item.status.S };
+  } catch (err) {
+    if (err.name !== "ConditionalCheckFailedException") throw err;
+    // A row already exists for this claimId. Treat same-user re-submits
+    // as idempotent success (returns the existing row); cross-user
+    // collisions as 409.
+    const existing = await db.send(new GetItemCommand({
+      TableName: TABLE,
+      Key: { claimId: { S: claimId } }
+    }));
+    if (existing.Item?.userId?.S === userId) {
+      return {
+        ok: true,
+        claimId,
+        createdAt: existing.Item.createdAt?.S || now,
+        status: existing.Item.status?.S || "in-review",
+        idempotent: true
+      };
+    }
+    return { error: "claimId already in use", code: 409 };
+  }
 }
 
 async function listAllClaims() {
@@ -643,6 +764,22 @@ export const handler = async (event) => {
         claimIds: out.claims.map((c) => c.claimId)
       });
       return response(200, out);
+    }
+
+    if (routeKey === "POST /claims"
+        || (method === "POST" && /^\/claims\/?$/.test(path))) {
+      let body;
+      try { body = event.body ? JSON.parse(event.body) : null; }
+      catch { return response(400, { error: "Invalid JSON body" }); }
+      const result = await createClaim(userId, body);
+      if (result.error) return response(result.code || 400, { error: result.error });
+      audit(event, {
+        event: "create_claim",
+        userId,
+        claimId: result.claimId,
+        idempotent: !!result.idempotent
+      });
+      return response(result.idempotent ? 200 : 201, result);
     }
 
     return response(404, { error: "Route not found", routeKey, path });

@@ -24,7 +24,15 @@ Last updated: April 26, 2026.
       with HMAC-SHA256 signature verification and IAM perms for
       DynamoDB GetItem/UpdateItem, KMS Decrypt, and SES SendEmail
 - [ ] Re-deploy `credimed-claims` with the audit-logging + email
-      changes from latest commits
+      changes + the new `POST /claims` route (without it the patient
+      flow looks like it succeeds but the claim never reaches
+      DynamoDB and disappears the moment localStorage clears — see
+      `backend/claims/DEPLOY.md`)
+- [ ] Add `KMS_KEY_ID` env var + `kms:Encrypt` IAM permission to the
+      `credimed-claims` Lambda role (required by the POST handler;
+      same KMS key the webhook already decrypts with)
+- [ ] Register `POST /claims` in the API Gateway HTTP API,
+      JWT-authorized, integrated with `credimed-claims`
 - [x] Verify `metadata.claimId` is set in the payment Lambda when
       creating PaymentIntents — confirmed via code audit. Lambda
       includes `metadata: { userId, claimId, plan, source }` plus
