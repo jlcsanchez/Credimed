@@ -102,6 +102,12 @@ html,body{
    slot just renders empty/hidden. */
 .app-shell .app-panel { display: none !important; }
 
+/* Force the brand mark (the "H" pill) to render in Credimed teal — the
+   default --teal-600 var sometimes resolves to a fallback that looks
+   slate-grey on this page. Hard-coded so it's always visible. */
+.app-topbar .brand-mark,
+.app-sidebar .sb-mark { background-color: #0D9488 !important; color: #fff !important; }
+
 .card {
   background:#fff; border:1px solid rgba(15,23,42,0.06); border-radius:16px;
   padding:18px 20px; box-shadow:0 4px 14px -8px rgba(15,23,42,0.08);
