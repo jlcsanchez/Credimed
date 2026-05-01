@@ -21,7 +21,15 @@ Last updated: April 26, 2026.
 - [x] Lambda `credimed-payment` deployed (Stripe PaymentIntent)
 - [ ] Lambda `credimed-stripe-webhook` deployed (see `backend/webhooks/DEPLOY.md`)
 - [ ] Re-deploy `credimed-claims` with the audit-logging + email
-      changes from latest commits
+      changes + the new `POST /claims` route (without it the patient
+      flow looks like it succeeds but the claim never reaches
+      DynamoDB and disappears the moment localStorage clears — see
+      `backend/claims/DEPLOY.md`)
+- [ ] Add `KMS_KEY_ID` env var + `kms:Encrypt` IAM permission to the
+      `credimed-claims` Lambda role (required by the POST handler;
+      same KMS key the webhook already decrypts with)
+- [ ] Register `POST /claims` in the API Gateway HTTP API,
+      JWT-authorized, integrated with `credimed-claims`
 - [ ] Verify `metadata.claimId` is set in the payment Lambda when
       creating PaymentIntents (without it the webhook can't link
       payments to claims)

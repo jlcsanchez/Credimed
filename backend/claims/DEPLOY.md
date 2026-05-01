@@ -1,18 +1,22 @@
 # Credimed claims Lambda — deploy guide
 
-This Lambda powers three endpoints used by the dashboard and admin:
+This Lambda powers all claim endpoints used by the dashboard, the
+patient flow, and admin:
 
 | Method | Path                  | Caller       | Auth                  |
 |--------|-----------------------|--------------|-----------------------|
+| POST   | `/claims`             | Patient      | JWT (any signed-in)   |
 | GET    | `/claims`             | Patient      | JWT (any signed-in)   |
 | GET    | `/claims/:id`         | Patient      | JWT (must own claim)  |
 | GET    | `/admin/claims`       | Admin        | JWT + `admin` group   |
 | PATCH  | `/admin/claims/:id`   | Admin        | JWT + `admin` group   |
 
-`POST /claims` (the existing endpoint that submission-confirmed.html
-uses to write a new claim into DynamoDB) is **not** in this file —
-keep whatever Lambda you already have for it. This file adds the
-read + admin update side.
+`POST /claims` is the persistence path: when the patient lands on
+`submission-confirmed.html`, the page POSTs the in-memory claim
+(localStorage) to this Lambda, which encrypts PHI with KMS and writes
+to DynamoDB. Without that POST, the claim only exists on the user's
+device and disappears when storage is cleared (iOS Safari ITP purges
+localStorage after 7 days of no visit).
 
 ## Files
 
@@ -38,21 +42,36 @@ Their next-issued ID token will carry `cognito:groups: ["admin"]`.
 
 ### 2. DynamoDB table
 
-Create a table named `credimed-claims` (or set `DYNAMO_TABLE` env var
-to whatever you already have):
+Create a table named `credimed-claims`:
 
-- Partition key: `userSub` (String)
-- Sort key:      `claimId` (String)
+- Partition key: `claimId` (String)
 - Billing mode:  On-demand
 
-If you want fast `claimId`-only lookups for the admin update endpoint,
-add a GSI:
+For per-user listing (`GET /claims`) add a GSI:
 
-- GSI name: `claimId-index`
-- Partition key: `claimId` (String)
+- GSI name: `userId-createdAt-index`
+- Partition key: `userId`     (String)  — Cognito `sub`
+- Sort key:      `createdAt`  (String)  — ISO timestamp
 - Project all attributes
 
-(The handler currently uses Scan as a fallback — fine for early volumes.)
+(Admin list path uses Scan — fine until ~500 claims; there's a TODO
+in `LAUNCH.md` to add a status-indexed GSI when volume justifies it.)
+
+### 2b. KMS key for PHI
+
+Create a Customer-Managed Key (KMS → Customer managed keys → Create):
+
+- Key type: Symmetric
+- Key usage: Encrypt and decrypt
+- Alias: `alias/credimed-phi`
+- Key administrators: your IAM user
+- Key users: leave blank for now (the Lambda role gets access via the
+  inline IAM policy in step 3, not via the key policy's "key users"
+  field)
+
+Copy the key's ARN — you'll set it as `KMS_KEY_ID` in step 5. The
+same key is used by the webhook Lambda to decrypt fields when sending
+patient emails, so its ARN must be reachable from both Lambda roles.
 
 ### 3. Lambda function
 
@@ -68,6 +87,7 @@ add a GSI:
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "DynamoRW",
       "Effect": "Allow",
       "Action": [
         "dynamodb:GetItem",
@@ -80,6 +100,15 @@ add a GSI:
         "arn:aws:dynamodb:us-west-2:YOUR_ACCOUNT_ID:table/credimed-claims",
         "arn:aws:dynamodb:us-west-2:YOUR_ACCOUNT_ID:table/credimed-claims/index/*"
       ]
+    },
+    {
+      "Sid": "KMSPHI",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt"
+      ],
+      "Resource": "arn:aws:kms:us-west-2:YOUR_ACCOUNT_ID:key/YOUR_KMS_KEY_ID"
     }
   ]
 }
@@ -102,12 +131,11 @@ Upload the zip in the Lambda Code section. Set the handler to
 
 Configuration → Environment variables:
 
-| Key                       | Value                       | Required |
-|---------------------------|-----------------------------|----------|
-| `DYNAMO_TABLE`            | `credimed-claims`           | yes      |
-| `ADMIN_GROUP`             | `admin`                     | yes      |
-| `STRIPE_REFUND_ENABLED`   | `false` (flip to `true` on) | no — defaults off |
-| `STRIPE_SECRET_KEY`       | `sk_test_…` or `sk_live_…`  | only when `STRIPE_REFUND_ENABLED=true` |
+| Key                       | Value                                         | Required |
+|---------------------------|-----------------------------------------------|----------|
+| `KMS_KEY_ID`              | ARN of the `alias/credimed-phi` key (step 2b) | yes — POST fails without it |
+| `STRIPE_REFUND_ENABLED`   | `false` (flip to `true` on)                   | no — defaults off |
+| `STRIPE_SECRET_KEY`       | `sk_test_…` or `sk_live_…`                    | only when `STRIPE_REFUND_ENABLED=true` |
 
 (The AWS_REGION env var is auto-set by Lambda — don't override it.)
 
@@ -135,17 +163,26 @@ claim `refunded`:
 
 ### 6. API Gateway routes
 
-Use your existing HTTP API (the one that already has `POST /claims`).
-Add four routes, all protected by the existing JWT authorizer:
+Use your existing HTTP API. Add the routes below, all protected by
+the existing JWT authorizer:
 
+- `POST /claims`             → integration: `credimed-claims` Lambda  ← NEW (the disappearing-claim fix)
 - `GET /claims`              → integration: `credimed-claims` Lambda
 - `GET /claims/{id}`         → integration: `credimed-claims` Lambda
 - `GET /admin/claims`        → integration: `credimed-claims` Lambda
 - `PATCH /admin/claims/{id}` → integration: `credimed-claims` Lambda
-- `OPTIONS /admin/claims`    → for CORS preflight (or enable CORS at the API level)
+- `OPTIONS /claims`          → for CORS preflight (or enable CORS at the API level)
+- `OPTIONS /admin/claims`    → for CORS preflight
 
 For each, **enable JWT authorization** and select your User Pool. Save
 each route, then deploy the API to your existing stage.
+
+If `POST /claims` is missing, the patient flow appears to succeed
+(submission-confirmed.html shows the confirmation screen) but the
+claim never reaches DynamoDB. The frontend logs a warning to the
+browser console; nothing is shown to the user. The next time
+localStorage gets cleared, the claim is gone forever — that's the
+exact bug this Lambda's POST route fixes.
 
 ### 7. Smoke test
 

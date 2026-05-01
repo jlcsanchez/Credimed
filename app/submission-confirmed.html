@@ -393,38 +393,49 @@ html, body {
     if (sub) sub.textContent = "We've filed your claim with your insurer. Updates will go to " + email + ".";
   }
 
-  /* If this page loaded from Stripe redirect (?paid=1 or payment_intent_client_secret),
-     POST the claim to the backend so it's actually stored and processed. */
-  var params = new URLSearchParams(window.location.search);
-  var justPaid = params.get('paid') === '1' || params.has('payment_intent_client_secret');
-  if (justPaid) {
-    try {
-      /* receipt.amountPaidUSD is the documents-screen-normalized USD value
-         (~18:1 from MXN). Always send USD to the backend so downstream
-         consumers (dashboard, admin queue, insurer portal) don't have to
-         re-detect currency. Also forward the original amount + currency
-         as a secondary record for audit / reconciliation. */
-      var S = window.CredimedState || { get: function(){ return null; } };
-      var body = {
-        claimId: claimId,
-        plan: S.get('plan.selected') || 'standard',
-        paidAmountUSD: S.get('receipt.amountPaidUSD') || null,
-        paidAmountOriginal: S.get('receipt.amountPaid') || null,
-        paidCurrency: S.get('receipt.currency') || null,
-        estimateMin: S.get('estimate.rangeMin') || null,
-        estimateMax: S.get('estimate.rangeMax') || null,
-        city: S.get('receipt.city') || null,
-        procedures: S.get('receipt.procedures') || null,
-        procedure: S.get('receipt.procedure') || null,
-        submittedAt: new Date().toISOString()
-      };
-      if (window.authFetch && window.CREDIMED_API) {
-        await window.authFetch(window.CREDIMED_API + '/claims', { method: 'POST', body: body });
-      }
-    } catch (e) {
-      console.warn('[submission-confirmed] could not POST claim:', e);
-      /* soft-fail; user still sees their confirmation */
+  /* Persist the claim to the backend. Without this, the claim only
+     exists in localStorage on this device and disappears the moment
+     the user clears storage / switches device / iOS Safari ITP purges
+     it (which iOS does aggressively after 7 days of no visits).
+     The Lambda is idempotent on claimId, so reloading or arriving
+     here multiple times for the same claim is safe — it returns 200
+     with the existing row instead of creating a duplicate. */
+  try {
+    var S = window.CredimedState || { get: function(){ return null; } };
+    var ins = S.get('insurance', {}) || {};
+    var body = {
+      claimId: claimId,
+      status: 'in-review',
+      plan: S.get('plan.selected') || 'standard',
+      submittedAt: claim && claim.submittedAt ? claim.submittedAt : new Date().toISOString(),
+      // Receipt + estimate (non-PHI numbers + free-text city/procedures).
+      // amountPaidUSD is the documents-screen-normalized USD value (~18:1
+      // from MXN). Always send USD so dashboard / admin / insurer
+      // portal consumers don't have to re-detect currency. The original
+      // amount + currency tag along for audit / reconciliation.
+      paidAmount:    S.get('receipt.amountPaid')    || null,
+      paidAmountUSD: S.get('receipt.amountPaidUSD') || null,
+      paidCurrency:  S.get('receipt.currency')      || null,
+      estimateMin:   S.get('estimate.rangeMin')     || null,
+      estimateMax:   S.get('estimate.rangeMax')     || null,
+      city:          S.get('receipt.city')          || null,
+      procedures:    S.get('receipt.procedures')    || null,
+      procedure:     S.get('receipt.procedure')     || null,
+      // PHI — Lambda KMS-encrypts these before writing to DynamoDB.
+      firstName: S.get('user.firstName') || (cu && cu.attributes && cu.attributes.given_name)  || '',
+      lastName:  S.get('user.lastName')  || (cu && cu.attributes && cu.attributes.family_name) || '',
+      email:     S.get('user.email')     || email                                              || '',
+      insurer:   ins.insurer  || '',
+      memberId:  ins.memberId || ''
+    };
+    if (window.authFetch && window.CREDIMED_API) {
+      await window.authFetch(window.CREDIMED_API + '/claims', { method: 'POST', body: body });
     }
+  } catch (e) {
+    console.warn('[submission-confirmed] could not POST claim:', e);
+    /* soft-fail; the confirmation screen still shows. The user's claim
+       is still in localStorage so the dashboard renders today; if the
+       backend stays down, next dashboard visit can retry. */
   }
 })();
 
