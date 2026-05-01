@@ -84,16 +84,20 @@ html,body{
 @media (min-width: 760px) {
   .body-wrap {
     grid-template-columns: 1fr 1fr;
-    max-width: 960px;
+    max-width: 1040px;
     margin-left: auto;
     margin-right: auto;
     align-items: start;
   }
   /* Hero (refund headline) spans full width at the top */
   .body-wrap > .refund-hero { grid-column: 1 / -1; }
-  /* Optional: let docs card span full width too — it tends to be short */
-  .body-wrap > .card:has(.docs-row) { grid-column: 1 / -1; }
 }
+/* The patient app shell renders an `aside.app-panel` with stale
+   "Loading claim status…" text that duplicates the timeline already
+   shown in the cards. Hide it here so the claim detail page reads
+   clean and the main grid uses the full available width. */
+.app-shell .app-panel { display: none !important; }
+.app-shell.has-panel { grid-template-columns: auto 1fr !important; }
 
 .card {
   background:#fff; border:1px solid rgba(15,23,42,0.06); border-radius:16px;
