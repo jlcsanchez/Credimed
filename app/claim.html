@@ -83,21 +83,24 @@ html,body{
 }
 @media (min-width: 760px) {
   .body-wrap {
-    grid-template-columns: 1fr 1fr;
-    max-width: 1040px;
-    margin-left: auto;
-    margin-right: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px;
     align-items: start;
+    max-width: 880px;
+    margin-left: 0;
+    margin-right: auto;
   }
-  /* Hero (refund headline) spans full width at the top */
+  /* Refund hero hero spans full width at the top */
   .body-wrap > .refund-hero { grid-column: 1 / -1; }
+  /* Need help? is short — pair it next to the documents card or
+     finance card so the page doesn't end with an orphan single column. */
+  .body-wrap > .card:last-child { grid-column: auto; }
 }
-/* The patient app shell renders an `aside.app-panel` with stale
-   "Loading claim status…" text that duplicates the timeline already
-   shown in the cards. Hide it here so the claim detail page reads
-   clean and the main grid uses the full available width. */
+/* Hide the stale right side panel ("Loading claim status…" etc.) —
+   the body-wrap already renders the timeline. The app shell's
+   has-panel grid is restored so the layout doesn't shift, the panel
+   slot just renders empty/hidden. */
 .app-shell .app-panel { display: none !important; }
-.app-shell.has-panel { grid-template-columns: auto 1fr !important; }
 
 .card {
   background:#fff; border:1px solid rgba(15,23,42,0.06); border-radius:16px;
