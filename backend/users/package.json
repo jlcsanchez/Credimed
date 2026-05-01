@@ -1,0 +1,11 @@
+{
+  "name": "credimed-users",
+  "version": "1.0.0",
+  "description": "Lambda for patient profile persistence (address, banking, phone, notifications) — complement to Cognito user attributes.",
+  "type": "module",
+  "main": "credimed-users.lambda.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.620.0",
+    "@aws-sdk/client-kms": "^3.620.0"
+  }
+}

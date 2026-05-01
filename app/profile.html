@@ -342,7 +342,21 @@ html,body{
       </div>
       <div class="field">
         <label>Phone (for claim status updates)</label>
-        <input type="tel" id="phone" autocomplete="tel" placeholder="+1 555 555 5555" />
+        <div style="display:flex;gap:8px;align-items:stretch">
+          <select id="phoneCC" style="flex:0 0 auto;min-width:118px">
+            <option value="+1">🇺🇸 +1 (US)</option>
+            <option value="+52">🇲🇽 +52 (MX)</option>
+            <option value="+34">🇪🇸 +34 (ES)</option>
+            <option value="+44">🇬🇧 +44 (UK)</option>
+            <option value="+57">🇨🇴 +57 (CO)</option>
+            <option value="+54">🇦🇷 +54 (AR)</option>
+            <option value="+56">🇨🇱 +56 (CL)</option>
+            <option value="+51">🇵🇪 +51 (PE)</option>
+            <option value="other">Other…</option>
+          </select>
+          <input type="tel" id="phone" autocomplete="tel" placeholder="555 555 5555" style="flex:1 1 auto" />
+        </div>
+        <div class="helper" id="phoneHelper" style="display:none">When "Other…" is selected, enter the full E.164 number including +country code (e.g., +49 30 1234567).</div>
       </div>
       <div class="save-row">
         <button class="btn-save" id="saveContact">Save contact</button>
@@ -464,6 +478,67 @@ function _credimedProfileBoot() {
   var S = window.CredimedState;
   var $ = function (id) { return document.getElementById(id); };
 
+  /* ────── Backend profile API ──────
+     /profile is the source of truth for fields Cognito doesn't store
+     (international phone, mailing address, banking, notification
+     toggles). Falls back silently if the API is unreachable so the
+     local-only path still works on every device. */
+  var KNOWN_CC = ['+1', '+52', '+34', '+44', '+57', '+54', '+56', '+51'];
+
+  function splitPhoneCC(raw) {
+    var s = String(raw || '').trim();
+    if (!s) return { cc: '+1', rest: '' };
+    if (s.charAt(0) !== '+') return { cc: '+1', rest: s };
+    // Match the longest known CC first; fall back to "other" so the
+    // user sees the original raw input intact.
+    for (var i = 0; i < KNOWN_CC.length; i++) {
+      var cc = KNOWN_CC[i];
+      if (s.indexOf(cc) === 0) {
+        return { cc: cc, rest: s.slice(cc.length).trim() };
+      }
+    }
+    return { cc: 'other', rest: s };
+  }
+
+  function joinPhoneCC(cc, rest) {
+    var digits = String(rest || '').trim();
+    if (!digits) return '';
+    if (cc === 'other') {
+      // User entered the full E.164 themselves (e.g., "+49 30 1234567").
+      return digits;
+    }
+    // Strip any leading + in case the user included one in the local part.
+    digits = digits.replace(/^\+/, '').trim();
+    return cc + ' ' + digits;
+  }
+
+  async function apiLoadProfile() {
+    if (!window.authFetch || !window.CREDIMED_API) return null;
+    try {
+      var resp = await window.authFetch(window.CREDIMED_API + '/profile');
+      if (!resp || !resp.ok) return null;
+      var data = await resp.json();
+      return data.profile || null;
+    } catch (e) {
+      console.info('[profile] backend load skipped:', e.message || e);
+      return null;
+    }
+  }
+
+  async function apiSaveProfile(fields) {
+    if (!window.authFetch || !window.CREDIMED_API) return false;
+    try {
+      var resp = await window.authFetch(window.CREDIMED_API + '/profile', {
+        method: 'PATCH',
+        body: fields
+      });
+      return !!(resp && resp.ok);
+    } catch (e) {
+      console.warn('[profile] backend save failed:', e.message || e);
+      return false;
+    }
+  }
+
   /* Transient flash 'Saved ✓' next to a section's Save button. */
   function flash(statusId) {
     var el = $(statusId);
@@ -542,18 +617,29 @@ function _credimedProfileBoot() {
     var firstName = attrs.given_name || S.get('user.firstName', '') || '';
     var lastName  = attrs.family_name || S.get('user.lastName', '')  || '';
     var email     = attrs.email || S.get('user.email', '') || '';
-    /* phone + dob: Cognito is the source of truth (pushContactToCognito
-       writes them as phone_number + birthdate). Read Cognito first so the
-       form re-populates after localStorage gets cleared — iOS Safari ITP
-       purges after 7 days, sign-out on a different device wipes the
-       per-device state, etc. */
-    var phone     = attrs.phone_number || S.get('user.phone', '') || '';
     var dob       = attrs.birthdate    || S.get('user.dob',   '') || '';
+
+    /* Backend profile is the source of truth for everything Cognito doesn't
+       cover (international phone, mailing address, banking, notifications).
+       Falls through to localStorage if the API is unreachable. The phone
+       precedence is:
+         1. backendProfile.phoneRaw  — what the user entered, any country
+         2. attrs.phone_number       — Cognito legacy (US-only path)
+         3. localStorage             — last-known on this device */
+    var backendProfile = await apiLoadProfile();
+    var phone = (backendProfile && backendProfile.phoneRaw)
+                || attrs.phone_number
+                || S.get('user.phone', '')
+                || '';
 
     $('firstName').value = firstName;
     $('lastName').value  = lastName;
     $('email').value     = email;
-    $('phone').value     = phone;
+    // Phone: split into country code + remainder for the dropdown UI.
+    var phoneParts = splitPhoneCC(phone);
+    if ($('phoneCC')) $('phoneCC').value = phoneParts.cc;
+    $('phone').value     = phoneParts.rest;
+    if ($('phoneHelper')) $('phoneHelper').style.display = (phoneParts.cc === 'other') ? 'block' : 'none';
 
     $('displayName').textContent  = (firstName + ' ' + lastName).trim() || email || 'You';
     $('displayEmail').textContent = email || '—';
@@ -569,45 +655,62 @@ function _credimedProfileBoot() {
     if ($('pcFirstName')) $('pcFirstName').value = firstName;
     if ($('pcLastName'))  $('pcLastName').value  = lastName;
     if ($('pcEmail'))     $('pcEmail').value     = email;
-    if ($('pcPhone'))     $('pcPhone').value     = phone;
+    if ($('pcPhoneCC'))   $('pcPhoneCC').value   = phoneParts.cc;
+    if ($('pcPhone'))     $('pcPhone').value     = phoneParts.rest;
     if ($('pcDob'))       $('pcDob').value       = dob;
 
-    // Mailing address — populated by agreement.html's syncAddressToState.
-    var addr = S.get('mailingAddress', {}) || {};
-    $('addrName').value   = addr.name   || (firstName + ' ' + lastName).trim();
-    $('addrStreet').value = addr.street || '';
-    $('addrApt').value    = addr.apt    || '';
-    $('addrCity').value   = addr.city   || '';
-    $('addrState').value  = addr.state  || '';
-    $('addrZip').value    = addr.zip    || '';
+    /* Mailing address — backend profile wins over the localStorage cache
+       seeded by agreement.html's syncAddressToState. */
+    var localAddr = S.get('mailingAddress', {}) || {};
+    var addr = {
+      name:   (backendProfile && backendProfile.addrName)   || localAddr.name   || (firstName + ' ' + lastName).trim(),
+      street: (backendProfile && backendProfile.addrStreet) || localAddr.street || '',
+      apt:    (backendProfile && backendProfile.addrApt)    || localAddr.apt    || '',
+      city:   (backendProfile && backendProfile.addrCity)   || localAddr.city   || '',
+      state:  (backendProfile && backendProfile.addrState)  || localAddr.state  || '',
+      zip:    (backendProfile && backendProfile.addrZip)    || localAddr.zip    || ''
+    };
+    $('addrName').value   = addr.name;
+    $('addrStreet').value = addr.street;
+    $('addrApt').value    = addr.apt;
+    $('addrCity').value   = addr.city;
+    $('addrState').value  = addr.state;
+    $('addrZip').value    = addr.zip;
 
-    if ($('pcAddrStreet')) $('pcAddrStreet').value = addr.street || '';
-    if ($('pcAddrCity'))   $('pcAddrCity').value   = addr.city   || '';
-    if ($('pcAddrState'))  $('pcAddrState').value  = addr.state  || '';
-    if ($('pcAddrZip'))    $('pcAddrZip').value    = addr.zip    || '';
+    if ($('pcAddrStreet')) $('pcAddrStreet').value = addr.street;
+    if ($('pcAddrCity'))   $('pcAddrCity').value   = addr.city;
+    if ($('pcAddrState'))  $('pcAddrState').value  = addr.state;
+    if ($('pcAddrZip'))    $('pcAddrZip').value    = addr.zip;
 
-    // Banking
-    var bank = S.get('banking', {}) || {};
-    $('bankHolder').value  = bank.holderName || (firstName + ' ' + lastName).trim();
-    $('bankName').value    = bank.bankName   || '';
-    $('bankRouting').value = bank.routing    || '';
-    $('bankAccount').value = bank.account    || '';
-    $('bankType').value    = bank.accountType || 'checking';
+    // Banking — backend wins; banking PII is only KMS-decrypted server-side.
+    var localBank = S.get('banking', {}) || {};
+    var bank = {
+      holderName:  (backendProfile && backendProfile.bankHolder)  || localBank.holderName || (firstName + ' ' + lastName).trim(),
+      bankName:    (backendProfile && backendProfile.bankName)    || localBank.bankName   || '',
+      routing:     (backendProfile && backendProfile.bankRouting) || localBank.routing    || '',
+      account:     (backendProfile && backendProfile.bankAccount) || localBank.account    || '',
+      accountType: (backendProfile && backendProfile.bankType)    || localBank.accountType || 'checking'
+    };
+    $('bankHolder').value  = bank.holderName;
+    $('bankName').value    = bank.bankName;
+    $('bankRouting').value = bank.routing;
+    $('bankAccount').value = bank.account;
+    $('bankType').value    = bank.accountType;
 
-    // Banking — PC layout
-    if ($('pcBankHolder'))  $('pcBankHolder').value  = bank.holderName || (firstName + ' ' + lastName).trim();
-    if ($('pcBankName'))    $('pcBankName').value    = bank.bankName   || '';
-    if ($('pcBankRouting')) $('pcBankRouting').value = bank.routing    || '';
-    if ($('pcBankAccount')) $('pcBankAccount').value = bank.account    || '';
-    if ($('pcBankType'))    $('pcBankType').value    = bank.accountType || 'checking';
+    if ($('pcBankHolder'))  $('pcBankHolder').value  = bank.holderName;
+    if ($('pcBankName'))    $('pcBankName').value    = bank.bankName;
+    if ($('pcBankRouting')) $('pcBankRouting').value = bank.routing;
+    if ($('pcBankAccount')) $('pcBankAccount').value = bank.account;
+    if ($('pcBankType'))    $('pcBankType').value    = bank.accountType;
 
-    /* Notifications — default to ON if state is missing, so first-time
-       users see all three switches in "subscribed" position (matches
-       common SaaS expectation; user can always opt out). */
-    var notifs = S.get('notifications', {}) || {};
+    /* Notifications — backend wins, then localStorage. Default to ON for
+       claim/insurer updates and OFF for marketing tips so first-time users
+       see the right "subscribed" position with no need to opt in.        */
+    var localNotifs = S.get('notifications', {}) || {};
     document.querySelectorAll('[data-notif-key]').forEach(function (cb) {
       var key = cb.getAttribute('data-notif-key');
-      var stored = notifs[key];
+      var backendVal = backendProfile ? backendProfile[key] : undefined;
+      var stored = (backendVal != null) ? backendVal : localNotifs[key];
       cb.checked = (stored == null) ? (key !== 'tipsAndGuides') : !!stored;
     });
 
@@ -647,23 +750,31 @@ function _credimedProfileBoot() {
   $('saveContact').addEventListener('click', function () {
     var firstName = $('firstName').value.trim();
     var lastName  = $('lastName').value.trim();
-    var phoneRaw  = $('phone').value.trim();
+    var phoneCC   = ($('phoneCC') || {}).value || '+1';
+    var phoneRest = $('phone').value.trim();
+    var phoneRaw  = joinPhoneCC(phoneCC, phoneRest);
     S.merge('user', { firstName: firstName, lastName: lastName, phone: phoneRaw });
     flash('statusContact');
-    hydrate();
+    if ($('phoneHelper')) $('phoneHelper').style.display = (phoneCC === 'other') ? 'block' : 'none';
     pushContactToCognito({ firstName: firstName, lastName: lastName, phoneRaw: phoneRaw }, 'statusContact');
+    apiSaveProfile({ phoneRaw: phoneRaw });
   });
 
   $('saveAddr').addEventListener('click', function () {
-    S.set('mailingAddress', {
+    var addr = {
       name:   $('addrName').value.trim(),
       street: $('addrStreet').value.trim(),
       apt:    $('addrApt').value.trim(),
       city:   $('addrCity').value.trim(),
       state:  $('addrState').value.trim().toUpperCase(),
       zip:    $('addrZip').value.trim(),
-    });
+    };
+    S.set('mailingAddress', addr);
     flash('statusAddr');
+    apiSaveProfile({
+      addrName: addr.name, addrStreet: addr.street, addrApt: addr.apt,
+      addrCity: addr.city, addrState: addr.state, addrZip: addr.zip
+    });
   });
 
   /* PC save handlers — share state with the mobile inputs via CredimedState. */
@@ -671,27 +782,33 @@ function _credimedProfileBoot() {
     $('pcSaveContact').addEventListener('click', function () {
       var firstName = ($('pcFirstName') || {}).value ? $('pcFirstName').value.trim() : '';
       var lastName  = ($('pcLastName')  || {}).value ? $('pcLastName').value.trim()  : '';
-      var phoneRaw  = ($('pcPhone')     || {}).value ? $('pcPhone').value.trim()     : '';
+      var phoneCC   = ($('pcPhoneCC')   || {}).value || '+1';
+      var phoneRest = ($('pcPhone')     || {}).value ? $('pcPhone').value.trim()     : '';
+      var phoneRaw  = joinPhoneCC(phoneCC, phoneRest);
       var dob       = ($('pcDob')       || {}).value || '';
       S.merge('user', { firstName: firstName, lastName: lastName, phone: phoneRaw, dob: dob });
       flash('pcStatusContact');
-      hydrate();
       pushContactToCognito({ firstName: firstName, lastName: lastName, phoneRaw: phoneRaw, dob: dob }, 'pcStatusContact');
+      apiSaveProfile({ phoneRaw: phoneRaw });
     });
   }
   if ($('pcSaveAddress')) {
     $('pcSaveAddress').addEventListener('click', function () {
       var prev = S.get('mailingAddress', {}) || {};
-      S.set('mailingAddress', {
+      var addr = {
         name:   prev.name || '',
         street: ($('pcAddrStreet') || {}).value && $('pcAddrStreet').value.trim() || '',
         apt:    prev.apt || '',
         city:   ($('pcAddrCity')   || {}).value && $('pcAddrCity').value.trim()   || '',
         state:  ($('pcAddrState')  || {}).value && $('pcAddrState').value.trim().toUpperCase() || '',
-        zip:    ($('pcAddrZip')    || {}).value && $('pcAddrZip').value.trim()    || '',
-      });
+        zip:    ($('pcAddrZip')    || {}).value && $('pcAddrZip').value.trim()    || ''
+      };
+      S.set('mailingAddress', addr);
       flash('pcStatusAddress');
-      hydrate();
+      apiSaveProfile({
+        addrName: addr.name, addrStreet: addr.street, addrApt: addr.apt,
+        addrCity: addr.city, addrState: addr.state, addrZip: addr.zip
+      });
     });
   }
 
@@ -720,17 +837,24 @@ function _credimedProfileBoot() {
         account: account, accountType: type
       });
       flash('pcStatusBank');
+      apiSaveProfile({
+        bankHolder: holder, bankName: bankNm, bankRouting: routing,
+        bankAccount: account, bankType: type
+      });
     });
   }
 
-  /* PC Notifications — wire checkboxes by data-notif-key, save to state on change.
-     Default to all-on so first-time users see toggles in their expected position
-     (most users want updates by default). */
+  /* Notifications — wire checkboxes by data-notif-key, save to state +
+     backend on change. Default to all-on (except marketing) so first-time
+     users see toggles in their expected position. */
   document.querySelectorAll('[data-notif-key]').forEach(function (cb) {
     cb.addEventListener('change', function () {
       var key = cb.getAttribute('data-notif-key');
       S.set('notifications.' + key, !!cb.checked);
       flash('pcStatusNotif');
+      var patch = {};
+      patch[key] = !!cb.checked;
+      apiSaveProfile(patch);
     });
   });
 
@@ -739,6 +863,7 @@ function _credimedProfileBoot() {
     var bankNm  = $('bankName').value.trim();
     var routing = $('bankRouting').value.replace(/\D/g, '');
     var account = $('bankAccount').value.replace(/\D/g, '');
+    var type    = $('bankType').value;
     if (routing && routing.length !== 9) {
       alert('Routing number must be 9 digits.');
       return;
@@ -748,9 +873,25 @@ function _credimedProfileBoot() {
       bankName: bankNm,
       routing: routing,
       account: account,
-      accountType: $('bankType').value,
+      accountType: type,
     });
     flash('statusBank');
+    apiSaveProfile({
+      bankHolder: holder, bankName: bankNm, bankRouting: routing,
+      bankAccount: account, bankType: type
+    });
+  });
+
+  /* Surface the international-phone helper as the user changes the
+     country-code dropdown, on both layouts. */
+  ['phoneCC', 'pcPhoneCC'].forEach(function (id) {
+    var el = $(id);
+    if (!el) return;
+    el.addEventListener('change', function () {
+      if ($('phoneHelper')) {
+        $('phoneHelper').style.display = (el.value === 'other') ? 'block' : 'none';
+      }
+    });
   });
 
   /* ────── Nav buttons ────── */
@@ -798,7 +939,23 @@ if (document.readyState === 'loading') {
           <div class="prof-field"><label>Last name</label><input type="text" id="pcLastName"></div>
         </div>
         <div class="prof-field"><label>Email</label><input type="email" id="pcEmail" disabled></div>
-        <div class="prof-field"><label>Phone (US)</label><input type="tel" id="pcPhone" placeholder="+1 (555) 555-5555"></div>
+        <div class="prof-field">
+          <label>Phone</label>
+          <div style="display:flex;gap:8px;align-items:stretch">
+            <select id="pcPhoneCC" style="flex:0 0 auto;min-width:118px">
+              <option value="+1">🇺🇸 +1 (US)</option>
+              <option value="+52">🇲🇽 +52 (MX)</option>
+              <option value="+34">🇪🇸 +34 (ES)</option>
+              <option value="+44">🇬🇧 +44 (UK)</option>
+              <option value="+57">🇨🇴 +57 (CO)</option>
+              <option value="+54">🇦🇷 +54 (AR)</option>
+              <option value="+56">🇨🇱 +56 (CL)</option>
+              <option value="+51">🇵🇪 +51 (PE)</option>
+              <option value="other">Other…</option>
+            </select>
+            <input type="tel" id="pcPhone" placeholder="555 555 5555" style="flex:1 1 auto">
+          </div>
+        </div>
         <div class="prof-field"><label>Date of birth</label><input type="date" id="pcDob"></div>
       </section>
       <section class="prof-card" style="margin-top: 22px;">
