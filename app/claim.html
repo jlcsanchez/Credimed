@@ -85,7 +85,7 @@ html,body{
   .body-wrap {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px 20px;
-    align-items: start;
+    align-items: stretch;
     max-width: 880px;
     margin-left: 0;
     margin-right: auto;
@@ -96,6 +96,11 @@ html,body{
      same width as the small cards on the right side, no orphan band
      at the bottom. */
   .body-wrap > .card:last-child { grid-column: 2 / 3; }
+  /* Make cards in the same grid row visually align by stretching to
+     the tallest sibling. The .actions block (Need help) pushes its
+     button down so it bottom-aligns with the financial breakdown. */
+  .body-wrap > .card { display: flex; flex-direction: column; }
+  .body-wrap > .card .actions { margin-top: auto; }
 }
 /* Hide the stale right side panel ("Loading claim status…" etc.) —
    the body-wrap already renders the timeline. The app shell's
@@ -225,6 +230,26 @@ html,body{
   .claim-mobile-only .hero h1 {
     font-size: 26px !important; color: var(--slate-900) !important;
   }
+  /* The hero logo badge was designed for the dark teal mobile gradient
+     (white text on rgba(255,255,255,0.08) background). On PC the hero
+     loses its dark backdrop, so the white-on-transparent text becomes
+     invisible against the cream page bg. Repaint as a solid teal pill
+     with white CREDIMED text + teal "H" inside a white circle so it
+     reads correctly on light backgrounds. */
+  .claim-mobile-only .hero .logo-badge {
+    background: var(--teal-700, #0F766E) !important;
+    border-color: var(--teal-800, #0A7A70) !important;
+  }
+  .claim-mobile-only .hero .logo-badge .text { color: #fff !important; }
+  .claim-mobile-only .hero .logo-badge .circle { color: var(--teal-700, #0F766E) !important; }
+  /* Back arrow + ref text were also white-on-dark; bump them to slate
+     so they don't disappear on the cream PC backdrop. */
+  .claim-mobile-only .hero .icon-btn {
+    background: rgba(15,23,42,0.04) !important;
+    color: var(--slate-700, #334155) !important;
+    border-color: rgba(15,23,42,0.08) !important;
+  }
+  .claim-mobile-only .hero .ref { color: var(--slate-500, #64748B) !important; }
   .claim-crumb { font-size: 13px; color: var(--slate-500); margin: 0 0 14px; display: flex; align-items: center; gap: 8px; }
   .claim-crumb a { color: var(--slate-500); text-decoration: none; }
   .claim-crumb a:hover { color: var(--teal-700); }
