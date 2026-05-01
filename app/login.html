@@ -260,6 +260,23 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
         <input id="su-email" type="email" autocomplete="email" placeholder="you@example.com">
       </div>
       <div class="field">
+        <label for="su-phone">Phone</label>
+        <div style="display:flex;gap:8px;align-items:stretch">
+          <select id="su-phone-cc" style="flex:0 0 auto;min-width:118px;height:52px;padding:0 12px;border:1px solid var(--slate-200,#E2E8F0);border-radius:12px;font-size:15px;background:#fff;font-family:inherit;color:var(--slate-900);">
+            <option value="+1">🇺🇸 +1 (US)</option>
+            <option value="+52" selected>🇲🇽 +52 (MX)</option>
+            <option value="+34">🇪🇸 +34 (ES)</option>
+            <option value="+44">🇬🇧 +44 (UK)</option>
+            <option value="+57">🇨🇴 +57 (CO)</option>
+            <option value="+54">🇦🇷 +54 (AR)</option>
+            <option value="+56">🇨🇱 +56 (CL)</option>
+            <option value="+51">🇵🇪 +51 (PE)</option>
+            <option value="other">Other…</option>
+          </select>
+          <input id="su-phone" type="tel" autocomplete="tel" placeholder="555 555 5555" style="flex:1 1 auto">
+        </div>
+      </div>
+      <div class="field">
         <label for="su-pw">Password</label>
         <input id="su-pw" type="password" autocomplete="new-password" placeholder="At least 8 characters">
         <div class="pw-hints" id="pwHints">
@@ -591,10 +608,19 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
 
   /* ---------- signup ---------- */
   $('btnSignup').addEventListener('click', async function () {
-    var first = $('su-first').value.trim();
-    var last  = $('su-last').value.trim();
-    var email = $('su-email').value.trim().toLowerCase();
-    var pw    = $('su-pw').value;
+    var first    = $('su-first').value.trim();
+    var last     = $('su-last').value.trim();
+    var email    = $('su-email').value.trim().toLowerCase();
+    var pw       = $('su-pw').value;
+    var phoneCC  = ($('su-phone-cc') || {}).value || '+52';
+    var phoneRest = ($('su-phone') || {}).value ? $('su-phone').value.trim() : '';
+    /* Phone is collected at signup so the patient never lands on /profile
+       with an empty contact field. Stored on /profile (PATCH) right after
+       Cognito sign-in lands. Free-text — no E.164 enforcement so Mexican,
+       Spanish, etc. numbers don't get rejected. */
+    var phoneRaw = phoneRest
+      ? (phoneCC === 'other' ? phoneRest : (phoneCC + ' ' + phoneRest.replace(/^\+/, '').trim()))
+      : '';
 
     if (!first || !last) return showError('Please enter your first and last name.');
     if (!isValidEmail(email)) return showError('Please enter a valid email address.');
@@ -621,7 +647,7 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
       // persist basics for downstream screens
       try {
         window.CredimedState && window.CredimedState.merge('user', {
-          firstName: first, lastName: last, email: email
+          firstName: first, lastName: last, email: email, phone: phoneRaw
         });
       } catch (e) {}
 
@@ -637,6 +663,17 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
       try {
         await window.cognitoSignIn(email, pw);
         showSuccess('Account created. Redirecting...');
+        // Persist phone to /profile now that we have a JWT. Best-effort —
+        // doesn't block the redirect; profile.html will save again on
+        // first edit if this misses.
+        if (phoneRaw && window.authFetch && window.CREDIMED_API) {
+          window.authFetch(window.CREDIMED_API + '/profile', {
+            method: 'PATCH',
+            body: { phoneRaw: phoneRaw }
+          }).catch(function (err) {
+            console.warn('[signup] /profile save failed:', err && err.message);
+          });
+        }
         setTimeout(async function () { window.location.href = await getPostAuthUrl('signup'); }, 600);
         return;
       } catch (signinErr) {

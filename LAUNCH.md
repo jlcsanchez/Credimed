@@ -33,6 +33,12 @@ Last updated: April 26, 2026.
       same KMS key the webhook already decrypts with)
 - [ ] Register `POST /claims` in the API Gateway HTTP API,
       JWT-authorized, integrated with `credimed-claims`
+- [ ] Deploy new `credimed-users` Lambda (patient profile persistence —
+      address, banking, phone with country code, notifications). See
+      `backend/users/DEPLOY.md`. Without this, address/banking are
+      localStorage-only and disappear on storage clear / device switch
+- [ ] Register `GET /profile` + `PATCH /profile` in the API Gateway
+      HTTP API, JWT-authorized, integrated with `credimed-users`
 - [x] Verify `metadata.claimId` is set in the payment Lambda when
       creating PaymentIntents — confirmed via code audit. Lambda
       includes `metadata: { userId, claimId, plan, source }` plus
