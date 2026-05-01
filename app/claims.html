@@ -483,6 +483,15 @@ html,body{
     });
   }
 
+  /* Backend uses claimId as the canonical key (matches the DynamoDB
+     PK); the rest of this file uses the shorter c.id. Normalize at
+     the API boundary so render code stays unchanged. */
+  function normalizeClaim(c) {
+    if (!c || typeof c !== 'object') return c;
+    if (!c.id && c.claimId) c.id = c.claimId;
+    return c;
+  }
+
   async function load() {
     // 1) Try the backend first.
     var claims = null;
@@ -491,7 +500,7 @@ html,body{
         var resp = await window.authFetch(window.CREDIMED_API + '/claims');
         if (resp && resp.ok) {
           var data = await resp.json();
-          claims = data.claims || data || [];
+          claims = (data.claims || data || []).map(normalizeClaim);
         }
       }
     } catch (e) {

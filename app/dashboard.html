@@ -1529,6 +1529,7 @@ mountScope('desktop');
     if (!resp || !resp.ok) return;
     var data = await resp.json();
     var c = (data && data.claim) || data;
+    if (c && !c.id && c.claimId) c.id = c.claimId;
     if (!c || !c.id) return;
     try { localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: c })); } catch (e) {}
     applyBackendClaim(c);
@@ -1781,7 +1782,14 @@ window.hydratePCDashboard();
     if (!resp || !resp.ok) return;
     var data = await resp.json();
     var list = (data && data.claims) || data || [];
-    if (!Array.isArray(list) || list.length === 0) {
+    /* Backend uses claimId as the canonical key (DynamoDB PK); the
+       dashboard reads c.id everywhere. Normalize at the boundary so
+       the rest of the file stays unchanged. */
+    list = (Array.isArray(list) ? list : []).map(function (c) {
+      if (c && typeof c === 'object' && !c.id && c.claimId) c.id = c.claimId;
+      return c;
+    });
+    if (list.length === 0) {
       /* Backend has nothing for this user — keep whatever local state
          already has. The next time the user submits a claim that
          actually persists server-side, this fetch will return data
@@ -1798,6 +1806,19 @@ window.hydratePCDashboard();
       list.forEach(function (c) { if (c && c.id) backendIds[c.id] = true; });
       var localOnly = local.filter(function (c) { return c && c.id && !backendIds[c.id]; });
       window.CredimedState.set('claims', list.concat(localOnly));
+
+      /* Set the singular `claim` (the active one the dashboard renders)
+         so hydrateClaimFromState picks up backend data on first load —
+         e.g., when a returning user lands on the dashboard with empty
+         localStorage. The list is newest-first per the Lambda, so
+         list[0] is the most recent claim. Don't clobber if the local
+         active claim is one of the list entries. */
+      var localActive = window.CredimedState.get('claim', null);
+      var keepLocal = localActive && localActive.id && backendIds[localActive.id];
+      if (!keepLocal) {
+        window.CredimedState.set('claim', list[0]);
+        if (typeof hydrateClaimFromState === 'function') hydrateClaimFromState();
+      }
     }
     window.hydratePCDashboard();
   } catch (e) {
