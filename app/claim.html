@@ -90,11 +90,12 @@ html,body{
     margin-left: 0;
     margin-right: auto;
   }
-  /* Refund hero hero spans full width at the top */
+  /* Refund hero spans full width at the top */
   .body-wrap > .refund-hero { grid-column: 1 / -1; }
-  /* Need help? is short — pair it next to the documents card or
-     finance card so the page doesn't end with an orphan single column. */
-  .body-wrap > .card:last-child { grid-column: auto; }
+  /* Need help? — last card on the page — spans full width so it
+     doesn't sit alone in the left column with empty space to the
+     right. Reads as a clean footer band. */
+  .body-wrap > .card:last-child { grid-column: 1 / -1; }
 }
 /* Hide the stale right side panel ("Loading claim status…" etc.) —
    the body-wrap already renders the timeline. The app shell's
