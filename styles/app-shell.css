@@ -144,7 +144,13 @@
   border-right: 1px solid var(--cream-2, var(--shell-cream-2));
   position: sticky;
   top: 0;
+  /* Use min-height alongside height so the sidebar fills the viewport
+     even when the grid track tries to collapse to content. align-self
+     stretch is a backup for grid contexts where height:100vh alone
+     resolves to a shorter row height. */
   height: 100vh;
+  min-height: 100vh;
+  align-self: stretch;
   overflow: hidden;
   z-index: 20;
 }
