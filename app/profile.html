@@ -342,8 +342,8 @@ html,body{
       </div>
       <div class="field">
         <label>Phone (for claim status updates)</label>
-        <div style="display:flex;gap:8px;align-items:stretch">
-          <select id="phoneCC" style="flex:0 0 auto;min-width:118px">
+        <div style="display:flex;gap:8px;align-items:stretch;width:100%">
+          <select id="phoneCC" style="flex:0 0 130px;width:130px;box-sizing:border-box">
             <option value="+1">🇺🇸 +1 (US)</option>
             <option value="+52">🇲🇽 +52 (MX)</option>
             <option value="+34">🇪🇸 +34 (ES)</option>
@@ -354,7 +354,7 @@ html,body{
             <option value="+51">🇵🇪 +51 (PE)</option>
             <option value="other">Other…</option>
           </select>
-          <input type="tel" id="phone" autocomplete="tel" placeholder="555 555 5555" style="flex:1 1 auto" />
+          <input type="tel" id="phone" autocomplete="tel" placeholder="555 555 5555" style="flex:1 1 0;width:auto;min-width:0" />
         </div>
         <div class="helper" id="phoneHelper" style="display:none">When "Other…" is selected, enter the full E.164 number including +country code (e.g., +49 30 1234567).</div>
       </div>
@@ -941,8 +941,8 @@ if (document.readyState === 'loading') {
         <div class="prof-field"><label>Email</label><input type="email" id="pcEmail" disabled></div>
         <div class="prof-field">
           <label>Phone</label>
-          <div style="display:flex;gap:8px;align-items:stretch">
-            <select id="pcPhoneCC" style="flex:0 0 auto;min-width:118px">
+          <div style="display:flex;gap:8px;align-items:stretch;width:100%">
+            <select id="pcPhoneCC" style="flex:0 0 130px;width:130px;box-sizing:border-box">
               <option value="+1">🇺🇸 +1 (US)</option>
               <option value="+52">🇲🇽 +52 (MX)</option>
               <option value="+34">🇪🇸 +34 (ES)</option>
@@ -953,7 +953,7 @@ if (document.readyState === 'loading') {
               <option value="+51">🇵🇪 +51 (PE)</option>
               <option value="other">Other…</option>
             </select>
-            <input type="tel" id="pcPhone" placeholder="555 555 5555" style="flex:1 1 auto">
+            <input type="tel" id="pcPhone" placeholder="555 555 5555" style="flex:1 1 0;width:auto;min-width:0">
           </div>
         </div>
         <div class="prof-field"><label>Date of birth</label><input type="date" id="pcDob"></div>
