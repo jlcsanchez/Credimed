@@ -259,20 +259,20 @@ body[data-page="admin"]      .app-sidebar .sb-link[data-nav="admin"]     svg {
   color: var(--teal-600, var(--shell-teal-600));
 }
 
-/* Mirror to bottom nav */
+/* Mirror to bottom nav — bright mint on dark teal bar */
 body[data-page="dashboard"]  .app-bottomnav a[data-nav="dashboard"],
 body[data-page="claims"]     .app-bottomnav a[data-nav="claims"],
 body[data-page="claim"]      .app-bottomnav a[data-nav="claims"],
 body[data-page="documents"]  .app-bottomnav a[data-nav="documents"],
 body[data-page="profile"]    .app-bottomnav a[data-nav="profile"] {
-  color: var(--teal-700, var(--shell-teal-700));
+  color: #5EEAD4;
 }
 body[data-page="dashboard"]  .app-bottomnav a[data-nav="dashboard"] svg,
 body[data-page="claims"]     .app-bottomnav a[data-nav="claims"]    svg,
 body[data-page="claim"]      .app-bottomnav a[data-nav="claims"]    svg,
 body[data-page="documents"]  .app-bottomnav a[data-nav="documents"] svg,
 body[data-page="profile"]    .app-bottomnav a[data-nav="profile"]   svg {
-  color: var(--teal-600, var(--shell-teal-600));
+  color: #5EEAD4;
 }
 
 .app-sidebar .sb-spacer { flex: 1; }
@@ -377,33 +377,81 @@ body[data-page="profile"]    .app-bottomnav a[data-nav="profile"]   svg {
 }
 
 /* ============================================================
-   BOTTOM NAV  (mobile only, < 768px)
+   BOTTOM NAV  (mobile only, < 768px) — fixed dark-teal bar with
+   raised FAB. position:fixed (not sticky) so it can't get clipped
+   by a parent scroll/overflow context — the previous sticky setup
+   would disappear on pages whose layouts created a new containing
+   block.
    ============================================================ */
 .app-bottomnav {
   grid-area: bottomnav;
-  display: flex;
-  position: sticky;
+  position: fixed;
+  left: 0;
+  right: 0;
   bottom: 0;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(14px) saturate(180%);
-  border-top: 1px solid var(--cream-2, var(--shell-cream-2));
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  display: flex;
   justify-content: space-around;
+  align-items: stretch;
+  background: var(--teal-900, var(--shell-teal-900));
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.18);
   z-index: 30;
 }
 .app-bottomnav a {
   flex: 1;
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
   padding: 6px 4px;
   font-size: 10.5px; font-weight: 600;
-  color: var(--slate-500, var(--shell-slate-500));
+  color: rgba(255, 255, 255, 0.62);
   text-decoration: none;
   border-radius: 8px;
+  transition: color 150ms;
 }
 .app-bottomnav a svg {
-  width: 20px; height: 20px;
-  color: var(--slate-400, var(--shell-slate-400));
+  width: 22px; height: 22px;
+  color: inherit;
+  transition: color 150ms;
 }
+.app-bottomnav a:hover { color: rgba(255, 255, 255, 0.92); }
+
+/* FAB — center action, raised above the bar so it pops like the
+   reference design. Sits on top of the navy strip with a teal glow. */
+.app-bottomnav .fab {
+  position: relative;
+  margin-top: -28px;
+  color: #FFFFFF;
+}
+.app-bottomnav .fab .fab-bubble {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(160deg, #5EEAD4 0%, #14B8A6 55%, #0D9488 100%);
+  box-shadow:
+    0 10px 24px rgba(13, 148, 136, 0.45),
+    0 2px 6px rgba(15, 23, 42, 0.25);
+  margin-bottom: 4px;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.app-bottomnav .fab .fab-bubble svg {
+  width: 28px; height: 28px;
+  color: #FFFFFF;
+}
+.app-bottomnav .fab:active .fab-bubble {
+  transform: scale(0.94);
+  box-shadow:
+    0 6px 14px rgba(13, 148, 136, 0.4),
+    0 1px 3px rgba(15, 23, 42, 0.22);
+}
+
+/* Reserve space at the bottom of every authenticated page so the
+   fixed nav never overlaps content. Only matters on mobile — the
+   media query at the bottom hides the nav entirely on tablet+. */
+@media (max-width: 767px) {
+  .app-main { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+}
+
 @media (min-width: 768px) { .app-bottomnav { display: none; } }
 
 /* ============================================================
