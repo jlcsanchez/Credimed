@@ -24,21 +24,21 @@ Last updated: April 26, 2026.
       with HMAC-SHA256 signature verification and IAM perms for
       DynamoDB GetItem/UpdateItem, KMS Decrypt, and SES SendEmail
 - [ ] Re-deploy `credimed-claims` with the audit-logging + email
-      changes + the new `POST /claims` route (without it the patient
-      flow looks like it succeeds but the claim never reaches
-      DynamoDB and disappears the moment localStorage clears — see
-      `backend/claims/DEPLOY.md`)
-- [ ] Add `KMS_KEY_ID` env var + `kms:Encrypt` IAM permission to the
-      `credimed-claims` Lambda role (required by the POST handler;
-      same KMS key the webhook already decrypts with)
-- [ ] Register `POST /claims` in the API Gateway HTTP API,
-      JWT-authorized, integrated with `credimed-claims`
-- [ ] Deploy new `credimed-users` Lambda (patient profile persistence —
+      changes (the POST handler we drafted in the same Lambda is
+      redundant — `credimed-save-claim` already owns POST /claims —
+      see `backend/claims/DEPLOY.md` for the audit + email parts)
+- [ ] Add `STRIPE_SECRET_KEY` env var + `STRIPE_REFUND_ENABLED=false`
+      to `credimed-claims` Lambda role (required by the money-back
+      refund path; flip the flag to `true` after sandbox-testing one
+      refund end-to-end)
+- [x] Deploy new `credimed-users` Lambda (patient profile persistence —
       address, banking, phone with country code, notifications). See
-      `backend/users/DEPLOY.md`. Without this, address/banking are
-      localStorage-only and disappear on storage clear / device switch
-- [ ] Register `GET /profile` + `PATCH /profile` in the API Gateway
-      HTTP API, JWT-authorized, integrated with `credimed-users`
+      `backend/users/DEPLOY.md`. **Live as of May 1, 2026.**
+- [x] Register `GET /profile` + `PATCH /profile` in the API Gateway
+      HTTP API, JWT-authorized, integrated with `credimed-users`.
+      **Live as of May 1, 2026.**
+- [x] `KMS_KEY_ID` env var + `kms:Encrypt`/`kms:Decrypt` IAM on
+      `credimed-users` role. **Done May 1, 2026.**
 - [x] Verify `metadata.claimId` is set in the payment Lambda when
       creating PaymentIntents — confirmed via code audit. Lambda
       includes `metadata: { userId, claimId, plan, source }` plus
