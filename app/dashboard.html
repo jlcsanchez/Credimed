@@ -1530,6 +1530,13 @@ mountScope('desktop');
     var data = await resp.json();
     var c = (data && data.claim) || data;
     if (c && !c.id && c.claimId) c.id = c.claimId;
+    if (c && !Array.isArray(c.procedures)) {
+      if (Array.isArray(c.proceduresList) && c.proceduresList.length) {
+        c.procedures = c.proceduresList;
+      } else if (typeof c.procedure === 'string' && c.procedure.indexOf(',') !== -1) {
+        c.procedures = c.procedure.split(/\s*,\s*/).filter(Boolean);
+      }
+    }
     if (!c || !c.id) return;
     try { localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: c })); } catch (e) {}
     applyBackendClaim(c);
@@ -1782,11 +1789,22 @@ window.hydratePCDashboard();
     if (!resp || !resp.ok) return;
     var data = await resp.json();
     var list = (data && data.claims) || data || [];
-    /* Backend uses claimId as the canonical key (DynamoDB PK); the
-       dashboard reads c.id everywhere. Normalize at the boundary so
-       the rest of the file stays unchanged. */
+    /* Backend uses claimId (DynamoDB PK) and stores procedures as
+       proceduresList; this file reads c.id and c.procedures. Alias
+       at the boundary so the rest of the file stays unchanged. Split
+       a comma-joined `procedure` string as a last resort so the count
+       (and any per-procedure render) is correct when only the
+       encrypted singular field is returned. */
     list = (Array.isArray(list) ? list : []).map(function (c) {
-      if (c && typeof c === 'object' && !c.id && c.claimId) c.id = c.claimId;
+      if (!c || typeof c !== 'object') return c;
+      if (!c.id && c.claimId) c.id = c.claimId;
+      if (!Array.isArray(c.procedures)) {
+        if (Array.isArray(c.proceduresList) && c.proceduresList.length) {
+          c.procedures = c.proceduresList;
+        } else if (typeof c.procedure === 'string' && c.procedure.indexOf(',') !== -1) {
+          c.procedures = c.procedure.split(/\s*,\s*/).filter(Boolean);
+        }
+      }
       return c;
     });
     if (list.length === 0) {

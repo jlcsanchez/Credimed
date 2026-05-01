@@ -571,9 +571,18 @@ html,body{
         if (resp && resp.ok) {
           var data = await resp.json();
           claim = (data && data.claim) || data;
-          /* Backend uses claimId; this page uses claim.id. Alias so the
-             render code stays unchanged. */
+          /* Backend uses claimId; this page uses claim.id. Alias.
+             Also bridge proceduresList → procedures and split a
+             comma-joined `procedure` string as a last resort so the
+             detail page renders the per-procedure list correctly. */
           if (claim && !claim.id && claim.claimId) claim.id = claim.claimId;
+          if (claim && !Array.isArray(claim.procedures)) {
+            if (Array.isArray(claim.proceduresList) && claim.proceduresList.length) {
+              claim.procedures = claim.proceduresList;
+            } else if (typeof claim.procedure === 'string' && claim.procedure.indexOf(',') !== -1) {
+              claim.procedures = claim.procedure.split(/\s*,\s*/).filter(Boolean);
+            }
+          }
         }
       }
     } catch (e) {
