@@ -250,7 +250,7 @@ signature pad already saves as a PNG data URL.
 ### 9. Billing dentist OR dental entity (boxes 48-52)
 
 This is the **Credimed dental clinic partner** — the Mexico-based
-provider who actually performed the work. Not Credimed Inc.
+provider who actually performed the work. Not Credimed LLC
 
 | # | Field | Source | Status |
 |---|---|---|---|

@@ -39,7 +39,7 @@ The patient's dashboard shows the resulting status pipeline:
    - Primary contact: you, with `ceo@credimed.us`
 3. Availity emails you within ~1 business day with login credentials.
 
-### Step 2 — Get a Type 2 NPI for Credimed Inc. (1-2 weeks)
+### Step 2 — Get a Type 2 NPI for Credimed LLC (1-2 weeks)
 
 If you don't already have an organizational NPI:
 
