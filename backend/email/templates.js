@@ -210,7 +210,7 @@ ${amountBlock}
                     &nbsp;&middot;&nbsp;
                     <a href="${SITE_BASE}/unsubscribe?u=${encodeURIComponent(unsubToken || claimId || '')}" style="color:#94A3B8;text-decoration:underline;">Unsubscribe</a>
                     <br />
-                    <span style="color:#CBD5E1;">Credimed Inc. &middot; 2261 Market St #5432, San Francisco, CA 94114</span>
+                    <span style="color:#CBD5E1;">Credimed LLC &middot; 2261 Market St #5432, San Francisco, CA 94114</span>
                   </td>
                 </tr>
               </table>

@@ -51,13 +51,13 @@ export async function generatePoaPdf(claim) {
   y -= 12;
 
   const body = [
-    'I, the patient identified above, authorize Credimed Inc. to act on my',
+    'I, the patient identified above, authorize Credimed LLC to act on my',
     'behalf for the limited purpose of preparing and submitting one (1)',
     'dental insurance claim to the carrier identified above, transmitting',
     'the claim package by fax, and receiving status updates from the',
     'carrier on my behalf.',
     '',
-    'Credimed Inc. is NOT authorized to receive insurance funds on my',
+    'Credimed LLC is NOT authorized to receive insurance funds on my',
     'behalf. Reimbursement is to be paid directly to me by the carrier.',
     '',
     'This authorization is limited to the single claim referenced above',

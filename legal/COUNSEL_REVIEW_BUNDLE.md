@@ -404,7 +404,7 @@ This version (v1.9) supersedes prior versions for all claims initiated on or aft
 
 ## 1. Scope of Service
 
-Credimed Inc. ("Credimed", "we", "us") provides a document preparation and submission support service for out-of-network dental insurance reimbursement claims. We agree to prepare, translate, itemize, and assist in the electronic submission of one (1) claim on behalf of the undersigned ("you", "Member") based solely on the documents and information you provide.
+Credimed LLC ("Credimed", "we", "us") provides a document preparation and submission support service for out-of-network dental insurance reimbursement claims. We agree to prepare, translate, itemize, and assist in the electronic submission of one (1) claim on behalf of the undersigned ("you", "Member") based solely on the documents and information you provide.
 
 Credimed acts solely as an administrative support service. We are not a healthcare provider, insurance company, third-party administrator (TPA), licensed insurance adjuster, or billing company. We do not make coverage determinations, modify clinical information, or independently verify the accuracy of submitted materials.
 
