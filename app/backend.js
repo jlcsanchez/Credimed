@@ -36,7 +36,7 @@ window.CREDIMED_COGNITO = {
 };
 window.CREDIMED_API    = 'https://0xosu4ifj5.execute-api.us-west-2.amazonaws.com';
 window.CREDIMED_LAMBDA = 'https://vhimqtp4oxicnyv6yarj2kpipe0sjfto.lambda-url.us-west-2.on.aws/';
-window.CREDIMED_STRIPE_PK = 'pk_test_51TKrV9EqFJnMc0RQN8UzTVtOgSJw7VoJ9uCoxLWYWYQYUUy3JzWatcXiw4EJV6wMRDcfc5urKPTq92DgCdhlDpMk00n3Y3HFsv';
+window.CREDIMED_STRIPE_PK = 'pk_live_51TKqaEIuuxQyzILr8RKo2XRYslS67bMG4sWQbHexOqrz7dQxpUB2kl6XkriYJ71On8uOs2gtFS7OGCfw3RE5Z0wr00u3mkRs3c';
 
 /* ---------- authFetch: JWT-aware fetch wrapper ---------- */
 window.authFetch = async function (url, opts) {
