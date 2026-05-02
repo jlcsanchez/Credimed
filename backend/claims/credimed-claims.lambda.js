@@ -71,8 +71,8 @@ const ENCRYPTED_FIELDS = [
 ];
 
 const ALLOWED_STATUSES = new Set([
-  "submitted", "in-review", "needs-docs",
-  "approved", "paid", "denied", "refunded"
+  "submitted", "in-review", "needs-docs", "submitted_to_carrier",
+  "approved", "paid", "denied", "refunded", "needs_attention"
 ]);
 
 // Structured decisionReason values. Free-text "Other" requires a
@@ -434,6 +434,14 @@ async function processStripeRefund({ paymentIntentId, amountUsd, claimId }) {
 }
 
 async function updateStatus(claimId, newStatus, extras = {}) {
+  /* If the admin is recording a manual fax confirmation but didn't
+     pass a status explicitly, default to "submitted_to_carrier" so the
+     UI doesn't have to send both fields every time. The "Mark as
+     faxed" admin button uses this. */
+  if (!newStatus && extras.faxConfirmationId) {
+    newStatus = "submitted_to_carrier";
+  }
+
   if (!ALLOWED_STATUSES.has(newStatus)) {
     return {
       error: "Invalid status. Allowed: " + [...ALLOWED_STATUSES].join(", "),
@@ -491,6 +499,21 @@ async function updateStatus(claimId, newStatus, extras = {}) {
       exprValues[":sri"] = { S: stripeRefund.refundId };
       exprValues[":srs"] = { S: stripeRefund.status };
     }
+  }
+
+  /* Manual-fax admin path: when the operator has faxed the bundle
+     from the WestFax web portal and pastes the confirmation back
+     into the admin console, persist faxConfirmationId + faxedAt +
+     submissionNotes alongside the status transition. */
+  if (extras.faxConfirmationId) {
+    updateExpr += ", faxConfirmationId = :fcid, faxedAt = :fat, faxSource = :fsrc";
+    exprValues[":fcid"] = { S: String(extras.faxConfirmationId) };
+    exprValues[":fat"]  = { S: extras.faxedAt || now };
+    exprValues[":fsrc"] = { S: "manual_admin" };
+  }
+  if (extras.submissionNotes) {
+    updateExpr += ", submissionNotes = :snotes";
+    exprValues[":snotes"] = { S: String(extras.submissionNotes).slice(0, 500) };
   }
 
   await db.send(new UpdateItemCommand({
@@ -691,8 +714,11 @@ export const handler = async (event) => {
       try { body = event.body ? JSON.parse(event.body) : {}; }
       catch { return response(400, { error: "Invalid JSON body" }); }
       const result = await updateStatus(id, body.status, {
-        docTypeNeeded:  body.docTypeNeeded,
-        docDescription: body.docDescription
+        docTypeNeeded:     body.docTypeNeeded,
+        docDescription:    body.docDescription,
+        faxConfirmationId: body.faxConfirmationId,
+        faxedAt:           body.faxedAt,
+        submissionNotes:   body.submissionNotes
       });
       if (result.error) return response(result.code || 400, { error: result.error });
       audit(event, {

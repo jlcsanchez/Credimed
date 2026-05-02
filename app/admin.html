@@ -163,6 +163,31 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 .cd-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13.5px; }
 .cd-row .k { color:var(--slate-500); font-weight:500; }
 .cd-row .v { color:var(--slate-900); font-weight:600; text-align:right; }
+/* Manual-fax block in the claim drawer — gives the admin one place to
+   generate the bundle PDF, see the carrier destination fax, and record
+   the WestFax confirmation after sending the fax manually. */
+.cd-fax-block { background:#F0FDFA; border:1px solid #CCFBF1; border-radius:10px; padding:14px 16px; }
+.cd-fax-status { font-size:13px; color:var(--slate-700); }
+.cd-fax-status.sent { color:#0F766E; font-weight:600; }
+.cd-fax-status.pending { color:var(--slate-500); }
+.cd-fax-status code { background:#fff; border:1px solid #CCFBF1; border-radius:4px; padding:1px 6px; font-family:'SF Mono','Menlo','Monaco',monospace; font-size:12px; color:#0F172A; }
+.cd-fax-carrier { font-size:13px; color:var(--slate-700); margin-top:8px; }
+.cd-fax-carrier .num { font-family:'SF Mono','Menlo','Monaco',monospace; font-weight:700; color:#0F172A; padding:2px 8px; background:#fff; border:1px solid #CCFBF1; border-radius:4px; }
+.cd-fax-link { display:block; margin-top:10px; padding:10px 12px; background:#fff; border:1px solid var(--teal-300, #5EEAD4); border-radius:8px; font-size:13px; color:#0F766E; text-decoration:none; word-break:break-all; }
+.cd-fax-link:hover { background:#F0FDFA; }
+.cd-fax-helper { font-size:11.5px; color:var(--slate-500); margin-top:10px; line-height:1.5; }
+.cd-fax-helper a { color:#0F766E; }
+/* Mini inline form for the "Mark as faxed manually" flow */
+.cd-fax-form { margin-top:10px; padding:12px; background:#fff; border:1px solid #CCFBF1; border-radius:8px; display:flex; flex-direction:column; gap:8px; }
+.cd-fax-form label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--slate-500); }
+.cd-fax-form input { width:100%; padding:8px 10px; font-size:13.5px; border:1px solid var(--slate-200); border-radius:6px; font-family:inherit; box-sizing:border-box; }
+.cd-fax-form .row { display:flex; gap:8px; }
+.cd-fax-form .row > div { flex:1; }
+.cd-fax-form .actions { display:flex; gap:8px; justify-content:flex-end; }
+.cd-fax-form .actions button { padding:8px 14px; font-size:13px; font-weight:600; border-radius:6px; border:0; cursor:pointer; font-family:inherit; }
+.cd-fax-form .actions button[type="button"] { background:var(--slate-100); color:var(--slate-700); }
+.cd-fax-form .actions button[type="submit"] { background:#0D9488; color:#fff; }
+.cd-fax-form .actions button:disabled { opacity:0.5; cursor:wait; }
 .cd-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
 .cd-action {
   flex:1; padding:10px 12px; border:1px solid var(--slate-300);
@@ -2601,6 +2626,19 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       +   '<div class="cd-row"><span class="k">Procedures</span><span class="v">' + procs + '</span></div>'
       + '</div>'
       + '<div class="cd-section">'
+      +   '<h3>Submit to insurer</h3>'
+      +   '<div id="cd-fax-' + c.id + '" class="cd-fax-block">'
+      +     (c.faxConfirmationId
+          ? '<div class="cd-fax-status sent">Faxed ' + (c.faxedAt ? new Date(c.faxedAt).toLocaleDateString() : '') + ' &middot; conf <code>' + c.faxConfirmationId + '</code></div>'
+          : '<div class="cd-fax-status pending">Not faxed yet</div>')
+      +     '<div class="cd-actions" style="margin-top:8px">'
+      +       '<button class="cd-action primary" data-cd-bundle="' + c.id + '">Generate PDF bundle</button>'
+      +       '<button class="cd-action" data-cd-faxed="' + c.id + '">Mark as faxed manually</button>'
+      +     '</div>'
+      +     '<div class="cd-fax-helper">Generates the ADA + POA + factura bundle and gives you a download link. Then upload it to <a href="https://home.westfax.com" target="_blank" rel="noopener">westfax.com</a> → Send Fax → use the carrier fax number above.</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="cd-section">'
       +   '<h3>Actions</h3>'
       +   '<div class="cd-actions">'
       +     '<button class="cd-action primary review-open-btn" data-cd-review="' + c.id + '">Review &amp; capture decision →</button>'
@@ -2627,6 +2665,123 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     if (e.target.closest('select') || e.target.closest('button')) return;
     var id = row.getAttribute('data-claim-id');
     if (id) openDrawer(id);
+  });
+
+  /* "Generate PDF bundle" — calls credimed-claim-submitter Lambda
+     (in stub mode by default), gets a presigned URL back, and shows
+     it in the drawer so the admin can download + manually fax via
+     WestFax web portal. Carrier fax destination + included-or-not
+     factura/translation surface inline. */
+  async function generateBundle(claimId, btn) {
+    var API = window.CREDIMED_API;
+    btn.disabled = true;
+    var origText = btn.textContent;
+    btn.textContent = 'Generating…';
+    var container = document.getElementById('cd-fax-' + claimId);
+    try {
+      var resp = await window.authFetch(API + '/admin/claims/' + encodeURIComponent(claimId) + '/submit', {
+        method: 'POST'
+      });
+      var data = await resp.json().catch(function () { return {}; });
+      if (!resp.ok && !data.bundleDownloadUrl) {
+        throw new Error(data.error || ('HTTP ' + resp.status));
+      }
+      var carrier = data.carrier || {};
+      var html = '';
+      if (carrier.displayName) {
+        html += '<div class="cd-fax-carrier">Carrier: <b>' + carrier.displayName + '</b>';
+        if (carrier.claimsFax) html += ' &middot; <span class="num">' + carrier.claimsFax + '</span>';
+        html += '</div>';
+      }
+      if (data.bundleDownloadUrl) {
+        html += '<a class="cd-fax-link" href="' + data.bundleDownloadUrl + '" target="_blank" rel="noopener" download="' + claimId + '-bundle.pdf">↓ Download bundle PDF (link expires 1h)</a>';
+      }
+      if (data.missing) {
+        var missingPieces = [];
+        if (data.missing.factura) missingPieces.push('factura');
+        if (data.missing.translation) missingPieces.push('English translation');
+        if (missingPieces.length) {
+          html += '<div class="cd-fax-helper" style="color:#B45309">Bundle missing: ' + missingPieces.join(', ') + '. Carrier may still accept; review before sending.</div>';
+        }
+      }
+      container.insertAdjacentHTML('beforeend', html);
+      btn.textContent = 'Re-generate bundle';
+      btn.disabled = false;
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = origText;
+      alert('Generate failed: ' + (err.message || err));
+    }
+  }
+
+  /* "Mark as faxed manually" — opens an inline form for the WestFax
+     confirmation ID + sent date, PATCHes the claim with those fields,
+     auto-transitions status to submitted_to_carrier. */
+  function showMarkFaxedForm(claimId) {
+    var container = document.getElementById('cd-fax-' + claimId);
+    if (container.querySelector('.cd-fax-form')) return;  // already open
+    var todayIso = new Date().toISOString().slice(0, 10);
+    var form = document.createElement('form');
+    form.className = 'cd-fax-form';
+    form.innerHTML =
+      '<div class="row">' +
+        '<div><label>Confirmation ID</label><input name="conf" placeholder="e.g. WF-12345" required></div>' +
+        '<div><label>Date sent</label><input name="date" type="date" value="' + todayIso + '" required></div>' +
+      '</div>' +
+      '<div><label>Notes (optional)</label><input name="notes" placeholder="e.g. Faxed via WestFax portal"></div>' +
+      '<div class="actions">' +
+        '<button type="button" data-cancel>Cancel</button>' +
+        '<button type="submit">Save &amp; mark as faxed</button>' +
+      '</div>';
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var fd = new FormData(form);
+      var conf  = (fd.get('conf')  || '').trim();
+      var date  = (fd.get('date')  || '').trim();
+      var notes = (fd.get('notes') || '').trim();
+      if (!conf || !date) return;
+      var btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      try {
+        var resp = await window.authFetch(window.CREDIMED_API + '/admin/claims/' + encodeURIComponent(claimId), {
+          method: 'PATCH',
+          body: {
+            faxConfirmationId: conf,
+            faxedAt: new Date(date + 'T12:00:00Z').toISOString(),
+            submissionNotes: notes
+          }
+        });
+        if (!resp.ok) {
+          var err = await resp.json().catch(function () { return {}; });
+          throw new Error(err.error || ('HTTP ' + resp.status));
+        }
+        // Refresh local state + re-render drawer
+        var c = ALL_CLAIMS.find(function (x) { return x && x.id === claimId; });
+        if (c) {
+          c.faxConfirmationId = conf;
+          c.faxedAt = date;
+          c.status = 'submitted_to_carrier';
+        }
+        applyFilters();
+        $('cdBody').innerHTML = renderDetail(c);
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Save & mark as faxed';
+        alert('Mark-as-faxed failed: ' + (err.message || err));
+      }
+    });
+    form.addEventListener('click', function (e) {
+      if (e.target.matches('[data-cancel]')) form.remove();
+    });
+    container.appendChild(form);
+  }
+
+  document.addEventListener('click', function (e) {
+    var bundleBtn = e.target.closest('[data-cd-bundle]');
+    if (bundleBtn) { generateBundle(bundleBtn.getAttribute('data-cd-bundle'), bundleBtn); return; }
+    var faxedBtn = e.target.closest('[data-cd-faxed]');
+    if (faxedBtn)  { showMarkFaxedForm(faxedBtn.getAttribute('data-cd-faxed')); return; }
   });
 
   /* Drawer-action buttons (Mark approved / paid / denied) */
