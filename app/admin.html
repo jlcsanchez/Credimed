@@ -795,6 +795,13 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       <h1 class="page-title">Claims</h1>
       <p class="page-sub">All submitted claims. Change status to trigger the user's dashboard + email updates.</p>
 
+      <!-- Awaiting-fax counter — surfaces how many paid claims still
+           need the manual fax-to-carrier step (the MVP bottleneck). -->
+      <div id="awaitingFaxBanner" style="display:none;background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13.5px;color:#92400E;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span><b id="awaitingFaxCount">0</b> paid <span id="awaitingFaxNoun">claims</span> awaiting fax submission</span>
+        <button id="awaitingFaxFilter" style="background:#92400E;color:#fff;border:0;padding:6px 12px;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">Show only these →</button>
+      </div>
+
       <!-- Filters bar -->
       <div class="filters-row">
         <div class="filter-group">
@@ -803,8 +810,10 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
             <option value="">All</option>
             <option value="submitted">Submitted</option>
             <option value="in-review">In review</option>
+            <option value="paid">Paid (awaiting fax)</option>
+            <option value="submitted_to_carrier">Faxed to carrier</option>
+            <option value="needs_attention">Needs attention</option>
             <option value="approved">Approved</option>
-            <option value="paid">Paid</option>
             <option value="denied">Denied</option>
           </select>
         </div>
@@ -1554,14 +1563,21 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
   /* --- Data loaders --- */
   var STATUS_LABELS = {
-    'submitted':  'Submitted',
-    'in-review':  'In review',
-    'needs-docs': 'Needs docs',
-    'approved':   'Approved',
-    'paid':       'Paid',
-    'denied':     'Denied'
+    'submitted':            'Submitted',
+    'in-review':            'In review',
+    'needs-docs':           'Needs docs',
+    'paid':                 'Paid (awaiting fax)',
+    'submitted_to_carrier': 'Faxed to carrier',
+    'needs_attention':      'Needs attention',
+    'approved':             'Approved',
+    'denied':               'Denied',
+    'refunded':             'Refunded'
   };
-  var STATUS_OPTIONS = ['submitted', 'in-review', 'needs-docs', 'approved', 'paid', 'denied'];
+  /* STATUS_OPTIONS is the set of values that show up in the inline
+     row-status <select>. Excluded on purpose: refunded (admin uses
+     the Refund tab for that), needs_attention (set by the submitter
+     Lambda automatically on fax errors, not a manual choice). */
+  var STATUS_OPTIONS = ['submitted', 'in-review', 'needs-docs', 'paid', 'submitted_to_carrier', 'approved', 'denied'];
 
   function money(n) {
     if (n == null) return '—';
@@ -2258,8 +2274,29 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
       return;
     }
     ALL_CLAIMS = claims;
+    /* Awaiting-fax counter: paid claims that haven't been faxed yet are
+       the MVP bottleneck — admin needs to act on each one. Surface the
+       count + a one-click filter so it's never out of sight. */
+    var awaiting = claims.filter(function (c) {
+      return c && c.status === 'paid' && !c.faxConfirmationId;
+    }).length;
+    var banner = $('awaitingFaxBanner');
+    if (awaiting > 0) {
+      $('awaitingFaxCount').textContent = String(awaiting);
+      $('awaitingFaxNoun').textContent  = awaiting === 1 ? 'claim' : 'claims';
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
     applyFilters();
   }
+
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'awaitingFaxFilter') {
+      $('filterStatus').value = 'paid';
+      applyFilters();
+    }
+  });
 
   /* Apply current filter form values to ALL_CLAIMS and re-render the
      table. Pure UI filter — no network call. */
