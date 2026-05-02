@@ -10,6 +10,8 @@ copy templates, reusable HTML snippets.
 |---|---|---|
 | `email-signature.html` | Raw HTML for the Gmail / Workspace email signature, with install instructions in the file header | Founders / staff with `@credimed.us` Workspace mailboxes |
 | `email-signature-preview.html` | The same signature inside a render frame so you can preview it in a browser before pasting into Gmail | Anyone setting up their signature |
+| `email-signature-mobile.txt` | Plain-text version of the signature for the Gmail iOS / Android app, where HTML signatures aren't supported. Copy-paste into Gmail app → Settings → account → Signature settings → Mobile signature | Founders sending mail from their phone's Gmail app |
+| `deploy-checklist.md` | Ordered list of Lambda deploys + AWS config changes the project needs after the recent batch of PRs. Single source of truth for what's pending in AWS at any given moment | Whoever sits down at AWS Console / CloudShell next |
 
 ## Install the email signature (3 minutes)
 

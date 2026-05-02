@@ -41,25 +41,50 @@ Last updated: April 26, 2026.
       `credimed-users` role. **Done May 1, 2026.**
 - [ ] Deploy `credimed-claim-submitter` Lambda (fax-first claim
       submission to insurer — generates ADA J430D PDF, bundles with
-      factura + translation + POA, sends via WestFax). See
-      `backend/fax/DEPLOY.md`. Until deployed, paid claims are stuck
-      in the admin queue with no path to the carrier.
-- [ ] Sign up for WestFax (or Documo / Notifyre) with HIPAA BAA → API
-      key into `FAX_API_KEY` env var
+      factura + translation + POA, optionally sends via fax provider).
+      See `backend/fax/DEPLOY.md`. Until deployed, the admin
+      "Generate PDF bundle" button (already shipped, PR #17) returns
+      404 from API Gateway.
+- [x] Sign up for WestFax HIPAA Basic ($14.99/mo). **Done May 2** —
+      fax number `(617) 749-4550` provisioned. **BAA still pending —
+      email sent to `support@westfax.com`** asking for it.
+- [ ] WestFax BAA executed (signed by both sides). Until then, no PHI
+      faxes can leave through this account. After execution, set
+      `FAX_PROVIDER=westfax` + `FAX_API_KEY` + `FAX_USERNAME` env vars
+      on `credimed-claim-submitter` to flip from stub mode to live.
 - [ ] Deploy `credimed-translation` Lambda (Spanish factura → English
       via Amazon Translate). Optional but reduces carrier rejections.
       See `backend/translation/DEPLOY.md`.
 - [ ] Wire OCR Lambda to invoke `credimed-translation` async on
       completion (1-line code change in OCR Lambda)
+- [ ] Re-deploy `credimed-claims` after PR #17 merge — the PATCH
+      route now accepts `faxConfirmationId` / `faxedAt` /
+      `submissionNotes`. Without re-deploy, the admin "Mark as faxed
+      manually" form returns 400 on those fields. ALLOWED_STATUSES
+      also gains `submitted_to_carrier` + `needs_attention`.
+- [ ] Re-deploy `credimed-users` after PR #18 merge — accepts the
+      claim-review fields (`dob`, `gender`, `relationship`,
+      `groupNumber`, `employer`, subscriber*). Without re-deploy,
+      the patient can fill out claim-review.html but the data is
+      localStorage-only (no backend persistence for those fields).
 - [ ] Counsel-authored POA template → drop into
       `backend/fax/templates/poa.pdf` and rewrite
       `poa-pdf-generator.js` to fill it (placeholder POA generator
       ships meanwhile)
-- [ ] Verify carrier fax numbers for Delta / Cigna / BCBS / Guardian /
-      United / Humana / Anthem (call provider lines), update
-      `backend/fax/carrier-fax-numbers.json`
-- [ ] Frontend "Submit to insurer" button on admin claim detail page
-      that POSTs `/admin/claims/{id}/submit`
+- [ ] Verify carrier fax numbers for Delta / United Concordia /
+      Anthem / BCBS (call provider lines, web didn't surface them),
+      update `backend/fax/carrier-fax-numbers.json`. **Aetna +
+      MetLife already verified by phone; Cigna + Guardian + Humana
+      seeded from public docs (PR #15) — verify by phone before
+      first real submission.**
+- [x] Frontend "Submit to insurer" button on admin claim detail page
+      that POSTs `/admin/claims/{id}/submit`. **Done May 2 (PR #17)**.
+- [x] Frontend `claim-review.html` page between plan and before-sign
+      to capture sex, DOB, relationship, groupNumber, employer.
+      **Done May 2 (PR #18)**.
+- [x] Status pills + admin awaiting-fax counter for the new
+      `submitted_to_carrier` + `needs_attention` statuses.
+      **Done May 2 (PR #19)**.
 - [x] Verify `metadata.claimId` is set in the payment Lambda when
       creating PaymentIntents — confirmed via code audit. Lambda
       includes `metadata: { userId, claimId, plan, source }` plus
