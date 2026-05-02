@@ -2,12 +2,13 @@
   'use strict';
 
   const FLOW = {
-    'documents':    { next: 'processing',  back: null },
-    'processing':   { next: 'estimate',    back: null, autoAdvanceMs: 8000 },
-    'estimate':     { next: 'plan',        back: 'documents' },
-    'plan':         { next: 'before-sign', back: 'estimate' },
-    'before-sign':  { next: 'agreement',   back: 'plan' },
-    'agreement':    { next: 'payment',     back: 'before-sign' }
+    'documents':    { next: 'processing',    back: null },
+    'processing':   { next: 'estimate',      back: null, autoAdvanceMs: 8000 },
+    'estimate':     { next: 'plan',          back: 'documents' },
+    'plan':         { next: 'claim-review',  back: 'estimate' },
+    'claim-review': { next: 'before-sign',   back: 'plan' },
+    'before-sign':  { next: 'agreement',     back: 'claim-review' },
+    'agreement':    { next: 'payment',       back: 'before-sign' }
     /* payment is intentionally OMITTED from the flow map — the Stripe confirm
        flow is the sole owner of navigation away from payment.html. On success
        Stripe redirects to /app/submission-confirmed.html?paid=1 via return_url.

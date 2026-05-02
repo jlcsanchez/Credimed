@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credimed — Confirm claim details</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-200:#99F6E4; --teal-300:#5EEAD4;
+  --teal-500:#14B8A6; --teal-600:#0D9488; --teal-700:#0F766E; --teal-800:#0A7A70; --teal-900:#134E4A;
+  --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
+  --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1E293B; --slate-900:#0F172A;
+  --cream:#FAF6EF; --cream-2:#E8E2D5;
+  --danger-fg:#B91C1C; --danger-bg:#FEF2F2; --danger-border:#FECACA;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; background:var(--cream); font-family:"DM Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--slate-900); -webkit-font-smoothing:antialiased; min-height:100vh; }
+
+.page { max-width: 720px; margin: 0 auto; padding: calc(20px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom)); }
+
+.brand-row { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.brand-mark { width:32px; height:32px; border-radius:50%; background:var(--teal-600); color:#fff; display:grid; place-items:center; font-weight:800; font-size:14px; }
+.brand-text { font-weight:700; letter-spacing:0.14em; font-size:13px; color:var(--teal-900); text-transform:uppercase; }
+
+.progress { display:flex; gap:6px; margin:18px 0 28px; }
+.progress div { height:3px; flex:1; background:rgba(15,23,42,0.08); border-radius:99px; }
+.progress div.on { background:var(--teal-600); }
+.progress div.cur { background:var(--teal-500); }
+
+h1 { font-family:"Playfair Display",Georgia,serif; font-size:28px; line-height:1.15; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; color:var(--slate-900); }
+.lead { color:var(--slate-600); font-size:15px; line-height:1.55; margin:0 0 26px; }
+
+.card { background:#fff; border:1px solid var(--cream-2); border-radius:14px; padding:18px 20px; margin-bottom:14px; }
+.card h2 { font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--slate-500); margin:0 0 14px; }
+
+.field { margin-bottom:14px; }
+.field:last-child { margin-bottom:0; }
+.field label { display:block; font-size:12px; font-weight:600; color:var(--slate-600); letter-spacing:0.02em; margin-bottom:6px; text-transform:uppercase; }
+.field .helper { font-size:12px; color:var(--slate-500); margin-top:4px; line-height:1.5; }
+.field input, .field select { width:100%; height:48px; padding:0 14px; border:1px solid var(--slate-200); border-radius:10px; font-size:15px; font-family:inherit; color:var(--slate-900); background:#fff; outline:none; transition:border-color 150ms,box-shadow 150ms; }
+.field input:focus, .field select:focus { border-color:var(--teal-600); box-shadow:0 0 0 3px rgba(13,148,136,0.12); }
+.field input[disabled] { background:var(--slate-50); color:var(--slate-500); cursor:not-allowed; }
+.field input.invalid { border-color:var(--danger-border); }
+
+.row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:480px) { .row-2 { grid-template-columns:1fr; } }
+
+.choice-row { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.choice-row.cols-3 { grid-template-columns:repeat(3,1fr); }
+.choice-row.cols-4 { grid-template-columns:repeat(4,1fr); }
+@media (max-width:480px) { .choice-row.cols-4 { grid-template-columns:repeat(2,1fr); } }
+.choice { position:relative; cursor:pointer; }
+.choice input { position:absolute; opacity:0; pointer-events:none; }
+.choice .box {
+  display:flex; align-items:center; justify-content:center; padding:12px 8px;
+  border:1px solid var(--slate-200); border-radius:10px; font-size:14px; font-weight:600;
+  color:var(--slate-700); background:#fff; transition:all 150ms; user-select:none;
+}
+.choice input:checked + .box {
+  border-color:var(--teal-600); background:var(--teal-50); color:var(--teal-800);
+  box-shadow:inset 0 0 0 1px var(--teal-600);
+}
+.choice input:focus-visible + .box { box-shadow:inset 0 0 0 1px var(--teal-600), 0 0 0 3px rgba(13,148,136,0.15); }
+
+.subscriber-fields { display:none; padding-top:14px; margin-top:14px; border-top:1px dashed var(--cream-2); }
+.subscriber-fields.show { display:block; }
+
+.read-only-row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; font-size:14px; }
+.read-only-row .k { color:var(--slate-500); }
+.read-only-row .v { color:var(--slate-900); font-weight:600; text-align:right; }
+
+.banner { padding:12px 14px; border-radius:10px; font-size:13px; line-height:1.5; margin-bottom:14px; display:none; }
+.banner.show { display:block; }
+.banner.error { background:var(--danger-bg); border:1px solid var(--danger-border); color:var(--danger-fg); }
+.banner.info  { background:var(--teal-50); border:1px solid var(--teal-100); color:var(--teal-800); }
+
+.footer-cta { margin-top:24px; display:flex; flex-direction:column; gap:10px; }
+.btn-primary { width:100%; height:54px; background:var(--teal-600); color:#fff; border:none; border-radius:14px; font-size:16px; font-weight:600; cursor:pointer; font-family:inherit; transition:background 150ms; }
+.btn-primary:hover:not(:disabled) { background:var(--teal-700); }
+.btn-primary:active:not(:disabled) { background:var(--teal-800); }
+.btn-primary:disabled { background:var(--slate-300); cursor:not-allowed; }
+.btn-secondary { width:100%; height:48px; background:#fff; color:var(--slate-700); border:1px solid var(--slate-200); border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
+.btn-secondary:hover { background:var(--slate-50); }
+
+.skip-note { text-align:center; font-size:12px; color:var(--slate-500); margin-top:10px; line-height:1.5; }
+</style>
+</head>
+<body data-page="claim-review">
+
+<div class="page">
+  <a href="/" class="brand-row" style="text-decoration:none">
+    <span class="brand-mark">H</span>
+    <span class="brand-text">Credimed</span>
+  </a>
+
+  <!-- Progress: documents → processing → estimate → plan → CLAIM-REVIEW → before-sign → agreement → payment -->
+  <div class="progress" aria-label="Step 5 of 8">
+    <div class="on"></div>
+    <div class="on"></div>
+    <div class="on"></div>
+    <div class="on"></div>
+    <div class="cur"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+  <h1>One last thing — confirm a few details</h1>
+  <p class="lead">U.S. dental insurance carriers require these to process your claim. Takes about 30 seconds.</p>
+
+  <div class="banner error" id="errBanner"></div>
+
+  <!-- Patient identity (mostly read-only, surfaces what we already have) -->
+  <div class="card">
+    <h2>You</h2>
+    <div class="read-only-row"><span class="k">Name</span><span class="v" id="roName">—</span></div>
+    <div class="read-only-row"><span class="k">Email</span><span class="v" id="roEmail">—</span></div>
+    <div class="read-only-row"><span class="k">Insurer</span><span class="v" id="roInsurer">—</span></div>
+    <div class="read-only-row"><span class="k">Member ID</span><span class="v" id="roMemberId">—</span></div>
+  </div>
+
+  <!-- Required fields the ADA asks for that we don't capture today -->
+  <div class="card">
+    <h2>Subscriber details</h2>
+
+    <div class="field">
+      <label>Date of birth</label>
+      <input type="date" id="dob" required>
+      <div class="helper">Required by every U.S. dental carrier.</div>
+    </div>
+
+    <div class="field">
+      <label>Sex on insurance card</label>
+      <div class="choice-row cols-3" role="radiogroup" aria-label="Sex on insurance card">
+        <label class="choice"><input type="radio" name="gender" value="M"><span class="box">Male</span></label>
+        <label class="choice"><input type="radio" name="gender" value="F"><span class="box">Female</span></label>
+        <label class="choice"><input type="radio" name="gender" value="X"><span class="box">Other</span></label>
+      </div>
+      <div class="helper">Pick the value listed on your insurance card. Box 14 of the ADA claim form.</div>
+    </div>
+
+    <div class="field">
+      <label>Are you the policyholder, or is the policy under someone else's name?</label>
+      <div class="choice-row cols-4" role="radiogroup" aria-label="Relationship to subscriber">
+        <label class="choice"><input type="radio" name="relationship" value="self" checked><span class="box">I'm the subscriber</span></label>
+        <label class="choice"><input type="radio" name="relationship" value="spouse"><span class="box">Spouse</span></label>
+        <label class="choice"><input type="radio" name="relationship" value="child"><span class="box">Child / dependent</span></label>
+        <label class="choice"><input type="radio" name="relationship" value="other"><span class="box">Other</span></label>
+      </div>
+    </div>
+
+    <div class="subscriber-fields" id="subscriberFields">
+      <div class="row-2">
+        <div class="field">
+          <label>Subscriber first name</label>
+          <input type="text" id="subFirst" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Subscriber last name</label>
+          <input type="text" id="subLast" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <label>Subscriber DOB</label>
+        <input type="date" id="subDob">
+      </div>
+    </div>
+  </div>
+
+  <!-- Plan-side fields commonly required by carriers -->
+  <div class="card">
+    <h2>Plan</h2>
+    <div class="field">
+      <label>Group number (optional)</label>
+      <input type="text" id="groupNumber" placeholder="e.g. 0012345" autocomplete="off">
+      <div class="helper">Sometimes printed on your insurance card next to "Group" or "GRP". Skip if you don't see one.</div>
+    </div>
+    <div class="field">
+      <label>Employer (optional)</label>
+      <input type="text" id="employer" placeholder="Your employer or sponsor" autocomplete="organization">
+      <div class="helper">Helps the carrier route the claim. Skip if you don't have an employer plan.</div>
+    </div>
+  </div>
+
+  <div class="footer-cta">
+    <button type="button" class="btn-primary" id="btnContinue">Continue → review &amp; sign</button>
+    <button type="button" class="btn-secondary" id="btnBack">← Back to plan</button>
+    <p class="skip-note">Required fields are marked. Optional fields you can come back to from your profile any time.</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+<script src="backend.js"></script>
+<script src="state.js"></script>
+<script src="require-auth.js"></script>
+<script src="connector.js"></script>
+<script src="auto-logoff.js"></script>
+<script>
+(async function () {
+  'use strict';
+  var S  = window.CredimedState;
+  var $  = function (id) { return document.getElementById(id); };
+
+  /* Hydrate the read-only "you" card + any previously-saved review fields.
+     Order of preference: backend /profile → CredimedState → blank.
+     The /profile response is the source of truth post-launch (survives
+     localStorage clears, follows user across devices). */
+  var backendProfile = null;
+  if (window.authFetch && window.CREDIMED_API) {
+    try {
+      var resp = await window.authFetch(window.CREDIMED_API + '/profile');
+      if (resp && resp.ok) {
+        var data = await resp.json();
+        backendProfile = data && data.profile;
+      }
+    } catch (_e) { /* offline or first-time user — fine, we fall through */ }
+  }
+
+  function pick(localKey, backendKey) {
+    var b = backendProfile && backendProfile[backendKey || localKey];
+    if (b != null && b !== '') return b;
+    return S.get(localKey, '') || '';
+  }
+
+  var firstName = pick('user.firstName', 'firstName');
+  var lastName  = pick('user.lastName',  'lastName');
+  var email     = pick('user.email',     'email');
+  var insurance = S.get('insurance', {}) || {};
+
+  $('roName').textContent     = ((firstName + ' ' + lastName).trim()) || '—';
+  $('roEmail').textContent    = email || '—';
+  $('roInsurer').textContent  = insurance.insurer  || '—';
+  $('roMemberId').textContent = insurance.memberId || '—';
+
+  /* Hydrate editable fields (DOB, gender, group, employer, relationship) */
+  $('dob').value         = backendProfile && backendProfile.dob || S.get('user.dob', '') || '';
+  $('groupNumber').value = backendProfile && backendProfile.groupNumber || insurance.groupId || S.get('user.groupNumber', '') || '';
+  $('employer').value    = backendProfile && backendProfile.employer || S.get('user.employer', '') || '';
+
+  var savedGender       = backendProfile && backendProfile.gender || S.get('user.gender', '');
+  var savedRelationship = backendProfile && backendProfile.relationship || S.get('user.relationship', 'self');
+
+  if (savedGender) {
+    var g = document.querySelector('input[name="gender"][value="' + savedGender + '"]');
+    if (g) g.checked = true;
+  }
+  var r = document.querySelector('input[name="relationship"][value="' + savedRelationship + '"]');
+  if (r) r.checked = true;
+
+  /* Subscriber sub-fields appear only when relationship !== self */
+  function syncSubscriberFields() {
+    var rel = (document.querySelector('input[name="relationship"]:checked') || {}).value;
+    var box = $('subscriberFields');
+    if (rel && rel !== 'self') box.classList.add('show');
+    else box.classList.remove('show');
+  }
+  document.querySelectorAll('input[name="relationship"]').forEach(function (el) {
+    el.addEventListener('change', syncSubscriberFields);
+  });
+  syncSubscriberFields();
+
+  /* Pre-populate any previously-entered subscriber overrides */
+  $('subFirst').value = backendProfile && backendProfile.subscriberFirstName || S.get('user.subscriberFirstName', '') || '';
+  $('subLast').value  = backendProfile && backendProfile.subscriberLastName  || S.get('user.subscriberLastName', '')  || '';
+  $('subDob').value   = backendProfile && backendProfile.subscriberDob       || S.get('user.subscriberDob', '')       || '';
+
+  function showError(msg) {
+    var b = $('errBanner');
+    b.textContent = msg;
+    b.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function clearError() {
+    var b = $('errBanner');
+    b.classList.remove('show');
+    b.textContent = '';
+  }
+
+  function readForm() {
+    var dob          = $('dob').value;
+    var gender       = (document.querySelector('input[name="gender"]:checked') || {}).value || '';
+    var relationship = (document.querySelector('input[name="relationship"]:checked') || {}).value || 'self';
+    return {
+      dob: dob,
+      gender: gender,
+      relationship: relationship,
+      groupNumber: $('groupNumber').value.trim(),
+      employer: $('employer').value.trim(),
+      subscriberFirstName: $('subFirst').value.trim(),
+      subscriberLastName:  $('subLast').value.trim(),
+      subscriberDob:       $('subDob').value
+    };
+  }
+
+  function validate(form) {
+    if (!form.dob) return 'Please enter your date of birth.';
+    if (!form.gender) return 'Please pick the sex listed on your insurance card.';
+    if (form.relationship !== 'self') {
+      if (!form.subscriberFirstName || !form.subscriberLastName)
+        return 'Please enter the subscriber’s name.';
+      if (!form.subscriberDob)
+        return 'Please enter the subscriber’s date of birth.';
+    }
+    return null;
+  }
+
+  $('btnBack').addEventListener('click', function () { location.href = '/app/plan.html'; });
+
+  $('btnContinue').addEventListener('click', async function () {
+    clearError();
+    var form = readForm();
+    var err = validate(form);
+    if (err) return showError(err);
+
+    /* 1. Persist to local CredimedState immediately so the next screens
+          can render with the new data even if the backend save races. */
+    S.merge('user', {
+      dob:                 form.dob,
+      gender:              form.gender,
+      relationship:        form.relationship,
+      groupNumber:         form.groupNumber,
+      employer:            form.employer,
+      subscriberFirstName: form.subscriberFirstName,
+      subscriberLastName:  form.subscriberLastName,
+      subscriberDob:       form.subscriberDob
+    });
+
+    /* 2. Best-effort backend save via /profile (the credimed-users
+          Lambda already accepts these fields). Don't block navigation
+          if it fails — the data is in localStorage + will retry on
+          next /profile interaction. */
+    var btn = $('btnContinue');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      if (window.authFetch && window.CREDIMED_API) {
+        await window.authFetch(window.CREDIMED_API + '/profile', {
+          method: 'PATCH',
+          body: form
+        });
+      }
+    } catch (_e) { /* silent fall-through */ }
+
+    location.href = '/app/before-sign.html';
+  });
+})();
+</script>
+</body>
+</html>

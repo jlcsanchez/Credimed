@@ -68,6 +68,16 @@ const ADDRESS_FIELDS = [
 const BANK_PLAIN_FIELDS = ["bankName", "bankType"];
 const BANK_ENCRYPTED_FIELDS = ["bankHolder", "bankRouting", "bankAccount"];
 const PHONE_FIELDS = ["phoneRaw"];
+/* Subscriber + claim-review fields captured by claim-review.html
+   right before the patient signs. Plain-text — these aren't PHI in the
+   strict sense (gender / DOB / employer / group# get printed on the
+   ADA form anyway, and the row's PK + userId is already access-gated).
+   Matches the field names the frontend sends in PATCH /profile. */
+const CLAIM_REVIEW_FIELDS = [
+  "dob", "gender", "relationship",
+  "groupNumber", "employer",
+  "subscriberFirstName", "subscriberLastName", "subscriberDob"
+];
 // Notification toggle keys — match the frontend's data-notif-key
 // attributes verbatim so save/hydrate share one vocabulary.
 const NOTIF_FIELDS = [
@@ -147,7 +157,7 @@ async function getProfile(email, userId) {
   }
 
   const profile = { email, userId };
-  for (const f of [...ADDRESS_FIELDS, ...BANK_PLAIN_FIELDS, ...PHONE_FIELDS]) {
+  for (const f of [...ADDRESS_FIELDS, ...BANK_PLAIN_FIELDS, ...PHONE_FIELDS, ...CLAIM_REVIEW_FIELDS]) {
     if (r.Item[f]?.S != null) profile[f] = r.Item[f].S;
   }
   for (const f of NOTIF_FIELDS) {
@@ -178,7 +188,7 @@ async function patchProfile(email, userId, body) {
   let i = 0;
 
   // Plaintext string fields
-  for (const f of [...ADDRESS_FIELDS, ...BANK_PLAIN_FIELDS, ...PHONE_FIELDS]) {
+  for (const f of [...ADDRESS_FIELDS, ...BANK_PLAIN_FIELDS, ...PHONE_FIELDS, ...CLAIM_REVIEW_FIELDS]) {
     if (body[f] != null) {
       const ph = `:v${i++}`;
       setParts.push(`${f} = ${ph}`);
