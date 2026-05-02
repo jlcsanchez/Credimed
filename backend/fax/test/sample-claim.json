@@ -1,0 +1,52 @@
+{
+  "_comment": "Synthetic claim for local PDF generation testing. Run `npm test` in the parent folder to render this into a PDF you can open visually and tune coordinates against.",
+  "claimId": "CMX-2026-DEMO01",
+  "userId": "demo-user-sub-1234",
+  "status": "ready_to_submit",
+  "createdAt": "2026-04-30T18:30:00Z",
+  "updatedAt": "2026-04-30T18:35:00Z",
+  "submittedAt": "2026-04-30T18:35:00Z",
+  "dateOfService": "2026-03-14",
+
+  "firstName": "MARIA",
+  "lastName": "GONZALEZ",
+  "dob": "1985-05-15",
+  "gender": "F",
+  "email": "maria.gonzalez@example.com",
+  "memberId": "W123456789",
+  "groupNumber": "0012345",
+  "employer": "ACME CORP",
+  "relationship": "self",
+
+  "addrStreet": "123 BEACON ST APT 4B",
+  "addrCity":   "BOSTON",
+  "addrState":  "MA",
+  "addrZip":    "02108",
+
+  "insurer": "AETNA DENTAL",
+  "plan": "standard",
+
+  "providerName":    "CLINICA DENTAL TIJUANA SA DE CV",
+  "providerAddress": "AV REVOLUCION 123",
+  "providerCity":    "TIJUANA",
+  "providerState":   "BC",
+  "providerZip":     "22000",
+  "providerPhone":   "+52 664 123 4567",
+  "providerRFC":     "CDT123456ABC",
+
+  "procedures": [
+    { "cdtCode": "D2740", "description": "Crown - porcelain/ceramic", "toothNumber": "14", "dateOfService": "2026-03-14", "amount": 450.00 },
+    { "cdtCode": "D3330", "description": "Endodontic therapy, molar", "toothNumber": "14", "dateOfService": "2026-03-14", "amount": 380.00 }
+  ],
+
+  "amount": 830.00,
+  "paidAmount": 9000,
+  "paidAmountUSD": 500,
+  "paidCurrency": "MXN",
+  "estimateMin": 350,
+  "estimateMax": 425,
+
+  "signature": {
+    "_comment": "data URLs would be here in a real claim; omitted in test fixture so the generator falls back to the date+name on the signature line"
+  }
+}

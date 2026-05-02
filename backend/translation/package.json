@@ -1,0 +1,13 @@
+{
+  "name": "credimed-translation",
+  "version": "1.0.0",
+  "description": "Translates the Spanish factura to English so the carrier can read it. Independent of the submitter Lambda — failure here doesn't block submission.",
+  "type": "module",
+  "main": "credimed-translation.lambda.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.620.0",
+    "@aws-sdk/client-translate": "^3.620.0",
+    "@aws-sdk/client-s3": "^3.620.0",
+    "pdf-lib": "^1.17.1"
+  }
+}

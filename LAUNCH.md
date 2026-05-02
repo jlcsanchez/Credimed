@@ -39,6 +39,27 @@ Last updated: April 26, 2026.
       **Live as of May 1, 2026.**
 - [x] `KMS_KEY_ID` env var + `kms:Encrypt`/`kms:Decrypt` IAM on
       `credimed-users` role. **Done May 1, 2026.**
+- [ ] Deploy `credimed-claim-submitter` Lambda (fax-first claim
+      submission to insurer — generates ADA J430D PDF, bundles with
+      factura + translation + POA, sends via WestFax). See
+      `backend/fax/DEPLOY.md`. Until deployed, paid claims are stuck
+      in the admin queue with no path to the carrier.
+- [ ] Sign up for WestFax (or Documo / Notifyre) with HIPAA BAA → API
+      key into `FAX_API_KEY` env var
+- [ ] Deploy `credimed-translation` Lambda (Spanish factura → English
+      via Amazon Translate). Optional but reduces carrier rejections.
+      See `backend/translation/DEPLOY.md`.
+- [ ] Wire OCR Lambda to invoke `credimed-translation` async on
+      completion (1-line code change in OCR Lambda)
+- [ ] Counsel-authored POA template → drop into
+      `backend/fax/templates/poa.pdf` and rewrite
+      `poa-pdf-generator.js` to fill it (placeholder POA generator
+      ships meanwhile)
+- [ ] Verify carrier fax numbers for Delta / Cigna / BCBS / Guardian /
+      United / Humana / Anthem (call provider lines), update
+      `backend/fax/carrier-fax-numbers.json`
+- [ ] Frontend "Submit to insurer" button on admin claim detail page
+      that POSTs `/admin/claims/{id}/submit`
 - [x] Verify `metadata.claimId` is set in the payment Lambda when
       creating PaymentIntents — confirmed via code audit. Lambda
       includes `metadata: { userId, claimId, plan, source }` plus

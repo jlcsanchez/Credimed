@@ -1,0 +1,95 @@
+{
+  "_meta": {
+    "description": "Lookup table mapping insurer name → claims fax number + mailing address. Used by credimed-claim-submitter to determine the fax destination and the address rendered on the ADA form.",
+    "lastUpdated": "2026-05-01",
+    "format": "Insurer key is lowercase, normalized (no punctuation). The Lambda matches via fuzzy lowercased substring on claim.insurer.",
+    "verificationMethod": "Each entry has verifiedAt; numbers should be re-confirmed by phone every 12 months. Public sources (carrier websites) prefer; provider-line phone calls definitive."
+  },
+  "aetna": {
+    "displayName": "Aetna Dental",
+    "claimsFax": "+18594558650",
+    "claimsAddress": {
+      "line1": "Aetna Dental Claims",
+      "line2": "PO Box 14094",
+      "city": "Lexington",
+      "state": "KY",
+      "zip": "40512"
+    },
+    "verifiedAt": "2026-04-29",
+    "notes": "Public on aetna.com claim form"
+  },
+  "metlife": {
+    "displayName": "MetLife Dental",
+    "claimsFax": "+13157926342",
+    "claimsAddress": {
+      "line1": "MetLife Group Dental Claims",
+      "line2": "PO Box 981282",
+      "city": "El Paso",
+      "state": "TX",
+      "zip": "79998"
+    },
+    "verifiedAt": "2026-04-29",
+    "notes": "Verified via MetLife provider line"
+  },
+  "delta": {
+    "displayName": "Delta Dental (varies by state subsidiary)",
+    "claimsFax": null,
+    "claimsAddress": null,
+    "verifiedAt": null,
+    "notes": "Each state subsidiary has its own claim fax. Call 800-336-8478 to look up by patient's plan state. TODO: split into delta-ca, delta-ny, delta-tx, etc. once we have first claims."
+  },
+  "cigna": {
+    "displayName": "Cigna Dental",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Cigna Dental Claims",
+      "line2": "PO Box 188037",
+      "city": "Chattanooga",
+      "state": "TN",
+      "zip": "37422"
+    },
+    "verifiedAt": null,
+    "notes": "Cigna prefers email at WBGDentalClaims@cigna.com but emailing PHI without a BAA is not HIPAA-compliant. Need to call 800-244-6224 to confirm fax line for dental."
+  },
+  "bcbs": {
+    "displayName": "Blue Cross Blue Shield (varies by state)",
+    "claimsFax": null,
+    "claimsAddress": null,
+    "verifiedAt": null,
+    "notes": "Each Blue plan operates independently. TODO: capture patient's specific Blue plan during signup (Anthem BCBS, BCBS of Texas, etc.) and route accordingly."
+  },
+  "guardian": {
+    "displayName": "Guardian Dental",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Guardian Dental Claims",
+      "line2": "PO Box 2459",
+      "city": "Spokane",
+      "state": "WA",
+      "zip": "99210"
+    },
+    "verifiedAt": null,
+    "notes": "Call 800-541-7846 to confirm claims fax"
+  },
+  "united": {
+    "displayName": "United Concordia",
+    "claimsFax": null,
+    "claimsAddress": null,
+    "verifiedAt": null,
+    "notes": "Call 800-332-0366"
+  },
+  "humana": {
+    "displayName": "Humana Dental",
+    "claimsFax": null,
+    "claimsAddress": null,
+    "verifiedAt": null,
+    "notes": "Call 800-833-6917"
+  },
+  "anthem": {
+    "displayName": "Anthem Blue Cross Dental",
+    "claimsFax": null,
+    "claimsAddress": null,
+    "verifiedAt": null,
+    "notes": "Call 833-894-1574"
+  }
+}
