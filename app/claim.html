@@ -396,13 +396,16 @@ html,body{
   'use strict';
 
   var STATUS_PILL = {
-    'submitted':  { label: 'Submitted',  cls: 'pill-teal' },
-    'in-review':  { label: 'In review',  cls: 'pill-indigo' },
-    'approved':   { label: 'Approved',   cls: 'pill-success' },
-    'paid':       { label: 'Paid',       cls: 'pill-success' },
-    'denied':     { label: 'Denied',     cls: 'pill-danger' },
+    'submitted':            { label: 'Submitted',       cls: 'pill-teal' },
+    'in-review':            { label: 'In review',       cls: 'pill-indigo' },
+    'paid':                 { label: 'Paid',            cls: 'pill-success' },
+    'submitted_to_carrier': { label: 'Sent to insurer', cls: 'pill-teal' },
+    'needs_attention':      { label: 'Needs attention', cls: 'pill-amber' },
+    'approved':             { label: 'Approved',        cls: 'pill-success' },
+    'denied':               { label: 'Denied',          cls: 'pill-danger' },
+    'refunded':             { label: 'Refunded',        cls: 'pill-amber' },
   };
-  var ORDER = ['submitted', 'in-review', 'approved', 'paid'];
+  var ORDER = ['submitted', 'in-review', 'submitted_to_carrier', 'approved', 'paid'];
 
   function $(id) { return document.getElementById(id); }
   function getParam(name) {
