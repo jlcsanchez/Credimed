@@ -1,0 +1,14 @@
+{
+  "name": "credimed-claim-submitter",
+  "version": "1.0.0",
+  "description": "Lambda that generates a filled ADA J430D PDF + sends it via fax to the patient's insurer. Triggered when a paid claim reaches status 'ready_to_submit'.",
+  "type": "module",
+  "main": "credimed-claim-submitter.lambda.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.620.0",
+    "@aws-sdk/client-kms": "^3.620.0",
+    "@aws-sdk/client-s3": "^3.620.0",
+    "@aws-sdk/client-ses": "^3.620.0",
+    "pdf-lib": "^1.17.1"
+  }
+}
