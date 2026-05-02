@@ -107,18 +107,23 @@ Last updated: April 26, 2026.
 ### Stripe
 
 - [x] Frontend integrated (Stripe Elements, JWT auth on intent)
-- [x] TEST MODE badge added when `pk_test_*` detected
-- [ ] **Switch from `pk_test_*` to `pk_live_*`** in `app/backend.js`
-      line 39 — the moment we accept real payments
-- [ ] Stripe live secret key in payment Lambda env
+- [x] TEST MODE badge added when `pk_test_*` detected (auto-hides in live)
+- [x] **Frontend swapped to `pk_live_*`** in `app/backend.js` line 39 (2026-05-02)
+- [ ] **Verify** `STRIPE_SECRET_KEY` on `credimed-payment` Lambda starts
+      with `sk_live_*` (AWS Console → Lambda → Configuration → Environment).
+      If still `sk_test_*`, payments will fail because mode mismatches.
 - [x] Stripe webhook registered in dashboard (test mode) pointing to
       `credimed-stripe-webhook` Function URL — listening to
       `payment_intent.succeeded` + `payment_intent.payment_failed`
-- [ ] Stripe webhook registered in **live mode** (separate signing secret)
-- [x] `STRIPE_WEBHOOK_SECRET` in webhook Lambda env (test secret)
-- [ ] `STRIPE_WEBHOOK_SECRET` swapped to live secret when going live
-- [ ] Test end-to-end with `4242 4242 4242 4242` (test) and a real
-      live card under $10 to confirm full happy path
+- [ ] **Verify** Stripe live-mode webhook is registered separately:
+      Stripe Dashboard → Developers → Webhooks → Live mode → endpoint
+      should match `credimed-stripe-webhook` Function URL with the same
+      events (`payment_intent.succeeded` + `.payment_failed`)
+- [ ] **Verify** `STRIPE_WEBHOOK_SECRET` on `credimed-stripe-webhook`
+      Lambda is the LIVE webhook secret (starts with `whsec_…`,
+      different value than the test one)
+- [ ] Test end-to-end with a real live card under $10 to confirm full
+      happy path → refund via Stripe dashboard once verified
 
 ### Google Workspace
 
