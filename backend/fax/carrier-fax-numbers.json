@@ -2,14 +2,16 @@
   "_meta": {
     "description": "Lookup table mapping insurer name → claims fax number + mailing address. Used by credimed-claim-submitter to determine the fax destination and the address rendered on the ADA form.",
     "lastUpdated": "2026-05-02",
-    "format": "Insurer key is lowercase, normalized (no punctuation). The Lambda matches via fuzzy lowercased substring on claim.insurer.",
+    "format": "Insurer key uses hyphens for clarity (e.g. 'delta-ca'). The Lambda matcher strips non-letters from both sides and sorts longest-first, so 'united-concordia' (15 chars) wins over generic 'united' (6) when both are present.",
     "verificationLevels": {
       "verified-by-phone": "Called the carrier's provider line and confirmed the fax number works",
       "found-on-carrier-website": "Listed in a public PDF or page on the carrier's domain. Should be re-confirmed by phone before first real submission",
       "unconfirmed": "Number not yet sourced; needs phone call"
     },
-    "verificationMethod": "Each entry has verifiedAt + verificationLevel. Numbers should be re-confirmed by phone every 12 months."
+    "verificationMethod": "Each entry has verifiedAt + verificationLevel. Numbers should be re-confirmed by phone every 12 months.",
+    "noFaxFallback": "Where claimsFax is null, the carrier either refuses faxed claims (most Delta + Blues subsidiaries) or only publishes a mailing address. For these, admin must mail the bundle or submit via EDI/Availity. The Lambda surfaces 'No claims fax on file' to the admin UI so they can route manually."
   },
+
   "aetna": {
     "displayName": "Aetna Dental",
     "claimsFax": "+18594558650",
@@ -22,22 +24,84 @@
     },
     "verifiedAt": "2026-04-29",
     "verificationLevel": "found-on-carrier-website",
-    "notes": "Public on aetna.com claim form"
+    "notes": "Public on aetna.com claim form."
   },
-  "metlife": {
-    "displayName": "MetLife Dental",
-    "claimsFax": "+13157926342",
+
+  "ameritas": {
+    "displayName": "Ameritas Dental",
+    "claimsFax": "+14023092579",
     "claimsAddress": {
-      "line1": "MetLife Group Dental Claims",
-      "line2": "PO Box 981282",
-      "city": "El Paso",
-      "state": "TX",
-      "zip": "79998"
+      "line1": "Ameritas Group Claims",
+      "line2": "PO Box 82520",
+      "city": "Lincoln",
+      "state": "NE",
+      "zip": "68501"
     },
-    "verifiedAt": "2026-04-29",
-    "verificationLevel": "verified-by-phone",
-    "notes": "Confirmed via MetLife provider line"
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Source: ameritas.com/dental-providers/submit-a-claim-or-pre-treatment-estimate/. Provider line: 800-487-5553."
   },
+
+  "anthem": {
+    "displayName": "Anthem Blue Cross Dental",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Anthem Dental Claims",
+      "line2": "PO Box 1115",
+      "city": "Minneapolis",
+      "state": "MN",
+      "zip": "55440"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "No paper-claims fax published; Anthem pushes Availity EDI. Mail PO Box 1115 Minneapolis MN 55440-1115. Provider line to verify fax: 800-627-0004."
+  },
+
+  "bcbs-fep": {
+    "displayName": "BCBS FEP Dental (GRID Dental Corp.)",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "BCBS FEP Dental Claims",
+      "line2": "PO Box 75",
+      "city": "Minneapolis",
+      "state": "MN",
+      "zip": "55440"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Source: bcbsfepdental.com/contactUs and dentalclaimssubmissionqrg.pdf. No public claims fax; mail to PO Box 75. Provider line: 855-504-2583 (1-855-504-BLUE)."
+  },
+
+  "bcbs-ma": {
+    "displayName": "Blue Cross Blue Shield of Massachusetts (Dental Blue)",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Blue Cross Blue Shield of Massachusetts",
+      "line2": "PO Box 986030",
+      "city": "Boston",
+      "state": "MA",
+      "zip": "02298"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Source: bluecrossma.org Dental Blue ADA claim form. No published paper-claims fax; provider services 800-882-1178 option 3."
+  },
+
+  "bcbs-tx": {
+    "displayName": "Blue Cross Blue Shield of Texas (Dental)",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Blue Cross and Blue Shield of Texas",
+      "line2": "PO Box 660044",
+      "city": "Dallas",
+      "state": "TX",
+      "zip": "75266"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Source: bcbstx.com dental-claim-tx.pdf. EDI-first via Availity (payor 84980); no dental-specific claims fax. Dental Benefits Customer Service: 800-367-6401."
+  },
+
   "cigna": {
     "displayName": "Cigna Dental",
     "claimsFax": "+18604574948",
@@ -50,8 +114,99 @@
     },
     "verifiedAt": "2026-05-02",
     "verificationLevel": "found-on-carrier-website",
-    "notes": "Number sourced from Cigna's public provider docs (importantContactInformation.pdf on cigna.com). Cigna prefers electronic submission via CignaforHCP.com / Availity; fax is the documented fallback for paper claims. Confirm by phone (800-244-6224) before first real submission."
+    "notes": "Cigna prefers electronic submission via CignaforHCP.com / Availity; fax is the documented fallback for paper claims. Provider line: 800-244-6224."
   },
+
+  "delta-ca": {
+    "displayName": "Delta Dental of California",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Delta Dental of California",
+      "line2": "PO Box 997330",
+      "city": "Sacramento",
+      "state": "CA",
+      "zip": "95899"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Delta Dental does NOT accept faxed claims. EDI payer 03194 or paper. Provider line: 800-765-6003."
+  },
+
+  "delta-ins-co": {
+    "displayName": "Delta Dental Insurance Company (multi-state: GA/FL/TX/MS/LA/NV/UT/AL)",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Delta Dental Insurance Company",
+      "line2": "PO Box 1809",
+      "city": "Alpharetta",
+      "state": "GA",
+      "zip": "30023"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Underwrites Delta Dental in GA/FL/TX/MS/LA/NV/UT/AL. No fax accepted. EDI payer 94276. Provider line: 800-521-2651."
+  },
+
+  "delta-ma": {
+    "displayName": "Delta Dental of Massachusetts",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Delta Dental of Massachusetts",
+      "line2": "PO Box 9695",
+      "city": "Boston",
+      "state": "MA",
+      "zip": "02114"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "unconfirmed",
+    "notes": "Address is account-specific; some accounts use PO Box 2907 Milwaukee WI 53201-2907. Confirm correct PO Box by phone: 800-872-0500. No fax accepted."
+  },
+
+  "delta-ny": {
+    "displayName": "Delta Dental of New York",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Delta Dental of New York, Inc.",
+      "line2": "PO Box 2105",
+      "city": "Mechanicsburg",
+      "state": "PA",
+      "zip": "17055"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "unconfirmed",
+    "notes": "Administered by Delta Dental of Pennsylvania (payer ID 11198). Address sourced from third-party search; reconfirm by phone: 800-932-0783. No fax accepted."
+  },
+
+  "delta-tx": {
+    "displayName": "Delta Dental of Texas (administered by Delta Dental Insurance Company)",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Delta Dental Insurance Company",
+      "line2": "PO Box 1809",
+      "city": "Alpharetta",
+      "state": "GA",
+      "zip": "30023"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Delta Dental of Texas business is underwritten/administered by Delta Dental Insurance Company. DeltaCare USA TX uses PO Box 1810 Alpharetta GA 30023. No fax accepted. Provider line: 800-521-2651."
+  },
+
+  "dentaquest": {
+    "displayName": "DentaQuest",
+    "claimsFax": "+12628343589",
+    "claimsAddress": {
+      "line1": "DentaQuest, LLC",
+      "line2": "PO Box 2906",
+      "city": "Milwaukee",
+      "state": "WI",
+      "zip": "53201"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Source: dentaquest.com provider guides. EDI payer ID CX014 preferred."
+  },
+
   "guardian": {
     "displayName": "Guardian Dental",
     "claimsFax": "+15094653404",
@@ -66,6 +221,7 @@
     "verificationLevel": "found-on-carrier-website",
     "notes": "Standard Guardian Dental claims fax. Managed DentalGuard plans use a different fax (+1 916-679-7197) and only accept claims that don't require x-rays. Confirm plan type from member ID card before sending."
   },
+
   "humana": {
     "displayName": "Humana Dental",
     "claimsFax": "+18885562128",
@@ -78,44 +234,126 @@
     },
     "verifiedAt": "2026-05-02",
     "verificationLevel": "found-on-carrier-website",
-    "notes": "Number from Humana's provider portal. Provider customer service: 800-833-2223. Confirm by phone before first real submission."
+    "notes": "Number from Humana's provider portal. Provider customer service: 800-833-2223."
   },
-  "united": {
-    "displayName": "United Concordia",
+
+  "liberty": {
+    "displayName": "LIBERTY Dental Plan",
+    "claimsFax": "+19492230011",
+    "claimsAddress": {
+      "line1": "LIBERTY Dental Plan, Attn: Claims",
+      "line2": "PO Box 401086",
+      "city": "Las Vegas",
+      "state": "NV",
+      "zip": "89140"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "CA-specific claims may use PO Box 26110 Santa Ana CA 92799-6110. Provider line: 888-352-7924."
+  },
+
+  "lincoln": {
+    "displayName": "Lincoln Financial Dental",
+    "claimsFax": "+18887357636",
+    "claimsAddress": {
+      "line1": "The Lincoln National Life Insurance Company",
+      "line2": "Dental Claims Input Center, PO Box 614008",
+      "city": "Orlando",
+      "state": "FL",
+      "zip": "32861"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Email Fileclaim@lfg.com also accepted."
+  },
+
+  "metlife": {
+    "displayName": "MetLife Dental",
+    "claimsFax": "+13157926342",
+    "claimsAddress": {
+      "line1": "MetLife Group Dental Claims",
+      "line2": "PO Box 981282",
+      "city": "El Paso",
+      "state": "TX",
+      "zip": "79998"
+    },
+    "verifiedAt": "2026-04-29",
+    "verificationLevel": "verified-by-phone",
+    "notes": "Confirmed via MetLife provider line."
+  },
+
+  "principal": {
+    "displayName": "Principal Dental",
     "claimsFax": null,
     "claimsAddress": {
-      "line1": "United Concordia Claims (FFS)",
+      "line1": "Principal Life Insurance Company",
+      "line2": "PO Box 10357",
+      "city": "Des Moines",
+      "state": "IA",
+      "zip": "50306"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "No dental-specific claims fax published; Principal prefers EDI (Vyne Dental, DentalXChange) or email CSDClaims@exchange.principal.com. Provider line to verify fax: 800-247-4695."
+  },
+
+  "renaissance": {
+    "displayName": "Renaissance Dental",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "Renaissance, Attn: Claims Department",
+      "line2": "PO Box 17250",
+      "city": "Indianapolis",
+      "state": "IN",
+      "zip": "46217"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "No claims fax published; carrier uses email claims@renaissancefamily.com. Eligibility/claims line: 888-358-9484."
+  },
+
+  "sunlife": {
+    "displayName": "Sun Life Financial Dental (formerly Assurant Dental)",
+    "claimsFax": "+16237601876",
+    "claimsAddress": {
+      "line1": "Sun Life",
+      "line2": "PO Box 311",
+      "city": "Milwaukee",
+      "state": "WI",
+      "zip": "53201"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Fax 623-760-1876 covers claims and pre-estimates. NY uses PO Box 1428; FL group A896 uses PO Box 1618. Provider line: 800-442-7742."
+  },
+
+  "uhc": {
+    "displayName": "UnitedHealthcare Dental",
+    "claimsFax": null,
+    "claimsAddress": {
+      "line1": "UnitedHealthcare Dental Claims Unit",
+      "line2": "PO Box 30567",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "zip": "84130"
+    },
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "EDI-first via Optum/Healthplex; payer ID 52133. No claims fax published on uhcdental.com. Provider line to verify fax: 800-822-5353."
+  },
+
+  "united-concordia": {
+    "displayName": "United Concordia Dental",
+    "claimsFax": "+17176354565",
+    "claimsAddress": {
+      "line1": "United Concordia Dental Claims",
       "line2": "PO Box 69421",
       "city": "Harrisburg",
       "state": "PA",
       "zip": "17106"
     },
-    "verifiedAt": null,
-    "verificationLevel": "unconfirmed",
-    "notes": "Their provider docs surface mailing address but not a fax. Most claims go via Availity/EDI. Call 800-332-0366 to confirm fax exists and is the right one for OOC claims. Mailing fallback: PO Box 69421 Harrisburg, PA 17106 (FFS plans). DHMO uses PO Box 69422."
-  },
-  "delta": {
-    "displayName": "Delta Dental (varies by state subsidiary)",
-    "claimsFax": null,
-    "claimsAddress": null,
-    "verifiedAt": null,
-    "verificationLevel": "unconfirmed",
-    "notes": "Each state subsidiary operates independently with its own fax + mailing. Delta Dental has 39 member companies. Use the patient's member ID card to identify the specific plan, then call 800-336-8478 to look up by state. TODO: split this entry into delta-ca, delta-ny, delta-tx, etc. once we have first claims and know which states are active."
-  },
-  "anthem": {
-    "displayName": "Anthem Blue Cross Dental",
-    "claimsFax": null,
-    "claimsAddress": null,
-    "verifiedAt": null,
-    "verificationLevel": "unconfirmed",
-    "notes": "Anthem strongly prefers electronic submission via Availity; no public fax for OOC dental claims surfaced in 2026 docs. Practical path: call 833-894-1574 or check member ID card. May need to use Availity instead of fax for Anthem patients."
-  },
-  "bcbs": {
-    "displayName": "Blue Cross Blue Shield (varies by state, FEP separate)",
-    "claimsFax": null,
-    "claimsAddress": null,
-    "verifiedAt": null,
-    "verificationLevel": "unconfirmed",
-    "notes": "Each Blue plan operates independently — BCBS of Massachusetts, BCBS of Texas, Anthem BCBS of CA, etc. BCBS FEP Dental is the separate federal-employee plan (855-504-2583). Direct Blue plans publicly mail-first; fax is plan-specific. TODO: capture patient's specific Blue plan during signup and route accordingly."
+    "verifiedAt": "2026-05-02",
+    "verificationLevel": "found-on-carrier-website",
+    "notes": "Same Harrisburg fax used for FFS commercial paper claims and TRICARE CONUS per UCCI contact materials. FFS member service: 800-332-0366. DHMO claims use PO Box 69422."
   }
 }
