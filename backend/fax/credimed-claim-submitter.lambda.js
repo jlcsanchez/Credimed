@@ -68,6 +68,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { KMSClient, DecryptCommand } from "@aws-sdk/client-kms";
 import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { PDFDocument } from "pdf-lib";
 import { readFile } from "fs/promises";
@@ -207,6 +208,23 @@ async function loadAndDecryptClaim(claimId) {
   return claim;
 }
 
+async function presignedDownloadUrl(key, expiresInSeconds = 3600) {
+  /* 1-hour signed URL the admin can paste into a browser to download
+     the bundled PDF directly from S3. Avoids round-tripping the binary
+     through API Gateway (which has a 6 MB response limit). */
+  if (!key) return null;
+  try {
+    return await getSignedUrl(
+      s3,
+      new GetObjectCommand({ Bucket: ARCHIVE_BUCKET, Key: key }),
+      { expiresIn: expiresInSeconds }
+    );
+  } catch (err) {
+    console.warn(`[s3 presign] ${key} failed:`, err.message);
+    return null;
+  }
+}
+
 async function fetchS3PdfIfExists(key) {
   try {
     const r = await s3.send(new GetObjectCommand({
@@ -247,30 +265,48 @@ function carrierLookup(claim, carriers) {
   return null;
 }
 
-async function persistFaxResult(claimId, faxResult) {
+async function persistFaxResult(claimId, faxResult, bundleS3Key) {
   const now = new Date().toISOString();
-  const expr = ["faxedAt = :now", "lastSubmissionAttempt = :now"];
-  const values = { ":now": { S: now } };
+  const expr = ["lastSubmissionAttempt = :now", "bundleS3Key = :bs", "bundleGeneratedAt = :now"];
+  const values = {
+    ":now": { S: now },
+    ":bs":  { S: String(bundleS3Key || "") }
+  };
+  let attrNames = null;
 
-  if (faxResult.ok) {
-    expr.push("faxConfirmationId = :fid", "faxStatus = :st", "#s = :submitted");
+  if (faxResult.status === "stub_no_send") {
+    /* Stub mode (no fax provider configured): bundle was generated +
+       archived, but no fax actually sent. DO NOT touch claim.status —
+       admin will transition it manually via PATCH /admin/claims/{id}
+       once they fax the bundle from WestFax web portal and paste the
+       confirmation ID into the "Mark as faxed" form. This preserves
+       admin control during the manual-MVP phase before automation. */
+  } else if (faxResult.ok) {
+    /* Real fax sent successfully — transition status, stamp the
+       provider's confirmation ID + faxedAt automatically. */
+    expr.push("faxedAt = :now", "faxConfirmationId = :fid", "faxStatus = :st", "#s = :submitted");
     values[":fid"] = { S: String(faxResult.providerFaxId || "") };
     values[":st"]  = { S: String(faxResult.status || "queued") };
     values[":submitted"] = { S: "submitted_to_carrier" };
+    attrNames = { "#s": "status" };
   } else {
+    /* Real fax attempt that failed — flag the claim so the admin
+       sees it in the queue. */
     expr.push("faxStatus = :st", "faxError = :err", "#s = :needs");
     values[":st"]  = { S: "failed" };
     values[":err"] = { S: String(faxResult.error || "unknown") };
     values[":needs"] = { S: "needs_attention" };
+    attrNames = { "#s": "status" };
   }
 
-  await db.send(new UpdateItemCommand({
+  const cmd = {
     TableName: TABLE,
     Key: { claimId: { S: claimId } },
     UpdateExpression: `SET ${expr.join(", ")}`,
-    ExpressionAttributeNames: { "#s": "status" },
     ExpressionAttributeValues: values
-  }));
+  };
+  if (attrNames) cmd.ExpressionAttributeNames = attrNames;
+  await db.send(new UpdateItemCommand(cmd));
 }
 
 async function emailPatient(claim, carrierName) {
@@ -371,11 +407,13 @@ export const handler = async (event) => {
       await persistFaxResult(claimId, {
         ok: false,
         error: `No claims fax on file for "${claim.insurer}". Update carrier-fax-numbers.json.`
-      });
+      }, bundleKey);
+      const noCarrierUrl = await presignedDownloadUrl(bundleKey);
       return response(422, {
         error: "Carrier fax not configured. Admin must update carrier-fax-numbers.json + redeploy.",
         insurer: claim.insurer,
-        bundleS3: bundleKey
+        bundleS3: bundleKey,
+        bundleDownloadUrl: noCarrierUrl
       }, event);
     }
 
@@ -387,32 +425,50 @@ export const handler = async (event) => {
       subject: `Credimed claim ${claimId} for ${claim.firstName} ${claim.lastName}`
     });
 
-    // 8. Persist outcome
-    await persistFaxResult(claimId, faxResult);
+    // 8. Persist outcome (in stub mode, this only records the bundle —
+    //    status stays unchanged so admin can transition manually after
+    //    sending the fax via WestFax web portal)
+    await persistFaxResult(claimId, faxResult, bundleKey);
 
-    // 9. Email patient on success
+    // 9. Email patient on success (only when a real fax was sent; in
+    //    stub mode the admin will trigger the email after marking faxed)
     if (faxResult.ok) {
       await emailPatient(claim, lookup.info.displayName);
     }
+
+    // 10. Generate a presigned download URL for the bundle so the admin
+    //     can grab it directly from the API response (handy in stub
+    //     mode for the manual upload-to-WestFax step).
+    const bundleDownloadUrl = await presignedDownloadUrl(bundleKey);
 
     audit(event, {
       event: "submit_complete",
       claimId, insurer: claim.insurer,
       carrierKey: lookup.carrierKey,
       faxOk: faxResult.ok,
+      stubMode: faxResult.status === "stub_no_send",
       faxConfirmationId: faxResult.providerFaxId,
       bundleSize: bundle.length,
       facturaIncluded:     !!facturaPdf,
       translationIncluded: !!translationPdf
     });
 
-    return response(faxResult.ok ? 200 : 502, {
-      ok: faxResult.ok,
+    /* Stub mode is the manual-MVP happy path — return 200 with the
+       download URL so the admin can grab the bundle, fax it from the
+       WestFax portal, then come back and mark it faxed. Real-mode
+       failures still return 502. */
+    const httpStatus = faxResult.ok || faxResult.status === "stub_no_send" ? 200 : 502;
+
+    return response(httpStatus, {
+      ok: faxResult.ok || faxResult.status === "stub_no_send",
+      stubMode: faxResult.status === "stub_no_send",
       claimId,
       faxConfirmationId: faxResult.providerFaxId,
       faxStatus: faxResult.status,
       faxError: faxResult.error,
       bundleS3: bundleKey,
+      bundleDownloadUrl,
+      carrier: lookup.info,  // displayName + claimsFax for admin UI
       missing: {
         factura: !facturaPdf,
         translation: !translationPdf
