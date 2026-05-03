@@ -668,12 +668,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
 <div class="admin-mobile-only">
 
-<!-- AUTH CHECK SPLASH (visible only during the brief Cognito group lookup
-     before we either enter the shell or redirect). The admin page never
-     surfaces a sign-in form to non-admins — anyone without admin Cognito
-     group membership is silently bounced to the patient dashboard or the
-     regular login page, so random visitors never see "Admin sign in". -->
-<div class="gate" id="gate">
+<!-- AUTH CHECK SPLASH — hidden by default. JS only flips it visible if the
+     Cognito group lookup takes longer than 400ms (rare on a warm session
+     since the check is fully client-side JWT decode). For the typical
+     fast path, admins land straight in the shell and non-admins are
+     redirected before any UI ever flashes. -->
+<div class="gate" id="gate" style="display:none">
   <div class="gate-card" style="text-align:center">
     <div style="width:32px;height:32px;border:3px solid var(--slate-200);border-top-color:var(--teal-600);border-radius:50%;animation:spin .8s linear infinite;margin:6px auto 14px"></div>
     <p style="margin:0;color:var(--slate-500);font-size:13px">Verifying access…</p>
@@ -1404,7 +1404,19 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
                                    admin sign-in goes through the regular
                                    login screen (no separate admin gate). */
   (async function () {
+    /* Show the splash only if the auth check is still running after 400ms.
+       On a warm Cognito session the check resolves in <100ms — fast enough
+       that the splash never paints, so admins land straight in the shell
+       and non-admins are bounced before any flicker. The 400ms guard kicks
+       in only on cold starts / slow networks so the user isn't staring at
+       a blank tab. */
+    var splash = $('gate');
+    var splashTimer = setTimeout(function () { if (splash) splash.style.display = 'flex'; }, 400);
+
     var check = await isAdmin();
+    clearTimeout(splashTimer);
+    if (splash) splash.style.display = 'none';
+
     if (check.ok) {
       enterShell(check.user);
       return;
