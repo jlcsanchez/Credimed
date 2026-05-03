@@ -881,6 +881,35 @@ function _credimedProfileBoot() {
     });
   });
 
+  /* Phone input: digits-only + length per country. Mirrors the same
+     logic from login.html / signup so the patient can't paste
+     "176028022222222" in either place. */
+  var PHONE_MAX = { '+1': 10, '+52': 10, '+44': 10, '+57': 10, '+54': 10,
+                    '+34': 9,  '+56': 9,  '+51': 9,
+                    'other': 15 };
+  function applyPhoneConstraints(ccId, inpId) {
+    var ccSel = $(ccId), phInp = $(inpId);
+    if (!ccSel || !phInp) return;
+    var max = PHONE_MAX[ccSel.value] || 15;
+    phInp.setAttribute('maxlength', String(max));
+    phInp.setAttribute('inputmode', 'numeric');
+    var stripped = (phInp.value || '').replace(/\D/g, '');
+    if (stripped.length > max) stripped = stripped.slice(0, max);
+    if (phInp.value !== stripped) phInp.value = stripped;
+  }
+  [['phoneCC', 'phone'], ['pcPhoneCC', 'pcPhone']].forEach(function (pair) {
+    var ccSel = $(pair[0]), phInp = $(pair[1]);
+    if (!ccSel || !phInp) return;
+    ccSel.addEventListener('change', function () { applyPhoneConstraints(pair[0], pair[1]); });
+    phInp.addEventListener('input', function () {
+      var max = PHONE_MAX[ccSel.value] || 15;
+      var stripped = (phInp.value || '').replace(/\D/g, '');
+      if (stripped.length > max) stripped = stripped.slice(0, max);
+      if (phInp.value !== stripped) phInp.value = stripped;
+    });
+    applyPhoneConstraints(pair[0], pair[1]);
+  });
+
   /* ────── Nav buttons ────── */
   $('backBtn').addEventListener('click', function () {
     if (document.referrer && document.referrer.indexOf('/app/') !== -1) history.back();

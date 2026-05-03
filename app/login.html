@@ -597,6 +597,51 @@ html, body { margin: 0; padding: 0; background: #FAF6EF; font-family: "DM Sans",
     });
   });
 
+  /* ---------- phone input: digits-only + length per country ----------
+     Per-country expected length (national mobile format, no leading 0):
+       +1 (US/CA), +52 (MX), +44 (UK), +57 (CO), +54 (AR): 10
+       +34 (ES), +56 (CL), +51 (PE):                         9
+       other:                                                15 (E.164 cap)
+     Max-length enforces the user can't type past the spec; the live
+     digit-strip kills any letter / space / paren the keyboard inserts. */
+  var PHONE_MAX = { '+1': 10, '+52': 10, '+44': 10, '+57': 10, '+54': 10,
+                    '+34': 9,  '+56': 9,  '+51': 9,
+                    'other': 15 };
+  var PHONE_PLACEHOLDER = { '+1': '555 555 5555', '+52': '55 5555 5555',
+                            '+44': '7700 900123',  '+57': '300 123 4567',
+                            '+54': '11 2345 6789', '+34': '612 34 56 78',
+                            '+56': '9 1234 5678',  '+51': '912 345 678',
+                            'other': 'Phone number' };
+
+  function applyPhoneConstraints() {
+    var ccSel = $('su-phone-cc');
+    var phInp = $('su-phone');
+    if (!ccSel || !phInp) return;
+    var cc = ccSel.value || '+52';
+    var max = PHONE_MAX[cc] || 15;
+    phInp.setAttribute('maxlength', String(max));
+    phInp.setAttribute('inputmode', 'numeric');
+    phInp.placeholder = PHONE_PLACEHOLDER[cc] || 'Phone number';
+    /* Re-trim if user already typed past the new limit (e.g. switched
+       from "other" to "+52" with 15 digits in the box). */
+    var stripped = (phInp.value || '').replace(/\D/g, '');
+    if (stripped.length > max) stripped = stripped.slice(0, max);
+    if (phInp.value !== stripped) phInp.value = stripped;
+  }
+  (function () {
+    var ccSel = $('su-phone-cc');
+    var phInp = $('su-phone');
+    if (!ccSel || !phInp) return;
+    ccSel.addEventListener('change', applyPhoneConstraints);
+    phInp.addEventListener('input', function () {
+      var max = PHONE_MAX[ccSel.value] || 15;
+      var stripped = (phInp.value || '').replace(/\D/g, '');
+      if (stripped.length > max) stripped = stripped.slice(0, max);
+      if (phInp.value !== stripped) phInp.value = stripped;
+    });
+    applyPhoneConstraints();
+  })();
+
   /* ---------- password strength indicator ---------- */
   var pwInput = $('su-pw');
   pwInput.addEventListener('input', function () {
