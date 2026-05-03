@@ -596,21 +596,8 @@ function _credimedProfileBoot() {
     var cu = null;
     try { cu = await window.cognitoGetCurrentUser(); } catch (e) {}
     if (!cu) {
-      // Demo-session fallback: if a demo session is active, render the
-      // form with whatever's in CredimedState instead of bouncing to
-      // login. Demo users don't have a Cognito identity.
-      var demo = null;
-      try { demo = JSON.parse(localStorage.getItem('credimed.demo') || 'null'); }
-      catch (e) {}
-      if (!demo || !demo.email) {
-        window.location.href = '/app/login.html';
-        return;
-      }
-      cu = { attributes: {
-        email: demo.email,
-        given_name: (demo.user && demo.user.firstName) || '',
-        family_name: (demo.user && demo.user.lastName) || ''
-      }};
+      window.location.href = '/app/login.html';
+      return;
     }
 
     var attrs = (cu && cu.attributes) || {};
@@ -904,7 +891,6 @@ function _credimedProfileBoot() {
   });
   $('signoutBtn').addEventListener('click', function () {
     if (!confirm('Sign out of Credimed?')) return;
-    try { localStorage.removeItem('credimed.demo'); } catch (e) {}
     try { if (window.cognitoSignOut) window.cognitoSignOut(); } catch (e) {}
     window.location.href = '/app/login.html';
   });

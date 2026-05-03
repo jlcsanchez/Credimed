@@ -2,9 +2,9 @@
  * require-auth.js — proactive session check on page load.
  *
  * Runs synchronously *before* the rest of the page wires up. If the
- * user has no Cognito ID token in localStorage AND no demo session,
- * redirects to login.html with a return URL so they come back here
- * after authenticating.
+ * user has no Cognito ID token in localStorage, redirects to
+ * login.html with a return URL so they come back here after
+ * authenticating.
  *
  * Why proactive (not reactive on first authFetch failure):
  *   - Authenticated pages render UI scaffolding before they make
@@ -23,15 +23,6 @@
   'use strict';
 
   if (window.CREDIMED_AUTH_OPTIONAL) return;
-
-  function hasDemoSession() {
-    try {
-      var raw = localStorage.getItem('credimed.demo');
-      if (!raw) return false;
-      var d = JSON.parse(raw);
-      return !!(d && (d.email || d.isAdmin));
-    } catch (e) { return false; }
-  }
 
   function hasCognitoToken() {
     /* Cognito Identity SDK stores the ID token at a key like
@@ -53,7 +44,7 @@
     return false;
   }
 
-  if (hasDemoSession() || hasCognitoToken()) return;
+  if (hasCognitoToken()) return;
 
   // No session. Hide the page and bounce to login. The hide step
   // prevents a flash of authenticated UI before the redirect lands.

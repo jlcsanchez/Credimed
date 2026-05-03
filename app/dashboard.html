@@ -1409,7 +1409,6 @@ function wireScope(scope){
   signOutBtns.forEach((signOutBtn) => {
     signOutBtn.addEventListener('click', () => {
       if (!confirm('Sign out of Credimed?')) return;
-      try { localStorage.removeItem('credimed.demo'); } catch (e) {}
       try { if (window.cognitoSignOut) window.cognitoSignOut(); } catch (e) {}
       // Don't clear claim state on sign-out so the user can still see their
       // tracker after signing back in. Just drop the auth session.
@@ -1505,12 +1504,6 @@ mountScope('desktop');
    Runs after first paint so the UI doesn't block on the network. */
 (async function hydrateFromBackend() {
   try {
-    // Demo session — already seeded into CredimedState by login.html. Skip
-    // the network round-trip so reviewers see deterministic data.
-    try {
-      if (localStorage.getItem('credimed.demo')) return;
-    } catch (e) {}
-
     if (!window.authFetch || !window.CREDIMED_API) return;
     var S = window.CredimedState;
     var localClaim = S ? S.get('claim', null) : null;
@@ -1783,7 +1776,6 @@ window.hydratePCDashboard();
    claims yet' a second after page load. */
 (async function fetchClaimList() {
   try {
-    if (localStorage.getItem('credimed.demo')) return;
     if (!window.authFetch || !window.CREDIMED_API) return;
     var resp = await window.authFetch(window.CREDIMED_API + '/claims');
     if (!resp || !resp.ok) return;

@@ -61,7 +61,6 @@
 
   function signOut() {
     clearTimers();
-    try { localStorage.removeItem('credimed.demo'); } catch (e) {}
     try {
       if (window.cognitoSignOut) window.cognitoSignOut();
     } catch (e) {}

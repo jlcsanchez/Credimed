@@ -13,6 +13,7 @@ body[data-page="admin"]{background:var(--cream, #FAF6EF) !important}
 <meta charset="UTF-8">
 <title>Credimed — Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
 <style>
 :root {
   --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-300:#5EEAD4; --teal-500:#14B8A6;
@@ -667,23 +668,18 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
 <div class="admin-mobile-only">
 
-<!-- LOGIN GATE -->
+<!-- AUTH CHECK SPLASH (visible only during the brief Cognito group lookup
+     before we either enter the shell or redirect). The admin page never
+     surfaces a sign-in form to non-admins — anyone without admin Cognito
+     group membership is silently bounced to the patient dashboard or the
+     regular login page, so random visitors never see "Admin sign in". -->
 <div class="gate" id="gate">
-  <div class="gate-card">
-    <h1>Admin sign in</h1>
-    <p>Sign in with your Credimed administrator account.</p>
-    <div class="gate-err" id="gateErr"></div>
-    <div class="field">
-      <label for="gEmail">Email</label>
-      <input id="gEmail" type="email" placeholder="admin@credimed.us" autocomplete="email">
-    </div>
-    <div class="field">
-      <label for="gPass">Password</label>
-      <input id="gPass" type="password" placeholder="••••••••" autocomplete="current-password">
-    </div>
-    <button class="gate-btn" id="gBtn">Enter Admin Dashboard</button>
+  <div class="gate-card" style="text-align:center">
+    <div style="width:32px;height:32px;border:3px solid var(--slate-200);border-top-color:var(--teal-600);border-radius:50%;animation:spin .8s linear infinite;margin:6px auto 14px"></div>
+    <p style="margin:0;color:var(--slate-500);font-size:13px">Verifying access…</p>
   </div>
 </div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
 <!-- ADMIN SHELL -->
 <div class="shell" id="shell">
@@ -1347,74 +1343,6 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
 
   var $ = function (id) { return document.getElementById(id); };
 
-  /* Demo session — set by login.html when an account in DEMO_USERS signs
-     in. Bypasses Cognito entirely and uses a seeded fixture for the
-     claims feed so reviewers see a populated dashboard. Remove once the
-     real Cognito user pool has working test users. */
-  function getDemoSession() {
-    try {
-      var raw = localStorage.getItem('credimed.demo');
-      if (!raw) return null;
-      var d = JSON.parse(raw);
-      if (!d || !d.isAdmin) return null;
-      return d;
-    } catch (e) { return null; }
-  }
-
-  /* Demo claims fixture — used by admin demo to populate Overview /
-     Claims / Patients tabs without a backend. Hit anywhere fetchClaims()
-     would normally talk to the Lambda. */
-  var DEMO_CLAIMS = [
-    { id: 'CMX-2026-D001', userSub: 'demo-1', firstName: 'Alex',  lastName: 'Rivera',  email: 'demo@credimed.us',  status: 'submitted',
-      submittedAt: new Date(Date.now() - 1*86400000).toISOString(), plan: 'standard',
-      paidAmount: 14000, paidCurrency: 'MXN', paidAmountUSD: 790, estimateMin: 450, estimateMax: 610,
-      procedure: 'Crown (zirconia) + Root canal', procedures: ['Crown (zirconia)', 'Root canal'],
-      insurer: 'Aetna PPO', memberId: 'W123456789', city: 'Cancún' },
-    { id: 'CMX-2026-D002', userSub: 'demo-2', firstName: 'Maria', lastName: 'Hernández', email: 'maria.h@example.com', status: 'in-review',
-      submittedAt: new Date(Date.now() - 4*86400000).toISOString(), plan: 'premium',
-      paidAmount: 1180, paidCurrency: 'USD', paidAmountUSD: 1180, estimateMin: 620, estimateMax: 820,
-      procedure: 'Implant + Crown', procedures: ['Dental implant', 'Crown (zirconia)'],
-      insurer: 'Cigna Dental Premier', memberId: 'U998877665', city: 'Tijuana' },
-    { id: 'CMX-2026-D003', userSub: 'demo-3', firstName: 'Daniel', lastName: 'Park', email: 'd.park@example.com', status: 'approved',
-      submittedAt: new Date(Date.now() - 11*86400000).toISOString(), plan: 'standard',
-      paidAmount: 8200, paidCurrency: 'MXN', paidAmountUSD: 460, estimateMin: 240, estimateMax: 340,
-      procedure: 'Veneers (4)', procedures: ['Veneer ×4'],
-      insurer: 'Delta Dental PPO', memberId: 'D44558899', city: 'Playa del Carmen' },
-    { id: 'CMX-2026-D004', userSub: 'demo-4', firstName: 'Sofía', lastName: 'Velázquez', email: 'sofia.v@example.com', status: 'paid',
-      submittedAt: new Date(Date.now() - 32*86400000).toISOString(), paidAt: new Date(Date.now() - 5*86400000).toISOString(), plan: 'standard',
-      paidAmount: 22500, paidCurrency: 'MXN', paidAmountUSD: 1280, estimateMin: 720, estimateMax: 940,
-      procedure: 'Full mouth cleaning + Crown', procedures: ['Deep cleaning', 'Crown (porcelain)'],
-      insurer: 'MetLife PPO', memberId: 'M77665544', city: 'Mexico City' },
-    { id: 'CMX-2026-D005', userSub: 'demo-5', firstName: 'James', lastName: 'O\'Brien', email: 'james.o@example.com', status: 'denied',
-      submittedAt: new Date(Date.now() - 18*86400000).toISOString(), deniedAt: new Date(Date.now() - 3*86400000).toISOString(), plan: 'standard',
-      paidAmount: 6300, paidCurrency: 'MXN', paidAmountUSD: 350, estimateMin: 180, estimateMax: 240,
-      procedure: 'Composite filling', procedures: ['Composite filling ×3'],
-      insurer: 'United Healthcare', memberId: 'U22113344', city: 'Cabo San Lucas',
-      // Refund workflow (v1.9): pending eligibility determination — admin needs to review
-      refundStatus: 'pending', planFee: 49, paidResubs: 0 },
-    { id: 'CMX-2026-D006', userSub: 'demo-2', firstName: 'Maria', lastName: 'Hernández', email: 'maria.h@example.com', status: 'submitted',
-      submittedAt: new Date(Date.now() - 0.5*86400000).toISOString(), plan: 'premium',
-      paidAmount: 980, paidCurrency: 'USD', paidAmountUSD: 980, estimateMin: 510, estimateMax: 680,
-      procedure: 'Root canal + temporary crown', procedures: ['Root canal', 'Crown (temporary)'],
-      insurer: 'Cigna Dental Premier', memberId: 'U998877665', city: 'Tijuana' },
-    // Two more denied claims with different refund states for the Refunds tab demo:
-    { id: 'CMX-2026-D007', userSub: 'demo-7', firstName: 'Lucia', lastName: 'Romero', email: 'lucia.r@example.com', status: 'denied',
-      submittedAt: new Date(Date.now() - 45*86400000).toISOString(), deniedAt: new Date(Date.now() - 8*86400000).toISOString(),
-      refundedAt: new Date(Date.now() - 5*86400000).toISOString(),
-      plan: 'plus', paidAmount: 18500, paidCurrency: 'MXN', paidAmountUSD: 1040, estimateMin: 580, estimateMax: 760,
-      procedure: 'Inlay + cleaning + filling', procedures: ['Inlay/Onlay', 'Deep cleaning', 'Composite filling'],
-      insurer: 'Aetna PPO', memberId: 'A55667788', city: 'Mérida',
-      refundStatus: 'refunded', refundAmount: 79, planFee: 79, paidResubs: 1 },
-    { id: 'CMX-2026-D008', userSub: 'demo-8', firstName: 'Robert', lastName: 'Chen', email: 'robert.c@example.com', status: 'denied',
-      submittedAt: new Date(Date.now() - 60*86400000).toISOString(), deniedAt: new Date(Date.now() - 15*86400000).toISOString(),
-      plan: 'premium', paidAmount: 2400, paidCurrency: 'USD', paidAmountUSD: 2400, estimateMin: 1100, estimateMax: 1450,
-      procedure: 'Implant + crown + bridge', procedures: ['Dental implant', 'Crown (zirconia)', 'Bridge'],
-      insurer: 'Delta Dental PPO', memberId: 'D11223344', city: 'Cancún',
-      // Not eligible — denied for plan exclusion (cosmetic), per Section 2.3 exclusions list
-      refundStatus: 'not_eligible', refundDeclineReason: 'Plan exclusion: implant not covered under member\'s benefit schedule',
-      planFee: 99, paidResubs: 0 }
-  ];
-
   /* Decode a JWT payload (no signature verification — Cognito SDK already
      validated it before storing). Used to read cognito:groups and other
      custom claims without round-tripping to Lambda. */
@@ -1461,86 +1389,32 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     loadOverview();
   }
 
-  /* --- Gate login --- */
-  $('gBtn').addEventListener('click', async function () {
-    var email = ($('gEmail').value || '').trim().toLowerCase();
-    var pass  = $('gPass').value;
-    var err   = $('gateErr');
-    err.classList.remove('show');
-
-    if (!email || !pass) {
-      err.textContent = 'Enter your admin email and password.';
-      err.classList.add('show');
-      return;
-    }
-    try {
-      await window.cognitoSignIn(email, pass);
-      var check = await isAdmin();
-      if (!check.ok) {
-        err.textContent = check.reason === 'not-admin'
-          ? 'This account is not in the admin group. Contact support to request access.'
-          : (check.error && check.error.message) || 'Authorization failed.';
-        err.classList.add('show');
-        try { window.cognitoSignOut(); } catch (e) {}
-        return;
-      }
-      enterShell(check.user);
-    } catch (e) {
-      err.textContent = (e && e.message) || 'Sign-in failed.';
-      err.classList.add('show');
-    }
-  });
-  $('gPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('gBtn').click(); });
-
   /* --- Sign out --- */
   $('signoutBtn').addEventListener('click', function () {
-    try { localStorage.removeItem('credimed.demo'); } catch (e) {}
     try { window.cognitoSignOut(); } catch (e) {}
-    location.reload();
+    location.replace('/app/login.html');
   });
 
-  /* --- Auto-enter if already signed in as admin ---
-     Real Cognito admin ALWAYS wins over a stale demo flag. If a real
-     admin session exists in localStorage from a prior /app/admin.html
-     visit, we proactively clear it before entering the real shell so
-     the rest of the page (fetchClaims, review save, etc.) doesn't
-     accidentally fall back to the demo code paths that early-return
-     locally without hitting the backend. */
+  /* --- Access control on page load ---
+     Three outcomes, no sign-in form ever shown:
+       admin                     → enterShell()
+       signed in but not admin   → silently redirect to patient dashboard
+       not signed in             → redirect to /app/login.html, preserving
+                                   admin.html as the post-login return so
+                                   admin sign-in goes through the regular
+                                   login screen (no separate admin gate). */
   (async function () {
     var check = await isAdmin();
     if (check.ok) {
-      try { localStorage.removeItem('credimed.demo'); } catch (e) {}
       enterShell(check.user);
       return;
     }
-    // No real Cognito admin — accept the demo flag if present so
-    // reviewers without an AWS account can still showcase the UI.
-    var demo = getDemoSession();
-    if (demo) {
-      enterShell({ attributes: { email: demo.email, given_name: 'Admin', family_name: 'Demo' } });
+    if (check.reason === 'not-admin') {
+      location.replace('/app/dashboard.html');
       return;
     }
-    // else: stay on the gate — don't surface 'not-admin' yet, user might
-    // just want to sign in with a different account.
-  })();
-
-  /* Also accept demo creds entered into the gate's email/password form
-     (in case the user lands on /app/admin.html directly without going
-     through /app/login.html). */
-  (function () {
-    var origBtn = $('gBtn');
-    if (!origBtn) return;
-    origBtn.addEventListener('click', function (e) {
-      var email = ($('gEmail').value || '').trim().toLowerCase();
-      var pass  = $('gPass').value;
-      if (email === 'admin@credimed.us' && pass === 'demo') {
-        e.stopImmediatePropagation();
-        try { localStorage.setItem('credimed.demo', JSON.stringify({
-          email: email, isAdmin: true, ts: Date.now()
-        })); } catch (err) {}
-        location.reload();
-      }
-    }, true);
+    // not-signed-in or auth error → bounce to login, return here after
+    location.replace('/app/login.html?return=' + encodeURIComponent('/app/admin.html'));
   })();
 
   /* --- Tab switching --- */
@@ -1609,8 +1483,6 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   }
 
   async function fetchClaims() {
-    // Demo session: skip the network and serve the seeded fixture.
-    if (getDemoSession()) return DEMO_CLAIMS.slice();
     var API = window.CREDIMED_API;
     try {
       var resp = await window.authFetch(API + '/admin/claims');
@@ -1718,42 +1590,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   }
 
   /* Build a Claims & Revenue dataset for a given range key (1d|1w|1m|1y|5y).
-     Real version derives from the claims feed; demo / no-data version
-     uses representative numbers from the legacy operations panel so
-     reviewers see a populated chart. */
+     Derives bars / line / KPIs from the live ALL_CLAIMS feed — empty
+     ranges render as zeros (no demo fallback). */
   function buildCRDataset(rangeKey, claims) {
-    /* Demo fixtures kept for the demo session only (admin@credimed.us /
-       demo). For real Cognito admins we derive everything from the
-       actual ALL_CLAIMS feed so brand-new accounts don't see fake
-       458-claim charts. */
-    var DEMO_BASE = {
-      '1d': { sub: 'Today',                     labels: ['8am','10am','12pm','2pm','4pm','6pm'],
-              bars: [4, 7, 4, 9, 7, 4], line: [3, 5, 2, 8, 5, 3], dash: [0.05, 0.06, 0.05, 0.07, 0.06, 0.05],
-              kpis: { claims: 10, revenue: 9300, reimbursed: 6800, fees: 250, trend: '+18%' } },
-      '1w': { sub: 'This week',                 labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-              bars: [6, 9, 8, 12, 11, 4, 8], line: [5, 8, 7, 11, 10, 3, 7], dash: [0.07, 0.08, 0.07, 0.09, 0.08, 0.05, 0.07],
-              kpis: { claims: 31, revenue: 30800, reimbursed: 22400, fees: 775, trend: '+22%' } },
-      '1m': { sub: 'Last 30 days',              labels: ['W1','W2','W3','W4'],
-              bars: [8, 11, 9, 14], line: [7, 10, 8, 13], dash: [0.07, 0.08, 0.07, 0.10],
-              kpis: { claims: 42, revenue: 51000, reimbursed: 37200, fees: 1050, trend: '+31%' } },
-      '1y': { sub: 'Apr 2025 – Mar 2026',
-              labels: ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
-              bars: [22, 28, 26, 32, 34, 38, 44, 41, 47, 53, 58, 65],
-              line: [16, 21, 19, 24, 26, 29, 35, 32, 39, 46, 52, 60],
-              dash: [0.04, 0.05, 0.05, 0.06, 0.06, 0.07, 0.08, 0.08, 0.09, 0.10, 0.11, 0.12],
-              kpis: { claims: 458, revenue: 446000, reimbursed: 318000, fees: 11500, trend: '+41%' } },
-      '5y': { sub: '2021 – 2026',               labels: ['2021','2022','2023','2024','2025','2026'],
-              bars: [38, 88, 158, 266, 412, 458], line: [22, 48, 94, 168, 286, 318], dash: [0.5, 0.9, 1.5, 2.4, 3.6, 4.0],
-              kpis: { claims: 1373, revenue: 1330000, reimbursed: 982000, fees: 34400, trend: '+980%' } }
-    };
-    if (getDemoSession()) {
-      return DEMO_BASE[rangeKey] || DEMO_BASE['1y'];
-    }
-
-    /* Real-data path: derive bars/line/KPIs from ALL_CLAIMS. The bar
-       labels mirror the demo layout for the picked range so the chart
-       still looks alive when there are 8 claims, just with real values
-       (zeros where there's no data). */
+    /* Bar labels mirror the time range layout for the picked range so
+       the chart still looks alive when there are only a handful of
+       claims, just with real values (zeros where there's no data). */
     var SUB = { '1d': 'Today', '1w': 'This week', '1m': 'Last 30 days',
                 '1y': 'Apr 2025 – Mar 2026', '5y': '2021 – 2026' };
     var LABELS = {
@@ -2085,38 +1927,30 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     ALL_CLAIMS = claims;
 
     /* Stats: total claims, total recovered (paid), active (in review),
-       commissions (15% of recovered). Inflate recovered by a multiplier
-       so the demo shows a respectable headline number even with only
-       ~6 seeded claims. */
+       commissions (15% of recovered). */
     var total = claims.length;
     var active = claims.filter(function (c) { return c.status === 'in-review' || c.status === 'submitted'; }).length;
-    var recoveredFromDemo = claims.filter(function (c) { return c.status === 'paid' || c.status === 'approved'; })
+    var recovered = claims.filter(function (c) { return c.status === 'paid' || c.status === 'approved'; })
       .reduce(function (s, c) {
         var mid = ((c.estimateMin || 0) + (c.estimateMax || 0)) / 2;
         return s + mid;
       }, 0);
-    var recovered = getDemoSession() ? 318000 : recoveredFromDemo;
 
     /* Plan revenue = sum of $49 (Standard) + $79 (Plus) + $99 (Premium)
-       fees from every claim. Complexity-based, no commission. Demo
-       split: 50/30/20% on 458 annual claims. */
+       fees from every claim. Complexity-based, no commission. */
     var TIER_PRICE = { standard: 49, plus: 79, premium: 99 };
-    var planRevenueDemo = Math.round(458 * 0.50 * 49 + 458 * 0.30 * 79 + 458 * 0.20 * 99);
-    var planRevenueReal = (claims || []).reduce(function (s, c) {
+    var planRevenue = (claims || []).reduce(function (s, c) {
       return s + (TIER_PRICE[c.plan] || TIER_PRICE.standard);
     }, 0);
-    var planRevenue = getDemoSession() ? planRevenueDemo : planRevenueReal;
 
-    /* Refunds totals — used in headline metric. Demo inflates to ~$1.4k
-       to look respectable across 458 annual claims (4-5% refund rate
-       at $79 average plan fee). */
+    /* Refunds totals — used in headline metric. */
     var refundTotals = computeRefundTotals(claims);
-    var refundsTotal = getDemoSession() ? 1480 : refundTotals.refunded;
-    var refundsCount = getDemoSession() ? 23 : refundTotals.refundedCount;
+    var refundsTotal = refundTotals.refunded;
+    var refundsCount = refundTotals.refundedCount;
 
-    $('stTotal').textContent     = getDemoSession() ? '247'  : total;
+    $('stTotal').textContent     = total;
     $('stRecovered').textContent = moneyShort(recovered);
-    $('stActive').textContent    = getDemoSession() ? '38'   : active;
+    $('stActive').textContent    = active;
     $('stPlanRev').textContent   = moneyShort(planRevenue);
     $('stRefunds').textContent   = moneyShort(refundsTotal);
     $('stRefundTrend').textContent = refundsCount + ' issued';
@@ -2140,14 +1974,12 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
   /* ────────────────────────────────────────────────────────────────────
      FINANCE PANEL
      KPI cards + revenue overview chart + recent transactions table.
-     Like Overview, derives from the claims feed. Demo uses the legacy
-     numbers ($318k recovered etc.) for a respectable mock. */
+     Like Overview, derives from the claims feed. */
   async function loadFinance() {
     var claims = ALL_CLAIMS.length ? ALL_CLAIMS : await fetchClaims();
     if (!ALL_CLAIMS.length && claims) ALL_CLAIMS = claims;
 
-    var demo = !!getDemoSession();
-    var recovered  = demo ? 318000 : (claims || []).filter(function (c) { return c.status === 'paid' || c.status === 'approved'; })
+    var recovered = (claims || []).filter(function (c) { return c.status === 'paid' || c.status === 'approved'; })
       .reduce(function (s, c) { return s + ((c.estimateMin || 0) + (c.estimateMax || 0))/2; }, 0);
 
     /* Complexity-based pricing model (set by app/payment.html and the
@@ -2158,42 +1990,22 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
        - Plus     $79 — 2–3 procedures, refund_avg ≥ $395
        - Premium  $99 — 4+ procedures (or any claim flagged for code review)
        - Additional resubmissions: $19 (Lite/Standard/Plus — Premium unlimited)
-       - 0% commission on reimbursement (never charged) */
-    var microFees, liteFees, standardFees, plusFees, premiumFees, resubFees;
-    if (demo) {
-      // Demo distribution after MICRO addition:
-      // 5% Micro / 10% Lite / 50% Standard / 25% Plus / 10% Premium on 458 claims;
-      // ~5% of non-Premium pay one extra resub.
-      var mClaims = Math.round(458 * 0.05);
-      var liClaims = Math.round(458 * 0.10);
-      var sClaims = Math.round(458 * 0.50);
-      var lClaims = Math.round(458 * 0.25);
-      var pClaims = Math.round(458 * 0.10);
-      var paidResubs = Math.round((mClaims + liClaims + sClaims + lClaims) * 0.05);
-      microFees    = mClaims * 19;
-      liteFees     = liClaims * 29;
-      standardFees = sClaims * 49;
-      plusFees     = lClaims * 79;
-      premiumFees  = pClaims * 99;
-      resubFees    = paidResubs * 19;
-    } else {
-      // Real claims default to "standard" when c.plan is missing — this
-      // mirrors the Overview tab's planRevenue math (TIER_PRICE[c.plan]
-      // || TIER_PRICE.standard) so both views stay consistent.
-      var planOf = function (c) { return c.plan || 'standard'; };
-      microFees    = (claims || []).filter(function (c) { return planOf(c) === 'micro'; }).length * 19;
-      liteFees     = (claims || []).filter(function (c) { return planOf(c) === 'lite'; }).length * 29;
-      standardFees = (claims || []).filter(function (c) { return planOf(c) === 'standard'; }).length * 49;
-      plusFees     = (claims || []).filter(function (c) { return planOf(c) === 'plus'; }).length * 79;
-      premiumFees  = (claims || []).filter(function (c) { return planOf(c) === 'premium'; }).length * 99;
-      resubFees    = (claims || []).reduce(function (s, c) { return s + ((c.paidResubs || 0) * 19); }, 0);
-    }
+       - 0% commission on reimbursement (never charged).
+       Real claims default to "standard" when c.plan is missing — mirrors
+       the Overview tab's planRevenue math so both views stay consistent. */
+    var planOf = function (c) { return c.plan || 'standard'; };
+    var microFees    = (claims || []).filter(function (c) { return planOf(c) === 'micro'; }).length * 19;
+    var liteFees     = (claims || []).filter(function (c) { return planOf(c) === 'lite'; }).length * 29;
+    var standardFees = (claims || []).filter(function (c) { return planOf(c) === 'standard'; }).length * 49;
+    var plusFees     = (claims || []).filter(function (c) { return planOf(c) === 'plus'; }).length * 79;
+    var premiumFees  = (claims || []).filter(function (c) { return planOf(c) === 'premium'; }).length * 99;
+    var resubFees    = (claims || []).reduce(function (s, c) { return s + ((c.paidResubs || 0) * 19); }, 0);
     var planFees = microFees + liteFees + standardFees + plusFees + premiumFees;
     var grossRev = planFees + resubFees;
 
     /* Refunds — money out per v1.2 §2.3 money-back guarantee. */
     var refundTotals = computeRefundTotals(claims);
-    var refundsOut = demo ? 1480 : refundTotals.refunded;
+    var refundsOut = refundTotals.refunded;
     var netRev = grossRev - refundsOut;
 
     $('fkRecovered').textContent = moneyShort(recovered);
@@ -2561,18 +2373,6 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     rmState.saving = true;
     $('rmSave').disabled = true;
     $('rmSave').textContent = 'Saving…';
-
-    // Demo session: just log + close. The capture flow exists but the
-    // POST never reaches the backend (we have no Cognito session in demo).
-    if (getDemoSession()) {
-      console.log('[review][demo] decision payload:', payload);
-      setTimeout(function () {
-        closeReviewModal();
-        alert('Demo: review captured locally (would POST to /admin/claims/' + rmState.claimId + '/review).');
-        rmState && (rmState.saving = false);
-      }, 250);
-      return;
-    }
 
     try {
       var API = window.CREDIMED_API;
