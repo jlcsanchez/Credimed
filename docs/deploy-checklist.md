@@ -4,7 +4,7 @@ Single source of truth for what needs to happen on AWS after merging
 the recent batch of PRs. Run this top-down — each step is independently
 verifiable, so you can stop and resume any time.
 
-**Last updated:** 2026-05-02 after PR #19.
+**Last updated:** 2026-05-02 — WestFax BAA fully executed + carrier table expanded to 22 entries.
 
 ---
 
@@ -15,7 +15,8 @@ Live on credimed.us (auto-deploys from GitHub Pages):
 - ✅ Admin "Submit to insurer" buttons (PR #17) — Generate PDF Bundle + Mark as faxed
 - ✅ Status pills + "awaiting fax" counter (PR #19)
 - ✅ Email signature in `docs/` (PR #16) — install in Gmail manually
-- ✅ Carrier fax numbers seeded for Aetna, MetLife, Cigna, Guardian, Humana
+- ✅ Carrier fax table seeded with 22 entries — fax verified for Aetna, Ameritas, Cigna, DentaQuest, Guardian, Humana, Liberty, Lincoln, MetLife, Sun Life, United Concordia. Mailing-only (no fax accepted) for Anthem, all 5 Delta state subsidiaries, BCBS-TX/MA/FEP, Principal, Renaissance, UHC.
+- ✅ WestFax HIPAA Basic ($14.99/mo) — fax number `(617) 749-4550`, **BAA signed 2026-05-02**
 
 Pending in AWS — the buttons render but the underlying Lambdas need
 deploy or re-deploy:
@@ -25,7 +26,7 @@ deploy or re-deploy:
 - ⏳ `credimed-users` re-deploy — accepts dob / gender / relationship / groupNumber / employer / subscriber*
 
 Pending vendor work (your side):
-- ⏳ WestFax HIPAA Basic ($14.99/mo) — signed up, fax number `(617) 749-4550`. **BAA still pending — email `support@westfax.com`** with the template in `backend/fax/DEPLOY.md`
+- ⏳ WestFax API credentials — check the WestFax dashboard for Product ID + Username. Needed only for step 5 (live mode).
 - ⏳ Mercury — waiting on transfer to fund the business card
 - ⏳ Email signature — installed minimal "Credimed" text on Gmail iOS app; full HTML version available via Safari + `mail.google.com` desktop view if you want the branded one
 
@@ -114,11 +115,19 @@ Follow `backend/fax/DEPLOY.md`. Summary:
 returns presigned URL → download the PDF → the bundle contains ADA +
 POA pages.
 
-### 5. After WestFax BAA is signed and active
+### 5. Switch to live fax sending (WestFax BAA is now active)
 
-Switch from stub mode to real fax sending. This is **two env var
-changes** on the existing `credimed-claim-submitter` Lambda — no
-re-bundle, no IAM change.
+BAA was countersigned 2026-05-02. Once `credimed-claim-submitter`
+is deployed in stub mode (step 4) and you've test-generated at least
+one bundle successfully, flip to live mode. This is **only env var
+changes** on the Lambda — no re-bundle, no IAM change.
+
+**Before flipping, get from the WestFax dashboard:**
+- **Product ID** (also called "API Key") — Settings → API → "Production Key"
+- **Username** — your WestFax login email
+
+Save both into AWS Systems Manager Parameter Store as SecureString,
+or paste directly into the env vars below.
 
 ```bash
 aws lambda update-function-configuration \
@@ -169,10 +178,13 @@ outbound fax under "Sent".
 - **POA template authored by counsel**: replace the placeholder in
   `backend/fax/templates/poa.pdf` once your lawyer ships it. Until
   then, the placeholder POA goes in the bundle.
-- **Carrier fax numbers for Delta / United Concordia / Anthem / BCBS**:
-  call each carrier's provider line; web didn't surface a fax for
-  out-of-country claims. Update `backend/fax/carrier-fax-numbers.json`
-  + redeploy submitter.
+- **Carriers that don't accept fax claims at all**: per the 2026-05-02
+  research, Delta Dental (all 5 state subsidiaries), Anthem, BCBS-TX,
+  BCBS-MA, BCBS-FEP, UHC, Principal, and Renaissance only accept
+  mail or EDI — not fax. The Lambda surfaces "No claims fax on file"
+  and the admin must mail the bundle (use the `claimsAddress` from
+  `carrier-fax-numbers.json`) or submit via Availity / DentalXChange /
+  Vyne. Long-term, wire EDI into the submitter as a second channel.
 - **Cognito hardening** (password policy, MFA admin, email
   verification): doc'd in `backend/COGNITO_HARDENING.md`. ~15 min in
   Cognito Console.

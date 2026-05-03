@@ -257,10 +257,20 @@ async function bundlePdfs(pdfBytesList) {
 }
 
 function carrierLookup(claim, carriers) {
-  const key = String(claim.insurer || "").toLowerCase().replace(/[^a-z]/g, "");
-  for (const [carrierKey, info] of Object.entries(carriers)) {
-    if (carrierKey.startsWith("_")) continue;
-    if (key.includes(carrierKey)) return { carrierKey, info };
+  /* Match strategy: lowercase + strip non-letters from BOTH the incoming
+     insurer string AND each carrier key, then substring-match. Sort
+     entries by normalized-key length descending so a more-specific key
+     (e.g. "united-concordia" → "unitedconcordia", 15 chars) wins over
+     a generic prefix (e.g. "united" → 6 chars) when both are present. */
+  const insurerNorm = String(claim.insurer || "").toLowerCase().replace(/[^a-z]/g, "");
+  if (!insurerNorm) return null;
+  const entries = Object.entries(carriers)
+    .filter(([k]) => !k.startsWith("_"))
+    .map(([k, info]) => ({ carrierKey: k, info, norm: k.toLowerCase().replace(/[^a-z]/g, "") }))
+    .filter(e => e.norm.length > 0)
+    .sort((a, b) => b.norm.length - a.norm.length);
+  for (const { carrierKey, info, norm } of entries) {
+    if (insurerNorm.includes(norm)) return { carrierKey, info };
   }
   return null;
 }
