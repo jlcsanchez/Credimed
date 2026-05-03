@@ -1,31 +1,37 @@
 <!--
   Credimed email signature — Gmail / Google Workspace ready
   ---------------------------------------------------------
-  Matches the brand shell used in backend/email/templates.js so every
+  Mirrors the brand shell used in backend/email/templates.js so every
   email Juan Luis sends from ceo@credimed.us looks consistent with the
-  transactional emails patients receive. Uses the same teal palette,
-  same "H in circle" mark, same Iowan/system-ui typography stack.
+  transactional emails patients receive: same teal palette, same "H in
+  teal circle" mark, same Iowan/system-ui typography stack.
+
+  The wording matches docs/email-signature-mobile.txt verbatim — that
+  way HTML (Gmail web) and plain-text (Gmail iOS / Android) stay in
+  sync. If you change one, change both.
 
   How to install in Gmail (3 minutes):
-    1. Open this file in a browser tab (or any HTML preview).
-       The rendered version (with the formatted layout) is what you
-       want to copy — NOT the raw HTML source.
-    2. In the browser tab, click somewhere inside the signature block
-       and Cmd+A / Ctrl+A to select all → Cmd+C / Ctrl+C to copy.
-    3. Open Gmail → Settings (gear top-right) → "See all settings".
-    4. Scroll to "Signature" → "Create new" → name it "Credimed".
-    5. Paste (Cmd+V / Ctrl+V) into the signature editor.
-    6. Set "Signature defaults":
+    1. Open docs/email-signature-preview.html in a browser tab.
+       The rendered version is what you want to copy — NOT the raw
+       HTML source from this file.
+    2. Click inside the signature block, drag-select from
+       "Juan Luis Sanchez" through the HIPAA notice at the bottom, or
+       Cmd+A / Ctrl+A inside it to select all.
+    3. Cmd+C / Ctrl+C to copy.
+    4. Open Gmail → Settings (gear top-right) → "See all settings".
+    5. Scroll to "Signature" → "Create new" → name it "Credimed".
+    6. Paste (Cmd+V / Ctrl+V) into the signature editor.
+    7. Set "Signature defaults":
          For new emails:    Credimed
          For reply/forward: Credimed
-    7. Tap "Insert signature before quoted text in replies".
+       Tick "Insert signature before quoted text in replies".
     8. Save changes (bottom of page).
 
   How to verify it works:
     - Compose a new email — signature appears at the bottom.
-    - Send a test to yourself — verify the H mark renders teal and the
-      tagline "Dental claim assistance for cross-border patients"
-      doesn't break to multiple lines on desktop.
+    - Send a test to yourself — the H mark should render teal, the
+      tagline shouldn't break to multiple lines on desktop, and the
+      Wyoming address block should keep its line breaks.
 
   How to update:
     - Re-edit this file → repeat the copy/paste flow.
@@ -35,47 +41,54 @@
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0F172A;border-collapse:collapse;border-spacing:0;line-height:1.45;">
   <tr>
     <!-- Brand mark (H in teal circle) -->
-    <td valign="top" style="padding:0 14px 0 0;border:0;">
+    <td valign="top" style="padding:2px 16px 0 0;border:0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border-spacing:0;">
         <tr>
-          <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;background-color:#0D9488;border-radius:50%;text-align:center;vertical-align:middle;">
-            <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:18px;font-weight:800;color:#ffffff;line-height:40px;letter-spacing:0;">H</span>
+          <td width="44" height="44" align="center" valign="middle" style="width:44px;height:44px;background-color:#0D9488;border-radius:50%;text-align:center;vertical-align:middle;">
+            <span style="font-family:'Iowan Old Style','Apple Garamond',Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#ffffff;line-height:44px;letter-spacing:0;">H</span>
           </td>
         </tr>
       </table>
     </td>
     <!-- Vertical separator -->
-    <td valign="top" style="padding:2px 14px 2px 0;border-left:1px solid #E8E2D5;width:1px;"></td>
+    <td valign="top" style="padding:2px 16px 2px 0;border-left:2px solid #0D9488;width:2px;"></td>
     <!-- Identity + contact block -->
     <td valign="top" style="padding:0;border:0;">
-      <!-- Name + title row -->
+      <!-- Name -->
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;color:#0F172A;letter-spacing:-0.01em;line-height:1.3;">
         Juan Luis Sanchez
       </div>
-      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;font-weight:600;color:#0F766E;letter-spacing:0.04em;text-transform:uppercase;margin-top:2px;">
-        Founder &amp; CEO &middot; Credimed
-      </div>
-      <!-- Spacer -->
-      <div style="height:8px;line-height:8px;font-size:0;">&nbsp;</div>
-      <!-- Tagline -->
-      <div style="font-family:'Iowan Old Style','Apple Garamond',Georgia,'Times New Roman',serif;font-size:13px;color:#475569;font-style:italic;line-height:1.4;">
-        Dental claim assistance for cross-border patients.
+      <!-- Title -->
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;font-weight:600;color:#0F766E;letter-spacing:0.06em;text-transform:uppercase;margin-top:3px;">
+        Founder &amp; CEO, Credimed
       </div>
       <!-- Spacer -->
       <div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div>
-      <!-- Contact rows -->
-      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;color:#475569;line-height:1.65;">
-        <a href="mailto:ceo@credimed.us" style="color:#0F766E;text-decoration:none;font-weight:500;">ceo@credimed.us</a>
-        &nbsp;&middot;&nbsp;
-        <a href="https://credimed.us" target="_blank" style="color:#0F766E;text-decoration:none;font-weight:500;">credimed.us</a>
+      <!-- Tagline -->
+      <div style="font-family:'Iowan Old Style','Apple Garamond',Georgia,'Times New Roman',serif;font-size:13px;color:#475569;font-style:italic;line-height:1.4;">
+        Dental insurance claim assistance for cross-border patients
       </div>
-      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:#94A3B8;line-height:1.6;margin-top:2px;">
-        Fax: (617) 749-4550 &middot; HIPAA-compliant
+      <!-- Spacer -->
+      <div style="height:12px;line-height:12px;font-size:0;">&nbsp;</div>
+      <!-- Contact row: email + fax -->
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;color:#475569;line-height:1.65;">
+        <a href="mailto:ceo@credimed.us" style="color:#0F766E;text-decoration:none;font-weight:600;">ceo@credimed.us</a>
+        <span style="color:#CBD5E1;">&nbsp;&middot;&nbsp;</span>
+        <span style="color:#475569;">Fax: (617) 749-4550</span>
+      </div>
+      <!-- Spacer -->
+      <div style="height:8px;line-height:8px;font-size:0;">&nbsp;</div>
+      <!-- Address block -->
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:#64748B;line-height:1.55;">
+        <span style="color:#0F172A;font-weight:600;">Credimed LLC</span><br>
+        30 N Gould St Ste N<br>
+        Sheridan, WY 82801, United States
       </div>
     </td>
   </tr>
 </table>
-<!-- HIPAA confidentiality footer (small, neutral, only renders on desktop wide enough) -->
-<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:10.5px;color:#94A3B8;line-height:1.5;margin-top:14px;max-width:520px;">
-  This message and any attachments may contain protected health information (PHI) intended only for the named recipient. If you received this in error, please notify the sender and delete the message immediately. Credimed LLC complies with HIPAA standards for the handling of PHI.
+<!-- HIPAA confidentiality footer -->
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:10.5px;color:#94A3B8;line-height:1.55;margin-top:16px;padding-top:12px;border-top:1px solid #E8E2D5;max-width:560px;">
+  <span style="color:#475569;font-weight:600;">Confidentiality Notice:</span> This message may contain confidential information, including protected health information (PHI), intended only for the recipient. If you received this message in error, please notify the sender and delete it.<br>
+  Credimed LLC implements safeguards consistent with HIPAA requirements.
 </div>
