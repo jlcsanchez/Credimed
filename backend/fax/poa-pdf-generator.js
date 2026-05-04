@@ -106,10 +106,13 @@ export async function generatePoaPdf(claim) {
     y = M.top;
     drawHeader();
     drawFooter();
-    /* Start content 52px below the very top — that's 24px below the
-       header divider line at M.top - 28. Earlier value (38) put the
-       title cramped right under the divider. */
-    y = M.top - 52;
+    /* Start content 76px below the very top — that's 48px below the
+       header divider line at M.top - 28. The "LIMITED POWER OF
+       ATTORNEY" title needs to sit visually distinct from the
+       Credimed brand block above it; flush against the divider felt
+       cramped, and even at 24px the brand and title still read as
+       one cluster. 48px lets the title breathe as its own beat. */
+    y = M.top - 76;
   };
 
   const drawHeader = () => {
