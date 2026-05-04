@@ -134,7 +134,7 @@ export async function generatePoaPdf(claim) {
     page.drawText(ENTITY_NAME, {
       x: M.left, y: fY + 8, size: 8, font: fontBold, color: SLATE_900
     });
-    page.drawText('Authorized representative contact for claim inquiries', {
+    page.drawText('Authorized representative contact for claim inquiries (Credimed LLC)', {
       x: M.left, y: fY - 4, size: 7.5, font: fontItalic, color: SLATE_500
     });
     page.drawText(`${ENTITY_ADDR_1}  ·  ${ENTITY_ADDR_2}`, {
@@ -190,10 +190,12 @@ export async function generatePoaPdf(claim) {
       /* Drop a "Signature required on following page" notice at the
          bottom of the current page so the patient (and carrier
          reviewer) understands the signature wasn't omitted, just
-         placed past the page break. Only fires once per page. */
+         placed past the page break. Only fires once per page.
+         Sits ~22px above the footer divider for clear breathing
+         room — fax/print rendering can crowd otherwise. */
       if (!page._sigNoticeDrawn) {
         page.drawText('Signature required on following page  >>', {
-          x: M.left, y: M.bottom + 8, size: 9, font: fontItalic, color: TEAL
+          x: M.left, y: M.bottom + 22, size: 10, font: fontItalic, color: TEAL
         });
         page._sigNoticeDrawn = true;
       }
@@ -215,7 +217,7 @@ export async function generatePoaPdf(claim) {
   y -= 16;
   /* Header context line — at-a-glance plain-language summary. */
   drawPara(
-    "This document authorizes Credimed LLC to act as the patient's limited representative for claim submission and follow-up.",
+    "This document authorizes Credimed LLC to act as the patient's limited representative for the submission, processing, and follow-up of a dental insurance claim.",
     { size: 9, color: SLATE_500, lineHeight: 12 }
   );
   y -= 10;
