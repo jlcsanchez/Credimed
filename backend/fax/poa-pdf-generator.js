@@ -2,21 +2,27 @@
  * POA (Power of Attorney) PDF generator.
  *
  * Generates a 2-page Limited Power of Attorney + HIPAA Authorization
- * + Electronic Communications Consent that the patient signs digitally
- * on credimed.us before their claim is submitted. The signed document
- * travels in the fax bundle alongside the ADA J430D so the carrier
- * has the patient's express authorization for Credimed to act on
- * their behalf.
+ * + Electronic Communications Consent + Electronic Signature
+ * Acknowledgement that the patient signs digitally on credimed.us
+ * before their claim is submitted. The signed document travels in
+ * the fax bundle alongside the ADA J430D so the carrier has the
+ * patient's express authorization for Credimed to act on their
+ * behalf.
  *
- * Wording authored by counsel (May 2026 revision). Section structure:
- *   §1  Limited grant of authority (file, transmit, follow up,
- *       receive correspondence — explicitly excludes receiving funds)
+ * Wording authored by counsel (May 2026 revision 2). Section structure:
+ *   §1  Limited grant of authority — file, transmit, follow up
+ *       (incl. telephone), receive AND request correspondence;
+ *       explicit "no funds, under any circumstance" exclusion
  *   §2  HIPAA authorization §164.508 with the required statutory
- *       elements (right to revoke, no conditioning, copy on request,
- *       redisclosure notice, minimum necessary)
+ *       elements: voluntariness, no conditioning, right to revoke,
+ *       copy on request, redisclosure notice, minimum necessary,
+ *       AND explicit purpose-of-disclosure statement
  *   §3  Term, revocation, acknowledgement (auto-expires on
  *       adjudication or 12 months, whichever first)
  *   §4  Electronic communications consent
+ *   §5  Electronic signature acknowledgement (15 USC §7001 + state
+ *       UETA — generic state reference, not pinned to Wyoming, so
+ *       the same template works for cross-state members)
  *
  * If counsel ships their own PDF template, swap to the same draw-on-
  * template pattern used in ada-pdf-generator.js.
@@ -38,18 +44,35 @@ const PAGE_W = 612;
 const PAGE_H = 792;
 const M = { left: 54, right: 558, top: 752, bottom: 80 };
 
+/* US-style human-readable date. Falls back to the input string if
+   it doesn't parse as a date (e.g. "06/15/2024" stays unchanged). */
+function fmtDate(input) {
+  if (!input) return '—';
+  const s = String(input);
+  // Already MM/DD/YYYY → return as-is
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) return s;
+  // ISO YYYY-MM-DD → reformat
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return `${m[2]}/${m[3]}/${m[1]}`;
+  return s;
+}
+
 export async function generatePoaPdf(claim) {
   const pdf = await PDFDocument.create();
   const font       = await pdf.embedFont(StandardFonts.Helvetica);
   const fontBold   = await pdf.embedFont(StandardFonts.HelveticaBold);
   const fontItalic = await pdf.embedFont(StandardFonts.HelveticaOblique);
 
-  const fullName = [claim.firstName, claim.lastName].filter(Boolean).join(' ').trim() || '—';
-  const memberId = claim.memberId || '—';
-  const insurer  = claim.insurer  || '—';
-  const claimId  = claim.claimId || claim.id || '—';
-  const dob      = claim.dob || '—';
-  const today    = new Date().toISOString().slice(0, 10);
+  const fullName     = [claim.firstName, claim.lastName].filter(Boolean).join(' ').trim() || '—';
+  const memberId     = claim.memberId || '—';
+  const insurer      = claim.insurer  || '—';
+  const claimId      = claim.claimId || claim.id || '—';
+  const dob          = fmtDate(claim.dob);
+  const dateOfSvc    = fmtDate(claim.dateOfService);
+  const today        = fmtDate(new Date().toISOString().slice(0, 10));
+  const patientZip   = claim.addrZip || '—';
+  const payerId      = claim.payerId || '(not provided)';
+  const phoneOrEmail = claim.phone || claim.email || '';
 
   // ── Page lifecycle helpers ──────────────────────────────────────
   let page;
@@ -130,7 +153,7 @@ export async function generatePoaPdf(claim) {
   });
   y -= 24;
 
-  // Patient + claim block (2 columns, 3 rows)
+  // Patient + claim block (2 columns, 4 rows)
   const drawKV = (label, value, x, yy) => {
     page.drawText(label.toUpperCase(), {
       x, y: yy, size: 7, font: fontBold, color: SLATE_500
@@ -141,14 +164,16 @@ export async function generatePoaPdf(claim) {
   };
   const colLeft  = M.left;
   const colRight = M.left + 280;
-  drawKV('Patient / Subscriber', fullName, colLeft,  y);
-  drawKV('Date of Birth',        dob,      colRight, y);
-  y -= 32;
-  drawKV('Member ID',            memberId, colLeft,  y);
-  drawKV('Insurer',              insurer,  colRight, y);
-  y -= 32;
-  drawKV('Claim reference',      claimId,  colLeft,  y);
-  drawKV('Date',                 today,    colRight, y);
+  drawKV('Patient / Subscriber', fullName,    colLeft,  y);
+  drawKV('Date of Birth',        dob,         colRight, y);
+  y -= 30;
+  drawKV('Patient Address (ZIP)', patientZip, colLeft,  y);
+  drawKV('Member ID',             memberId,   colRight, y);
+  y -= 30;
+  drawKV('Insurer / Payer Name',  insurer,    colLeft,  y);
+  drawKV('Payer ID (if known)',   payerId,    colRight, y);
+  y -= 30;
+  drawKV('Date(s) of Service',    dateOfSvc,  colLeft,  y);
   y -= 36;
 
   // §1 — Limited grant of authority
@@ -163,19 +188,25 @@ export async function generatePoaPdf(claim) {
     'In furtherance of this authorization, Credimed LLC may:',
     '   (a) prepare and submit the ADA Dental Claim Form (J430D) on my behalf;',
     '   (b) transmit the claim package by facsimile, mail, or electronic data interchange (EDI);',
-    '   (c) communicate with the insurer regarding the status, processing, or adjudication of this',
-    '       claim; and',
-    '   (d) receive copies of correspondence, Explanation of Benefits (EOBs), remittance details,',
-    '       and other claim-related documents from the insurer on my behalf.',
+    '   (c) communicate with the insurer, including telephone inquiries, regarding the status,',
+    '       processing, or adjudication of this claim; and',
+    '   (d) receive copies of correspondence (including Explanation of Benefits (EOBs) and',
+    '       remittance details), and request such documents on my behalf, related to this claim.',
     '',
-    'Credimed LLC is NOT authorized to receive payment from the insurer on my behalf. All',
-    'reimbursements shall be paid directly to me by the insurer.'
+    'Credimed LLC is not authorized, under any circumstance, to receive payment from the insurer',
+    'on my behalf. All reimbursements shall be paid directly to me by the insurer.'
   ].forEach(line => drawText(line));
   y -= 6;
 
-  // §2 — HIPAA Authorization
-  ensureSpace(280);
-  drawText('2.  HIPAA AUTHORIZATION FOR DISCLOSURE OF PHI', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
+  // §2 — HIPAA Authorization (with initials placeholder on the right)
+  ensureSpace(330);
+  drawText('2.  HIPAA AUTHORIZATION FOR DISCLOSURE OF PHI', { size: 10, bold: true, color: TEAL, lineHeight: 18, x: M.left });
+  // Initials placeholder, right-aligned on the same line
+  const initialsLabel = 'Initials: ____';
+  const initialsX = M.right - font.widthOfTextAtSize(initialsLabel, 9);
+  page.drawText(initialsLabel, {
+    x: initialsX, y: y + 18, size: 9, font, color: SLATE_500
+  });
 
   [
     'In accordance with 45 CFR §164.508, I authorize the insurer named above to disclose',
@@ -185,17 +216,19 @@ export async function generatePoaPdf(claim) {
     'The information disclosed may include claim status, EOBs, remittance details, and any',
     'communications related to the adjudication of this claim.',
     '',
+    'Purpose of disclosure: The purpose of this authorization is to facilitate the processing,',
+    'submission, and follow-up of the dental insurance claim described above.',
+    '',
     'This authorization is voluntary. I understand that:'
   ].forEach(line => drawText(line));
 
-  // HIPAA bullet list
+  // HIPAA bullet list — wrapped to fit
   const bullets = [
     'My treatment, payment, enrollment, or eligibility for benefits is not conditioned on signing this authorization.',
     'I may revoke this authorization in writing at any time by notifying the insurer and Credimed LLC, except to the extent that action has already been taken in reliance on it.',
     'I am entitled to receive a copy of this authorization upon request.',
     'Information disclosed pursuant to this authorization may be subject to redisclosure by the recipient and may no longer be protected under HIPAA.'
   ];
-  // Wrap each bullet to ~92 chars per visual line
   bullets.forEach(b => {
     ensureSpace(40);
     const wrapped = wrapText(b, 92);
@@ -238,13 +271,25 @@ export async function generatePoaPdf(claim) {
     'email, secure digital platforms, and other electronic communication methods used by',
     'Credimed LLC.'
   ].forEach(line => drawText(line));
+  y -= 6;
+
+  // §5 — Electronic Signature Acknowledgement
+  ensureSpace(70);
+  drawText('5.  ELECTRONIC SIGNATURE ACKNOWLEDGEMENT', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
+
+  [
+    'My electronic signature below constitutes my legal signature in accordance with',
+    '15 USC §7001 (Electronic Signatures in Global and National Commerce Act, "E-SIGN Act") and',
+    'applicable state electronic transaction laws. My electronic signature has the same legal',
+    'force and effect as a handwritten signature, and I intend to be bound by it.'
+  ].forEach(line => drawText(line));
   y -= 18;
 
   // ── Signature block ─────────────────────────────────────────────
-  ensureSpace(120);
+  ensureSpace(150);
   const sigY = y;
 
-  // Patient signature line
+  // Row 1: Patient signature + Date signed
   page.drawLine({
     start: { x: M.left, y: sigY },
     end:   { x: M.left + 240, y: sigY },
@@ -254,7 +299,6 @@ export async function generatePoaPdf(claim) {
     x: M.left, y: sigY - 12, size: 8, font, color: SLATE_500
   });
 
-  // Date line
   page.drawLine({
     start: { x: M.left + 280, y: sigY },
     end:   { x: M.left + 420, y: sigY },
@@ -285,7 +329,7 @@ export async function generatePoaPdf(claim) {
     }
   }
 
-  // Printed name
+  // Row 2: Printed name + Phone or Email
   page.drawLine({
     start: { x: M.left, y: sigY - 36 },
     end:   { x: M.left + 240, y: sigY - 36 },
@@ -298,7 +342,6 @@ export async function generatePoaPdf(claim) {
     x: M.left, y: sigY - 32, size: 11, font, color: SLATE_900
   });
 
-  // Phone or Email
   page.drawLine({
     start: { x: M.left + 280, y: sigY - 36 },
     end:   { x: M.left + 480, y: sigY - 36 },
@@ -307,10 +350,24 @@ export async function generatePoaPdf(claim) {
   page.drawText('Phone or Email', {
     x: M.left + 280, y: sigY - 48, size: 8, font, color: SLATE_500
   });
-  const phoneOrEmail = claim.phone || claim.email || '';
   if (phoneOrEmail) {
     page.drawText(phoneOrEmail, {
       x: M.left + 280, y: sigY - 32, size: 11, font, color: SLATE_900
+    });
+  }
+
+  // Row 3: ZIP Code (auto-filled from patient profile, also confirms identity)
+  page.drawLine({
+    start: { x: M.left, y: sigY - 72 },
+    end:   { x: M.left + 240, y: sigY - 72 },
+    thickness: 0.5, color: SLATE_900
+  });
+  page.drawText('ZIP Code', {
+    x: M.left, y: sigY - 84, size: 8, font, color: SLATE_500
+  });
+  if (claim.addrZip) {
+    page.drawText(String(claim.addrZip), {
+      x: M.left, y: sigY - 68, size: 11, font, color: SLATE_900
     });
   }
 
