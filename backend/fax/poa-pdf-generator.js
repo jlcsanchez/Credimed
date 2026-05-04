@@ -106,7 +106,10 @@ export async function generatePoaPdf(claim) {
     y = M.top;
     drawHeader();
     drawFooter();
-    y = M.top - 38;
+    /* Start content 52px below the very top — that's 24px below the
+       header divider line at M.top - 28. Earlier value (38) put the
+       title cramped right under the divider. */
+    y = M.top - 52;
   };
 
   const drawHeader = () => {
@@ -218,22 +221,29 @@ export async function generatePoaPdf(claim) {
   page.drawText('LIMITED POWER OF ATTORNEY', {
     x: M.left, y, size: 16, font: fontBold, color: SLATE_900
   });
-  y -= 16;
+  /* 22px gap (was 16): subtitle reads as a separate beat instead of
+     sitting flush against the title baseline. */
+  y -= 22;
   page.drawText('and HIPAA Authorization for Disclosure of Protected Health Information', {
     x: M.left, y, size: 10, font: fontItalic, color: SLATE_500
   });
-  y -= 16;
-  /* Header context line — at-a-glance plain-language summary. */
+  y -= 24;
+  /* Header context lines — at-a-glance plain-language summary. */
   drawPara(
     "This document authorizes Credimed LLC to act as the patient's limited representative for the submission, processing, and follow-up of a dental insurance claim.",
-    { size: 9, color: SLATE_500, lineHeight: 12 }
+    { size: 9, color: SLATE_500, lineHeight: 13 }
   );
-  y -= 4;
+  /* 8px between the two context lines (was 4) so the italic
+     "Submission via fax authorized" reads as its own beat, not as a
+     wrapped continuation of the previous sentence. */
+  y -= 8;
   drawPara(
     'Submission via fax authorized.',
-    { size: 9, italic: true, color: SLATE_500, lineHeight: 12 }
+    { size: 9, italic: true, color: SLATE_500, lineHeight: 13 }
   );
-  y -= 10;
+  /* 22px gap (was 10) before the patient header block so the patient
+     data feels visually distinct from the document title cluster. */
+  y -= 22;
 
   // Patient + claim block (2 columns, 4 rows). Right column starts at
   // x=320 (was 280) so the second column extends further into the
