@@ -170,9 +170,17 @@ export async function generatePoaPdf(claim) {
   };
 
   /* Draw a paragraph (auto-wraps to CONTENT_W) and advance y by the
-     total line height. Pass `indent` to inset all wrapped lines (e.g.
-     for the (a)(b)(c)(d) sub-items so continuation lines align under
-     the first character of the item, not under the "(a) "). */
+     total line height.
+       opts.indent  — inset continuation lines (for (a)(b)(c)(d)
+                      sub-items so wrapped lines align under the
+                      first character of the item, not under "(a) ")
+       opts.justify — distribute extra space between words so each
+                      non-last line reaches the right margin (full
+                      justification, like a printed legal doc).
+                      Defaults to true for body prose. The LAST line
+                      of any paragraph stays left-aligned because
+                      justifying a half-empty last line creates ugly
+                      word-spacing gaps. */
   const drawPara = (text, opts = {}) => {
     const size = opts.size || BODY_SIZE;
     const f    = opts.bold ? fontBold : (opts.italic ? fontItalic : font);
@@ -181,14 +189,47 @@ export async function generatePoaPdf(claim) {
     const x = opts.x != null ? opts.x : M.left;
     const indent = opts.indent || 0;
     const maxWidth = opts.maxWidth != null ? opts.maxWidth : (CONTENT_W - (x - M.left));
-    /* Empty drawPara('') = explicit paragraph break. Use PARA_GAP so the
-       break is visually distinct from a wrapped continuation line. */
+    const justify = opts.justify !== false;
     if (text === '') { y -= PARA_GAP; return; }
     const lines = wrapPara(text, maxWidth, f, size);
     lines.forEach((line, idx) => {
       const lx = idx === 0 ? x : x + indent;
-      page.drawText(line, { x: lx, y, size, font: f, color });
+      const isLastLine = idx === lines.length - 1;
+      const lineMaxWidth = idx === 0 ? maxWidth : (maxWidth - indent);
+      if (justify && !isLastLine) {
+        drawJustifiedLine(line, lx, y, lineMaxWidth, f, size, color);
+      } else {
+        page.drawText(line, { x: lx, y, size, font: f, color });
+      }
       y -= lh;
+    });
+  };
+
+  /* Draw a single line so its words are spaced out to fill maxWidth
+     exactly (full justification). If the line has only one word, no
+     justification is possible — draw it left-aligned. */
+  const drawJustifiedLine = (line, startX, lineY, maxWidth, f, size, color) => {
+    const words = line.split(' ').filter(Boolean);
+    if (words.length <= 1) {
+      page.drawText(line, { x: startX, y: lineY, size, font: f, color });
+      return;
+    }
+    const wordWidths = words.map(w => f.widthOfTextAtSize(w, size));
+    const totalWordWidth = wordWidths.reduce((a, b) => a + b, 0);
+    const totalGap = maxWidth - totalWordWidth;
+    const gapPerSpace = totalGap / (words.length - 1);
+    /* Cap the gap at 3x the natural space width so a short line near
+       the end of a paragraph doesn't blow out into huge inter-word
+       gaps. If we hit the cap, fall back to left-aligned for that line. */
+    const naturalSpace = f.widthOfTextAtSize(' ', size);
+    if (gapPerSpace > naturalSpace * 3) {
+      page.drawText(line, { x: startX, y: lineY, size, font: f, color });
+      return;
+    }
+    let cursor = startX;
+    words.forEach((w, i) => {
+      page.drawText(w, { x: cursor, y: lineY, size, font: f, color });
+      cursor += wordWidths[i] + gapPerSpace;
     });
   };
 
