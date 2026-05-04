@@ -45,7 +45,10 @@ const PAGE_H = 792;
 const M = { left: 54, right: 558, top: 752, bottom: 80 };
 const CONTENT_W = M.right - M.left;        // 504px usable width
 const BODY_SIZE = 9.5;
-const BODY_LH   = 13;
+const BODY_LH   = 14;     // was 13 — extra 1px gives prose room to breathe
+const PARA_GAP  = 8;      // additional gap between paragraphs (on top of BODY_LH)
+const SEC_GAP   = 16;     // gap between sections (after the last paragraph)
+const TITLE_GAP = 22;     // gap below a section title before the first paragraph
 
 /* US-style human-readable date. Falls back to the input string if
    it doesn't parse as a date (e.g. "06/15/2024" stays unchanged). */
@@ -172,7 +175,9 @@ export async function generatePoaPdf(claim) {
     const x = opts.x != null ? opts.x : M.left;
     const indent = opts.indent || 0;
     const maxWidth = opts.maxWidth != null ? opts.maxWidth : (CONTENT_W - (x - M.left));
-    if (text === '') { y -= lh; return; }
+    /* Empty drawPara('') = explicit paragraph break. Use PARA_GAP so the
+       break is visually distinct from a wrapped continuation line. */
+    if (text === '') { y -= PARA_GAP; return; }
     const lines = wrapPara(text, maxWidth, f, size);
     lines.forEach((line, idx) => {
       const lx = idx === 0 ? x : x + indent;
@@ -185,7 +190,7 @@ export async function generatePoaPdf(claim) {
     page.drawText(text, {
       x: M.left, y, size: 10, font: fontBold, color: TEAL
     });
-    y -= 18;
+    y -= TITLE_GAP;
   };
 
   const ensureSpace = (px) => {
@@ -245,15 +250,15 @@ export async function generatePoaPdf(claim) {
   const colRight = M.left + 280;
   drawKV('Patient / Subscriber', fullName,    colLeft,  y);
   drawKV('Date of Birth',        dob,         colRight, y);
-  y -= 30;
+  y -= 42;
   drawKV('Patient ZIP Code',      patientZip, colLeft,  y);
   drawKV('Member ID',             memberId,   colRight, y);
-  y -= 30;
+  y -= 42;
   drawKV('Insurer / Payer Name',  insurer,    colLeft,  y);
   drawKV('Payer ID (if known)',   payerId,    colRight, y);
-  y -= 30;
+  y -= 42;
   drawKV('Date(s) of Service',    dateOfSvc,  colLeft,  y);
-  y -= 36;
+  y -= 42;
 
   // §1 — Limited grant of authority
   drawSectionTitle('1.  GRANT OF LIMITED AUTHORITY');
@@ -278,7 +283,7 @@ export async function generatePoaPdf(claim) {
   drawPara(
     'Credimed LLC is not authorized, under any circumstance, to receive payment from the insurer on my behalf. All reimbursements shall be paid directly to me by the insurer.'
   );
-  y -= 6;
+  y -= SEC_GAP;
 
   // §2 — HIPAA Authorization (with initials placeholder on the right)
   ensureSpace(330);
@@ -319,7 +324,7 @@ export async function generatePoaPdf(claim) {
   drawPara(
     'Disclosure is limited to the minimum necessary information required to process this claim. Credimed LLC agrees to maintain the confidentiality of PHI consistent with HIPAA safeguards and to use it solely for purposes of representing me in connection with this claim.'
   );
-  y -= 6;
+  y -= SEC_GAP;
 
   // §3 — Term, revocation, acknowledgement
   ensureSpace(120);
@@ -334,7 +339,7 @@ export async function generatePoaPdf(claim) {
   drawPara(
     'I may revoke this authorization at any time by written notice to the insurer and to Credimed LLC. Revocation does not affect any actions taken prior to receipt of such notice.'
   );
-  y -= 6;
+  y -= SEC_GAP;
 
   // §4 — Electronic Communications Consent
   ensureSpace(70);
@@ -343,7 +348,7 @@ export async function generatePoaPdf(claim) {
   drawPara(
     'I authorize communications related to this claim to occur via electronic means, including email, secure digital platforms, and other electronic communication methods used by Credimed LLC.'
   );
-  y -= 6;
+  y -= SEC_GAP;
 
   // §5 — Electronic Signature Acknowledgement
   ensureSpace(80);
