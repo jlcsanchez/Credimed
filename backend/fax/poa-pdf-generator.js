@@ -114,16 +114,26 @@ export async function generatePoaPdf(claim) {
     page.drawText(ENTITY_NAME, {
       x: M.left, y: fY + 8, size: 8, font: fontBold, color: SLATE_900
     });
-    page.drawText(`${ENTITY_ADDR_1}  ·  ${ENTITY_ADDR_2}`, {
-      x: M.left, y: fY - 4, size: 8, font, color: SLATE_500
+    page.drawText('Authorized representative contact for claim inquiries', {
+      x: M.left, y: fY - 4, size: 7.5, font: fontItalic, color: SLATE_500
     });
-    page.drawText(`${ENTITY_CONTACT}  ·  HIPAA-compliant`, {
+    page.drawText(`${ENTITY_ADDR_1}  ·  ${ENTITY_ADDR_2}`, {
       x: M.left, y: fY - 16, size: 8, font, color: SLATE_500
     });
-    const stamp = `Claim ${claimId}  ·  Generated ${new Date().toISOString().slice(0, 19)}Z`;
+    page.drawText(`${ENTITY_CONTACT}  ·  HIPAA-compliant`, {
+      x: M.left, y: fY - 28, size: 8, font, color: SLATE_500
+    });
+    /* Claim ID stamp — bottom-right of every page so the carrier can
+       cross-reference if the document gets separated from the bundle. */
+    const stamp = `Claim ${claimId}`;
+    const stampW = fontBold.widthOfTextAtSize(stamp, 8);
     page.drawText(stamp, {
-      x: M.right - font.widthOfTextAtSize(stamp, 7),
-      y: fY - 28, size: 7, font, color: SLATE_500
+      x: M.right - stampW, y: fY + 8, size: 8, font: fontBold, color: SLATE_900
+    });
+    const subStamp = `Generated ${new Date().toISOString().slice(0, 19)}Z`;
+    page.drawText(subStamp, {
+      x: M.right - font.widthOfTextAtSize(subStamp, 7),
+      y: fY - 4, size: 7, font, color: SLATE_500
     });
   };
 
@@ -137,7 +147,21 @@ export async function generatePoaPdf(claim) {
   };
 
   const ensureSpace = (px) => {
-    if (y - px < M.bottom) newPage();
+    if (y - px < M.bottom) {
+      /* Before flipping to a new page, drop a "Signature required on
+         following page →" notice at the bottom of the current page so
+         the patient (and any reviewer) understands the signature has
+         not been omitted, just placed past the page break. The notice
+         only fires when the current page hasn't already drawn it. */
+      if (!page._sigNoticeDrawn) {
+        const noticeY = M.bottom + 8;
+        page.drawText('Signature required on following page  >>', {
+          x: M.left, y: noticeY, size: 9, font: fontItalic, color: TEAL
+        });
+        page._sigNoticeDrawn = true;
+      }
+      newPage();
+    }
   };
 
   // ── Page 1 ─────────────────────────────────────────────────────
@@ -151,7 +175,18 @@ export async function generatePoaPdf(claim) {
   page.drawText('and HIPAA Authorization for Disclosure of Protected Health Information', {
     x: M.left, y, size: 10, font: fontItalic, color: SLATE_500
   });
-  y -= 24;
+  y -= 16;
+  /* Header context line — at-a-glance plain-language summary so the
+     carrier reviewer (and the patient) understand the document's
+     purpose without needing to read the full legalese. */
+  page.drawText("This document authorizes Credimed LLC to act as the patient's limited representative", {
+    x: M.left, y, size: 9, font, color: SLATE_500
+  });
+  y -= 12;
+  page.drawText('for claim submission and follow-up.', {
+    x: M.left, y, size: 9, font, color: SLATE_500
+  });
+  y -= 22;
 
   // Patient + claim block (2 columns, 4 rows)
   const drawKV = (label, value, x, yy) => {
@@ -186,7 +221,7 @@ export async function generatePoaPdf(claim) {
     'treatment described in the documentation I provide to Credimed LLC.',
     '',
     'In furtherance of this authorization, Credimed LLC may:',
-    '   (a) prepare and submit the ADA Dental Claim Form (J430D) on my behalf;',
+    '   (a) prepare and submit the ADA Dental Claim Form on my behalf;',
     '   (b) transmit the claim package by facsimile, mail, or electronic data interchange (EDI);',
     '   (c) communicate with the insurer, including telephone inquiries, regarding the status,',
     '       processing, or adjudication of this claim; and',
