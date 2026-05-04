@@ -336,7 +336,7 @@ step).
 `s3://credimed-edi-archive/{claimId}/{claimId}-poa.pdf`.
 
 **Template:** static POA PDF authored by counsel. Authorizes
-Credimed Inc to prepare and submit the dental insurance claim on
+Credimed LLC to prepare and submit the dental insurance claim on
 the patient's behalf, transmit by fax to the carrier, and receive
 status updates from the carrier on the patient's behalf. No
 authority to receive funds (which already go directly to the

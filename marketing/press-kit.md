@@ -1,7 +1,7 @@
 # Credimed — Press Kit
 
 **Last updated:** April 27, 2026
-**Press contact:** Juan Luis Sanchez · `press@credimed.us` · Boston, MA
+**Press contact:** Juan Luis Sanchez · `press@credimed.us` · Sheridan, WY
 
 ---
 

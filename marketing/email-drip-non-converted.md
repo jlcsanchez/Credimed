@@ -38,7 +38,7 @@ Hit reply if anything's blocking you. I read every email.
 — Juan Luis
 Founder, Credimed
 
-[Unsubscribe](%unsubscribe_url%) · 2 minutes to file · Boston, MA
+[Unsubscribe](%unsubscribe_url%) · 2 minutes to file · Sheridan, WY
 
 ---
 
@@ -141,7 +141,7 @@ Either way, I appreciate you giving us a look.
 
 — Juan Luis
 Founder, Credimed
-Boston, MA
+Sheridan, WY
 
 [Unsubscribe](%unsubscribe_url%)
 
