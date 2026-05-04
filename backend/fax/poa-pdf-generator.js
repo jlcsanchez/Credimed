@@ -150,7 +150,10 @@ export async function generatePoaPdf(claim) {
     page.drawText(stamp, {
       x: M.right - stampW, y: fY + 8, size: 8, font: fontBold, color: SLATE_900
     });
-    const subStamp = `Generated ${new Date().toISOString().slice(0, 19)}Z`;
+    const generatedHuman = new Date().toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const subStamp = `Generated ${generatedHuman}`;
     page.drawText(subStamp, {
       x: M.right - font.widthOfTextAtSize(subStamp, 7),
       y: fY - 4, size: 7, font, color: SLATE_500
@@ -220,6 +223,11 @@ export async function generatePoaPdf(claim) {
     "This document authorizes Credimed LLC to act as the patient's limited representative for the submission, processing, and follow-up of a dental insurance claim.",
     { size: 9, color: SLATE_500, lineHeight: 12 }
   );
+  y -= 4;
+  drawPara(
+    'Submission via fax authorized.',
+    { size: 9, italic: true, color: SLATE_500, lineHeight: 12 }
+  );
   y -= 10;
 
   // Patient + claim block (2 columns, 4 rows). Right column starts at
@@ -260,7 +268,7 @@ export async function generatePoaPdf(claim) {
   const subItems = [
     '(a) prepare and submit the ADA Dental Claim Form on my behalf;',
     '(b) transmit the claim package by facsimile, mail, or electronic data interchange (EDI);',
-    '(c) communicate with the insurer, including telephone inquiries, regarding the status, processing, or adjudication of this claim; and',
+    '(c) communicate with the insurer regarding the status, processing, or adjudication of this claim, including telephone inquiries; and',
     '(d) receive copies of correspondence (including Explanation of Benefits (EOBs) and remittance details), and request such documents on my behalf, related to this claim.'
   ];
   subItems.forEach(item => {
