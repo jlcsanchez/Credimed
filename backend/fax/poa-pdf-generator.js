@@ -1,76 +1,126 @@
 /**
  * POA (Power of Attorney) PDF generator.
  *
- * Generates a one-page Limited Power of Attorney + HIPAA Authorization
- * that the patient signs digitally on credimed.us before their claim
- * is submitted. The signed POA travels in the fax bundle alongside the
- * ADA J430D so the carrier has the patient's express authorization for
- * Credimed to act on their behalf.
+ * Generates a 2-page Limited Power of Attorney + HIPAA Authorization
+ * + Electronic Communications Consent that the patient signs digitally
+ * on credimed.us before their claim is submitted. The signed document
+ * travels in the fax bundle alongside the ADA J430D so the carrier
+ * has the patient's express authorization for Credimed to act on
+ * their behalf.
  *
- * Authority granted (Limited POA):
- *   - Prepare and submit ONE specific dental insurance claim
- *   - Transmit the claim package by fax / mail / EDI
- *   - Receive status updates from the carrier on the patient's behalf
- *   - Receive copies of carrier correspondence about this claim
- *   - NO authority to receive funds (carrier pays the patient directly)
+ * Wording authored by counsel (May 2026 revision). Section structure:
+ *   §1  Limited grant of authority (file, transmit, follow up,
+ *       receive correspondence — explicitly excludes receiving funds)
+ *   §2  HIPAA authorization §164.508 with the required statutory
+ *       elements (right to revoke, no conditioning, copy on request,
+ *       redisclosure notice, minimum necessary)
+ *   §3  Term, revocation, acknowledgement (auto-expires on
+ *       adjudication or 12 months, whichever first)
+ *   §4  Electronic communications consent
  *
- * HIPAA Authorization (separate but on the same page):
- *   - Allows the carrier to disclose PHI about THIS claim to Credimed
- *   - Required because Credimed is acting as the patient's authorized
- *     representative and needs to receive EOBs / status updates
- *   - Limited to the specific claim referenced; expires on adjudication
- *
- * The generator is intentionally text-based (drawn programmatically
- * rather than from a PDF template) so the same code handles all
- * patients without needing a separate template file. If counsel later
- * provides a branded PDF template, swap to the same draw-on-template
- * pattern used in ada-pdf-generator.js.
+ * If counsel ships their own PDF template, swap to the same draw-on-
+ * template pattern used in ada-pdf-generator.js.
  */
 
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
-const TEAL = rgb(0.051, 0.580, 0.533);   // #0D9488
-const SLATE_900 = rgb(0.059, 0.090, 0.165); // #0F172A
-const SLATE_500 = rgb(0.392, 0.451, 0.545); // #64748B
-const SLATE_300 = rgb(0.796, 0.835, 0.882); // #CBD5E1
+const TEAL       = rgb(0.051, 0.580, 0.533); // #0D9488
+const SLATE_900  = rgb(0.059, 0.090, 0.165); // #0F172A
+const SLATE_500  = rgb(0.392, 0.451, 0.545); // #64748B
+const SLATE_300  = rgb(0.796, 0.835, 0.882); // #CBD5E1
 
-const ENTITY_NAME = 'Credimed LLC';
-const ENTITY_ADDR_1 = '30 N Gould St Ste N';
-const ENTITY_ADDR_2 = 'Sheridan, WY 82801, United States';
+const ENTITY_NAME    = 'Credimed LLC';
+const ENTITY_ADDR_1  = '30 N Gould St Ste N';
+const ENTITY_ADDR_2  = 'Sheridan, WY 82801, United States';
 const ENTITY_CONTACT = 'support@credimed.us  ·  Fax: (617) 749-4550';
+
+const PAGE_W = 612;
+const PAGE_H = 792;
+const M = { left: 54, right: 558, top: 752, bottom: 80 };
 
 export async function generatePoaPdf(claim) {
   const pdf = await PDFDocument.create();
-  const page = pdf.addPage([612, 792]);
-  const font = await pdf.embedFont(StandardFonts.Helvetica);
-  const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const font       = await pdf.embedFont(StandardFonts.Helvetica);
+  const fontBold   = await pdf.embedFont(StandardFonts.HelveticaBold);
   const fontItalic = await pdf.embedFont(StandardFonts.HelveticaOblique);
 
-  const M = { left: 54, right: 558, top: 752 };
-  let y = M.top;
+  const fullName = [claim.firstName, claim.lastName].filter(Boolean).join(' ').trim() || '—';
+  const memberId = claim.memberId || '—';
+  const insurer  = claim.insurer  || '—';
+  const claimId  = claim.claimId || claim.id || '—';
+  const dob      = claim.dob || '—';
+  const today    = new Date().toISOString().slice(0, 10);
 
-  // ── Header — H mark + entity ────────────────────────────────────
-  page.drawCircle({ x: M.left + 14, y: y - 4, size: 14, color: TEAL });
-  page.drawText('H', {
-    x: M.left + 9, y: y - 9, size: 16, font: fontBold, color: rgb(1, 1, 1)
-  });
-  page.drawText(ENTITY_NAME, {
-    x: M.left + 36, y: y - 2, size: 13, font: fontBold, color: SLATE_900
-  });
-  page.drawText('Cross-border dental insurance claim assistance', {
-    x: M.left + 36, y: y - 16, size: 9, font: fontItalic, color: SLATE_500
-  });
-  y -= 38;
+  // ── Page lifecycle helpers ──────────────────────────────────────
+  let page;
+  let y;
 
-  // Divider
-  page.drawLine({
-    start: { x: M.left, y },
-    end:   { x: M.right, y },
-    thickness: 0.5, color: SLATE_300
-  });
-  y -= 24;
+  const newPage = () => {
+    page = pdf.addPage([PAGE_W, PAGE_H]);
+    y = M.top;
+    drawHeader();
+    drawFooter();
+    y = M.top - 38;
+  };
 
-  // ── Title ───────────────────────────────────────────────────────
+  const drawHeader = () => {
+    page.drawCircle({ x: M.left + 14, y: M.top - 4, size: 14, color: TEAL });
+    page.drawText('H', {
+      x: M.left + 9, y: M.top - 9, size: 16, font: fontBold, color: rgb(1, 1, 1)
+    });
+    page.drawText(ENTITY_NAME, {
+      x: M.left + 36, y: M.top - 2, size: 13, font: fontBold, color: SLATE_900
+    });
+    page.drawText('Cross-border dental insurance claim assistance', {
+      x: M.left + 36, y: M.top - 16, size: 9, font: fontItalic, color: SLATE_500
+    });
+    page.drawLine({
+      start: { x: M.left, y: M.top - 28 },
+      end:   { x: M.right, y: M.top - 28 },
+      thickness: 0.5, color: SLATE_300
+    });
+  };
+
+  const drawFooter = () => {
+    const fY = 56;
+    page.drawLine({
+      start: { x: M.left, y: fY + 22 },
+      end:   { x: M.right, y: fY + 22 },
+      thickness: 0.5, color: SLATE_300
+    });
+    page.drawText(ENTITY_NAME, {
+      x: M.left, y: fY + 8, size: 8, font: fontBold, color: SLATE_900
+    });
+    page.drawText(`${ENTITY_ADDR_1}  ·  ${ENTITY_ADDR_2}`, {
+      x: M.left, y: fY - 4, size: 8, font, color: SLATE_500
+    });
+    page.drawText(`${ENTITY_CONTACT}  ·  HIPAA-compliant`, {
+      x: M.left, y: fY - 16, size: 8, font, color: SLATE_500
+    });
+    const stamp = `Claim ${claimId}  ·  Generated ${new Date().toISOString().slice(0, 19)}Z`;
+    page.drawText(stamp, {
+      x: M.right - font.widthOfTextAtSize(stamp, 7),
+      y: fY - 28, size: 7, font, color: SLATE_500
+    });
+  };
+
+  const drawText = (text, opts = {}) => {
+    const size = opts.size || 9.5;
+    const f    = opts.bold ? fontBold : (opts.italic ? fontItalic : font);
+    const lh   = opts.lineHeight || 13;
+    const color = opts.color || SLATE_900;
+    page.drawText(text, { x: opts.x || M.left, y, size, font: f, color });
+    y -= lh;
+  };
+
+  const ensureSpace = (px) => {
+    if (y - px < M.bottom) newPage();
+  };
+
+  // ── Page 1 ─────────────────────────────────────────────────────
+  newPage();
+
+  // Title
   page.drawText('LIMITED POWER OF ATTORNEY', {
     x: M.left, y, size: 16, font: fontBold, color: SLATE_900
   });
@@ -80,13 +130,7 @@ export async function generatePoaPdf(claim) {
   });
   y -= 24;
 
-  // ── Patient + claim block (2 columns) ───────────────────────────
-  const fullName = [claim.firstName, claim.lastName].filter(Boolean).join(' ').trim() || '—';
-  const memberId = claim.memberId || '—';
-  const insurer  = claim.insurer  || '—';
-  const claimId  = claim.claimId || claim.id || '—';
-  const today    = new Date().toISOString().slice(0, 10);
-
+  // Patient + claim block (2 columns, 3 rows)
   const drawKV = (label, value, x, yy) => {
     page.drawText(label.toUpperCase(), {
       x, y: yy, size: 7, font: fontBold, color: SLATE_500
@@ -95,93 +139,112 @@ export async function generatePoaPdf(claim) {
       x, y: yy - 12, size: 11, font, color: SLATE_900
     });
   };
-
   const colLeft  = M.left;
   const colRight = M.left + 280;
   drawKV('Patient / Subscriber', fullName, colLeft,  y);
-  drawKV('Date',                 today,    colRight, y);
+  drawKV('Date of Birth',        dob,      colRight, y);
   y -= 32;
   drawKV('Member ID',            memberId, colLeft,  y);
   drawKV('Insurer',              insurer,  colRight, y);
   y -= 32;
   drawKV('Claim reference',      claimId,  colLeft,  y);
-  y -= 32;
+  drawKV('Date',                 today,    colRight, y);
+  y -= 36;
 
-  // Section 1 — Power of Attorney body
-  page.drawText('1.  GRANT OF LIMITED AUTHORITY', {
-    x: M.left, y, size: 10, font: fontBold, color: TEAL
-  });
-  y -= 18;
+  // §1 — Limited grant of authority
+  drawText('1.  GRANT OF LIMITED AUTHORITY', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
 
-  const poaBody = [
-    `I, the patient identified above, appoint ${ENTITY_NAME} as my limited`,
-    'representative for the sole purpose of preparing, submitting, and following up on',
-    'the single dental insurance claim referenced above with the insurer named above.',
+  [
+    'I, the patient identified above, hereby appoint Credimed LLC, including its employees,',
+    'contractors, and designated agents, as my limited representative for the sole purpose of',
+    'preparing, submitting, and following up on a dental insurance claim associated with the',
+    'treatment described in the documentation I provide to Credimed LLC.',
     '',
-    `In furtherance of this authorization, ${ENTITY_NAME} may: (a) prepare and submit`,
-    'the ADA Dental Claim Form (J430D) on my behalf; (b) transmit the claim package',
-    'by facsimile, mail, or electronic data interchange (EDI); (c) communicate with',
-    'the insurer regarding the status, processing, or adjudication of this claim;',
-    'and (d) receive copies of correspondence, Explanation of Benefits (EOBs), and',
-    'other claim-related documents from the insurer on my behalf.',
+    'In furtherance of this authorization, Credimed LLC may:',
+    '   (a) prepare and submit the ADA Dental Claim Form (J430D) on my behalf;',
+    '   (b) transmit the claim package by facsimile, mail, or electronic data interchange (EDI);',
+    '   (c) communicate with the insurer regarding the status, processing, or adjudication of this',
+    '       claim; and',
+    '   (d) receive copies of correspondence, Explanation of Benefits (EOBs), remittance details,',
+    '       and other claim-related documents from the insurer on my behalf.',
     '',
-    `${ENTITY_NAME} is NOT authorized to receive payment from the insurer on my`,
-    'behalf. All reimbursement shall be paid directly to me by the insurer.'
+    'Credimed LLC is NOT authorized to receive payment from the insurer on my behalf. All',
+    'reimbursements shall be paid directly to me by the insurer.'
+  ].forEach(line => drawText(line));
+  y -= 6;
+
+  // §2 — HIPAA Authorization
+  ensureSpace(280);
+  drawText('2.  HIPAA AUTHORIZATION FOR DISCLOSURE OF PHI', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
+
+  [
+    'In accordance with 45 CFR §164.508, I authorize the insurer named above to disclose',
+    'Protected Health Information (PHI) related to this claim to Credimed LLC, including its',
+    'employees, contractors, and designated agents assisting in claim processing.',
+    '',
+    'The information disclosed may include claim status, EOBs, remittance details, and any',
+    'communications related to the adjudication of this claim.',
+    '',
+    'This authorization is voluntary. I understand that:'
+  ].forEach(line => drawText(line));
+
+  // HIPAA bullet list
+  const bullets = [
+    'My treatment, payment, enrollment, or eligibility for benefits is not conditioned on signing this authorization.',
+    'I may revoke this authorization in writing at any time by notifying the insurer and Credimed LLC, except to the extent that action has already been taken in reliance on it.',
+    'I am entitled to receive a copy of this authorization upon request.',
+    'Information disclosed pursuant to this authorization may be subject to redisclosure by the recipient and may no longer be protected under HIPAA.'
   ];
-  poaBody.forEach(line => {
-    page.drawText(line, { x: M.left, y, size: 9.5, font, color: SLATE_900 });
-    y -= 13;
+  // Wrap each bullet to ~92 chars per visual line
+  bullets.forEach(b => {
+    ensureSpace(40);
+    const wrapped = wrapText(b, 92);
+    wrapped.forEach((line, idx) => {
+      const prefix = idx === 0 ? '   •  ' : '       ';
+      drawText(prefix + line);
+    });
   });
   y -= 6;
 
-  // Section 2 — HIPAA authorization
-  page.drawText('2.  HIPAA AUTHORIZATION FOR DISCLOSURE OF PHI', {
-    x: M.left, y, size: 10, font: fontBold, color: TEAL
-  });
-  y -= 18;
-
-  const hipaaBody = [
-    'In accordance with 45 CFR §164.508, I authorize the insurer named above to',
-    `disclose Protected Health Information (PHI) related to this specific claim to`,
-    `${ENTITY_NAME}. The information disclosed may include claim status, EOBs,`,
-    'remittance details, and any communications related to the adjudication of',
-    'this claim.',
-    '',
-    'This authorization is voluntary and limited in scope. I understand that I may',
-    'revoke it in writing at any time by notifying the insurer, except to the extent',
-    `the insurer has already acted in reliance on it. ${ENTITY_NAME} agrees to`,
-    'maintain the disclosed PHI consistent with HIPAA safeguards and to use it only',
-    'for purposes of representing me in connection with this claim.'
-  ];
-  hipaaBody.forEach(line => {
-    page.drawText(line, { x: M.left, y, size: 9.5, font, color: SLATE_900 });
-    y -= 13;
-  });
+  ensureSpace(40);
+  [
+    'Disclosure is limited to the minimum necessary information required to process this',
+    'claim. Credimed LLC agrees to maintain the confidentiality of PHI consistent with HIPAA',
+    'safeguards and to use it solely for purposes of representing me in connection with this claim.'
+  ].forEach(line => drawText(line));
   y -= 6;
 
-  // Section 3 — Term + revocation
-  page.drawText('3.  TERM, REVOCATION, AND ACKNOWLEDGEMENT', {
-    x: M.left, y, size: 10, font: fontBold, color: TEAL
-  });
-  y -= 18;
+  // §3 — Term, revocation, acknowledgement
+  ensureSpace(120);
+  drawText('3.  TERM, REVOCATION, AND ACKNOWLEDGEMENT', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
 
-  const termBody = [
-    'This authorization is limited to the single claim referenced above and',
-    'automatically expires on the earlier of (a) final adjudication of the claim by',
-    'the insurer, or (b) twelve (12) months from the date signed below. I may',
-    'revoke this authorization at any time by written notice to the insurer and',
-    `to ${ENTITY_NAME} at the contact information shown in the footer of this`,
-    'document. Revocation does not invalidate any disclosures or actions already',
-    'taken in reliance on this authorization.'
-  ];
-  termBody.forEach(line => {
-    page.drawText(line, { x: M.left, y, size: 9.5, font, color: SLATE_900 });
-    y -= 13;
-  });
-  y -= 16;
+  [
+    'This authorization is limited to a single dental insurance claim associated with the treatment',
+    'described in my submitted documentation and shall automatically expire on the earlier of:',
+    '   (a) final adjudication of the claim by the insurer; or',
+    '   (b) twelve (12) months from the date signed below.',
+    '',
+    'I may revoke this authorization at any time by written notice to the insurer and to Credimed',
+    'LLC. Revocation does not affect any actions taken prior to receipt of such notice.'
+  ].forEach(line => drawText(line));
+  y -= 6;
+
+  // §4 — Electronic Communications Consent
+  ensureSpace(70);
+  drawText('4.  ELECTRONIC COMMUNICATIONS CONSENT', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
+
+  [
+    'I authorize communications related to this claim to occur via electronic means, including',
+    'email, secure digital platforms, and other electronic communication methods used by',
+    'Credimed LLC.'
+  ].forEach(line => drawText(line));
+  y -= 18;
 
   // ── Signature block ─────────────────────────────────────────────
+  ensureSpace(120);
   const sigY = y;
+
+  // Patient signature line
   page.drawLine({
     start: { x: M.left, y: sigY },
     end:   { x: M.left + 240, y: sigY },
@@ -191,6 +254,7 @@ export async function generatePoaPdf(claim) {
     x: M.left, y: sigY - 12, size: 8, font, color: SLATE_500
   });
 
+  // Date line
   page.drawLine({
     start: { x: M.left + 280, y: sigY },
     end:   { x: M.left + 420, y: sigY },
@@ -212,10 +276,8 @@ export async function generatePoaPdf(claim) {
         const png = await pdf.embedPng(Buffer.from(m[1], 'base64'));
         const dims = png.scaleToFit(200, 50);
         page.drawImage(png, {
-          x: M.left + 12,
-          y: sigY + 2,
-          width: dims.width,
-          height: dims.height
+          x: M.left + 12, y: sigY + 2,
+          width: dims.width, height: dims.height
         });
       }
     } catch (err) {
@@ -223,34 +285,54 @@ export async function generatePoaPdf(claim) {
     }
   }
 
-  // Patient typed name (printed) below signature
-  page.drawText(`Printed: ${fullName}`, {
-    x: M.left, y: sigY - 26, size: 9, font, color: SLATE_900
-  });
-
-  // ── Footer ──────────────────────────────────────────────────────
-  const footerY = 56;
+  // Printed name
   page.drawLine({
-    start: { x: M.left, y: footerY + 22 },
-    end:   { x: M.right, y: footerY + 22 },
-    thickness: 0.5, color: SLATE_300
+    start: { x: M.left, y: sigY - 36 },
+    end:   { x: M.left + 240, y: sigY - 36 },
+    thickness: 0.5, color: SLATE_900
   });
-  page.drawText(ENTITY_NAME, {
-    x: M.left, y: footerY + 8, size: 8, font: fontBold, color: SLATE_900
+  page.drawText('Printed name', {
+    x: M.left, y: sigY - 48, size: 8, font, color: SLATE_500
   });
-  page.drawText(`${ENTITY_ADDR_1}  ·  ${ENTITY_ADDR_2}`, {
-    x: M.left, y: footerY - 4, size: 8, font, color: SLATE_500
-  });
-  page.drawText(ENTITY_CONTACT, {
-    x: M.left, y: footerY - 16, size: 8, font, color: SLATE_500
+  page.drawText(fullName, {
+    x: M.left, y: sigY - 32, size: 11, font, color: SLATE_900
   });
 
-  // Page reference (claim ID + generated timestamp) for audit
-  const stamp = `Claim ${claimId}  ·  Generated ${new Date().toISOString().slice(0, 19)}Z`;
-  page.drawText(stamp, {
-    x: M.right - font.widthOfTextAtSize(stamp, 7),
-    y: footerY - 16, size: 7, font, color: SLATE_500
+  // Phone or Email
+  page.drawLine({
+    start: { x: M.left + 280, y: sigY - 36 },
+    end:   { x: M.left + 480, y: sigY - 36 },
+    thickness: 0.5, color: SLATE_900
   });
+  page.drawText('Phone or Email', {
+    x: M.left + 280, y: sigY - 48, size: 8, font, color: SLATE_500
+  });
+  const phoneOrEmail = claim.phone || claim.email || '';
+  if (phoneOrEmail) {
+    page.drawText(phoneOrEmail, {
+      x: M.left + 280, y: sigY - 32, size: 11, font, color: SLATE_900
+    });
+  }
 
   return pdf.save();
+}
+
+/* Hand-rolled word-wrap. Splits `text` into lines of at most `maxChars`
+   characters, breaking on spaces, never mid-word. Returns the array of
+   lines so the caller can drawText each one. */
+function wrapText(text, maxChars) {
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let current = '';
+  for (const w of words) {
+    if (!current) { current = w; continue; }
+    if ((current + ' ' + w).length <= maxChars) {
+      current += ' ' + w;
+    } else {
+      lines.push(current);
+      current = w;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
 }
