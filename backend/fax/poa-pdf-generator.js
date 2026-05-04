@@ -9,7 +9,7 @@
  * patient's express authorization for Credimed to act on their
  * behalf.
  *
- * Wording authored by counsel (May 2026 revision 2). Section structure:
+ * Wording authored by counsel (May 2026 revision 3). Section structure:
  *   §1  Limited grant of authority — file, transmit, follow up
  *       (incl. telephone), receive AND request correspondence;
  *       explicit "no funds, under any circumstance" exclusion
@@ -21,11 +21,11 @@
  *       adjudication or 12 months, whichever first)
  *   §4  Electronic communications consent
  *   §5  Electronic signature acknowledgement (15 USC §7001 + state
- *       UETA — generic state reference, not pinned to Wyoming, so
- *       the same template works for cross-state members)
+ *       UETA — generic state reference, not pinned to Wyoming)
  *
- * If counsel ships their own PDF template, swap to the same draw-on-
- * template pattern used in ada-pdf-generator.js.
+ * Paragraphs are wrapped at draw time using actual Helvetica metrics
+ * (not character count) so the body uses the full content width
+ * regardless of glyph mix.
  */
 
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
@@ -43,18 +43,39 @@ const ENTITY_CONTACT = 'support@credimed.us  ·  Fax: (617) 749-4550';
 const PAGE_W = 612;
 const PAGE_H = 792;
 const M = { left: 54, right: 558, top: 752, bottom: 80 };
+const CONTENT_W = M.right - M.left;        // 504px usable width
+const BODY_SIZE = 9.5;
+const BODY_LH   = 13;
 
 /* US-style human-readable date. Falls back to the input string if
    it doesn't parse as a date (e.g. "06/15/2024" stays unchanged). */
 function fmtDate(input) {
   if (!input) return '—';
   const s = String(input);
-  // Already MM/DD/YYYY → return as-is
   if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) return s;
-  // ISO YYYY-MM-DD → reformat
   const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (m) return `${m[2]}/${m[3]}/${m[1]}`;
   return s;
+}
+
+/* Word-wrap a paragraph to fit within `maxWidth` pixels, using the
+   actual glyph widths of `font` at `size`. Never breaks mid-word.
+   Returns an array of lines. */
+function wrapPara(text, maxWidth, font, size) {
+  const words = String(text).split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = '';
+  for (const w of words) {
+    const trial = current ? current + ' ' + w : w;
+    if (font.widthOfTextAtSize(trial, size) <= maxWidth) {
+      current = trial;
+    } else {
+      if (current) lines.push(current);
+      current = w;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
 }
 
 export async function generatePoaPdf(claim) {
@@ -74,7 +95,6 @@ export async function generatePoaPdf(claim) {
   const payerId      = claim.payerId || '(not provided)';
   const phoneOrEmail = claim.phone || claim.email || '';
 
-  // ── Page lifecycle helpers ──────────────────────────────────────
   let page;
   let y;
 
@@ -137,26 +157,43 @@ export async function generatePoaPdf(claim) {
     });
   };
 
-  const drawText = (text, opts = {}) => {
-    const size = opts.size || 9.5;
+  /* Draw a paragraph (auto-wraps to CONTENT_W) and advance y by the
+     total line height. Pass `indent` to inset all wrapped lines (e.g.
+     for the (a)(b)(c)(d) sub-items so continuation lines align under
+     the first character of the item, not under the "(a) "). */
+  const drawPara = (text, opts = {}) => {
+    const size = opts.size || BODY_SIZE;
     const f    = opts.bold ? fontBold : (opts.italic ? fontItalic : font);
-    const lh   = opts.lineHeight || 13;
+    const lh   = opts.lineHeight || BODY_LH;
     const color = opts.color || SLATE_900;
-    page.drawText(text, { x: opts.x || M.left, y, size, font: f, color });
-    y -= lh;
+    const x = opts.x != null ? opts.x : M.left;
+    const indent = opts.indent || 0;
+    const maxWidth = opts.maxWidth != null ? opts.maxWidth : (CONTENT_W - (x - M.left));
+    if (text === '') { y -= lh; return; }
+    const lines = wrapPara(text, maxWidth, f, size);
+    lines.forEach((line, idx) => {
+      const lx = idx === 0 ? x : x + indent;
+      page.drawText(line, { x: lx, y, size, font: f, color });
+      y -= lh;
+    });
+  };
+
+  const drawSectionTitle = (text) => {
+    page.drawText(text, {
+      x: M.left, y, size: 10, font: fontBold, color: TEAL
+    });
+    y -= 18;
   };
 
   const ensureSpace = (px) => {
     if (y - px < M.bottom) {
-      /* Before flipping to a new page, drop a "Signature required on
-         following page →" notice at the bottom of the current page so
-         the patient (and any reviewer) understands the signature has
-         not been omitted, just placed past the page break. The notice
-         only fires when the current page hasn't already drawn it. */
+      /* Drop a "Signature required on following page" notice at the
+         bottom of the current page so the patient (and carrier
+         reviewer) understands the signature wasn't omitted, just
+         placed past the page break. Only fires once per page. */
       if (!page._sigNoticeDrawn) {
-        const noticeY = M.bottom + 8;
         page.drawText('Signature required on following page  >>', {
-          x: M.left, y: noticeY, size: 9, font: fontItalic, color: TEAL
+          x: M.left, y: M.bottom + 8, size: 9, font: fontItalic, color: TEAL
         });
         page._sigNoticeDrawn = true;
       }
@@ -176,19 +213,16 @@ export async function generatePoaPdf(claim) {
     x: M.left, y, size: 10, font: fontItalic, color: SLATE_500
   });
   y -= 16;
-  /* Header context line — at-a-glance plain-language summary so the
-     carrier reviewer (and the patient) understand the document's
-     purpose without needing to read the full legalese. */
-  page.drawText("This document authorizes Credimed LLC to act as the patient's limited representative", {
-    x: M.left, y, size: 9, font, color: SLATE_500
-  });
-  y -= 12;
-  page.drawText('for claim submission and follow-up.', {
-    x: M.left, y, size: 9, font, color: SLATE_500
-  });
-  y -= 22;
+  /* Header context line — at-a-glance plain-language summary. */
+  drawPara(
+    "This document authorizes Credimed LLC to act as the patient's limited representative for claim submission and follow-up.",
+    { size: 9, color: SLATE_500, lineHeight: 12 }
+  );
+  y -= 10;
 
-  // Patient + claim block (2 columns, 4 rows)
+  // Patient + claim block (2 columns, 4 rows). Right column starts at
+  // x=320 (was 280) so the second column extends further into the
+  // available width and the page no longer feels left-heavy.
   const drawKV = (label, value, x, yy) => {
     page.drawText(label.toUpperCase(), {
       x, y: yy, size: 7, font: fontBold, color: SLATE_500
@@ -202,7 +236,7 @@ export async function generatePoaPdf(claim) {
   drawKV('Patient / Subscriber', fullName,    colLeft,  y);
   drawKV('Date of Birth',        dob,         colRight, y);
   y -= 30;
-  drawKV('Patient Address (ZIP)', patientZip, colLeft,  y);
+  drawKV('Patient ZIP Code',      patientZip, colLeft,  y);
   drawKV('Member ID',             memberId,   colRight, y);
   y -= 30;
   drawKV('Insurer / Payer Name',  insurer,    colLeft,  y);
@@ -212,52 +246,55 @@ export async function generatePoaPdf(claim) {
   y -= 36;
 
   // §1 — Limited grant of authority
-  drawText('1.  GRANT OF LIMITED AUTHORITY', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
+  drawSectionTitle('1.  GRANT OF LIMITED AUTHORITY');
 
-  [
-    'I, the patient identified above, hereby appoint Credimed LLC, including its employees,',
-    'contractors, and designated agents, as my limited representative for the sole purpose of',
-    'preparing, submitting, and following up on a dental insurance claim associated with the',
-    'treatment described in the documentation I provide to Credimed LLC.',
-    '',
-    'In furtherance of this authorization, Credimed LLC may:',
-    '   (a) prepare and submit the ADA Dental Claim Form on my behalf;',
-    '   (b) transmit the claim package by facsimile, mail, or electronic data interchange (EDI);',
-    '   (c) communicate with the insurer, including telephone inquiries, regarding the status,',
-    '       processing, or adjudication of this claim; and',
-    '   (d) receive copies of correspondence (including Explanation of Benefits (EOBs) and',
-    '       remittance details), and request such documents on my behalf, related to this claim.',
-    '',
-    'Credimed LLC is not authorized, under any circumstance, to receive payment from the insurer',
-    'on my behalf. All reimbursements shall be paid directly to me by the insurer.'
-  ].forEach(line => drawText(line));
+  drawPara(
+    'I, the patient identified above, hereby appoint Credimed LLC, including its employees, contractors, and designated agents, as my limited representative for the sole purpose of preparing, submitting, and following up on a dental insurance claim associated with the treatment described in the documentation I provide to Credimed LLC.'
+  );
+  drawPara('');
+  drawPara('In furtherance of this authorization, Credimed LLC may:');
+
+  // (a)(b)(c)(d) sub-items — indented continuation lines
+  const subItems = [
+    '(a) prepare and submit the ADA Dental Claim Form on my behalf;',
+    '(b) transmit the claim package by facsimile, mail, or electronic data interchange (EDI);',
+    '(c) communicate with the insurer, including telephone inquiries, regarding the status, processing, or adjudication of this claim; and',
+    '(d) receive copies of correspondence (including Explanation of Benefits (EOBs) and remittance details), and request such documents on my behalf, related to this claim.'
+  ];
+  subItems.forEach(item => {
+    drawPara(item, { x: M.left + 18, indent: 22, maxWidth: CONTENT_W - 18 });
+  });
+  drawPara('');
+  drawPara(
+    'Credimed LLC is not authorized, under any circumstance, to receive payment from the insurer on my behalf. All reimbursements shall be paid directly to me by the insurer.'
+  );
   y -= 6;
 
   // §2 — HIPAA Authorization (with initials placeholder on the right)
   ensureSpace(330);
-  drawText('2.  HIPAA AUTHORIZATION FOR DISCLOSURE OF PHI', { size: 10, bold: true, color: TEAL, lineHeight: 18, x: M.left });
-  // Initials placeholder, right-aligned on the same line
+  drawSectionTitle('2.  HIPAA AUTHORIZATION FOR DISCLOSURE OF PHI');
+  /* Right-aligned initials placeholder on the same line as the title */
   const initialsLabel = 'Initials: ____';
-  const initialsX = M.right - font.widthOfTextAtSize(initialsLabel, 9);
   page.drawText(initialsLabel, {
-    x: initialsX, y: y + 18, size: 9, font, color: SLATE_500
+    x: M.right - font.widthOfTextAtSize(initialsLabel, 9),
+    y: y + 18, size: 9, font, color: SLATE_500
   });
 
-  [
-    'In accordance with 45 CFR §164.508, I authorize the insurer named above to disclose',
-    'Protected Health Information (PHI) related to this claim to Credimed LLC, including its',
-    'employees, contractors, and designated agents assisting in claim processing.',
-    '',
-    'The information disclosed may include claim status, EOBs, remittance details, and any',
-    'communications related to the adjudication of this claim.',
-    '',
-    'Purpose of disclosure: The purpose of this authorization is to facilitate the processing,',
-    'submission, and follow-up of the dental insurance claim described above.',
-    '',
-    'This authorization is voluntary. I understand that:'
-  ].forEach(line => drawText(line));
+  drawPara(
+    'In accordance with 45 CFR §164.508, I authorize the insurer named above to disclose Protected Health Information (PHI) related to this claim to Credimed LLC, including its employees, contractors, and designated agents assisting in claim processing.'
+  );
+  drawPara('');
+  drawPara(
+    'The information disclosed may include claim status, EOBs, remittance details, and any communications related to the adjudication of this claim.'
+  );
+  drawPara('');
+  drawPara(
+    'Purpose of disclosure: The purpose of this authorization is to facilitate the processing, submission, and follow-up of the dental insurance claim described above.'
+  );
+  drawPara('');
+  drawPara('This authorization is voluntary. I understand that:');
 
-  // HIPAA bullet list — wrapped to fit
+  // HIPAA bullet list
   const bullets = [
     'My treatment, payment, enrollment, or eligibility for benefits is not conditioned on signing this authorization.',
     'I may revoke this authorization in writing at any time by notifying the insurer and Credimed LLC, except to the extent that action has already been taken in reliance on it.',
@@ -266,68 +303,55 @@ export async function generatePoaPdf(claim) {
   ];
   bullets.forEach(b => {
     ensureSpace(40);
-    const wrapped = wrapText(b, 92);
-    wrapped.forEach((line, idx) => {
-      const prefix = idx === 0 ? '   •  ' : '       ';
-      drawText(prefix + line);
-    });
+    drawPara('•  ' + b, { x: M.left + 16, indent: 14, maxWidth: CONTENT_W - 16 });
   });
-  y -= 6;
-
-  ensureSpace(40);
-  [
-    'Disclosure is limited to the minimum necessary information required to process this',
-    'claim. Credimed LLC agrees to maintain the confidentiality of PHI consistent with HIPAA',
-    'safeguards and to use it solely for purposes of representing me in connection with this claim.'
-  ].forEach(line => drawText(line));
+  drawPara('');
+  drawPara(
+    'Disclosure is limited to the minimum necessary information required to process this claim. Credimed LLC agrees to maintain the confidentiality of PHI consistent with HIPAA safeguards and to use it solely for purposes of representing me in connection with this claim.'
+  );
   y -= 6;
 
   // §3 — Term, revocation, acknowledgement
   ensureSpace(120);
-  drawText('3.  TERM, REVOCATION, AND ACKNOWLEDGEMENT', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
+  drawSectionTitle('3.  TERM, REVOCATION, AND ACKNOWLEDGEMENT');
 
-  [
-    'This authorization is limited to a single dental insurance claim associated with the treatment',
-    'described in my submitted documentation and shall automatically expire on the earlier of:',
-    '   (a) final adjudication of the claim by the insurer; or',
-    '   (b) twelve (12) months from the date signed below.',
-    '',
-    'I may revoke this authorization at any time by written notice to the insurer and to Credimed',
-    'LLC. Revocation does not affect any actions taken prior to receipt of such notice.'
-  ].forEach(line => drawText(line));
+  drawPara(
+    'This authorization is limited to a single dental insurance claim associated with the treatment described in my submitted documentation and shall automatically expire on the earlier of:'
+  );
+  drawPara('(a) final adjudication of the claim by the insurer; or', { x: M.left + 18, indent: 22, maxWidth: CONTENT_W - 18 });
+  drawPara('(b) twelve (12) months from the date signed below.', { x: M.left + 18, indent: 22, maxWidth: CONTENT_W - 18 });
+  drawPara('');
+  drawPara(
+    'I may revoke this authorization at any time by written notice to the insurer and to Credimed LLC. Revocation does not affect any actions taken prior to receipt of such notice.'
+  );
   y -= 6;
 
   // §4 — Electronic Communications Consent
   ensureSpace(70);
-  drawText('4.  ELECTRONIC COMMUNICATIONS CONSENT', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
+  drawSectionTitle('4.  ELECTRONIC COMMUNICATIONS CONSENT');
 
-  [
-    'I authorize communications related to this claim to occur via electronic means, including',
-    'email, secure digital platforms, and other electronic communication methods used by',
-    'Credimed LLC.'
-  ].forEach(line => drawText(line));
+  drawPara(
+    'I authorize communications related to this claim to occur via electronic means, including email, secure digital platforms, and other electronic communication methods used by Credimed LLC.'
+  );
   y -= 6;
 
   // §5 — Electronic Signature Acknowledgement
-  ensureSpace(70);
-  drawText('5.  ELECTRONIC SIGNATURE ACKNOWLEDGEMENT', { size: 10, bold: true, color: TEAL, lineHeight: 18 });
+  ensureSpace(80);
+  drawSectionTitle('5.  ELECTRONIC SIGNATURE ACKNOWLEDGEMENT');
 
-  [
-    'My electronic signature below constitutes my legal signature in accordance with',
-    '15 USC §7001 (Electronic Signatures in Global and National Commerce Act, "E-SIGN Act") and',
-    'applicable state electronic transaction laws. My electronic signature has the same legal',
-    'force and effect as a handwritten signature, and I intend to be bound by it.'
-  ].forEach(line => drawText(line));
+  drawPara(
+    'My electronic signature below constitutes my legal signature in accordance with 15 USC §7001 (Electronic Signatures in Global and National Commerce Act, "E-SIGN Act") and applicable state electronic transaction laws. My electronic signature has the same legal force and effect as a handwritten signature, and I intend to be bound by it.'
+  );
   y -= 18;
 
   // ── Signature block ─────────────────────────────────────────────
   ensureSpace(150);
   const sigY = y;
 
-  // Row 1: Patient signature + Date signed
+  // Row 1: Patient signature (wider) + Date signed
   page.drawLine({
     start: { x: M.left, y: sigY },
-    end:   { x: M.left + 240, y: sigY },
+    end:   { x: M.left + 290, y: sigY },
     thickness: 0.5, color: SLATE_900
   });
   page.drawText('Patient signature', {
@@ -335,15 +359,15 @@ export async function generatePoaPdf(claim) {
   });
 
   page.drawLine({
-    start: { x: M.left + 280, y: sigY },
-    end:   { x: M.left + 420, y: sigY },
+    start: { x: M.left + 320, y: sigY },
+    end:   { x: M.right,      y: sigY },
     thickness: 0.5, color: SLATE_900
   });
   page.drawText('Date signed', {
-    x: M.left + 280, y: sigY - 12, size: 8, font, color: SLATE_500
+    x: M.left + 320, y: sigY - 12, size: 8, font, color: SLATE_500
   });
   page.drawText(today, {
-    x: M.left + 280, y: sigY + 4, size: 11, font, color: SLATE_900
+    x: M.left + 320, y: sigY + 4, size: 11, font, color: SLATE_900
   });
 
   // Embed signature image if the patient signed on the canvas
@@ -353,7 +377,7 @@ export async function generatePoaPdf(claim) {
       const m = String(dataUrl).match(/^data:image\/png;base64,(.+)$/);
       if (m) {
         const png = await pdf.embedPng(Buffer.from(m[1], 'base64'));
-        const dims = png.scaleToFit(200, 50);
+        const dims = png.scaleToFit(240, 50);
         page.drawImage(png, {
           x: M.left + 12, y: sigY + 2,
           width: dims.width, height: dims.height
@@ -367,7 +391,7 @@ export async function generatePoaPdf(claim) {
   // Row 2: Printed name + Phone or Email
   page.drawLine({
     start: { x: M.left, y: sigY - 36 },
-    end:   { x: M.left + 240, y: sigY - 36 },
+    end:   { x: M.left + 290, y: sigY - 36 },
     thickness: 0.5, color: SLATE_900
   });
   page.drawText('Printed name', {
@@ -378,23 +402,23 @@ export async function generatePoaPdf(claim) {
   });
 
   page.drawLine({
-    start: { x: M.left + 280, y: sigY - 36 },
-    end:   { x: M.left + 480, y: sigY - 36 },
+    start: { x: M.left + 320, y: sigY - 36 },
+    end:   { x: M.right,      y: sigY - 36 },
     thickness: 0.5, color: SLATE_900
   });
   page.drawText('Phone or Email', {
-    x: M.left + 280, y: sigY - 48, size: 8, font, color: SLATE_500
+    x: M.left + 320, y: sigY - 48, size: 8, font, color: SLATE_500
   });
   if (phoneOrEmail) {
     page.drawText(phoneOrEmail, {
-      x: M.left + 280, y: sigY - 32, size: 11, font, color: SLATE_900
+      x: M.left + 320, y: sigY - 32, size: 11, font, color: SLATE_900
     });
   }
 
-  // Row 3: ZIP Code (auto-filled from patient profile, also confirms identity)
+  // Row 3: ZIP Code (auto-filled from patient profile)
   page.drawLine({
     start: { x: M.left, y: sigY - 72 },
-    end:   { x: M.left + 240, y: sigY - 72 },
+    end:   { x: M.left + 290, y: sigY - 72 },
     thickness: 0.5, color: SLATE_900
   });
   page.drawText('ZIP Code', {
@@ -407,24 +431,4 @@ export async function generatePoaPdf(claim) {
   }
 
   return pdf.save();
-}
-
-/* Hand-rolled word-wrap. Splits `text` into lines of at most `maxChars`
-   characters, breaking on spaces, never mid-word. Returns the array of
-   lines so the caller can drawText each one. */
-function wrapText(text, maxChars) {
-  const words = String(text).split(/\s+/);
-  const lines = [];
-  let current = '';
-  for (const w of words) {
-    if (!current) { current = w; continue; }
-    if ((current + ' ' + w).length <= maxChars) {
-      current += ' ' + w;
-    } else {
-      lines.push(current);
-      current = w;
-    }
-  }
-  if (current) lines.push(current);
-  return lines;
 }
