@@ -32,7 +32,7 @@ The patient's dashboard shows the resulting status pipeline:
 
 1. Go to <https://www.availity.com/essentials>
 2. Click **Register** and fill in business info:
-   - Business name: **Credimed, Inc.**
+   - Business name: **Credimed LLC**
    - Business type: **Billing service**
    - Tax ID (EIN): your Credimed federal EIN
    - Type 2 NPI: your organizational NPI (see Step 2 if you don't have one)
