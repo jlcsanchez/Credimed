@@ -48,8 +48,8 @@ const ANA_FAQ = [
     topic: 'general',
     q_es: '¿Cuánto cuesta?',
     q_en: 'How much does it cost?',
-    a_es: 'Cobramos según la complejidad del claim, desde $19 y con tope del 20% de tu reembolso: Micro $19, Lite $29, Standard $49, Plus $79, Premium $99. La complejidad la determina nuestro sistema basado en cuántos procedimientos, cuántos documentos, y la calidad del recibo. Una sola tarifa, sin comisión sobre tu reembolso.',
-    a_en: 'We charge based on claim complexity, starting at $19 and capped at 20% of your refund: Micro $19, Lite $29, Standard $49, Plus $79, Premium $99. Complexity is set by our system based on number of procedures, documents, and receipt quality. One flat fee, no commission on your refund.',
+    a_es: 'Cobramos según la complejidad del claim, desde $19: Micro $19, Lite $29, Standard $49, Plus $79, Premium $99. La complejidad la determina nuestro sistema basado en cuántos procedimientos, cuántos documentos, y la calidad del recibo. Una sola tarifa, sin comisión sobre tu reembolso.',
+    a_en: 'We charge based on claim complexity, starting at $19: Micro $19, Lite $29, Standard $49, Plus $79, Premium $99. Complexity is set by our system based on number of procedures, documents, and receipt quality. One flat fee, no commission on your refund.',
     keywords: ['cuesta', 'precio', 'tarifa', 'fee', 'price', 'cost', 'how much', 'cuanto', 'cobran']
   },
   {
@@ -140,8 +140,8 @@ const ANA_FAQ = [
     topic: 'pricing',
     q_es: '¿Por qué me tocó plan Micro / Lite / Standard / Plus / Premium?',
     q_en: 'Why did I get Micro / Lite / Standard / Plus / Premium?',
-    a_es: 'Asignamos plan según la complejidad de tu claim Y el tope del 20% de tu reembolso esperado: Micro ($19) para reembolsos muy pequeños o cuando el 20% lo coloca en el piso. Lite ($29) claims simples. Standard ($49) un procedimiento, recibo claro. Plus ($79) múltiples procedimientos o recibo que necesita más trabajo. Premium ($99) códigos ambiguos, muchos procedimientos, o calidad de recibo baja. La tarifa nunca pasa del 20% de tu refund.',
-    a_en: 'We assign plan by claim complexity AND the 20% cap on your expected refund: Micro ($19) for very small refunds or when the 20% cap walks down to the floor. Lite ($29) for simple claims. Standard ($49) for one procedure with a clear receipt. Plus ($79) for multiple procedures or receipts needing more work. Premium ($99) for ambiguous codes, many procedures, or low receipt quality. The fee never exceeds 20% of your refund.',
+    a_es: 'Asignamos plan según la complejidad de tu claim: Micro ($19) para claims muy pequeños. Lite ($29) claims simples. Standard ($49) un procedimiento, recibo claro. Plus ($79) múltiples procedimientos o recibo que necesita más trabajo. Premium ($99) códigos ambiguos, muchos procedimientos, o calidad de recibo baja.',
+    a_en: 'We assign plan by claim complexity: Micro ($19) for very small claims. Lite ($29) for simple claims. Standard ($49) for one procedure with a clear receipt. Plus ($79) for multiple procedures or receipts needing more work. Premium ($99) for ambiguous codes, many procedures, or low receipt quality.',
     keywords: ['plan', 'micro', 'lite', 'standard', 'plus', 'premium', 'asign', 'tier']
   },
   {

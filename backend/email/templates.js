@@ -248,7 +248,7 @@ const templates = {
         statusLabel: 'Account created',
         headline: 'Welcome to Credimed.',
         subhead: "Your account is ready. Upload your dental receipt and we'll file your out-of-network reimbursement claim with your insurer within 24 hours.",
-        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0 0 12px;">Here's what happens next:</p><ol style="margin:0 0 12px;padding-left:18px;line-height:1.6;"><li>Upload your dental receipt + insurance card (~2 minutes)</li><li>We translate it, code it correctly, and prepare the ADA claim form</li><li>You confirm and pay our one-time fee (\$19–\$99 based on complexity, capped at 20% of your refund)</li><li>We file with your insurer the same day</li><li>Your insurer mails the refund check directly to you in 3–6 weeks</li></ol><p style="margin:0;"><b>You only pay if we recover your refund.</b> If your claim is eligible and we can't get it paid after one free resubmission, we refund your fee — full money-back guarantee.</p>`,
+        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0 0 12px;">Here's what happens next:</p><ol style="margin:0 0 12px;padding-left:18px;line-height:1.6;"><li>Upload your dental receipt + insurance card (~2 minutes)</li><li>We translate it, code it correctly, and prepare the ADA claim form</li><li>You confirm and pay our one-time fee (\$19–\$99 based on complexity)</li><li>We file with your insurer the same day</li><li>Your insurer mails the refund check directly to you in 3–6 weeks</li></ol><p style="margin:0;"><b>You only pay if we recover your refund.</b> If your claim is eligible and we can't get it paid after one free resubmission, we refund your fee — full money-back guarantee.</p>`,
         claimId: 'New member',
         ctaLabel: 'Upload my receipt',
         ctaUrl: `${APP_BASE}/documents.html`,
@@ -256,7 +256,7 @@ const templates = {
         unsubToken: 'welcome'
       }),
       text:
-        `${greet(firstName)}\n\nWelcome to Credimed. Your account is ready.\n\nNext step: upload your dental receipt + insurance card. We'll translate it, prepare the claim form, and file it with your insurer within 24 hours.\n\nFee: \$19–\$99 one-time (depends on claim complexity, capped at 20% of your refund). Money-back guarantee — if we can't recover your refund, we refund your fee.\n\nGet started: ${APP_BASE}/documents.html\n\nQuestions? Reply to this email.`
+        `${greet(firstName)}\n\nWelcome to Credimed. Your account is ready.\n\nNext step: upload your dental receipt + insurance card. We'll translate it, prepare the claim form, and file it with your insurer within 24 hours.\n\nFee: \$19–\$99 one-time (depends on claim complexity). Money-back guarantee — if we can't recover your refund, we refund your fee.\n\nGet started: ${APP_BASE}/documents.html\n\nQuestions? Reply to this email.`
     };
   },
 
