@@ -310,7 +310,7 @@ export async function generateAdaPdf(claim) {
   drawCheckbox(M.left + 168, y - 18, claim.gender === 'F', 'F');
   drawCheckbox(M.left + 198, y - 18, !claim.gender || (claim.gender !== 'M' && claim.gender !== 'F'), 'U');
   page.drawLine({
-    start: { x: M.left + 138, y: y - 22 }, end: { x: M.left + 222, y: y - 22 },
+    start: { x: M.left + 138, y: y - 28 }, end: { x: M.left + 222, y: y - 28 },
     thickness: 0.4, color: SLATE_300
   });
   drawField('15. Subscriber ID (assigned by plan)', claim.memberId || '', M.left + 230, 200);
@@ -349,7 +349,7 @@ export async function generateAdaPdf(claim) {
   drawCheckbox(M.left + 168, y - 18, claim.gender === 'F', 'F');
   drawCheckbox(M.left + 198, y - 18, !claim.gender || (claim.gender !== 'M' && claim.gender !== 'F'), 'U');
   page.drawLine({
-    start: { x: M.left + 138, y: y - 22 }, end: { x: M.left + 222, y: y - 22 },
+    start: { x: M.left + 138, y: y - 28 }, end: { x: M.left + 222, y: y - 28 },
     thickness: 0.4, color: SLATE_300
   });
   drawField('23. Patient ID/Account # (assigned by Dentist)', '', M.left + 230, 326);
@@ -509,7 +509,7 @@ export async function generateAdaPdf(claim) {
   });
   drawCheckbox(M.left + 158, y - 4, true, 'No (Skip 41-42)');
   drawCheckbox(M.left + 250, y - 4, false, 'Yes (Complete 41-42)');
-  y -= 16;
+  y -= 26;
   drawField('41. Date Appliance Placed', '', M.left, 180);
   drawField('42. Months of Treatment', '', M.left + 188, 100);
   drawField('43. Replacement of Prosthesis?', '', M.left + 296, 130);
