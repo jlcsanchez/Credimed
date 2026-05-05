@@ -510,6 +510,25 @@ html, body {
         S.get('receipt.amountPaid')    ||
         null;
 
+      /* Mexican dental clinic info — captured by claim-review.html
+         (pre-filled from OCR receipt extraction when available, or
+         typed manually by the patient). The Lambda reads these as
+         providerName / providerAddress / providerCity / providerState /
+         providerZip / providerPhone / providerRFC and renders them
+         on the ADA J430D form fields 48 (Billing Dentist) and
+         53-58 (Treating Dentist). */
+      var provider = S.get('provider', {}) || {};
+
+      /* Patient mailing address — captured in profile.html (saved to
+         the 'mailingAddress' slice) and needed on the claim row so
+         the ADA form's subscriber address block (field 12) renders. */
+      var addr = S.get('mailingAddress', {}) || {};
+
+      /* Signature — captured on the agreement.html canvas. The
+         backend stores it as a Map so the ADA + POA generators can
+         pull it back as `signature.adaDataUrl` / `signature.poaDataUrl`. */
+      var signature = S.get('signature', {}) || {};
+
       var body = {
         claimId: claimId,
         // Required PHI fields (encrypted by Lambda)
@@ -529,6 +548,36 @@ html, body {
         city: S.get('receipt.city') || null,
         procedures: S.get('receipt.procedures') || null,
         procedure: S.get('receipt.procedure') || null,
+        // Patient subscriber-side fields → ADA fields 13-22
+        dob:                  user.dob                  || null,
+        gender:               user.gender               || null,
+        relationship:         user.relationship         || 'self',
+        groupNumber:          user.groupNumber          || null,
+        employer:             user.employer             || null,
+        subscriberFirstName:  user.subscriberFirstName  || null,
+        subscriberLastName:   user.subscriberLastName   || null,
+        subscriberDob:        user.subscriberDob        || null,
+        // Patient mailing address → ADA field 12
+        addrStreet:  addr.street || null,
+        addrApt:     addr.apt    || null,
+        addrCity:    addr.city   || null,
+        addrState:   addr.state  || null,
+        addrZip:     addr.zip    || null,
+        // Mexican dental clinic info → ADA fields 48 + 53-58
+        providerName:    provider.name   || null,
+        providerAddress: provider.street || null,
+        providerCity:    provider.city   || null,
+        providerState:   provider.state  || null,
+        providerZip:     provider.zip    || null,
+        providerPhone:   provider.phone  || null,
+        providerRFC:     provider.rfc    || null,
+        // Date of service — top of ADA Record of Services Provided
+        dateOfService: S.get('receipt.dateOfService') || null,
+        // Patient signature — embedded into the ADA + POA PDFs
+        signature: {
+          adaDataUrl: signature.adaDataUrl || signature.dataUrl || null,
+          poaDataUrl: signature.poaDataUrl || signature.dataUrl || null
+        },
         documents: documents,
         submittedAt: new Date().toISOString()
       };

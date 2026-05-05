@@ -2028,6 +2028,16 @@ mountScope('desktop');
       privacyAccepted: true,
       userAgent: navigator.userAgent
     });
+
+    /* Also stash the signature in a top-level 'signature' slice so
+       submission-confirmed.html can pull it out and POST it to the
+       backend as { adaDataUrl, poaDataUrl }. The same image is used
+       for both forms today (one canvas → patient signs once, applied
+       to both ADA J430D box 36 and POA signature line). */
+    S.set('signature', {
+      adaDataUrl: sigDataUrl,
+      poaDataUrl: sigDataUrl
+    });
     /* do NOT preventDefault — connector.js will navigate on .footer-cta .btn-primary click */
   }, true);
 

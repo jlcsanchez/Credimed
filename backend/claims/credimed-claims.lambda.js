@@ -293,8 +293,30 @@ async function createClaim(userId, body) {
   };
 
   // Non-PHI scalars — copy through with the same S/N typing the reader
-  // already understands.
-  const STRING_FIELDS = ["plan", "city", "paidCurrency", "submittedAt", "paidAt", "deniedAt"];
+  // already understands. Must stay in sync with the credimed-claim-
+  // submitter Lambda's PASSTHROUGH list — anything the submitter
+  // reads at fax-generation time must be persisted here at claim-
+  // creation time, otherwise the row reads back blank and the ADA
+  // form ships with empty fields (provider info, patient address,
+  // DOB, etc.).
+  const STRING_FIELDS = [
+    // Core claim metadata
+    "plan", "city", "paidCurrency", "submittedAt", "paidAt", "deniedAt",
+    // Patient subscriber-side fields (also stored in user profile, but
+    // needed on the claim row so the submitter can render the ADA form
+    // without round-tripping to the users table)
+    "dob", "gender", "groupNumber", "employer", "relationship",
+    "subscriberFirstName", "subscriberLastName", "subscriberDob",
+    // Patient mailing address
+    "addrStreet", "addrApt", "addrCity", "addrState", "addrZip",
+    // Mexican dental clinic — ADA J430D Box 48 (Billing Dentist) +
+    // Boxes 53-58 (Treating Dentist)
+    "providerName", "providerAddress", "providerCity", "providerState",
+    "providerZip", "providerPhone", "providerRFC", "providerNPI",
+    "providerLicense", "providerSpecialty", "treatingDentistName",
+    // Date of service — top of ADA Record of Services
+    "dateOfService", "payerId"
+  ];
   for (const f of STRING_FIELDS) {
     if (body[f] != null && body[f] !== "") item[f] = { S: String(body[f]) };
   }
@@ -306,6 +328,21 @@ async function createClaim(userId, body) {
   }
   if (Array.isArray(body.procedures) && body.procedures.length > 0) {
     item.procedures = { S: JSON.stringify(body.procedures) };
+  }
+  // Patient signature — captured on the agreement.html canvas before
+  // payment. Stored as a Map so we can keep the ADA data URL and the
+  // POA data URL separately if they ever diverge (today they're the
+  // same image embedded in both PDFs). The submitter reads
+  // r.Item.signature.M.adaDataUrl.S and embeds it in the patient-
+  // signature box on field 36 of the ADA form and on the POA's
+  // signature line.
+  if (body.signature && typeof body.signature === "object") {
+    const sigMap = {};
+    if (body.signature.adaDataUrl) sigMap.adaDataUrl = { S: String(body.signature.adaDataUrl) };
+    if (body.signature.poaDataUrl) sigMap.poaDataUrl = { S: String(body.signature.poaDataUrl) };
+    if (Object.keys(sigMap).length > 0) {
+      item.signature = { M: sigMap };
+    }
   }
 
   // PHI — encrypt in parallel. Empty/missing fields return null and are
