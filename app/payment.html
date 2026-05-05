@@ -1806,6 +1806,59 @@ mountScope('desktop');
   } else {
     injectStripeElement();
   }
+
+  /* Admin-only Test Mode bypass — renders independently of Stripe so
+     it's still usable when Stripe fails to mount (live key + test card,
+     PaymentIntent error, network blip, etc.). The Lambda re-checks the
+     Cognito 'admin' group claim server-side and rejects paymentMode=test
+     from non-admins, so this UI has no value to a non-admin even if
+     they unhide it via DevTools.
+
+     Mounted into BOTH the PC sidebar (.pay-stripe-card) and the mobile
+     payment area so the button is visible at any viewport. CSS hides
+     the wrong copy based on viewport — the same display rules the
+     existing Stripe mount targets use. */
+  async function renderAdminTestModeBlock() {
+    try {
+      if (!(await window.isCredimedAdmin())) return;
+    } catch (e) { return; }
+
+    function makeBlock(idSuffix) {
+      var block = document.createElement('div');
+      block.id = 'admin-testmode-block-' + idSuffix;
+      block.className = 'admin-testmode-block';
+      block.style.cssText =
+        'margin:18px 0 0;padding:14px 16px;border:1px dashed #94A3B8;' +
+        'border-radius:10px;background:#FFFBEB;display:flex;flex-direction:column;gap:8px;';
+      block.innerHTML =
+        '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#92400E;">Admin · Test Mode</div>' +
+        '<div style="font-size:12px;line-height:1.45;color:#475569;">Skip Stripe and submit this claim with <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;">paymentMode=test</code>. Nothing is charged. Claims show a <b>TEST</b> badge in admin.</div>' +
+        '<button type="button" class="admin-testmode-btn" style="align-self:flex-start;padding:9px 14px;border:1px solid #0D9488;background:#fff;color:#0D9488;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Simulate payment (TEST)</button>';
+      block.querySelector('.admin-testmode-btn').addEventListener('click', function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+        window.location.href = window.location.origin + '/app/submission-confirmed.html?paid=1&testmode=1';
+      });
+      return block;
+    }
+
+    var pcCard = document.querySelector('.pay-stripe-card');
+    if (pcCard && !document.getElementById('admin-testmode-block-pc')) {
+      pcCard.appendChild(makeBlock('pc'));
+    }
+    var mobileWrap = document.querySelector('.payment-mobile-only');
+    if (mobileWrap && !document.getElementById('admin-testmode-block-mobile')) {
+      mobileWrap.appendChild(makeBlock('mobile'));
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderAdminTestModeBlock);
+  } else {
+    renderAdminTestModeBlock();
+  }
 })();
 </script>
 <script src="auto-logoff.js"></script>

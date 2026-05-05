@@ -450,6 +450,244 @@ export function buildEmail(eventType, data) {
   return t(data || {});
 }
 
+/**
+ * Branded shell for Cognito verification / password-reset emails.
+ *
+ * Cognito's "Custom message" trigger lets us replace the default plain
+ * "Your password reset code is XXXXXX" with a branded HTML body. The
+ * Lambda returns this HTML as event.response.emailMessage and Cognito
+ * delivers it (via its own SES infra OR our verified SES identity if
+ * configured). Returning HTML is critical: without it Cognito falls
+ * back to a single-line text email from no-reply@verificationemail.com.
+ *
+ * slots:
+ *   subject     — title tag (clients show when forwarded as attachment)
+ *   preheader   — hidden inbox preview text
+ *   statusLabel — top-right pill (e.g. "Password reset", "Confirm email")
+ *   headline    — serif H1
+ *   subhead     — sans-serif lead paragraph above the code
+ *   code        — the 6-digit verification code
+ *   helperText  — small grey text below the code (security reminder)
+ */
+function verificationShell(slots) {
+  const { subject, preheader, statusLabel, headline, subhead, code, helperText } = slots;
+  return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="x-apple-disable-message-reformatting" />
+<meta name="color-scheme" content="light" />
+<meta name="supported-color-schemes" content="light" />
+<title>${subject}</title>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+  body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #FAF6EF; }
+  a { color: #0D9488; text-decoration: none; }
+  @media screen and (max-width: 640px) {
+    .container { width: 100% !important; max-width: 100% !important; }
+    .px { padding-left: 24px !important; padding-right: 24px !important; }
+    .h1 { font-size: 24px !important; line-height: 1.25 !important; }
+    .code-box { font-size: 28px !important; letter-spacing: 0.32em !important; }
+    .footer-cell { text-align: center !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background-color:#FAF6EF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;color:#FAF6EF;">${preheader || ''}</div>
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#FAF6EF;">
+    <tr>
+      <td align="center" style="padding:32px 16px 48px 16px;">
+        <table role="presentation" class="container" cellpadding="0" cellspacing="0" border="0" width="640" style="width:640px;max-width:640px;background-color:#ffffff;border-radius:14px;border:1px solid #E8E2D5;box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+          <tr>
+            <td class="px" style="padding:24px 32px 20px 32px;border-bottom:1px solid #F1ECE0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td align="left" valign="middle">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td valign="middle" style="padding-right:10px;line-height:0;">
+                          <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td width="28" height="28" align="center" valign="middle" style="width:28px;height:28px;background-color:#0D9488;border-radius:50%;text-align:center;vertical-align:middle;">
+                                <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;font-weight:700;color:#ffffff;letter-spacing:0;line-height:28px;">H</span>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td valign="middle" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#134E4A;text-transform:uppercase;">CREDIMED</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="right" valign="middle" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:#64748B;letter-spacing:0.04em;text-transform:uppercase;">${statusLabel}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="px" style="padding:40px 32px 12px 32px;font-family:'Iowan Old Style','Apple Garamond',Georgia,'Times New Roman',serif;font-size:26px;line-height:1.25;color:#0F172A;font-weight:600;letter-spacing:-0.01em;" class="h1">${headline}</td>
+          </tr>
+          <tr>
+            <td class="px" style="padding:0 32px 28px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;color:#475569;">${subhead}</td>
+          </tr>
+          <tr>
+            <td class="px" align="center" style="padding:0 32px 8px 32px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td align="center" class="code-box" style="background-color:#F0FDFA;border:1px solid #CCFBF1;border-radius:12px;padding:22px 16px;font-family:'SF Mono','Menlo','Monaco','Consolas',monospace;font-size:34px;font-weight:700;letter-spacing:0.42em;color:#134E4A;text-align:center;">${code}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="px" style="padding:18px 32px 36px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.55;color:#64748B;">${helperText}</td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td style="border-top:1px solid #F1ECE0;font-size:0;line-height:0;height:1px;">&nbsp;</td></tr></table>
+            </td>
+          </tr>
+          <tr>
+            <td class="px" style="padding:22px 32px 28px 32px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td class="footer-cell" align="left" valign="top" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#94A3B8;">
+                    Questions? <a href="mailto:${SUPPORT_EMAIL}" style="color:#0F766E;text-decoration:none;font-weight:500;">${SUPPORT_EMAIL}</a>
+                    <br />
+                    <a href="${SITE_BASE}/legal/privacy.html" style="color:#94A3B8;text-decoration:underline;">Privacy</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="${SITE_BASE}/legal/terms.html" style="color:#94A3B8;text-decoration:underline;">Terms</a>
+                    <br />
+                    <span style="color:#CBD5E1;">Credimed LLC &middot; 30 N Gould St Ste N, Sheridan, WY 82801</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="640" class="container" style="width:640px;max-width:640px;">
+          <tr>
+            <td align="center" style="padding:18px 16px 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:11px;color:#CBD5E1;letter-spacing:0.12em;text-transform:uppercase;">Sent by Credimed &middot; credimed.us</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+/**
+ * Build subject + HTML body for a Cognito Custom Message trigger.
+ *
+ * Cognito passes the verification code through event.request.codeParameter
+ * (an opaque placeholder Cognito substitutes server-side just before
+ * sending). Pass that exact string in `code`; do NOT pre-render an
+ * actual digit string here — Cognito's substitution happens AFTER the
+ * Lambda returns, and a real-looking number would be sent verbatim.
+ *
+ * triggerSource is the Cognito event source string:
+ *   CustomMessage_SignUp                — initial signup verification
+ *   CustomMessage_ResendCode            — user re-requested the code
+ *   CustomMessage_ForgotPassword        — password reset code
+ *   CustomMessage_VerifyUserAttribute   — verifying a changed email
+ *   CustomMessage_AdminCreateUser       — admin-created user (temp pw)
+ *   CustomMessage_UpdateUserAttribute   — confirming an attribute update
+ *   CustomMessage_Authentication        — MFA code
+ *
+ * Anything else returns null so the Lambda falls through to Cognito's
+ * default plain-text behavior.
+ */
+export function buildVerificationEmail(triggerSource, code, firstName) {
+  const hi = firstName ? titleCase(firstName) : '';
+  const greeting = hi ? `Hi ${hi},` : 'Hi,';
+  const helperBoiler =
+    `${greeting} this code expires in 1 hour. ` +
+    `If you didn't request it, you can ignore this email — your account stays secure. ` +
+    `Credimed will never ask you for this code by phone or chat.`;
+
+  switch (triggerSource) {
+    case 'CustomMessage_ForgotPassword':
+      return {
+        subject: 'Reset your Credimed password',
+        html: verificationShell({
+          subject: 'Reset your Credimed password',
+          preheader: 'Use this code to set a new password on your Credimed account.',
+          statusLabel: 'Password reset',
+          headline: 'Reset your password.',
+          subhead: 'Enter this code on the Credimed reset screen to choose a new password.',
+          code,
+          helperText: helperBoiler
+        })
+      };
+
+    case 'CustomMessage_SignUp':
+    case 'CustomMessage_ResendCode':
+      return {
+        subject: 'Confirm your Credimed email',
+        html: verificationShell({
+          subject: 'Confirm your Credimed email',
+          preheader: 'Use this code to finish creating your Credimed account.',
+          statusLabel: 'Confirm email',
+          headline: 'Welcome — confirm your email.',
+          subhead: 'Enter this code on the Credimed signup screen to activate your account.',
+          code,
+          helperText: helperBoiler
+        })
+      };
+
+    case 'CustomMessage_VerifyUserAttribute':
+    case 'CustomMessage_UpdateUserAttribute':
+      return {
+        subject: 'Verify your new email on Credimed',
+        html: verificationShell({
+          subject: 'Verify your new email on Credimed',
+          preheader: 'Confirm your updated email address on your Credimed account.',
+          statusLabel: 'Verify email',
+          headline: 'Confirm your new email.',
+          subhead: 'Enter this code on Credimed to confirm the change to your account.',
+          code,
+          helperText: helperBoiler
+        })
+      };
+
+    case 'CustomMessage_AdminCreateUser':
+      // Admin-created users get a TEMPORARY PASSWORD, not a numeric
+      // code. Treat code as the password and adjust copy + helper.
+      return {
+        subject: 'Your Credimed account is ready',
+        html: verificationShell({
+          subject: 'Your Credimed account is ready',
+          preheader: 'Sign in with this temporary password and pick a new one.',
+          statusLabel: 'Account invite',
+          headline: "You're invited to Credimed.",
+          subhead: 'Sign in with the temporary password below. Credimed will ask you to choose a new password right away.',
+          code,
+          helperText:
+            `${greeting} this temporary password expires in 7 days. If you weren't expecting this invite, you can ignore this email — your inbox is fine.`
+        })
+      };
+
+    case 'CustomMessage_Authentication':
+      return {
+        subject: 'Your Credimed sign-in code',
+        html: verificationShell({
+          subject: 'Your Credimed sign-in code',
+          preheader: 'One-time code to finish signing in to Credimed.',
+          statusLabel: 'Sign-in code',
+          headline: 'Your sign-in code.',
+          subhead: 'Enter this code on the Credimed sign-in screen to finish logging in.',
+          code,
+          helperText: helperBoiler
+        })
+      };
+
+    default:
+      return null;
+  }
+}
+
 // Map claim status to template name. Used by the claims Lambda when
 // admin updates a claim status. Returns null if no email should be
 // sent for that transition.

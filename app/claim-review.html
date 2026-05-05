@@ -185,6 +185,55 @@ h1 { font-family:"Playfair Display",Georgia,serif; font-size:28px; line-height:1
     </div>
   </div>
 
+  <!-- Mexican dental clinic info — required for the ADA J430D form fields
+       48 (Billing Dentist) and 53-58 (Treating Dentist). Pre-fills from
+       OCR-extracted receipt data when available; patient can correct or
+       fill in from scratch if OCR didn't run / didn't parse cleanly. -->
+  <div class="card">
+    <h2>Your dental clinic in Mexico</h2>
+    <p class="helper" style="margin:-4px 0 14px;font-size:13px;line-height:1.5;color:var(--slate-500)">
+      The carrier needs to know who provided your treatment. We pre-fill from your receipt — please review and correct if anything is off.
+    </p>
+
+    <div class="field">
+      <label>Clinic / dentist name</label>
+      <input type="text" id="provName" placeholder="e.g. Clínica Dental Cancún" autocomplete="organization" required>
+    </div>
+
+    <div class="field">
+      <label>Street address</label>
+      <input type="text" id="provStreet" placeholder="e.g. Av. Tulum 200, Centro" autocomplete="street-address" required>
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>City</label>
+        <input type="text" id="provCity" placeholder="Cancún" autocomplete="address-level2" required>
+      </div>
+      <div class="field">
+        <label>State / Estado</label>
+        <input type="text" id="provState" placeholder="Q. Roo" autocomplete="address-level1">
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>ZIP / Código Postal</label>
+        <input type="text" id="provZip" placeholder="77500" autocomplete="postal-code" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>Phone</label>
+        <input type="tel" id="provPhone" placeholder="+52 998 884 7777" autocomplete="tel" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>RFC / Tax ID <span class="optional">(optional)</span></label>
+      <input type="text" id="provRfc" placeholder="ABC123456789" autocomplete="off">
+      <div class="helper">Some carriers ask for the clinic's Mexican tax ID. Skip if your receipt doesn't show one.</div>
+    </div>
+  </div>
+
   <div class="footer-cta">
     <button type="button" class="btn-primary" id="btnContinue">Continue → review &amp; sign</button>
     <button type="button" class="btn-secondary" id="btnBack">← Back to plan</button>
@@ -267,6 +316,24 @@ h1 { font-family:"Playfair Display",Georgia,serif; font-size:28px; line-height:1
   $('subLast').value  = backendProfile && backendProfile.subscriberLastName  || S.get('user.subscriberLastName', '')  || '';
   $('subDob').value   = backendProfile && backendProfile.subscriberDob       || S.get('user.subscriberDob', '')       || '';
 
+  /* Hydrate dental clinic fields. Order of preference:
+       1. existing provider slice (if patient already filled it on a
+          previous visit)
+       2. receipt slice (OCR extraction of the factura PDF)
+       3. blank (patient types from scratch)
+     The OCR Lambda writes parsed factura fields into `receipt` —
+     `dentist` / `clinic` / `clinicAddress` / etc. are common keys
+     across our OCR variants. Fall through any that are populated. */
+  var providerSaved = S.get('provider', {}) || {};
+  var receipt = S.get('receipt', {}) || {};
+  $('provName').value   = providerSaved.name   || receipt.dentist      || receipt.clinic       || receipt.clinicName    || '';
+  $('provStreet').value = providerSaved.street || receipt.clinicAddress || receipt.dentistAddress || receipt.address     || '';
+  $('provCity').value   = providerSaved.city   || receipt.clinicCity   || receipt.dentistCity  || receipt.city          || '';
+  $('provState').value  = providerSaved.state  || receipt.clinicState  || receipt.dentistState || '';
+  $('provZip').value    = providerSaved.zip    || receipt.clinicZip    || receipt.dentistZip   || '';
+  $('provPhone').value  = providerSaved.phone  || receipt.clinicPhone  || receipt.dentistPhone || receipt.phone         || '';
+  $('provRfc').value    = providerSaved.rfc    || receipt.clinicRfc    || receipt.dentistRfc   || receipt.rfc           || '';
+
   function showError(msg) {
     var b = $('errBanner');
     b.textContent = msg;
@@ -291,7 +358,16 @@ h1 { font-family:"Playfair Display",Georgia,serif; font-size:28px; line-height:1
       employer: $('employer').value.trim(),
       subscriberFirstName: $('subFirst').value.trim(),
       subscriberLastName:  $('subLast').value.trim(),
-      subscriberDob:       $('subDob').value
+      subscriberDob:       $('subDob').value,
+      provider: {
+        name:   $('provName').value.trim(),
+        street: $('provStreet').value.trim(),
+        city:   $('provCity').value.trim(),
+        state:  $('provState').value.trim(),
+        zip:    $('provZip').value.trim(),
+        phone:  $('provPhone').value.trim(),
+        rfc:    $('provRfc').value.trim()
+      }
     };
   }
 
@@ -304,6 +380,10 @@ h1 { font-family:"Playfair Display",Georgia,serif; font-size:28px; line-height:1
       if (!form.subscriberDob)
         return 'Please enter the subscriber’s date of birth.';
     }
+    if (!form.provider.name)   return 'Please enter your dental clinic name.';
+    if (!form.provider.street) return 'Please enter your dental clinic address.';
+    if (!form.provider.city)   return 'Please enter your dental clinic city.';
+    if (!form.provider.phone)  return 'Please enter your dental clinic phone.';
     return null;
   }
 
@@ -327,6 +407,10 @@ h1 { font-family:"Playfair Display",Georgia,serif; font-size:28px; line-height:1
       subscriberLastName:  form.subscriberLastName,
       subscriberDob:       form.subscriberDob
     });
+    /* Dental clinic info goes into its own state slice so submission-
+       confirmed.html can pull it out and pass it to the backend POST
+       /claims body as providerName / providerAddress / etc. */
+    S.set('provider', form.provider);
 
     /* 2. Best-effort backend save via /profile (the credimed-users
           Lambda already accepts these fields). Don't block navigation
