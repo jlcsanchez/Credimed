@@ -452,9 +452,13 @@ html, body {
   }
 
   /* If this page loaded from Stripe redirect (?paid=1 or payment_intent_client_secret),
-     POST the claim to the backend so it's actually stored and processed. */
+     POST the claim to the backend so it's actually stored and processed.
+     ?testmode=1 is the admin Test Mode bypass set by payment.html — the
+     Lambda only honors paymentMode=test for callers in the 'admin' Cognito
+     group, so a hostile non-admin appending it to the URL gets rejected. */
   var params = new URLSearchParams(window.location.search);
   var justPaid = params.get('paid') === '1' || params.has('payment_intent_client_secret');
+  var testMode = params.get('testmode') === '1';
   if (justPaid) {
     try {
       /* receipt.amountPaidUSD is the documents-screen-normalized USD value
@@ -579,7 +583,11 @@ html, body {
           poaDataUrl: signature.poaDataUrl || signature.dataUrl || null
         },
         documents: documents,
-        submittedAt: new Date().toISOString()
+        submittedAt: new Date().toISOString(),
+        // Admin Test Mode flag — Lambda persists 'test' only when the
+        // caller is in the admin Cognito group, otherwise the field is
+        // dropped silently and the row stays paymentMode='live'.
+        paymentMode: testMode ? 'test' : 'live'
       };
       if (window.authFetch && window.CREDIMED_API) {
         await window.authFetch(window.CREDIMED_API + '/claims', { method: 'POST', body: body });

@@ -1517,18 +1517,26 @@ html, body { margin:0; padding:0; font-family: var(--font-ui); background: var(-
     }
   }
 
+  /* TEST badge — flagged on rows where the admin Test Mode bypass was
+     used at submission (Lambda persisted paymentMode='test'). Lets the
+     operator immediately spot demo claims so they aren't accidentally
+     faxed to a real carrier. */
+  var TEST_BADGE_HTML =
+    '<span class="status-pill" style="background:#FEF3C7;color:#92400E;border:1px dashed #D97706;margin-left:8px;letter-spacing:.06em;">TEST</span>';
+
   function renderClaimRow(c) {
     var name = (c.firstName || '') + ' ' + (c.lastName || '');
     name = name.trim() || c.email || '—';
     var proc = c.procedure || 'Dental claim';
     var city = c.city ? (' · ' + c.city) : '';
     var statusClass = 'status-' + (c.status || 'in-review');
+    var isTest = c.paymentMode === 'test';
     var options = STATUS_OPTIONS.map(function (s) {
       return '<option value="' + s + '"' + (c.status === s ? ' selected' : '') + '>' + STATUS_LABELS[s] + '</option>';
     }).join('');
     return (
-      '<div class="claims-row" data-claim-id="' + (c.id || '') + '">' +
-        '<div class="claim-id hide-mobile">' + (c.id || '—') + '</div>' +
+      '<div class="claims-row" data-claim-id="' + (c.id || '') + '"' + (isTest ? ' data-test-claim="1" style="background:#FFFBEB;"' : '') + '>' +
+        '<div class="claim-id hide-mobile">' + (c.id || '—') + (isTest ? ' ' + TEST_BADGE_HTML : '') + '</div>' +
         '<div>' +
           '<div class="claim-name">' + name + '</div>' +
           '<div class="claim-sub">' + proc + city + '</div>' +

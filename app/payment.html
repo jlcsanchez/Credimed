@@ -1738,6 +1738,39 @@ mountScope('desktop');
       /* Enable CTA once Stripe is ready */
       var cta = document.querySelector('[data-cta][data-scope="' + scope + '"]');
       if (cta) cta.disabled = false;
+
+      /* Admin-only Test Mode bypass.
+         When the signed-in user is in the Cognito 'admin' group, render
+         a small button below Stripe that skips payment entirely and
+         goes straight to submission-confirmed?paid=1&testmode=1. The
+         Lambda re-checks the same group claim on the JWT and rejects
+         paymentMode=test from non-admins, so this UI has no value to
+         a non-admin even if they unhide it via DevTools. */
+      try {
+        if (await window.isCredimedAdmin()) {
+          var mountWrap = document.getElementById('credimed-stripe-mount');
+          if (mountWrap && !document.getElementById('admin-testmode-block')) {
+            var block = document.createElement('div');
+            block.id = 'admin-testmode-block';
+            block.style.cssText =
+              'margin-top:18px;padding:12px 14px;border:1px dashed #94A3B8;' +
+              'border-radius:10px;background:#F8FAFC;display:flex;flex-direction:column;gap:8px;';
+            block.innerHTML =
+              '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;">Admin · Test Mode</div>' +
+              '<div style="font-size:12px;line-height:1.45;color:#475569;">Skip Stripe and submit this claim with <code style="background:#E2E8F0;padding:1px 5px;border-radius:4px;font-size:11px;">paymentMode=test</code>. Nothing is charged. Claims show a <b>TEST</b> badge in admin.</div>' +
+              '<button id="admin-testmode-btn" type="button" style="align-self:flex-start;padding:9px 14px;border:1px solid #0D9488;background:#fff;color:#0D9488;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Simulate payment (TEST)</button>';
+            mountWrap.appendChild(block);
+            document.getElementById('admin-testmode-btn').addEventListener('click', function (ev) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              var btn = this;
+              btn.disabled = true;
+              btn.textContent = 'Submitting...';
+              window.location.href = window.location.origin + '/app/submission-confirmed.html?paid=1&testmode=1';
+            });
+          }
+        }
+      } catch (e) { /* admin check failed — leave Stripe path only */ }
     } catch (err) {
       console.error('[Credimed] Stripe init failed:', err);
       var errMsg = (err && err.message) || String(err) || 'Network error';

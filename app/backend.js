@@ -240,6 +240,44 @@ window.authFetch = async function (url, opts) {
       });
     });
   };
+
+  /* Resolve admin status by reading the cognito:groups claim from the
+     ID token. Returns true only when the signed-in user belongs to the
+     'admin' group. Used by payment.html to gate the Test Mode bypass
+     and by submission-confirmed.html to mark the claim paymentMode.
+     The Lambda re-checks the same claim server-side, so this is purely
+     a UI affordance — bypassing it on the client gives nothing.
+
+     The check mirrors admin.html: case-insensitive, handles the API
+     Gateway HTTP API quirk where array claims serialize as
+     "[Admin Editor]" (bracket-wrapped, space-separated, no quotes). */
+  window.isCredimedAdmin = async function () {
+    try {
+      var token = await window.cognitoGetIdToken();
+      if (!token) return false;
+      var payload = token.split('.')[1];
+      var json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      var claims = JSON.parse(decodeURIComponent(escape(json)));
+      var groups = claims['cognito:groups'];
+      if (groups == null) return false;
+      if (typeof groups === 'string') {
+        var trimmed = groups.trim();
+        if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+          var inner = trimmed.slice(1, -1).trim();
+          try { groups = JSON.parse('[' + inner + ']'); }
+          catch (e) { groups = inner.split(/[,\s]+/).filter(Boolean); }
+        } else {
+          groups = trimmed.split(/[,\s]+/).filter(Boolean);
+        }
+      }
+      if (!Array.isArray(groups)) return false;
+      return groups
+        .map(function (g) { return String(g).replace(/["\[\]]/g, '').trim().toLowerCase(); })
+        .indexOf('admin') !== -1;
+    } catch (e) {
+      return false;
+    }
+  };
 })();
 
 /* ---------- Stripe helpers ---------- */

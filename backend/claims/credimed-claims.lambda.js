@@ -180,7 +180,7 @@ async function decryptItem(item) {
   // Add more here as the data model grows.
   const PASSTHROUGH = ["plan", "city", "paidCurrency", "paidAmount",
                        "paidAmountUSD", "estimateMin", "estimateMax",
-                       "submittedAt", "paidAt", "deniedAt"];
+                       "submittedAt", "paidAt", "deniedAt", "paymentMode"];
   for (const f of PASSTHROUGH) {
     if (item[f]?.S != null) claim[f] = item[f].S;
     else if (item[f]?.N != null) claim[f] = Number(item[f].N);
@@ -268,7 +268,7 @@ async function getOneClaim(claimId, userId, isAdminUser) {
  * partial data. status defaults to 'in-review' since the patient just
  * paid and submitted — admins move it forward from there.
  */
-async function createClaim(userId, body) {
+async function createClaim(userId, body, isAdminUser) {
   if (!body || typeof body !== "object") {
     return { error: "Missing JSON body", code: 400 };
   }
@@ -284,12 +284,20 @@ async function createClaim(userId, body) {
   }
 
   const now = new Date().toISOString();
+  // Admin-only Test Mode bypass: the patient-flow frontend only sets
+  // paymentMode='test' from payment.html's admin shortcut, which routes
+  // straight to submission-confirmed without going through Stripe.
+  // Honor it only when the caller is in the 'admin' Cognito group;
+  // anything else is silently coerced to 'live' so a hostile client
+  // can't avoid being charged by appending the flag manually.
+  const paymentMode = isAdminUser && body.paymentMode === "test" ? "test" : "live";
   const item = {
-    claimId:   { S: claimId },
-    userId:    { S: userId },
-    status:    { S: body.status && ALLOWED_STATUSES.has(body.status) ? body.status : "in-review" },
-    createdAt: { S: now },
-    updatedAt: { S: now }
+    claimId:    { S: claimId },
+    userId:     { S: userId },
+    status:     { S: body.status && ALLOWED_STATUSES.has(body.status) ? body.status : "in-review" },
+    createdAt:  { S: now },
+    updatedAt:  { S: now },
+    paymentMode: { S: paymentMode }
   };
 
   // Non-PHI scalars — copy through with the same S/N typing the reader
@@ -362,7 +370,7 @@ async function createClaim(userId, body) {
       Item: item,
       ConditionExpression: "attribute_not_exists(claimId)"
     }));
-    return { ok: true, claimId, createdAt: now, status: item.status.S };
+    return { ok: true, claimId, createdAt: now, status: item.status.S, paymentMode };
   } catch (err) {
     if (err.name !== "ConditionalCheckFailedException") throw err;
     // A row already exists for this claimId. Treat same-user re-submits
@@ -378,6 +386,7 @@ async function createClaim(userId, body) {
         claimId,
         createdAt: existing.Item.createdAt?.S || now,
         status: existing.Item.status?.S || "in-review",
+        paymentMode: existing.Item.paymentMode?.S || "live",
         idempotent: true
       };
     }
@@ -834,13 +843,14 @@ export const handler = async (event) => {
       let body;
       try { body = event.body ? JSON.parse(event.body) : null; }
       catch { return response(400, { error: "Invalid JSON body" }); }
-      const result = await createClaim(userId, body);
+      const result = await createClaim(userId, body, adminUser);
       if (result.error) return response(result.code || 400, { error: result.error });
       audit(event, {
         event: "create_claim",
         userId,
         claimId: result.claimId,
-        idempotent: !!result.idempotent
+        idempotent: !!result.idempotent,
+        paymentMode: result.paymentMode
       });
       return response(result.idempotent ? 200 : 201, result);
     }
