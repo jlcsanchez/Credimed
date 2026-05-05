@@ -306,11 +306,11 @@ export async function generateAdaPdf(claim) {
   page.drawText('14. GENDER', {
     x: M.left + 138, y: y - 1, size: 6, font: fontBold, color: SLATE_500
   });
-  drawCheckbox(M.left + 138, y - 18, claim.gender === 'M', 'M');
-  drawCheckbox(M.left + 168, y - 18, claim.gender === 'F', 'F');
-  drawCheckbox(M.left + 198, y - 18, !claim.gender || (claim.gender !== 'M' && claim.gender !== 'F'), 'U');
+  drawCheckbox(M.left + 138, y - 12, claim.gender === 'M', 'M');
+  drawCheckbox(M.left + 168, y - 12, claim.gender === 'F', 'F');
+  drawCheckbox(M.left + 198, y - 12, !claim.gender || (claim.gender !== 'M' && claim.gender !== 'F'), 'U');
   page.drawLine({
-    start: { x: M.left + 138, y: y - 28 }, end: { x: M.left + 222, y: y - 28 },
+    start: { x: M.left + 138, y: y - 20 }, end: { x: M.left + 222, y: y - 20 },
     thickness: 0.4, color: SLATE_300
   });
   drawField('15. Subscriber ID (assigned by plan)', claim.memberId || '', M.left + 230, 200);
@@ -345,11 +345,11 @@ export async function generateAdaPdf(claim) {
   page.drawText('22. PATIENT GENDER', {
     x: M.left + 138, y: y - 1, size: 6, font: fontBold, color: SLATE_500
   });
-  drawCheckbox(M.left + 138, y - 18, claim.gender === 'M', 'M');
-  drawCheckbox(M.left + 168, y - 18, claim.gender === 'F', 'F');
-  drawCheckbox(M.left + 198, y - 18, !claim.gender || (claim.gender !== 'M' && claim.gender !== 'F'), 'U');
+  drawCheckbox(M.left + 138, y - 12, claim.gender === 'M', 'M');
+  drawCheckbox(M.left + 168, y - 12, claim.gender === 'F', 'F');
+  drawCheckbox(M.left + 198, y - 12, !claim.gender || (claim.gender !== 'M' && claim.gender !== 'F'), 'U');
   page.drawLine({
-    start: { x: M.left + 138, y: y - 28 }, end: { x: M.left + 222, y: y - 28 },
+    start: { x: M.left + 138, y: y - 20 }, end: { x: M.left + 222, y: y - 20 },
     thickness: 0.4, color: SLATE_300
   });
   drawField('23. Patient ID/Account # (assigned by Dentist)', '', M.left + 230, 326);
