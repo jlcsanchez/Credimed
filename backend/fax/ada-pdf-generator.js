@@ -177,7 +177,9 @@ export async function generateAdaPdf(claim) {
     page.drawText(label, {
       x: M.left + 6, y: y - 9, size: 8.5, font: fontBold, color: rgb(1, 1, 1)
     });
-    y -= 16;
+    /* Drop 24px (was 16) so the first field label sits clearly below
+       the green bar's bottom edge instead of riding into it. */
+    y -= 24;
   };
 
   /* Draw a single-row labeled field with a thin underline. The label is
