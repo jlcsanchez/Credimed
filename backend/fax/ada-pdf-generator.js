@@ -170,6 +170,11 @@ export async function generateAdaPdf(claim) {
 
   // ── Drawing helpers ───────────────────────────────────────────
   const sectionHeader = (label) => {
+    /* Pre-padding above the bar — gives the green section header
+       breathing room from the previous section's last underline,
+       which otherwise sits only 4-6px above the bar top and looks
+       cramped. */
+    y -= 8;
     // Filled teal bar with white text
     page.drawRectangle({
       x: M.left, y: y - 12, width: CONTENT_W, height: 14, color: TEAL
@@ -177,41 +182,49 @@ export async function generateAdaPdf(claim) {
     page.drawText(label, {
       x: M.left + 6, y: y - 9, size: 8.5, font: fontBold, color: rgb(1, 1, 1)
     });
-    y -= 16;
+    /* Post-padding below the bar — first field label clears the bar's
+       bottom edge with ~6px of air. */
+    y -= 24;
   };
 
   /* Draw a single-row labeled field with a thin underline. The label is
-     small caps above the value; the value sits on a baseline. */
+     small caps above the value; the value sits below with breathing
+     room so the answer doesn't crowd against the question. */
   const drawField = (label, value, x, width, opts = {}) => {
     const labelSize = 6;
     const valueSize = opts.valueSize || 9;
     page.drawText(label.toUpperCase(), {
       x, y, size: labelSize, font: fontBold, color: SLATE_500
     });
-    page.drawLine({
-      start: { x, y: y - 11 }, end: { x: x + width, y: y - 11 },
-      thickness: 0.4, color: SLATE_300
-    });
+    // Value baseline 16px below label (was 9) — gives a clean gap
+    // between the small-caps label and the larger answer.
     if (value) {
       const display = String(value);
-      // Truncate if too long
       let shown = display;
       while (shown.length > 0 && font.widthOfTextAtSize(shown, valueSize) > width - 4) {
         shown = shown.slice(0, -1);
       }
       page.drawText(shown, {
-        x: x + 2, y: y - 9, size: valueSize, font, color: SLATE_900
+        x: x + 2, y: y - 16, size: valueSize, font, color: SLATE_900
       });
     }
+    // Underline 4px below the value baseline so the answer visually
+    // rests on the line.
+    page.drawLine({
+      start: { x, y: y - 20 }, end: { x: x + width, y: y - 20 },
+      thickness: 0.4, color: SLATE_300
+    });
   };
 
-  /* Multi-line address-style block that wraps to 2 lines if long. */
+  /* Multi-line address-style block — same vertical breathing room as
+     drawField. The label sits above; lines below have natural line
+     height. */
   const drawMultilineField = (label, lines, x, width) => {
     const labelSize = 6;
     page.drawText(label.toUpperCase(), {
       x, y, size: labelSize, font: fontBold, color: SLATE_500
     });
-    let lineY = y - 9;
+    let lineY = y - 16;
     lines.filter(Boolean).forEach((line, i) => {
       if (i < 2) {
         page.drawText(String(line), {
@@ -220,9 +233,9 @@ export async function generateAdaPdf(claim) {
         lineY -= 11;
       }
     });
-    // Underline at bottom of allocated space
+    // Underline at the bottom of the allocated 2-line space.
     page.drawLine({
-      start: { x, y: y - 31 }, end: { x: x + width, y: y - 31 },
+      start: { x, y: y - 38 }, end: { x: x + width, y: y - 38 },
       thickness: 0.4, color: SLATE_300
     });
   };
@@ -260,15 +273,15 @@ export async function generateAdaPdf(claim) {
   drawCheckbox(M.left + 380, y, false, 'EPSDT / Title XIX');
   y -= 14;
   drawField('2. Predetermination/Preauthorization Number', '', M.left, 320);
-  y -= 18;
+  y -= 26;
 
   // SECTION: DENTAL BENEFIT PLAN INFORMATION
   sectionHeader('DENTAL BENEFIT PLAN INFORMATION');
   drawField('3. Company / Plan Name', claim.insurer || '', M.left, 380);
   drawField('3a. Payer ID', claim.payerId || '', M.left + 388, 168);
-  y -= 18;
+  y -= 26;
   drawField('Address (City, State, ZIP)', claim.insurerAddress || '', M.left, CONTENT_W);
-  y -= 18;
+  y -= 26;
 
   // SECTION: OTHER COVERAGE
   sectionHeader('OTHER COVERAGE  (mark applicable box and complete items 5-11. If none, leave blank.)');
@@ -280,13 +293,13 @@ export async function generateAdaPdf(claim) {
   page.drawText('(if both, complete 5-11 for dental only)', {
     x: M.left + 220, y: y - 4, size: 7, font: fontItalic, color: SLATE_500
   });
-  y -= 18;
+  y -= 26;
 
   // SECTION: POLICYHOLDER / SUBSCRIBER INFORMATION
   sectionHeader('POLICYHOLDER / SUBSCRIBER INFORMATION  (assigned by plan named in #3)');
   drawMultilineField('12. Name (Last, First, Middle Initial, Suffix), Address, City, State, ZIP',
     [fullName, subscriberAddress, subscriberCityLine], M.left, CONTENT_W);
-  y -= 36;
+  y -= 44;
 
   drawField('13. Date of Birth (MM/DD/YYYY)', fmtDate(claim.dob), M.left, 130);
   // Field 14 — Gender (M/F/U)
@@ -297,14 +310,14 @@ export async function generateAdaPdf(claim) {
   drawCheckbox(M.left + 168, y - 12, claim.gender === 'F', 'F');
   drawCheckbox(M.left + 198, y - 12, !claim.gender || (claim.gender !== 'M' && claim.gender !== 'F'), 'U');
   page.drawLine({
-    start: { x: M.left + 138, y: y - 19 }, end: { x: M.left + 222, y: y - 19 },
+    start: { x: M.left + 138, y: y - 20 }, end: { x: M.left + 222, y: y - 20 },
     thickness: 0.4, color: SLATE_300
   });
   drawField('15. Subscriber ID (assigned by plan)', claim.memberId || '', M.left + 230, 200);
   drawField('16. Plan/Group Number', claim.groupNumber || '', M.left + 438, 118);
-  y -= 22;
+  y -= 30;
   drawField('17. Employer Name', claim.employer || '', M.left, CONTENT_W);
-  y -= 18;
+  y -= 26;
 
   // SECTION: PATIENT INFORMATION
   sectionHeader('PATIENT INFORMATION');
@@ -336,11 +349,11 @@ export async function generateAdaPdf(claim) {
   drawCheckbox(M.left + 168, y - 12, claim.gender === 'F', 'F');
   drawCheckbox(M.left + 198, y - 12, !claim.gender || (claim.gender !== 'M' && claim.gender !== 'F'), 'U');
   page.drawLine({
-    start: { x: M.left + 138, y: y - 19 }, end: { x: M.left + 222, y: y - 19 },
+    start: { x: M.left + 138, y: y - 20 }, end: { x: M.left + 222, y: y - 20 },
     thickness: 0.4, color: SLATE_300
   });
   drawField('23. Patient ID/Account # (assigned by Dentist)', '', M.left + 230, 326);
-  y -= 22;
+  y -= 30;
 
   // SECTION: RECORD OF SERVICES PROVIDED (procedure table)
   sectionHeader('RECORD OF SERVICES PROVIDED');
@@ -423,9 +436,9 @@ export async function generateAdaPdf(claim) {
   drawField('33. Missing Teeth (place an "X" on each missing tooth)', '', M.left, 320);
   drawField('34. Diagnosis Code List Qualifier', 'AB (ICD-10-CM)', M.left + 328, 110);
   drawField('32. Total Fee', fmtMoney(totalFeeDisplay), M.left + 442, 114, { valueSize: 11 });
-  y -= 18;
+  y -= 26;
   drawField('35. Remarks', '', M.left, CONTENT_W);
-  y -= 18;
+  y -= 26;
 
   // SECTION: AUTHORIZATIONS (signatures)
   sectionHeader('AUTHORIZATIONS');
@@ -490,22 +503,22 @@ export async function generateAdaPdf(claim) {
   drawField('38. Place of Treatment', claim.placeOfTreatment || '11 (Office)', M.left, 200);
   drawField('39. Enclosures (Y or N)', claim.enclosuresAttached ? 'Y' : 'N', M.left + 208, 100);
   drawField('39a. Date Last SRP', '', M.left + 316, 240);
-  y -= 18;
+  y -= 26;
   page.drawText('40. Is Treatment for Orthodontics?', {
     x: M.left, y, size: 7, font: fontBold, color: SLATE_500
   });
   drawCheckbox(M.left + 158, y - 4, true, 'No (Skip 41-42)');
   drawCheckbox(M.left + 250, y - 4, false, 'Yes (Complete 41-42)');
-  y -= 16;
+  y -= 26;
   drawField('41. Date Appliance Placed', '', M.left, 180);
   drawField('42. Months of Treatment', '', M.left + 188, 100);
   drawField('43. Replacement of Prosthesis?', '', M.left + 296, 130);
   drawField('44. Date of Prior Placement', '', M.left + 432, 124);
-  y -= 18;
+  y -= 26;
   drawField('45. Treatment Resulting from', '', M.left, 200);
   drawField('46. Date of Accident', '', M.left + 208, 140);
   drawField('47. Auto Accident State', '', M.left + 354, 202);
-  y -= 18;
+  y -= 26;
 
   // SECTION: BILLING DENTIST OR DENTAL ENTITY
   sectionHeader('BILLING DENTIST OR DENTAL ENTITY  (leave blank if dentist or dental entity is not submitting claim on behalf of the patient or insured/subscriber)');
@@ -516,14 +529,14 @@ export async function generateAdaPdf(claim) {
       [claim.providerCity, claim.providerState, claim.providerZip].filter(Boolean).join(', ')
     ],
     M.left, CONTENT_W);
-  y -= 36;
+  y -= 44;
   drawField('49. NPI', claim.providerNPI || '', M.left, 130);
   drawField('50. License Number', claim.providerLicense || '', M.left + 138, 160);
   drawField('51. SSN or TIN', claim.providerRFC || claim.providerTaxId || '', M.left + 306, 130);
   drawField('52. Phone Number', claim.providerPhone || '', M.left + 444, 112);
-  y -= 18;
+  y -= 26;
   drawField('52a. Additional Provider ID', '', M.left, CONTENT_W);
-  y -= 18;
+  y -= 26;
 
   // SECTION: TREATING DENTIST AND TREATMENT LOCATION INFORMATION
   sectionHeader('TREATING DENTIST AND TREATMENT LOCATION INFORMATION');
@@ -548,12 +561,12 @@ export async function generateAdaPdf(claim) {
   page.drawText(dateOfService, {
     x: M.right - 80, y: y - 22, size: 9, font, color: SLATE_900
   });
-  y -= 36;
+  y -= 44;
 
   drawField('53a. Locum Tenens Treating Dentist', '', M.left, 220);
   drawField('54. NPI', claim.providerNPI || '', M.left + 228, 130);
   drawField('55. License Number', claim.providerLicense || '', M.left + 366, 190);
-  y -= 18;
+  y -= 26;
   drawMultilineField('56. Address, City, State, ZIP',
     [
       claim.providerAddress || '',
@@ -561,10 +574,10 @@ export async function generateAdaPdf(claim) {
     ],
     M.left, CONTENT_W - 130);
   drawField('56a. Provider Specialty Code', claim.providerSpecialty || '122300000X (Dentist)', M.left + CONTENT_W - 124, 124);
-  y -= 36;
+  y -= 44;
   drawField('57. Phone Number', claim.providerPhone || '', M.left, 200);
   drawField('58. Additional Provider ID', '', M.left + 208, CONTENT_W - 208);
-  y -= 18;
+  y -= 26;
 
   return pdf.save();
 }
