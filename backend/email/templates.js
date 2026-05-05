@@ -232,7 +232,16 @@ ${amountBlock}
 }
 
 const dashboardUrl = `${APP_BASE}/dashboard.html`;
-const greet = (firstName) => firstName ? `Hi ${firstName},` : 'Hi,';
+/* Title-case the first letter of each space-separated token so a
+   patient who signed up "juan luis" still gets "Hi Juan Luis,". Falls
+   back to "Hi," if firstName is empty. */
+const titleCase = (s) =>
+  String(s || '')
+    .trim()
+    .split(/\s+/)
+    .map(w => w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : '')
+    .join(' ');
+const greet = (firstName) => firstName ? `Hi ${titleCase(firstName)},` : 'Hi,';
 
 const templates = {
   /* Sent immediately after Cognito Post-Confirmation fires (the user
