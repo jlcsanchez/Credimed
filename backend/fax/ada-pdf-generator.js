@@ -170,6 +170,11 @@ export async function generateAdaPdf(claim) {
 
   // ── Drawing helpers ───────────────────────────────────────────
   const sectionHeader = (label) => {
+    /* Pre-padding above the bar — gives the green section header
+       breathing room from the previous section's last underline,
+       which otherwise sits only 4-6px above the bar top and looks
+       cramped. */
+    y -= 8;
     // Filled teal bar with white text
     page.drawRectangle({
       x: M.left, y: y - 12, width: CONTENT_W, height: 14, color: TEAL
@@ -177,8 +182,8 @@ export async function generateAdaPdf(claim) {
     page.drawText(label, {
       x: M.left + 6, y: y - 9, size: 8.5, font: fontBold, color: rgb(1, 1, 1)
     });
-    /* Drop 24px (was 16) so the first field label sits clearly below
-       the green bar's bottom edge instead of riding into it. */
+    /* Post-padding below the bar — first field label clears the bar's
+       bottom edge with ~6px of air. */
     y -= 24;
   };
 
