@@ -157,10 +157,13 @@ a:hover { color: var(--teal-800); }
 }
 .city-pill.more-pill svg { color: currentColor; }
 
-/* When the patient has picked a city the entire pill row collapses —
-   showing only the active city pill or the "← All cities" back-chip
-   was redundant noise on top of the section heading + cards below. */
-.city-filter.is-filtered { display: none; }
+/* Pill row is hidden in production — patient feedback was that the
+   "Tijuana 3 / Los Algodones 3 / Los Cabos 2 / More cities" row
+   read as visual noise on top of both the search bar AND the
+   section headings below. The whole filter row stays in the DOM
+   (renderCityPills still wires click handlers for the search-bar
+   path that may surface them later), but it's never displayed. */
+.city-filter { display: none !important; }
 
 /* ============== More-cities search dialog ============== */
 .more-overlay {
