@@ -401,6 +401,29 @@ async function createClaim(userId, body, isAdminUser) {
         }
       }).catch(() => { /* sendEmailSafely never throws, but belt-and-suspenders */ });
     }
+
+    // Test Mode bypass — fire the same patient confirmation email the
+    // Stripe webhook would have sent on a real payment_intent.succeeded.
+    // Lets admins fully validate the email path (template render, SES
+    // delivery, copy) without burning real card charges + refunds.
+    // Paid amount string mirrors the pricing tier the patient picked,
+    // tagged "$X.00 (test mode)" so it's never confused with a real
+    // receipt in the inbox.
+    if (paymentMode === "test") {
+      const tierAmount = PLAN_FEE_USD[body.plan] || PLAN_FEE_USD.standard;
+      const recipientEmail = body.email && String(body.email).trim();
+      if (recipientEmail) {
+        sendEmailSafely({
+          to: recipientEmail,
+          eventType: "paymentReceivedAndFiled",
+          data: {
+            firstName:  body.firstName || "",
+            claimId,
+            amountPaid: `$${tierAmount}.00 (test mode)`
+          }
+        }).catch(() => { /* fire-and-forget */ });
+      }
+    }
     return { ok: true, claimId, createdAt: now, status: item.status.S, paymentMode };
   } catch (err) {
     if (err.name !== "ConditionalCheckFailedException") throw err;
