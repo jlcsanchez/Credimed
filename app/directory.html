@@ -149,78 +149,6 @@ a:hover { color: var(--teal-800); }
   background: var(--cream-2); color: var(--slate-600);
 }
 .city-pill.active .count { background: rgba(255,255,255,0.18); color: #fff; }
-.city-pill.more-pill {
-  border-style: dashed; color: var(--slate-600);
-}
-.city-pill.more-pill:hover {
-  border-style: solid; border-color: var(--teal-600); color: var(--teal-700);
-}
-.city-pill.more-pill svg { color: currentColor; }
-
-/* ============== More-cities search dialog ============== */
-.more-overlay {
-  position: fixed; inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(4px);
-  display: none;
-  align-items: flex-start; justify-content: center;
-  padding: 60px 16px 20px; z-index: 200;
-}
-.more-overlay.open { display: flex; }
-.more-panel {
-  width: 100%; max-width: 480px;
-  background: #fff; border-radius: 16px;
-  border: 1px solid var(--cream-2);
-  box-shadow: 0 30px 80px rgba(15,23,42,0.25);
-  overflow: hidden;
-}
-.more-head {
-  padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--cream-2);
-  display: flex; align-items: center; gap: 10px;
-}
-.more-head svg {
-  width: 16px; height: 16px; color: var(--slate-500); flex-shrink: 0;
-}
-.more-search {
-  flex: 1; border: none; outline: none; background: transparent;
-  font-family: inherit; font-size: 15px; color: var(--ink);
-}
-.more-search::placeholder { color: var(--slate-500); }
-.more-close {
-  width: 26px; height: 26px; border-radius: 8px; border: none;
-  background: var(--cream-2); color: var(--slate-600);
-  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-  font-family: inherit; font-size: 18px;
-}
-.more-list { max-height: 360px; overflow-y: auto; padding: 6px 0; }
-.more-item {
-  display: flex; align-items: center; gap: 12px;
-  width: 100%; padding: 12px 20px; border: none; background: transparent;
-  font-family: inherit; font-size: 14px; color: var(--ink);
-  cursor: pointer; text-align: left;
-}
-.more-item:hover { background: var(--cream); }
-.more-item .mi-mark {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: var(--teal-50); color: var(--teal-700);
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.more-item .mi-mark svg { width: 14px; height: 14px; }
-.more-item .mi-name { font-weight: 600; }
-.more-item .mi-meta {
-  font-size: 11.5px; color: var(--slate-500); font-weight: 500;
-  margin-top: 2px;
-}
-.more-item .mi-count {
-  margin-left: auto; font-size: 11px; font-weight: 600;
-  color: var(--slate-500);
-  padding: 3px 9px; border-radius: 999px; background: var(--cream-2);
-}
-.more-empty {
-  padding: 32px 20px; text-align: center;
-  font-size: 13px; color: var(--slate-500);
-}
 
 /* ============== Listing grid ============== */
 .listing-body { max-width: 1080px; margin: 0 auto; padding: 0 24px 32px; }
@@ -428,18 +356,6 @@ a:hover { color: var(--teal-800); }
   Credimed LLC &middot; 30 N Gould St Ste N, Sheridan, WY 82801
 </footer>
 
-<!-- More-cities search dialog -->
-<div class="more-overlay" id="moreOverlay" role="dialog" aria-modal="true" aria-label="Search Baja cities">
-  <div class="more-panel">
-    <div class="more-head">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input class="more-search" id="moreSearch" placeholder="Search Baja cities…" autocomplete="off">
-      <button class="more-close" id="moreClose" aria-label="Close">&times;</button>
-    </div>
-    <div class="more-list" id="moreList"></div>
-  </div>
-</div>
-
 <script>
 (function () {
   'use strict';
@@ -490,15 +406,6 @@ a:hover { color: var(--teal-800); }
     } catch (e) { return 'all'; }
   }
 
-  function allCitiesArray() {
-    if (!STATE.data) return [];
-    return (STATE.data.cities || []).concat(STATE.data.secondaryCities || []);
-  }
-
-  function isPrimary(citySlug) {
-    return (STATE.data?.cities || []).some(function (c) { return c.slug === citySlug; });
-  }
-
   function clinicsByCity(citySlug) {
     return ((STATE.data || {}).clinics || []).filter(function (c) {
       return c.city === citySlug;
@@ -537,23 +444,6 @@ a:hover { color: var(--teal-800); }
         '</button>'
       );
     }).join('');
-    /* If the user picked a secondary city, surface that pill too. */
-    if (STATE.city !== 'all' && !isPrimary(STATE.city)) {
-      var secondary = (STATE.data.secondaryCities || []).find(function (c) { return c.slug === STATE.city; });
-      if (secondary) {
-        html += (
-          '<button class="city-pill active" data-city="' + escapeHtml(secondary.slug) + '">' +
-            escapeHtml(secondary.display) +
-            ' <span class="count">' + (counts[secondary.slug] || 0) + '</span>' +
-          '</button>'
-        );
-      }
-    }
-    html += (
-      '<button class="city-pill more-pill" id="moreBtn">' +
-        ICONS.search + ' More cities' +
-      '</button>'
-    );
     box.innerHTML = html;
     box.querySelectorAll('[data-city]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -564,7 +454,6 @@ a:hover { color: var(--teal-800); }
         renderListing();
       });
     });
-    document.getElementById('moreBtn').addEventListener('click', openMoreDialog);
   }
 
   function syncUrl() {
@@ -625,7 +514,7 @@ a:hover { color: var(--teal-800); }
     var listing = document.getElementById('listing');
     var emptyEl = document.getElementById('empty');
 
-    var cities = allCitiesArray();
+    var cities = STATE.data.cities || [];
     var anyShown = false;
 
     var html = cities.map(function (city) {
@@ -659,76 +548,10 @@ a:hover { color: var(--teal-800); }
     emptyEl.style.display = anyShown ? 'none' : 'block';
   }
 
-  /* ---- More-cities dialog ---- */
-  function openMoreDialog() {
-    var overlay = document.getElementById('moreOverlay');
-    overlay.classList.add('open');
-    var input = document.getElementById('moreSearch');
-    input.value = '';
-    renderMoreList('');
-    setTimeout(function () { input.focus(); }, 50);
-  }
-  function closeMoreDialog() {
-    document.getElementById('moreOverlay').classList.remove('open');
-  }
-  function renderMoreList(query) {
-    var list = document.getElementById('moreList');
-    var q = (query || '').trim().toLowerCase();
-    var cities = allCitiesArray();
-    var counts = {};
-    (STATE.data.clinics || []).forEach(function (c) {
-      counts[c.city] = (counts[c.city] || 0) + 1;
-    });
-    var items = cities.filter(function (c) {
-      if (!q) return true;
-      return (c.display || '').toLowerCase().indexOf(q) !== -1
-          || (c.stateDisplay || '').toLowerCase().indexOf(q) !== -1;
-    });
-    if (items.length === 0) {
-      list.innerHTML =
-        '<div class="more-empty">No cities match "' + escapeHtml(query) + '". We\'re expanding — request your city at <a href="mailto:hello@credimed.us">hello@credimed.us</a>.</div>';
-      return;
-    }
-    list.innerHTML = items.map(function (c) {
-      var n = counts[c.slug] || 0;
-      return (
-        '<button class="more-item" data-pick-city="' + escapeHtml(c.slug) + '">' +
-          '<span class="mi-mark">' + ICONS.pin + '</span>' +
-          '<span>' +
-            '<div class="mi-name">' + escapeHtml(c.display) + '</div>' +
-            '<div class="mi-meta">' + escapeHtml(c.stateDisplay || c.state || '') + '</div>' +
-          '</span>' +
-          '<span class="mi-count">' + n + ' ' + (n === 1 ? 'clinic' : 'clinics') + '</span>' +
-        '</button>'
-      );
-    }).join('');
-    list.querySelectorAll('[data-pick-city]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        STATE.city = btn.getAttribute('data-pick-city');
-        closeMoreDialog();
-        syncUrl();
-        renderCityPills();
-        renderListing();
-      });
-    });
-  }
-
   /* ---- Search input ---- */
   document.getElementById('searchInput').addEventListener('input', function (e) {
     STATE.search = e.target.value;
     renderListing();
-  });
-
-  /* ---- Dialog close handlers ---- */
-  document.getElementById('moreClose').addEventListener('click', closeMoreDialog);
-  document.getElementById('moreOverlay').addEventListener('click', function (e) {
-    if (e.target === this) closeMoreDialog();
-  });
-  document.getElementById('moreSearch').addEventListener('input', function (e) {
-    renderMoreList(e.target.value);
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeMoreDialog();
   });
 
   /* ---- Bootstrap ---- */
