@@ -2,7 +2,7 @@
   "_meta": {
     "schemaVersion": 2,
     "lastUpdated": "2026-05-06",
-    "note": "PLACEHOLDER SEED DATA \u2014 replace with real partner clinics + their actual contact info before public launch. Ratings, average-paid, and average-refund figures are illustrative until we plug in a real reviews + claims-history source. Phones, websites, and addresses are NOT real partnerships yet \u2014 generic-sounding placeholders only. Directory is intentionally scoped to Tijuana / Los Algodones / Los Cabos until we have a real reason to expand.",
+    "note": "PLACEHOLDER SEED DATA — replace with real partner clinics + their actual contact info before public launch. Ratings, average-paid, and average-refund figures are illustrative until we plug in a real reviews + claims-history source. Phones, websites, and addresses are NOT real partnerships yet — generic-sounding placeholders only.",
     "verifyBeforeLaunch": true
   },
   "cities": [
@@ -20,7 +20,7 @@
       "state": "BC",
       "stateDisplay": "Baja California",
       "country": "Mexico",
-      "blurb": "Border town across from Yuma, AZ \u2014 known as the dental capital of Mexico. 350+ dentists in 4 walkable blocks."
+      "blurb": "Border town across from Yuma, AZ — known as the dental capital of Mexico. 350+ dentists in 4 walkable blocks."
     },
     {
       "slug": "los-cabos",
@@ -28,7 +28,41 @@
       "state": "BCS",
       "stateDisplay": "Baja California Sur",
       "country": "Mexico",
-      "blurb": "Resort destination popular with US patients combining travel and treatment. Cabo San Lucas + San Jos\u00e9 del Cabo corridor."
+      "blurb": "Resort destination popular with US patients combining travel and treatment. Cabo San Lucas + San José del Cabo corridor."
+    }
+  ],
+  "secondaryCities": [
+    {
+      "slug": "mexicali",
+      "display": "Mexicali",
+      "state": "BC",
+      "stateDisplay": "Baja California",
+      "country": "Mexico",
+      "blurb": "State capital of Baja California. Walking distance from the Calexico border crossing."
+    },
+    {
+      "slug": "ensenada",
+      "display": "Ensenada",
+      "state": "BC",
+      "stateDisplay": "Baja California",
+      "country": "Mexico",
+      "blurb": "Coastal city 90 minutes south of Tijuana. Popular with cruise-port and snowbird patients."
+    },
+    {
+      "slug": "la-paz",
+      "display": "La Paz",
+      "state": "BCS",
+      "stateDisplay": "Baja California Sur",
+      "country": "Mexico",
+      "blurb": "Capital of Baja California Sur. Quieter alternative to Cabo with full digital-workflow practices."
+    },
+    {
+      "slug": "loreto",
+      "display": "Loreto",
+      "state": "BCS",
+      "stateDisplay": "Baja California Sur",
+      "country": "Mexico",
+      "blurb": "Historic town on the Sea of Cortez. Boutique practice serving Loreto Bay residents and visitors."
     }
   ],
   "clinics": [
@@ -39,38 +73,20 @@
       "city": "tijuana",
       "cityDisplay": "Tijuana",
       "glyph": "T",
-      "address": "Zona R\u00edo \u00b7 Av. Paseo de los H\u00e9roes 9415 \u00b7 Tijuana, BC",
+      "address": "Zona Río · Av. Paseo de los Héroes 9415 · Tijuana, BC",
       "phone": "+1 (619) 555-0234",
       "whatsapp": "+1-619-555-0234",
       "website": "https://tijuanadentalcollective.com",
-      "hours": "Mon\u2013Sat \u00b7 8:00 AM \u2013 7:00 PM PT",
-      "languages": [
-        "en",
-        "es"
-      ],
-      "languagesDisplay": "English \u00b7 Spanish",
-      "specialties": [
-        "dental-implants",
-        "all-on-4",
-        "crowns",
-        "oral-surgery"
-      ],
-      "facilities": [
-        "in-house-lab",
-        "ct-scan",
-        "panoramic-xray",
-        "english-receptionist",
-        "valet-parking"
-      ],
-      "rating": {
-        "score": 4.7,
-        "count": 528,
-        "source": "public-reviews"
-      },
+      "hours": "Mon–Sat · 8:00 AM – 7:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "all-on-4", "crowns", "oral-surgery"],
+      "facilities": ["in-house-lab", "ct-scan", "panoramic-xray", "english-receptionist", "valet-parking"],
+      "rating": { "score": 4.7, "count": 528, "source": "public-reviews" },
       "credimedVerified": true,
       "tagline": "Modern surgical center 15 minutes from San Diego.",
       "avgPaidUSD": 2080,
-      "avgRefundUSD": "1,040\u20131,260"
+      "avgRefundUSD": "1,040–1,260"
     },
     {
       "id": "clnc_tij_002",
@@ -79,74 +95,42 @@
       "city": "tijuana",
       "cityDisplay": "Tijuana",
       "glyph": "S",
-      "address": "Plaza R\u00edo \u00b7 Av. Diego Rivera 2407 \u00b7 Tijuana, BC",
+      "address": "Plaza Río · Av. Diego Rivera 2407 · Tijuana, BC",
       "phone": "+1 (619) 555-0411",
       "whatsapp": "+1-619-555-0411",
       "website": "https://sdborderdentistry.com",
-      "hours": "Mon\u2013Fri \u00b7 9:00 AM \u2013 6:00 PM PT",
-      "languages": [
-        "en",
-        "es"
-      ],
-      "languagesDisplay": "English \u00b7 Spanish",
-      "specialties": [
-        "dental-implants",
-        "crowns",
-        "veneers",
-        "cosmetic-dentistry"
-      ],
-      "facilities": [
-        "in-house-lab",
-        "digital-impressions",
-        "english-receptionist",
-        "ada-accessible"
-      ],
-      "rating": {
-        "score": 4.5,
-        "count": 341,
-        "source": "public-reviews"
-      },
+      "hours": "Mon–Fri · 9:00 AM – 6:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "crowns", "veneers", "cosmetic-dentistry"],
+      "facilities": ["in-house-lab", "digital-impressions", "english-receptionist", "ada-accessible"],
+      "rating": { "score": 4.5, "count": 341, "source": "public-reviews" },
       "credimedVerified": true,
       "tagline": "US-trained dentists. Treatment plans in English with itemized US ADA codes.",
       "avgPaidUSD": 1950,
-      "avgRefundUSD": "980\u20131,180"
+      "avgRefundUSD": "980–1,180"
     },
     {
       "id": "clnc_tij_003",
       "slug": "rio-tijuana-dental",
-      "name": "R\u00edo Tijuana Dental",
+      "name": "Río Tijuana Dental",
       "city": "tijuana",
       "cityDisplay": "Tijuana",
       "glyph": "R",
-      "address": "Av. S\u00e1nchez Taboada 4001 \u00b7 Tijuana, BC",
+      "address": "Av. Sánchez Taboada 4001 · Tijuana, BC",
       "phone": "+1 (619) 555-0388",
       "whatsapp": "+1-619-555-0388",
       "website": "https://riotjdental.mx",
-      "hours": "Mon\u2013Sat \u00b7 8:00 AM \u2013 6:00 PM PT",
-      "languages": [
-        "es",
-        "en"
-      ],
-      "languagesDisplay": "Spanish \u00b7 Some English",
-      "specialties": [
-        "root-canal",
-        "extractions",
-        "crowns",
-        "fillings"
-      ],
-      "facilities": [
-        "panoramic-xray",
-        "valet-parking"
-      ],
-      "rating": {
-        "score": 4.6,
-        "count": 198,
-        "source": "public-reviews"
-      },
+      "hours": "Mon–Sat · 8:00 AM – 6:00 PM PT",
+      "languages": ["es", "en"],
+      "languagesDisplay": "Spanish · Some English",
+      "specialties": ["root-canal", "extractions", "crowns", "fillings"],
+      "facilities": ["panoramic-xray", "valet-parking"],
+      "rating": { "score": 4.6, "count": 198, "source": "public-reviews" },
       "credimedVerified": false,
       "tagline": "General-practice clinic in the financial district.",
       "avgPaidUSD": 1280,
-      "avgRefundUSD": "640\u2013780"
+      "avgRefundUSD": "640–780"
     },
     {
       "id": "clnc_alg_001",
@@ -155,38 +139,20 @@
       "city": "los-algodones",
       "cityDisplay": "Los Algodones",
       "glyph": "A",
-      "address": "Av. A 100, Vicente Guerrero \u00b7 Los Algodones, BC",
+      "address": "Av. A 100, Vicente Guerrero · Los Algodones, BC",
       "phone": "+1 (928) 555-0142",
       "whatsapp": "+1-928-555-0142",
       "website": "https://algodonessmile.mx",
-      "hours": "Mon\u2013Sat \u00b7 8:00 AM \u2013 6:00 PM PT",
-      "languages": [
-        "en",
-        "es"
-      ],
-      "languagesDisplay": "English \u00b7 Spanish",
-      "specialties": [
-        "dental-implants",
-        "crowns",
-        "bridges",
-        "veneers",
-        "all-on-4"
-      ],
-      "facilities": [
-        "in-house-lab",
-        "ct-scan",
-        "english-receptionist",
-        "shuttle-from-yuma"
-      ],
-      "rating": {
-        "score": 4.8,
-        "count": 412,
-        "source": "public-reviews"
-      },
+      "hours": "Mon–Sat · 8:00 AM – 6:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "crowns", "bridges", "veneers", "all-on-4"],
+      "facilities": ["in-house-lab", "ct-scan", "english-receptionist", "shuttle-from-yuma"],
+      "rating": { "score": 4.8, "count": 412, "source": "public-reviews" },
       "credimedVerified": true,
       "tagline": "Full-service implant center 5 minutes from the US border.",
       "avgPaidUSD": 1840,
-      "avgRefundUSD": "950\u20131,150"
+      "avgRefundUSD": "950–1,150"
     },
     {
       "id": "clnc_alg_002",
@@ -195,36 +161,20 @@
       "city": "los-algodones",
       "cityDisplay": "Los Algodones",
       "glyph": "B",
-      "address": "Calle 3a 89, Centro \u00b7 Los Algodones, BC",
+      "address": "Calle 3a 89, Centro · Los Algodones, BC",
       "phone": "+1 (928) 555-0188",
       "whatsapp": "+1-928-555-0188",
       "website": "https://borderdentalgroup.com",
-      "hours": "Mon\u2013Fri \u00b7 8:00 AM \u2013 5:00 PM PT",
-      "languages": [
-        "en",
-        "es"
-      ],
-      "languagesDisplay": "English \u00b7 Spanish",
-      "specialties": [
-        "dental-implants",
-        "crowns",
-        "root-canal",
-        "dentures"
-      ],
-      "facilities": [
-        "in-house-lab",
-        "panoramic-xray",
-        "english-receptionist"
-      ],
-      "rating": {
-        "score": 4.6,
-        "count": 287,
-        "source": "public-reviews"
-      },
+      "hours": "Mon–Fri · 8:00 AM – 5:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "crowns", "root-canal", "dentures"],
+      "facilities": ["in-house-lab", "panoramic-xray", "english-receptionist"],
+      "rating": { "score": 4.6, "count": 287, "source": "public-reviews" },
       "credimedVerified": true,
       "tagline": "Family-run practice. 22 years serving US PPO patients.",
       "avgPaidUSD": 1620,
-      "avgRefundUSD": "820\u2013990"
+      "avgRefundUSD": "820–990"
     },
     {
       "id": "clnc_alg_003",
@@ -233,37 +183,20 @@
       "city": "los-algodones",
       "cityDisplay": "Los Algodones",
       "glyph": "Y",
-      "address": "Blvd. S\u00e1nchez Taboada 15 \u00b7 Los Algodones, BC",
+      "address": "Blvd. Sánchez Taboada 15 · Los Algodones, BC",
       "phone": "+1 (928) 555-0199",
       "whatsapp": "+1-928-555-0199",
       "website": "https://yumacrossingdental.com",
-      "hours": "Tue\u2013Sat \u00b7 9:00 AM \u2013 5:00 PM PT",
-      "languages": [
-        "en",
-        "es"
-      ],
-      "languagesDisplay": "English \u00b7 Spanish",
-      "specialties": [
-        "veneers",
-        "crowns",
-        "teeth-whitening",
-        "cosmetic-dentistry"
-      ],
-      "facilities": [
-        "in-house-lab",
-        "ct-scan",
-        "digital-impressions",
-        "english-receptionist"
-      ],
-      "rating": {
-        "score": 4.9,
-        "count": 156,
-        "source": "public-reviews"
-      },
+      "hours": "Tue–Sat · 9:00 AM – 5:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["veneers", "crowns", "teeth-whitening", "cosmetic-dentistry"],
+      "facilities": ["in-house-lab", "ct-scan", "digital-impressions", "english-receptionist"],
+      "rating": { "score": 4.9, "count": 156, "source": "public-reviews" },
       "credimedVerified": false,
       "tagline": "Cosmetic-focused boutique. Same-day veneers when possible.",
       "avgPaidUSD": 2410,
-      "avgRefundUSD": "1,180\u20131,380"
+      "avgRefundUSD": "1,180–1,380"
     },
     {
       "id": "clnc_cab_001",
@@ -272,77 +205,196 @@
       "city": "los-cabos",
       "cityDisplay": "Los Cabos",
       "glyph": "C",
-      "address": "Blvd. Marina \u00b7 Cabo San Lucas, BCS",
+      "address": "Blvd. Marina · Cabo San Lucas, BCS",
       "phone": "+1 (624) 555-0411",
       "whatsapp": "+1-624-555-0411",
       "website": "https://cabodentalspa.com",
-      "hours": "Mon\u2013Fri \u00b7 9:00 AM \u2013 6:00 PM MST",
-      "languages": [
-        "en",
-        "es"
-      ],
-      "languagesDisplay": "English \u00b7 Spanish",
-      "specialties": [
-        "dental-implants",
-        "veneers",
-        "all-on-4",
-        "cosmetic-dentistry"
-      ],
-      "facilities": [
-        "in-house-lab",
-        "ct-scan",
-        "digital-impressions",
-        "english-receptionist",
-        "valet-parking"
-      ],
-      "rating": {
-        "score": 4.9,
-        "count": 224,
-        "source": "public-reviews"
-      },
+      "hours": "Mon–Fri · 9:00 AM – 6:00 PM MST",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "veneers", "all-on-4", "cosmetic-dentistry"],
+      "facilities": ["in-house-lab", "ct-scan", "digital-impressions", "english-receptionist", "valet-parking"],
+      "rating": { "score": 4.9, "count": 224, "source": "public-reviews" },
       "credimedVerified": true,
       "tagline": "Resort-area practice popular with US patients combining travel and treatment.",
       "avgPaidUSD": 2680,
-      "avgRefundUSD": "1,310\u20131,540"
+      "avgRefundUSD": "1,310–1,540"
     },
     {
       "id": "clnc_cab_002",
       "slug": "corridor-dental-san-jose",
-      "name": "Corridor Dental San Jos\u00e9",
+      "name": "Corridor Dental San José",
       "city": "los-cabos",
       "cityDisplay": "Los Cabos",
       "glyph": "C",
-      "address": "Carretera Transpeninsular Km 4.5 \u00b7 San Jos\u00e9 del Cabo, BCS",
+      "address": "Carretera Transpeninsular Km 4.5 · San José del Cabo, BCS",
       "phone": "+1 (624) 555-0288",
       "whatsapp": "+1-624-555-0288",
       "website": "https://corridordental.mx",
-      "hours": "Mon\u2013Sat \u00b7 8:00 AM \u2013 5:00 PM MST",
-      "languages": [
-        "en",
-        "es"
-      ],
-      "languagesDisplay": "English \u00b7 Spanish",
-      "specialties": [
-        "dental-implants",
-        "oral-surgery",
-        "crowns",
-        "bridges"
-      ],
-      "facilities": [
-        "in-house-lab",
-        "ct-scan",
-        "english-receptionist",
-        "ada-accessible"
-      ],
-      "rating": {
-        "score": 4.7,
-        "count": 138,
-        "source": "public-reviews"
-      },
+      "hours": "Mon–Sat · 8:00 AM – 5:00 PM MST",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "oral-surgery", "crowns", "bridges"],
+      "facilities": ["in-house-lab", "ct-scan", "english-receptionist", "ada-accessible"],
+      "rating": { "score": 4.7, "count": 138, "source": "public-reviews" },
       "credimedVerified": true,
       "tagline": "Surgical implant practice in the Tourist Corridor.",
       "avgPaidUSD": 2310,
-      "avgRefundUSD": "1,150\u20131,360"
+      "avgRefundUSD": "1,150–1,360"
+    },
+    {
+      "id": "clnc_mex_001",
+      "slug": "mexicali-dental-care",
+      "name": "Mexicali Dental Care",
+      "city": "mexicali",
+      "cityDisplay": "Mexicali",
+      "glyph": "M",
+      "address": "Av. Reforma 1010, Centro Cívico · Mexicali, BC",
+      "phone": "+1 (760) 555-0317",
+      "whatsapp": "+1-760-555-0317",
+      "website": "https://mexicalidentalcare.com",
+      "hours": "Mon–Sat · 8:00 AM – 6:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "crowns", "root-canal", "veneers"],
+      "facilities": ["in-house-lab", "panoramic-xray", "english-receptionist"],
+      "rating": { "score": 4.7, "count": 264, "source": "public-reviews" },
+      "credimedVerified": true,
+      "tagline": "Two-block walk from the Calexico West border crossing.",
+      "avgPaidUSD": 1740,
+      "avgRefundUSD": "870–1,050"
+    },
+    {
+      "id": "clnc_mex_002",
+      "slug": "cachanilla-smile-studio",
+      "name": "Cachanilla Smile Studio",
+      "city": "mexicali",
+      "cityDisplay": "Mexicali",
+      "glyph": "C",
+      "address": "Plaza Cachanilla · Calzada López Mateos 1100 · Mexicali, BC",
+      "phone": "+1 (760) 555-0204",
+      "whatsapp": "+1-760-555-0204",
+      "website": "https://cachanillasmile.mx",
+      "hours": "Tue–Sat · 9:00 AM – 6:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["veneers", "teeth-whitening", "orthodontics", "invisalign"],
+      "facilities": ["digital-impressions", "english-receptionist"],
+      "rating": { "score": 4.6, "count": 142, "source": "public-reviews" },
+      "credimedVerified": false,
+      "tagline": "Cosmetic and orthodontic specialty practice.",
+      "avgPaidUSD": 1980,
+      "avgRefundUSD": "990–1,180"
+    },
+    {
+      "id": "clnc_ens_001",
+      "slug": "pacifico-dental-ensenada",
+      "name": "Pacífico Dental Ensenada",
+      "city": "ensenada",
+      "cityDisplay": "Ensenada",
+      "glyph": "P",
+      "address": "Av. Reforma 720, Zona Centro · Ensenada, BC",
+      "phone": "+1 (646) 555-0144",
+      "whatsapp": "+1-646-555-0144",
+      "website": "https://pacificodental.mx",
+      "hours": "Mon–Fri · 9:00 AM – 5:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "crowns", "bridges", "cosmetic-dentistry"],
+      "facilities": ["in-house-lab", "panoramic-xray", "english-receptionist"],
+      "rating": { "score": 4.8, "count": 187, "source": "public-reviews" },
+      "credimedVerified": true,
+      "tagline": "Coastal practice popular with cruise-port and snowbird patients.",
+      "avgPaidUSD": 1860,
+      "avgRefundUSD": "930–1,120"
+    },
+    {
+      "id": "clnc_ens_002",
+      "slug": "bahia-dental-group",
+      "name": "Bahía Dental Group",
+      "city": "ensenada",
+      "cityDisplay": "Ensenada",
+      "glyph": "B",
+      "address": "Calle Tercera 891, Zona Centro · Ensenada, BC",
+      "phone": "+1 (646) 555-0233",
+      "whatsapp": "+1-646-555-0233",
+      "website": "https://bahiadental.mx",
+      "hours": "Mon–Sat · 8:00 AM – 5:00 PM PT",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["crowns", "fillings", "extractions", "teeth-whitening"],
+      "facilities": ["in-house-lab", "english-receptionist"],
+      "rating": { "score": 4.5, "count": 98, "source": "public-reviews" },
+      "credimedVerified": false,
+      "tagline": "General practice with on-site lab for same-day crowns.",
+      "avgPaidUSD": 1340,
+      "avgRefundUSD": "670–820"
+    },
+    {
+      "id": "clnc_paz_001",
+      "slug": "la-paz-dental-studio",
+      "name": "La Paz Dental Studio",
+      "city": "la-paz",
+      "cityDisplay": "La Paz",
+      "glyph": "L",
+      "address": "Av. Álvaro Obregón 580, Malecón · La Paz, BCS",
+      "phone": "+1 (612) 555-0152",
+      "whatsapp": "+1-612-555-0152",
+      "website": "https://lapazdentalstudio.mx",
+      "hours": "Mon–Fri · 9:00 AM – 6:00 PM MST",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["dental-implants", "crowns", "root-canal", "veneers"],
+      "facilities": ["ct-scan", "digital-impressions", "english-receptionist"],
+      "rating": { "score": 4.7, "count": 116, "source": "public-reviews" },
+      "credimedVerified": true,
+      "tagline": "Capital-city practice with full digital workflow and 3D imaging.",
+      "avgPaidUSD": 1720,
+      "avgRefundUSD": "860–1,030"
+    },
+    {
+      "id": "clnc_paz_002",
+      "slug": "malecon-smile-clinic",
+      "name": "Malecón Smile Clinic",
+      "city": "la-paz",
+      "cityDisplay": "La Paz",
+      "glyph": "M",
+      "address": "Calle Madero 230, Centro · La Paz, BCS",
+      "phone": "+1 (612) 555-0277",
+      "whatsapp": "+1-612-555-0277",
+      "website": "https://maleconsmile.mx",
+      "hours": "Mon–Sat · 8:00 AM – 5:00 PM MST",
+      "languages": ["es", "en"],
+      "languagesDisplay": "Spanish · Some English",
+      "specialties": ["crowns", "fillings", "teeth-whitening", "pediatric-dentistry"],
+      "facilities": ["panoramic-xray"],
+      "rating": { "score": 4.6, "count": 84, "source": "public-reviews" },
+      "credimedVerified": false,
+      "tagline": "Family practice steps from the waterfront promenade.",
+      "avgPaidUSD": 1180,
+      "avgRefundUSD": "590–710"
+    },
+    {
+      "id": "clnc_lor_001",
+      "slug": "loreto-bay-dental",
+      "name": "Loreto Bay Dental",
+      "city": "loreto",
+      "cityDisplay": "Loreto",
+      "glyph": "L",
+      "address": "Blvd. Misión de Loreto 18 · Loreto, BCS",
+      "phone": "+1 (613) 555-0119",
+      "whatsapp": "+1-613-555-0119",
+      "website": "https://loretobaydental.com",
+      "hours": "Tue–Sat · 9:00 AM – 5:00 PM MST",
+      "languages": ["en", "es"],
+      "languagesDisplay": "English · Spanish",
+      "specialties": ["crowns", "dental-implants", "cosmetic-dentistry", "teeth-whitening"],
+      "facilities": ["in-house-lab", "english-receptionist"],
+      "rating": { "score": 4.8, "count": 62, "source": "public-reviews" },
+      "credimedVerified": true,
+      "tagline": "Boutique practice serving Loreto Bay residents and visitors.",
+      "avgPaidUSD": 1880,
+      "avgRefundUSD": "940–1,130"
     }
   ],
   "specialtyLabels": {
