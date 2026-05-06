@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "schemaVersion": 1,
+    "lastUpdated": "2026-05-06",
+    "note": "PLACEHOLDER SEED DATA — replace with real partner clinics + their actual contact info before public launch. Ratings are illustrative until we plug in a real reviews source. Names, addresses, phones, websites are NOT real partnerships yet — generic-sounding placeholders only.",
+    "verifyBeforeLaunch": true
+  },
+  "cities": [
+    {
+      "slug": "los-algodones",
+      "display": "Los Algodones",
+      "state": "Baja California",
+      "country": "Mexico",
+      "blurb": "Border town across from Yuma, AZ — known as the dental capital of Mexico. 350+ dentists in 4 walkable blocks."
+    },
+    {
+      "slug": "tijuana",
+      "display": "Tijuana",
+      "state": "Baja California",
+      "country": "Mexico",
+      "blurb": "Mexico's busiest border city. Modern clinics within 20 minutes of San Diego, easy round-trip for major work."
+    }
+  ],
+  "clinics": [
+    {
+      "id": "clnc_alg_001",
+      "slug": "algodones-smile-center",
+      "name": "Algodones Smile Center",
+      "city": "los-algodones",
+      "cityDisplay": "Los Algodones",
+      "address": "Av. A #150, Centro, Los Algodones, BC 21970",
+      "phone": "+52-658-517-0000",
+      "whatsapp": "+52-658-517-0000",
+      "website": "https://example.com/algodones-smile-center",
+      "languages": ["es", "en"],
+      "specialties": ["dental-implants", "crowns", "bridges", "veneers", "all-on-4"],
+      "facilities": ["in-house-lab", "ct-scan", "english-receptionist", "shuttle-from-yuma"],
+      "rating": { "score": 4.8, "count": 412, "source": "public-reviews" },
+      "credimedVerified": true,
+      "tagline": "Full-service implant center 5 minutes from the US border."
+    },
+    {
+      "id": "clnc_alg_002",
+      "slug": "border-dental-group",
+      "name": "Border Dental Group",
+      "city": "los-algodones",
+      "cityDisplay": "Los Algodones",
+      "address": "Av. B #220, Centro, Los Algodones, BC 21970",
+      "phone": "+52-658-517-1212",
+      "whatsapp": "+52-658-517-1212",
+      "website": "https://example.com/border-dental-group",
+      "languages": ["es", "en"],
+      "specialties": ["dental-implants", "crowns", "root-canal", "extractions", "dentures"],
+      "facilities": ["in-house-lab", "panoramic-xray", "english-receptionist"],
+      "rating": { "score": 4.6, "count": 287, "source": "public-reviews" },
+      "credimedVerified": true,
+      "tagline": "Family-run practice. 22 years serving US PPO patients."
+    },
+    {
+      "id": "clnc_alg_003",
+      "slug": "yuma-crossing-dental",
+      "name": "Yuma Crossing Dental",
+      "city": "los-algodones",
+      "cityDisplay": "Los Algodones",
+      "address": "Calle Segunda #45, Centro, Los Algodones, BC 21970",
+      "phone": "+52-658-517-3434",
+      "whatsapp": "+52-658-517-3434",
+      "website": "https://example.com/yuma-crossing-dental",
+      "languages": ["es", "en"],
+      "specialties": ["veneers", "crowns", "teeth-whitening", "cosmetic-dentistry"],
+      "facilities": ["in-house-lab", "ct-scan", "digital-impressions", "english-receptionist"],
+      "rating": { "score": 4.9, "count": 156, "source": "public-reviews" },
+      "credimedVerified": false,
+      "tagline": "Cosmetic-focused boutique. Same-day veneers when possible."
+    },
+    {
+      "id": "clnc_tij_001",
+      "slug": "tijuana-dental-collective",
+      "name": "Tijuana Dental Collective",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "address": "Av. Revolución #1234, Zona Centro, Tijuana, BC 22000",
+      "phone": "+52-664-685-0000",
+      "whatsapp": "+52-664-685-0000",
+      "website": "https://example.com/tijuana-dental-collective",
+      "languages": ["es", "en"],
+      "specialties": ["dental-implants", "all-on-4", "crowns", "bridges", "oral-surgery"],
+      "facilities": ["in-house-lab", "ct-scan", "panoramic-xray", "english-receptionist", "valet-parking"],
+      "rating": { "score": 4.7, "count": 528, "source": "public-reviews" },
+      "credimedVerified": true,
+      "tagline": "Modern surgical center 15 minutes from San Diego."
+    },
+    {
+      "id": "clnc_tij_002",
+      "slug": "san-diego-border-dentistry",
+      "name": "San Diego Border Dentistry",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "address": "Blvd. Agua Caliente #4558, Aviación, Tijuana, BC 22014",
+      "phone": "+52-664-686-7878",
+      "whatsapp": "+52-664-686-7878",
+      "website": "https://example.com/san-diego-border-dentistry",
+      "languages": ["es", "en"],
+      "specialties": ["dental-implants", "crowns", "veneers", "cosmetic-dentistry", "teeth-whitening"],
+      "facilities": ["in-house-lab", "digital-impressions", "english-receptionist", "ada-accessible"],
+      "rating": { "score": 4.5, "count": 341, "source": "public-reviews" },
+      "credimedVerified": true,
+      "tagline": "US-trained dentists. Treatment plans in English with itemized US ADA codes."
+    },
+    {
+      "id": "clnc_tij_003",
+      "slug": "rio-tijuana-dental",
+      "name": "Río Tijuana Dental",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "address": "Paseo de los Héroes #9111, Zona Río, Tijuana, BC 22010",
+      "phone": "+52-664-634-5656",
+      "whatsapp": "+52-664-634-5656",
+      "website": "https://example.com/rio-tijuana-dental",
+      "languages": ["es", "en"],
+      "specialties": ["root-canal", "extractions", "crowns", "fillings", "general-dentistry"],
+      "facilities": ["panoramic-xray", "english-receptionist", "valet-parking"],
+      "rating": { "score": 4.6, "count": 198, "source": "public-reviews" },
+      "credimedVerified": false,
+      "tagline": "General-practice clinic in the financial district. Walk-ins welcome."
+    }
+  ],
+  "specialtyLabels": {
+    "dental-implants": "Dental Implants",
+    "all-on-4": "All-on-4 / All-on-6",
+    "crowns": "Crowns",
+    "bridges": "Bridges",
+    "veneers": "Veneers",
+    "root-canal": "Root Canal",
+    "extractions": "Extractions",
+    "dentures": "Dentures",
+    "fillings": "Fillings",
+    "teeth-whitening": "Teeth Whitening",
+    "cosmetic-dentistry": "Cosmetic Dentistry",
+    "oral-surgery": "Oral Surgery",
+    "general-dentistry": "General Dentistry"
+  },
+  "facilityLabels": {
+    "in-house-lab": "In-house lab",
+    "ct-scan": "CT scan / 3D imaging",
+    "panoramic-xray": "Panoramic X-ray",
+    "digital-impressions": "Digital impressions",
+    "english-receptionist": "English-speaking staff",
+    "shuttle-from-yuma": "Shuttle from Yuma, AZ",
+    "valet-parking": "Valet parking",
+    "ada-accessible": "ADA accessible"
+  }
+}

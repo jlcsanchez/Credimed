@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credimed — Clinic profile</title>
+<meta name="description" content="Verified dental clinic on Credimed. View specialties, languages, facilities, and start a US PPO reimbursement claim.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D9488">
+
+<style>
+:root {
+  --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-300:#5EEAD4; --teal-500:#14B8A6;
+  --teal-600:#0D9488; --teal-700:#0B8278; --teal-800:#0A7A70; --teal-900:#134E4A;
+  --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
+  --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1E293B; --slate-900:#0F172A;
+  --cream:#FAF6EF; --cream-2:#F1ECE0;
+  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
+  --serif: "Iowan Old Style", "Apple Garamond", Georgia, "Times New Roman", serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  font-family: var(--font-ui); color: var(--slate-900);
+  background: var(--cream); -webkit-font-smoothing: antialiased;
+  overflow-x: hidden; max-width: 100vw;
+}
+a { color: var(--teal-700); text-decoration: none; }
+a:hover { color: var(--teal-800); }
+.sr { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
+
+/* ---- Top bar (consistent with directory.html) ---- */
+.topbar {
+  background: rgba(15,23,42,0.97);
+  backdrop-filter: blur(8px);
+  position: sticky; top: 0; z-index: 50;
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.topbar .brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: #fff; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.14em;
+}
+.topbar .brand-mark {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--teal-600);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 13px;
+}
+.topbar nav { display: flex; gap: 18px; align-items: center; }
+.topbar nav a {
+  color: rgba(255,255,255,0.78); font-size: 13.5px; font-weight: 500;
+}
+.topbar nav a:hover { color: #fff; }
+.topbar nav .cta {
+  padding: 7px 14px; border-radius: 8px; background: var(--teal-600); color: #fff;
+  font-weight: 600;
+}
+.topbar nav .cta:hover { background: var(--teal-700); color: #fff; }
+@media (max-width: 640px) {
+  .topbar nav a:not(.cta) { display: none; }
+}
+
+/* ---- Breadcrumb ---- */
+.crumbs {
+  max-width: 880px; margin: 0 auto; padding: 18px 20px 0;
+  font-size: 13px; color: var(--slate-500);
+}
+.crumbs a { color: var(--slate-500); }
+.crumbs a:hover { color: var(--teal-700); }
+.crumbs .sep { margin: 0 6px; color: var(--slate-300); }
+
+/* ---- Header card ---- */
+.wrap { max-width: 880px; margin: 0 auto; padding: 14px 20px 56px; }
+.head-card {
+  background: #fff; border: 1px solid var(--cream-2); border-radius: 16px;
+  padding: 24px 24px 22px;
+  display: grid; grid-template-columns: 1fr; gap: 16px;
+}
+@media (min-width: 720px) {
+  .head-card { grid-template-columns: 1fr auto; align-items: start; }
+}
+.head-info h1 {
+  font-family: var(--serif);
+  font-size: 30px; line-height: 1.15; letter-spacing: -0.01em;
+  margin: 0 0 8px; font-weight: 600;
+}
+@media (max-width: 640px) { .head-info h1 { font-size: 24px; } }
+.head-info .meta {
+  display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center;
+  font-size: 13px; color: var(--slate-600); margin-bottom: 6px;
+}
+.head-info .meta .item { display: inline-flex; align-items: center; gap: 6px; }
+.head-info .meta svg { width: 13px; height: 13px; color: var(--slate-400); }
+.head-info .meta .verified {
+  color: var(--teal-700); font-weight: 700;
+}
+.head-info .meta .verified svg { color: var(--teal-700); }
+.head-info .tagline {
+  margin: 12px 0 0; font-size: 15px; line-height: 1.55; color: var(--slate-700);
+  border-left: 3px solid var(--teal-600); padding-left: 12px;
+}
+.head-cta {
+  background: var(--cream); border: 1px solid var(--cream-2); border-radius: 12px;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 220px;
+}
+.head-cta .lbl {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--slate-500);
+}
+.head-cta .est {
+  font-family: var(--serif); font-size: 22px; color: var(--slate-900); font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.head-cta .sub { font-size: 12px; color: var(--slate-500); line-height: 1.4; }
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 18px; border-radius: 10px; background: var(--teal-600); color: #fff;
+  font-weight: 700; font-size: 14px; text-decoration: none; border: 0; cursor: pointer;
+  font-family: inherit;
+}
+.btn-primary:hover { background: var(--teal-700); color: #fff; }
+
+/* ---- Sections ---- */
+.section {
+  background: #fff; border: 1px solid var(--cream-2); border-radius: 14px;
+  padding: 22px 24px; margin-top: 14px;
+}
+.section h2 {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--slate-500); margin: 0 0 14px;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  padding: 6px 12px; border-radius: 99px;
+  background: var(--slate-100); color: var(--slate-700);
+  font-size: 13px; font-weight: 600;
+}
+.tag.teal { background: var(--teal-50); color: var(--teal-800); border: 1px solid var(--teal-100); }
+
+.contact-row { display: grid; gap: 12px; grid-template-columns: 1fr; }
+@media (min-width: 600px) { .contact-row { grid-template-columns: 1fr 1fr; } }
+.contact-cell {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px 14px; border: 1px solid var(--cream-2); border-radius: 10px;
+}
+.contact-cell .ico {
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+  background: var(--teal-50); border: 1px solid var(--teal-100);
+  color: var(--teal-700); display: flex; align-items: center; justify-content: center;
+}
+.contact-cell .ico svg { width: 16px; height: 16px; }
+.contact-cell .body { flex: 1; min-width: 0; }
+.contact-cell .body .lbl {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--slate-500); margin-bottom: 2px;
+}
+.contact-cell .body .val {
+  font-size: 14px; color: var(--slate-900); word-break: break-all;
+}
+.contact-cell .body .val a { color: var(--teal-700); font-weight: 600; }
+
+/* ---- How Credimed integrates strip ---- */
+.howstrip {
+  background: var(--cream); padding: 24px 20px;
+  border-top: 1px solid var(--cream-2); border-bottom: 1px solid var(--cream-2);
+  margin: 32px 0 0;
+}
+.howstrip-inner {
+  max-width: 880px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr; gap: 14px;
+}
+@media (min-width: 700px) { .howstrip-inner { grid-template-columns: repeat(3, 1fr); } }
+.howstep { display: flex; gap: 12px; align-items: flex-start; }
+.howstep .num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--teal-600); color: #fff; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+}
+.howstep .txt { font-size: 13px; line-height: 1.5; color: var(--slate-700); }
+.howstep .txt b { color: var(--slate-900); }
+
+.bottom-cta {
+  max-width: 880px; margin: 32px auto 0; padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap;
+}
+.bottom-cta .lead {
+  font-family: var(--serif); font-size: 22px; line-height: 1.2;
+  color: var(--slate-900); margin: 0; font-weight: 600;
+}
+
+.foot {
+  text-align: center; padding: 32px 20px 56px;
+  font-size: 12.5px; color: var(--slate-500); line-height: 1.7;
+}
+.foot a { color: var(--slate-500); text-decoration: underline; }
+.foot a:hover { color: var(--teal-700); }
+
+.empty-state {
+  max-width: 600px; margin: 60px auto; padding: 28px;
+  background: #fff; border: 1px solid var(--cream-2); border-radius: 14px;
+  text-align: center;
+}
+.empty-state h2 {
+  font-family: var(--serif); font-size: 22px; margin: 0 0 8px; color: var(--slate-900);
+}
+.empty-state p { color: var(--slate-600); font-size: 14px; margin: 0 0 18px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="/" class="brand">
+    <span class="brand-mark">H</span> CREDIMED
+  </a>
+  <nav>
+    <a href="/app/directory.html">All clinics</a>
+    <a href="/how-it-works.html">How it works</a>
+    <a href="/app/login.html" class="cta">Start a claim</a>
+  </nav>
+</header>
+
+<div id="content">
+  <!-- Rendered by JS once clinics.json loads -->
+  <div class="empty-state" id="loadingState">
+    <h2>Loading clinic…</h2>
+    <p>One moment.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var ICONS = {
+    pin:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    star:   '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    arrow:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+    check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    phone:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+    chat:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    globe:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+    home:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>'
+  };
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  /* Read ?id=clnc_xxx from URL */
+  function getClinicId() {
+    try {
+      var p = new URLSearchParams(window.location.search);
+      return p.get('id') || '';
+    } catch (e) { return ''; }
+  }
+
+  var content = document.getElementById('content');
+
+  function renderNotFound(msg) {
+    content.innerHTML =
+      '<div class="empty-state">' +
+        '<h2>Clinic not found</h2>' +
+        '<p>' + escapeHtml(msg || "We couldn't find that clinic in our directory.") + '</p>' +
+        '<a class="btn-primary" href="/app/directory.html">Browse all clinics ' + ICONS.arrow + '</a>' +
+      '</div>';
+  }
+
+  function renderClinic(clinic, data) {
+    var labels  = data.specialtyLabels || {};
+    var fLabels = data.facilityLabels || {};
+    var cityObj = (data.cities || []).find(function (c) { return c.slug === clinic.city; });
+
+    var languageDisplay = (clinic.languages || []).map(function (l) {
+      return l === 'es' ? 'Spanish' : l === 'en' ? 'English' : l;
+    });
+
+    var verifiedBadge = clinic.credimedVerified
+      ? '<span class="item verified">' + ICONS.check + 'Credimed Verified</span>'
+      : '';
+
+    var ratingStr = '';
+    if (clinic.rating && typeof clinic.rating.score === 'number') {
+      ratingStr = '<span class="item">' + ICONS.star +
+        '<span style="color:var(--slate-700);font-weight:600;">' +
+        clinic.rating.score.toFixed(1) +
+        '</span>&nbsp;<span style="color:var(--slate-500);">(' +
+        (clinic.rating.count || 0) + ' reviews)</span></span>';
+    }
+
+    var contactCells = [];
+    if (clinic.phone) {
+      contactCells.push(
+        '<div class="contact-cell">' +
+          '<div class="ico">' + ICONS.phone + '</div>' +
+          '<div class="body">' +
+            '<div class="lbl">Phone</div>' +
+            '<div class="val"><a href="tel:' + escapeHtml(clinic.phone.replace(/\s+/g, '')) + '">' + escapeHtml(clinic.phone) + '</a></div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+    if (clinic.whatsapp) {
+      var wa = clinic.whatsapp.replace(/[^\d]/g, '');
+      contactCells.push(
+        '<div class="contact-cell">' +
+          '<div class="ico">' + ICONS.chat + '</div>' +
+          '<div class="body">' +
+            '<div class="lbl">WhatsApp</div>' +
+            '<div class="val"><a href="https://wa.me/' + escapeHtml(wa) + '" target="_blank" rel="noopener">' + escapeHtml(clinic.whatsapp) + '</a></div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+    if (clinic.website) {
+      contactCells.push(
+        '<div class="contact-cell">' +
+          '<div class="ico">' + ICONS.globe + '</div>' +
+          '<div class="body">' +
+            '<div class="lbl">Website</div>' +
+            '<div class="val"><a href="' + escapeHtml(clinic.website) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(clinic.website.replace(/^https?:\/\//, '')) + '</a></div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+    if (clinic.address) {
+      contactCells.push(
+        '<div class="contact-cell">' +
+          '<div class="ico">' + ICONS.home + '</div>' +
+          '<div class="body">' +
+            '<div class="lbl">Address</div>' +
+            '<div class="val">' + escapeHtml(clinic.address) + '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    /* CTA → /app/login.html?next=documents&clinicId=xxx — login page reads
+       'next' to route the user into the documents flow after sign-in.
+       claim-review.html (and any later flow page) reads ?clinicId from
+       the query and persists it via CredimedState so it follows the
+       claim through to the Lambda. */
+    var ctaHref = '/app/login.html?clinicId=' + encodeURIComponent(clinic.id);
+
+    document.title = 'Credimed — ' + clinic.name;
+
+    content.innerHTML =
+      '<nav class="crumbs" aria-label="Breadcrumb">' +
+        '<a href="/app/directory.html">Directory</a>' +
+        '<span class="sep">/</span>' +
+        '<a href="/app/directory.html?city=' + encodeURIComponent(clinic.city) + '">' + escapeHtml(clinic.cityDisplay) + '</a>' +
+        '<span class="sep">/</span>' +
+        '<span>' + escapeHtml(clinic.name) + '</span>' +
+      '</nav>' +
+      '<div class="wrap">' +
+        '<section class="head-card">' +
+          '<div class="head-info">' +
+            '<h1>' + escapeHtml(clinic.name) + '</h1>' +
+            '<div class="meta">' +
+              '<span class="item">' + ICONS.pin + escapeHtml(clinic.cityDisplay) +
+                (cityObj ? ', ' + escapeHtml(cityObj.state) : '') + '</span>' +
+              ratingStr +
+              verifiedBadge +
+            '</div>' +
+            (clinic.tagline ? '<p class="tagline">' + escapeHtml(clinic.tagline) + '</p>' : '') +
+          '</div>' +
+          '<div class="head-cta">' +
+            '<div class="lbl">Want this filed with your insurer?</div>' +
+            '<div class="est">Get your refund estimate</div>' +
+            '<div class="sub">2 minutes &middot; we file your claim within 24 hours of payment.</div>' +
+            '<a class="btn-primary" href="' + ctaHref + '">Estimate my refund ' + ICONS.arrow + '</a>' +
+          '</div>' +
+        '</section>' +
+
+        (clinic.specialties && clinic.specialties.length ?
+        '<section class="section">' +
+          '<h2>Specialties</h2>' +
+          '<div class="tag-row">' +
+            clinic.specialties.map(function (s) {
+              return '<span class="tag teal">' + escapeHtml(labels[s] || s) + '</span>';
+            }).join('') +
+          '</div>' +
+        '</section>' : '') +
+
+        (clinic.facilities && clinic.facilities.length ?
+        '<section class="section">' +
+          '<h2>Facilities &amp; amenities</h2>' +
+          '<div class="tag-row">' +
+            clinic.facilities.map(function (f) {
+              return '<span class="tag">' + escapeHtml(fLabels[f] || f) + '</span>';
+            }).join('') +
+          '</div>' +
+        '</section>' : '') +
+
+        (languageDisplay.length ?
+        '<section class="section">' +
+          '<h2>Languages spoken</h2>' +
+          '<div class="tag-row">' +
+            languageDisplay.map(function (l) {
+              return '<span class="tag">' + escapeHtml(l) + '</span>';
+            }).join('') +
+          '</div>' +
+        '</section>' : '') +
+
+        '<section class="section">' +
+          '<h2>Contact the clinic directly</h2>' +
+          '<div class="contact-row">' + contactCells.join('') + '</div>' +
+        '</section>' +
+      '</div>' +
+
+      '<section class="howstrip">' +
+        '<div class="howstrip-inner">' +
+          '<div class="howstep"><span class="num">1</span><div class="txt"><b>Book directly with the clinic.</b> Use the contact info above. Credimed isn’t a booking platform.</div></div>' +
+          '<div class="howstep"><span class="num">2</span><div class="txt"><b>Get treatment.</b> Pay the clinic and keep your itemized receipt.</div></div>' +
+          '<div class="howstep"><span class="num">3</span><div class="txt"><b>We file your claim.</b> Upload the receipt and we handle the rest with your US insurer.</div></div>' +
+        '</div>' +
+      '</section>' +
+
+      '<div class="bottom-cta">' +
+        '<p class="lead">Ready to claim your reimbursement?</p>' +
+        '<a class="btn-primary" href="' + ctaHref + '">Estimate my refund ' + ICONS.arrow + '</a>' +
+      '</div>' +
+
+      '<footer class="foot">' +
+        '<a href="/">Home</a> &middot; ' +
+        '<a href="/app/directory.html">All clinics</a> &middot; ' +
+        '<a href="/how-it-works.html">How it works</a> &middot; ' +
+        '<a href="/legal/privacy.html">Privacy</a> &middot; ' +
+        '<a href="/legal/terms.html">Terms</a><br>' +
+        'Credimed LLC &middot; 30 N Gould St Ste N, Sheridan, WY 82801<br>' +
+        '<span style="color:var(--slate-400);font-size:11px;">Listings reflect publicly available information. Credimed is not affiliated with this clinic unless explicitly marked &ldquo;Credimed Verified&rdquo; — that badge means we have reviewed credentials and confirmed the clinic accepts our claim filing process.</span>' +
+      '</footer>';
+  }
+
+  var id = getClinicId();
+  if (!id) { renderNotFound('No clinic specified.'); return; }
+
+  fetch('/clinics.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+    .then(function (data) {
+      var clinic = (data.clinics || []).find(function (c) { return c.id === id; });
+      if (!clinic) { renderNotFound("We couldn't find a clinic with that ID."); return; }
+      renderClinic(clinic, data);
+    })
+    .catch(function (err) {
+      console.error('[clinic] failed to load clinics.json:', err);
+      renderNotFound("We couldn't load the directory right now. Please refresh in a moment.");
+    });
+})();
+</script>
+
+<script src="/cookie-banner.js" defer></script>
+<script defer data-domain="credimed.us" src="https://plausible.io/js/script.js"></script>
+</body>
+</html>
