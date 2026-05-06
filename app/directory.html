@@ -149,6 +149,17 @@ a:hover { color: var(--teal-800); }
   background: var(--cream-2); color: var(--slate-600);
 }
 .city-pill.active .count { background: rgba(255,255,255,0.18); color: #fff; }
+.city-pill.back-pill {
+  background: transparent;
+  border: 1px dashed var(--cream-3, #E8E1D0);
+  color: var(--slate-600);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.city-pill.back-pill:hover {
+  border-style: solid;
+  border-color: var(--slate-400);
+  color: var(--ink);
+}
 
 /* ============== Listing grid ============== */
 .listing-body { max-width: 1080px; margin: 0 auto; padding: 0 24px 32px; }
@@ -436,14 +447,47 @@ a:hover { color: var(--teal-800); }
     (STATE.data.clinics || []).forEach(function (c) {
       counts[c.city] = (counts[c.city] || 0) + 1;
     });
-    var html = cities.map(function (c) {
-      return (
-        '<button class="city-pill ' + (STATE.city === c.slug ? 'active' : '') + '" data-city="' + escapeHtml(c.slug) + '">' +
-          escapeHtml(c.display) +
-          ' <span class="count">' + (counts[c.slug] || 0) + '</span>' +
-        '</button>'
-      );
-    }).join('');
+    var html;
+    if (STATE.city === 'all') {
+      // Default view — show every city pill so the patient can pick one.
+      html = cities.map(function (c) {
+        return (
+          '<button class="city-pill" data-city="' + escapeHtml(c.slug) + '">' +
+            escapeHtml(c.display) +
+            ' <span class="count">' + (counts[c.slug] || 0) + '</span>' +
+          '</button>'
+        );
+      }).join('');
+    } else {
+      // Filtered view — render ONLY the active city pill plus a "← All cities"
+      // affordance so the row stays focused on the current selection. Showing
+      // every pill here was confusing: the patient already picked, the others
+      // just looked like noise.
+      var active = cities.find(function (c) { return c.slug === STATE.city; });
+      if (active) {
+        html =
+          '<button class="city-pill back-pill" data-clear-city aria-label="Show all cities">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>' +
+            ' All cities' +
+          '</button>' +
+          '<button class="city-pill active" data-city="' + escapeHtml(active.slug) + '">' +
+            escapeHtml(active.display) +
+            ' <span class="count">' + (counts[active.slug] || 0) + '</span>' +
+          '</button>';
+      } else {
+        // Slug not found in our city list (e.g. stale ?city= query param).
+        // Fall back to the default view so the patient isn't stranded.
+        STATE.city = 'all';
+        html = cities.map(function (c) {
+          return (
+            '<button class="city-pill" data-city="' + escapeHtml(c.slug) + '">' +
+              escapeHtml(c.display) +
+              ' <span class="count">' + (counts[c.slug] || 0) + '</span>' +
+            '</button>'
+          );
+        }).join('');
+      }
+    }
     box.innerHTML = html;
     box.querySelectorAll('[data-city]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -454,6 +498,15 @@ a:hover { color: var(--teal-800); }
         renderListing();
       });
     });
+    var clearBtn = box.querySelector('[data-clear-city]');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        STATE.city = 'all';
+        syncUrl();
+        renderCityPills();
+        renderListing();
+      });
+    }
   }
 
   function syncUrl() {
