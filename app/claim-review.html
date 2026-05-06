@@ -317,22 +317,73 @@ h1 { font-family:"Playfair Display",Georgia,serif; font-size:28px; line-height:1
   $('subDob').value   = backendProfile && backendProfile.subscriberDob       || S.get('user.subscriberDob', '')       || '';
 
   /* Hydrate dental clinic fields. Order of preference:
-       1. existing provider slice (if patient already filled it on a
-          previous visit)
-       2. receipt slice (OCR extraction of the factura PDF)
-       3. blank (patient types from scratch)
-     The OCR Lambda writes parsed factura fields into `receipt` —
-     `dentist` / `clinic` / `clinicAddress` / etc. are common keys
-     across our OCR variants. Fall through any that are populated. */
+       1. clinic directory (if user came from clinic.html — clinicId in
+          state, fetched live from /clinics.json)
+       2. fresh OCR receipt (current claim's factura)
+       3. patient's previously-saved provider slice (their typed values
+          from a prior visit to claim-review.html for THIS claim)
+       4. blank
+     The previous order put the provider slice first, which leaked stale
+     data from a previous test claim into a new one — e.g., a Tijuana
+     receipt being pre-filled with Cancún provider info because both
+     sessions shared the same browser. Receipt is now authoritative;
+     provider slice only fills gaps the receipt doesn't cover. */
   var providerSaved = S.get('provider', {}) || {};
   var receipt = S.get('receipt', {}) || {};
-  $('provName').value   = providerSaved.name   || receipt.dentist      || receipt.clinic       || receipt.clinicName    || '';
-  $('provStreet').value = providerSaved.street || receipt.clinicAddress || receipt.dentistAddress || receipt.address     || '';
-  $('provCity').value   = providerSaved.city   || receipt.clinicCity   || receipt.dentistCity  || receipt.city          || '';
-  $('provState').value  = providerSaved.state  || receipt.clinicState  || receipt.dentistState || '';
-  $('provZip').value    = providerSaved.zip    || receipt.clinicZip    || receipt.dentistZip   || '';
-  $('provPhone').value  = providerSaved.phone  || receipt.clinicPhone  || receipt.dentistPhone || receipt.phone         || '';
-  $('provRfc').value    = providerSaved.rfc    || receipt.clinicRfc    || receipt.dentistRfc   || receipt.rfc           || '';
+
+  /* hydrate(receiptKeys, savedKey): receipt > provider slice > blank.
+     Reads multiple legacy keys the OCR Lambda might have used (the
+     parser has changed shapes a few times), returns the first non-
+     empty match. Falls back to the user's previously-saved provider
+     slice for fields the receipt didn't capture. */
+  function hydrate(receiptKeys, savedKey) {
+    for (var i = 0; i < receiptKeys.length; i++) {
+      var k = receiptKeys[i];
+      if (receipt[k] != null && receipt[k] !== '') return receipt[k];
+    }
+    return providerSaved[savedKey] || '';
+  }
+
+  $('provName').value   = hydrate(['dentist', 'clinic', 'clinicName'], 'name');
+  $('provStreet').value = hydrate(['clinicAddress', 'dentistAddress', 'address'], 'street');
+  $('provCity').value   = hydrate(['clinicCity', 'dentistCity', 'city'], 'city');
+  $('provState').value  = hydrate(['clinicState', 'dentistState'], 'state');
+  $('provZip').value    = hydrate(['clinicZip', 'dentistZip'], 'zip');
+  $('provPhone').value  = hydrate(['clinicPhone', 'dentistPhone', 'phone'], 'phone');
+  $('provRfc').value    = hydrate(['clinicRfc', 'dentistRfc', 'rfc'], 'rfc');
+
+  /* If the user came from a clinic profile in our directory (clinic.html
+     → ?clinicId=clnc_xxx → login.html persisted it to state), look up
+     the clinic in /clinics.json and pre-fill any field still blank.
+     Directory data wins over receipt OCR for fields the OCR didn't
+     extract — e.g., a clinic's ZIP and phone are usually in the
+     directory but rarely on the receipt. We never overwrite receipt-
+     extracted values: the receipt is the legal source of truth for
+     "where this specific treatment was performed." */
+  var clinicId = S.get('clinic.id', '');
+  if (clinicId && /^clnc_[A-Za-z0-9_]+$/.test(clinicId)) {
+    fetch('/clinics.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+      .then(function (data) {
+        var c = (data.clinics || []).find(function (x) { return x.id === clinicId; });
+        if (!c) return;
+        function fillIfEmpty(id, val) {
+          var el = document.getElementById(id);
+          if (el && !el.value && val) el.value = val;
+        }
+        fillIfEmpty('provName',   c.name);
+        fillIfEmpty('provStreet', c.address);
+        fillIfEmpty('provCity',   c.cityDisplay);
+        /* The directory address is unstructured ("Av. Revolución #1234,
+           Zona Centro, Tijuana, BC 22000"). Prefer the canonical city/
+           state we know from the cities array if those fields are still
+           blank after the receipt + address fall-throughs. */
+        var cityObj = (data.cities || []).find(function (x) { return x.slug === c.city; });
+        if (cityObj) fillIfEmpty('provState', cityObj.state);
+        fillIfEmpty('provPhone',  c.phone);
+      })
+      .catch(function () { /* non-fatal — patient still types from scratch */ });
+  }
 
   function showError(msg) {
     var b = $('errBanner');

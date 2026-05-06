@@ -65,6 +65,13 @@ const STRIPE_API_VERSION    = "2024-04-10";
 const STRIPE_REFUND_ENABLED = process.env.STRIPE_REFUND_ENABLED === "true";
 const STRIPE_SECRET_KEY     = process.env.STRIPE_SECRET_KEY || "";
 
+// Internal admin notification address — fires every new claim creation
+// so an operator gets paged into the queue instead of polling the
+// dashboard. Defaults to ceo@credimed.us; override in Lambda env to
+// route to a different mailbox or distribution list. Setting this to
+// empty string disables notifications.
+const ADMIN_NOTIFY_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "ceo@credimed.us";
+
 const ENCRYPTED_FIELDS = [
   "email", "firstName", "lastName",
   "memberId", "insurer", "procedure", "amount"
@@ -180,7 +187,8 @@ async function decryptItem(item) {
   // Add more here as the data model grows.
   const PASSTHROUGH = ["plan", "city", "paidCurrency", "paidAmount",
                        "paidAmountUSD", "estimateMin", "estimateMax",
-                       "submittedAt", "paidAt", "deniedAt", "paymentMode"];
+                       "submittedAt", "paidAt", "deniedAt", "paymentMode",
+                       "clinicId", "clinicReferredAt"];
   for (const f of PASSTHROUGH) {
     if (item[f]?.S != null) claim[f] = item[f].S;
     else if (item[f]?.N != null) claim[f] = Number(item[f].N);
@@ -323,7 +331,11 @@ async function createClaim(userId, body, isAdminUser) {
     "providerZip", "providerPhone", "providerRFC", "providerNPI",
     "providerLicense", "providerSpecialty", "treatingDentistName",
     // Date of service — top of ADA Record of Services
-    "dateOfService", "payerId"
+    "dateOfService", "payerId",
+    // Clinic directory attribution — set when the patient came in
+    // through a clinic profile page (acquisition source tracking).
+    // clinicId format is `clnc_*`; clinicReferredAt is an ISO timestamp.
+    "clinicId", "clinicReferredAt"
   ];
   for (const f of STRING_FIELDS) {
     if (body[f] != null && body[f] !== "") item[f] = { S: String(body[f]) };
@@ -370,6 +382,25 @@ async function createClaim(userId, body, isAdminUser) {
       Item: item,
       ConditionExpression: "attribute_not_exists(claimId)"
     }));
+
+    // Fire-and-forget admin notification. Never blocks or rolls back
+    // the patient response — if SES is throttled or down, the claim
+    // still lands in DynamoDB and the patient still sees their
+    // confirmation page. Operators can backfill from the admin queue.
+    if (ADMIN_NOTIFY_EMAIL) {
+      sendEmailSafely({
+        to: ADMIN_NOTIFY_EMAIL,
+        eventType: "adminNewClaimAlert",
+        data: {
+          claimId,
+          plan:           body.plan,
+          paymentMode,
+          city:           body.city,
+          clinicId:       body.clinicId,
+          paidAmountUSD:  body.paidAmountUSD
+        }
+      }).catch(() => { /* sendEmailSafely never throws, but belt-and-suspenders */ });
+    }
     return { ok: true, claimId, createdAt: now, status: item.status.S, paymentMode };
   } catch (err) {
     if (err.name !== "ConditionalCheckFailedException") throw err;

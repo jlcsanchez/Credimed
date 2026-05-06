@@ -533,6 +533,12 @@ html, body {
          pull it back as `signature.adaDataUrl` / `signature.poaDataUrl`. */
       var signature = S.get('signature', {}) || {};
 
+      /* Clinic referrer — set when the patient came in through a clinic
+         profile page in the directory (clinic.html → login.html
+         persisted clinic.id). Tracking this lets us measure which
+         clinics drive claim volume + later attribute revenue share. */
+      var clinic = S.get('clinic', {}) || {};
+
       var body = {
         claimId: claimId,
         // Required PHI fields (encrypted by Lambda)
@@ -584,6 +590,9 @@ html, body {
         },
         documents: documents,
         submittedAt: new Date().toISOString(),
+        // Clinic directory attribution — Lambda persists if present
+        clinicId:        clinic.id || null,
+        clinicReferredAt: clinic.referredAt || null,
         // Admin Test Mode flag — Lambda persists 'test' only when the
         // caller is in the admin Cognito group, otherwise the field is
         // dropped silently and the row stays paymentMode='live'.

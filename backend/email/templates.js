@@ -441,6 +441,65 @@ const templates = {
       text:
         `${greet(firstName)}\n\nPer our 100% money-back guarantee, we've issued a refund of ${amt}. It will appear in the original payment method within 5–10 business days.\n\nReference: ${claimId}`
     };
+  },
+
+  /* Internal notification — fires when a patient submits a new claim
+     so an operator gets paged into the admin queue instead of having
+     to poll the dashboard. Goes to ADMIN_NOTIFY_EMAIL (a Credimed
+     internal address), never the patient. No PHI in the body — just
+     the synthetic claim id, plan tier, and a link into admin.html. */
+  adminNewClaimAlert({ claimId, plan, paymentMode, city, clinicId, clinicName, paidAmountUSD }) {
+    const adminUrl  = `${APP_BASE}/admin.html#claim-${encodeURIComponent(claimId)}`;
+    const tierLabel = plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : '—';
+    const isTest    = paymentMode === 'test';
+    const subject   = isTest
+      ? `[TEST] New claim filed · ${claimId}`
+      : `New claim filed · ${claimId} (${tierLabel})`;
+
+    const detailRows = [];
+    if (tierLabel !== '—')   detailRows.push(['Plan',         tierLabel]);
+    if (paidAmountUSD)       detailRows.push(['Receipt total', `$${paidAmountUSD} USD`]);
+    if (city)                detailRows.push(['City',         city]);
+    if (clinicName)          detailRows.push(['Clinic',       `${clinicName} (${clinicId || '—'})`]);
+    else if (clinicId)       detailRows.push(['Clinic ID',    clinicId]);
+    if (isTest)              detailRows.push(['Mode',         'TEST (admin Test Mode bypass — Stripe skipped)']);
+
+    const detailsHtml = detailRows.length
+      ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 0;">${
+          detailRows.map(([k, v]) =>
+            `<tr><td style="padding:3px 12px 3px 0;font-size:12px;color:#64748B;letter-spacing:0.04em;text-transform:uppercase;font-weight:600;">${k}</td>` +
+            `<td style="padding:3px 0;font-size:14px;color:#0F172A;">${v}</td></tr>`
+          ).join('')
+        }</table>`
+      : '';
+    const detailsText = detailRows.map(([k, v]) => `${k}: ${v}`).join('\n');
+
+    return {
+      subject,
+      html: shell({
+        subject,
+        preheader: `Patient just paid + filed claim ${claimId}. Time to review.`,
+        statusLabel: isTest ? 'Test mode' : 'New claim',
+        headline: isTest ? 'New TEST claim filed.' : 'New claim filed.',
+        subhead: isTest
+          ? "Admin Test Mode bypass — no real payment, just a full end-to-end submission to validate the pipeline."
+          : "A patient just paid and submitted a claim. Open the admin queue to review the submission, generate the fax bundle, and send to the carrier.",
+        bodyText:
+          `<p style="margin:0 0 8px;font-weight:600;color:#0F172A;">Submission details</p>` +
+          detailsHtml,
+        claimId,
+        ctaLabel: 'Open in admin',
+        ctaUrl: adminUrl,
+        helperText: isTest
+          ? "Test claims show with a yellow 'TEST' badge in admin. Safe to play with — they won't be faxed unless you explicitly do so."
+          : "First check: dentist info populated, signature present, ADA + POA bundle renders cleanly. Then queue the fax.",
+        unsubToken: 'admin-alerts'
+      }),
+      text:
+        `New claim filed: ${claimId}${isTest ? ' (TEST MODE)' : ''}\n\n` +
+        (detailsText ? detailsText + '\n\n' : '') +
+        `Open in admin: ${adminUrl}`
+    };
   }
 };
 
