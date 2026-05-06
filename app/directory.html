@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Credimed — Verified dental clinics in Mexico</title>
-<meta name="description" content="Browse Credimed-verified dental clinics in Mexico. Find a partner clinic, get your treatment, and we'll file the reimbursement claim with your US PPO insurer.">
+<meta name="description" content="Browse Credimed-verified dental clinics across Baja California and Baja California Sur. Get your treatment, then we file the reimbursement claim with your US PPO insurer.">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D9488">
 <link rel="canonical" href="https://www.credimed.us/app/directory.html">
@@ -14,32 +14,30 @@
 <meta property="og:description" content="Find a Credimed-verified clinic. We file your US PPO reimbursement claim after treatment.">
 <meta property="og:url" content="https://www.credimed.us/app/directory.html">
 
+<link rel="stylesheet" href="/app/styles/tokens.css">
 <style>
 :root {
-  --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-300:#5EEAD4; --teal-500:#14B8A6;
-  --teal-600:#0D9488; --teal-700:#0B8278; --teal-800:#0A7A70; --teal-900:#134E4A;
-  --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
-  --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155;
-  --slate-800:#1E293B; --slate-900:#0F172A;
-  --cream:#FAF6EF; --cream-2:#F1ECE0;
-  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
-  --serif: "Iowan Old Style", "Apple Garamond", Georgia, "Times New Roman", serif;
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --cream: #FAF6EF;
+  --cream-2: #F1ECE0;
+  --ink: var(--slate-900);
+  --muted: var(--slate-500);
 }
-* { box-sizing: border-box; }
+
 html, body {
+  background: var(--cream);
+  font-family: var(--font-ui);
+  color: var(--ink);
   margin: 0; padding: 0;
-  font-family: var(--font-ui); color: var(--slate-900);
-  background: var(--cream); -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
   overflow-x: hidden; max-width: 100vw;
 }
+* { box-sizing: border-box; }
 a { color: var(--teal-700); text-decoration: none; }
 a:hover { color: var(--teal-800); }
 
-/* ---- Top bar (consistent with marketing pages) ---- */
+/* ---- Top bar (consistent with the rest of the site) ---- */
 .topbar {
   background: rgba(15,23,42,0.97);
-  backdrop-filter: blur(8px);
   position: sticky; top: 0; z-index: 50;
   padding: 14px 20px;
   display: flex; align-items: center; justify-content: space-between;
@@ -68,180 +66,316 @@ a:hover { color: var(--teal-800); }
   .topbar nav a:not(.cta) { display: none; }
 }
 
-/* ---- Hero ---- */
-.hero {
-  background: var(--hero-gradient); color: #fff;
-  padding: 56px 24px 64px; position: relative; overflow: hidden;
-}
-.hero::before {
-  content: ""; position: absolute; inset: -40%;
+/* ============== Page header ============== */
+.page-wrap {
+  max-width: 1080px; margin: 0 auto; padding: 32px 24px 0;
+  position: relative;
   background:
-    radial-gradient(ellipse at 18% 12%, rgba(94,234,212,0.18), transparent 50%),
-    radial-gradient(ellipse at 86% 35%, rgba(13,148,136,0.28), transparent 55%);
-  pointer-events: none;
+    radial-gradient(ellipse at 15% 10%, rgba(13,148,136,0.05), transparent 50%),
+    radial-gradient(ellipse at 85% 60%, rgba(13,148,136,0.04), transparent 55%),
+    transparent;
 }
-.hero-inner { max-width: 880px; margin: 0 auto; position: relative; }
-.hero .eyebrow {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
-  text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 14px;
-}
-.hero h1 {
-  font-family: var(--serif);
-  font-size: 40px; line-height: 1.1; letter-spacing: -0.015em;
-  margin: 0 0 14px; font-weight: 600;
-}
-.hero p.lead {
-  font-size: 16px; line-height: 1.55; color: rgba(255,255,255,0.85);
-  margin: 0 0 22px; max-width: 560px;
-}
-.hero .pills {
-  display: inline-flex; gap: 6px; padding: 5px;
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16);
-  border-radius: 99px;
-}
-.hero .pill {
-  padding: 8px 16px; border-radius: 99px;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  background: transparent; color: rgba(255,255,255,0.78);
-  border: 0; font-family: inherit; transition: all 0.15s;
-}
-.hero .pill.active {
-  background: #fff; color: var(--slate-900);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
-}
-.hero .pill:hover:not(.active) { color: #fff; }
-@media (max-width: 640px) {
-  .hero { padding: 42px 20px 48px; }
-  .hero h1 { font-size: 30px; }
-  .hero p.lead { font-size: 15px; }
+@media (min-width: 720px) {
+  .page-wrap { padding: 56px 56px 0; }
 }
 
-/* ---- Container ---- */
-.wrap { max-width: 880px; margin: 0 auto; padding: 32px 20px 80px; }
-
-/* ---- City summary card ---- */
-.city-card {
-  background: #fff; border: 1px solid var(--cream-2);
-  border-radius: 14px; padding: 16px 18px; margin-bottom: 22px;
-  display: flex; gap: 14px; align-items: flex-start;
+.page-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--teal-700);
+  margin: 0 0 12px; display: inline-flex; align-items: center; gap: 8px;
 }
-.city-card .icon {
-  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
-  background: var(--teal-50); border: 1px solid var(--teal-100);
-  color: var(--teal-700); display: flex; align-items: center; justify-content: center;
+.page-eyebrow::before {
+  content: ""; width: 16px; height: 1px; background: var(--teal-600);
 }
-.city-card .body { flex: 1; }
-.city-card .body h3 {
-  margin: 0 0 4px; font-size: 14px; font-weight: 700; color: var(--slate-900);
+.page-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 32px; line-height: 1.1; letter-spacing: -0.015em;
+  margin: 0 0 12px;
 }
-.city-card .body p {
-  margin: 0; font-size: 13px; line-height: 1.55; color: var(--slate-600);
+@media (min-width: 720px) { .page-title { font-size: 44px; } }
+.page-title em { font-style: italic; color: var(--teal-700); font-weight: 600; }
+.page-sub {
+  font-size: 14px; color: var(--slate-600); line-height: 1.55;
+  margin: 0 0 24px; max-width: 520px;
 }
-
-/* ---- Clinic cards grid ---- */
-.grid {
-  display: grid; gap: 14px;
-  grid-template-columns: 1fr;
-}
-@media (min-width: 700px) { .grid { grid-template-columns: 1fr 1fr; } }
-
-.clinic-card {
-  background: #fff; border: 1px solid var(--cream-2);
-  border-radius: 14px; padding: 20px 20px 18px;
-  display: flex; flex-direction: column; gap: 12px;
-  text-decoration: none; color: inherit;
-  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-}
-.clinic-card:hover {
-  border-color: var(--teal-300);
-  box-shadow: 0 4px 14px -4px rgba(13,148,136,0.18);
-  transform: translateY(-1px);
-}
-.clinic-head {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
-}
-.clinic-name {
-  font-size: 17px; font-weight: 700; color: var(--slate-900);
-  margin: 0; letter-spacing: -0.01em; line-height: 1.25;
-}
-.clinic-city {
-  font-size: 12px; color: var(--slate-500); margin-top: 3px;
-  display: flex; align-items: center; gap: 5px;
-}
-.clinic-city svg { width: 11px; height: 11px; }
-.verified-badge {
-  flex-shrink: 0;
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 9px; border-radius: 99px;
-  background: var(--teal-50); color: var(--teal-800);
-  border: 1px solid var(--teal-100);
-  font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-}
-.verified-badge svg { width: 10px; height: 10px; }
-.clinic-tagline {
-  font-size: 13.5px; line-height: 1.5; color: var(--slate-700);
-  margin: 0;
-}
-.clinic-meta {
-  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px;
-}
-.tag {
-  padding: 4px 10px; border-radius: 99px;
-  background: var(--slate-100); color: var(--slate-700);
-  font-size: 11.5px; font-weight: 600;
-}
-.clinic-foot {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 10px; border-top: 1px dashed var(--cream-2); margin-top: 4px;
-}
-.rating {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 13px; color: var(--slate-700); font-weight: 600;
-}
-.rating svg { width: 14px; height: 14px; color: #F59E0B; }
-.rating .count { color: var(--slate-500); font-weight: 500; font-size: 12px; }
-.clinic-cta {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 13px; font-weight: 700; color: var(--teal-700);
-}
-.clinic-cta svg { width: 13px; height: 13px; }
-
-.empty {
-  text-align: center; padding: 40px 20px;
-  color: var(--slate-500); font-size: 14px;
+@media (min-width: 720px) {
+  .page-sub { font-size: 15.5px; max-width: 600px; margin-bottom: 32px; }
 }
 
-/* ---- How it works strip ---- */
-.howstrip {
-  background: var(--cream); padding: 24px 20px;
-  border-top: 1px solid var(--cream-2);
+/* ============== Search bar ============== */
+.search-row {
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+.search-input {
+  flex: 1; height: 44px; padding: 0 14px 0 38px;
+  border-radius: 999px; border: 1px solid var(--cream-2);
+  background: #fff; font-size: 14px; color: var(--ink);
+  font-family: inherit;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 14px center;
+}
+.search-input::placeholder { color: var(--slate-500); }
+.search-input:focus {
+  outline: none; border-color: var(--teal-600);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ============== City filter ============== */
+.city-filter {
+  display: flex; gap: 8px; flex-wrap: wrap;
   border-bottom: 1px solid var(--cream-2);
-  margin: 32px 0 0;
+  padding: 0 0 20px; margin-bottom: 24px;
 }
-.howstrip-inner {
-  max-width: 880px; margin: 0 auto;
+@media (min-width: 720px) {
+  .city-filter { padding-bottom: 24px; margin-bottom: 32px; }
+}
+.city-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 999px;
+  background: #fff; border: 1px solid var(--cream-2);
+  font-size: 13px; font-weight: 500; color: var(--slate-700);
+  cursor: pointer; font-family: inherit;
+  transition: all 140ms ease;
+}
+.city-pill:hover { border-color: var(--slate-300); }
+.city-pill.active {
+  background: var(--ink); color: #fff; border-color: var(--ink);
+  font-weight: 600;
+}
+.city-pill .count {
+  font-size: 11px;
+  padding: 2px 7px; border-radius: 999px;
+  background: var(--cream-2); color: var(--slate-600);
+}
+.city-pill.active .count { background: rgba(255,255,255,0.18); color: #fff; }
+.city-pill.more-pill {
+  border-style: dashed; color: var(--slate-600);
+}
+.city-pill.more-pill:hover {
+  border-style: solid; border-color: var(--teal-600); color: var(--teal-700);
+}
+.city-pill.more-pill svg { color: currentColor; }
+
+/* ============== More-cities search dialog ============== */
+.more-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: flex-start; justify-content: center;
+  padding: 60px 16px 20px; z-index: 200;
+}
+.more-overlay.open { display: flex; }
+.more-panel {
+  width: 100%; max-width: 480px;
+  background: #fff; border-radius: 16px;
+  border: 1px solid var(--cream-2);
+  box-shadow: 0 30px 80px rgba(15,23,42,0.25);
+  overflow: hidden;
+}
+.more-head {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--cream-2);
+  display: flex; align-items: center; gap: 10px;
+}
+.more-head svg {
+  width: 16px; height: 16px; color: var(--slate-500); flex-shrink: 0;
+}
+.more-search {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-family: inherit; font-size: 15px; color: var(--ink);
+}
+.more-search::placeholder { color: var(--slate-500); }
+.more-close {
+  width: 26px; height: 26px; border-radius: 8px; border: none;
+  background: var(--cream-2); color: var(--slate-600);
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  font-family: inherit; font-size: 18px;
+}
+.more-list { max-height: 360px; overflow-y: auto; padding: 6px 0; }
+.more-item {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 12px 20px; border: none; background: transparent;
+  font-family: inherit; font-size: 14px; color: var(--ink);
+  cursor: pointer; text-align: left;
+}
+.more-item:hover { background: var(--cream); }
+.more-item .mi-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--teal-50); color: var(--teal-700);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.more-item .mi-mark svg { width: 14px; height: 14px; }
+.more-item .mi-name { font-weight: 600; }
+.more-item .mi-meta {
+  font-size: 11.5px; color: var(--slate-500); font-weight: 500;
+  margin-top: 2px;
+}
+.more-item .mi-count {
+  margin-left: auto; font-size: 11px; font-weight: 600;
+  color: var(--slate-500);
+  padding: 3px 9px; border-radius: 999px; background: var(--cream-2);
+}
+.more-empty {
+  padding: 32px 20px; text-align: center;
+  font-size: 13px; color: var(--slate-500);
+}
+
+/* ============== Listing grid ============== */
+.listing-body { max-width: 1080px; margin: 0 auto; padding: 0 24px 32px; }
+@media (min-width: 720px) {
+  .listing-body { padding: 0 56px 56px; }
+}
+.city-section { margin-bottom: 36px; }
+.city-section:last-child { margin-bottom: 0; }
+.city-heading {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.city-heading h2 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 22px; letter-spacing: -0.01em; margin: 0;
+}
+@media (min-width: 720px) { .city-heading h2 { font-size: 26px; } }
+.city-heading h2 em { font-style: italic; color: var(--teal-700); font-weight: 600; }
+.city-heading .city-meta {
+  font-size: 12px; color: var(--slate-500); font-weight: 500;
+}
+.clinic-grid {
   display: grid; grid-template-columns: 1fr; gap: 14px;
 }
-@media (min-width: 700px) { .howstrip-inner { grid-template-columns: repeat(3, 1fr); } }
-.howstep {
-  display: flex; gap: 12px; align-items: flex-start;
+@media (min-width: 720px) {
+  .clinic-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
 }
-.howstep .num {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: var(--teal-600); color: #fff; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 13px;
+@media (min-width: 1000px) {
+  .clinic-grid { grid-template-columns: repeat(3, 1fr); }
 }
-.howstep .txt { font-size: 13px; line-height: 1.5; color: var(--slate-700); }
-.howstep .txt b { color: var(--slate-900); }
 
-/* ---- Footer ---- */
+/* ============== Clinic card ============== */
+.clinic-card {
+  background: #fff; border-radius: 16px;
+  border: 1px solid var(--cream-2);
+  overflow: hidden; cursor: pointer;
+  transition: all 200ms ease;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column;
+}
+.clinic-card:hover {
+  border-color: var(--teal-200);
+  box-shadow: 0 12px 28px -12px rgba(13,148,136,0.18);
+  transform: translateY(-2px);
+}
+.cc-image {
+  height: 140px; position: relative;
+  background: linear-gradient(135deg, var(--teal-700), var(--teal-900));
+  overflow: hidden;
+}
+@media (min-width: 720px) { .cc-image { height: 160px; } }
+.cc-image::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(94,234,212,0.35), transparent 55%),
+    radial-gradient(circle at 20% 80%, rgba(13,148,136,0.4), transparent 60%);
+}
+.cc-image::after {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 14px);
+}
+.cc-image.v2 { background: linear-gradient(135deg, #1E3A8A, #0D9488); }
+.cc-image.v3 { background: linear-gradient(135deg, #0F766E, #134E4A); }
+.cc-image.v4 { background: linear-gradient(135deg, #134E4A, #0D9488); }
+.cc-image.v5 { background: linear-gradient(135deg, #0B8278, #1E293B); }
+.cc-image.v6 { background: linear-gradient(135deg, #115E59, #0D9488); }
+
+.cc-image .cc-glyph {
+  position: absolute; right: 16px; bottom: 14px; z-index: 2;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 56px; color: rgba(255,255,255,0.16);
+  line-height: 1; letter-spacing: -0.02em; font-style: italic;
+}
+.cc-verified {
+  position: absolute; top: 12px; left: 12px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 9px 5px 7px; border-radius: 999px;
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--teal-800); text-transform: uppercase;
+}
+.cc-verified svg { width: 12px; height: 12px; color: var(--teal-600); }
+
+.cc-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+.cc-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 18px; line-height: 1.25; letter-spacing: -0.01em;
+  margin: 0 0 6px;
+}
+@media (min-width: 720px) { .cc-title { font-size: 19px; } }
+.cc-rating {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; color: var(--slate-600);
+  margin-bottom: 12px;
+}
+.cc-rating .stars { color: #F59E0B; font-weight: 600; letter-spacing: -0.01em; }
+.cc-rating .num { color: var(--ink); font-weight: 600; }
+.cc-rating .dot { color: var(--slate-300); }
+.cc-quote {
+  font-size: 13.5px; line-height: 1.5; color: var(--slate-700);
+  margin: 0 0 14px;
+  font-style: italic; font-family: var(--font-display); font-weight: 400;
+}
+.cc-specs {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  margin-top: auto; padding-top: 12px;
+  border-top: 1px dashed var(--cream-2);
+}
+.cc-spec {
+  font-size: 11px; padding: 3px 8px; border-radius: 6px;
+  background: var(--teal-50); color: var(--teal-800);
+  font-weight: 500;
+}
+.cc-spec.more { background: transparent; color: var(--slate-500); }
+
+/* ============== Trust strip ============== */
+.trust-strip {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: #fff; border: 1px solid var(--cream-2);
+  display: flex; align-items: center; gap: 14px;
+}
+@media (min-width: 720px) {
+  .trust-strip-wrap { padding: 0 56px; }
+  .trust-strip { padding: 22px 28px; }
+}
+.trust-strip-wrap { padding: 0 24px; margin-bottom: 32px; }
+.trust-strip .ts-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--teal-50); color: var(--teal-700);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.trust-strip .ts-icon svg { width: 18px; height: 18px; }
+.trust-strip .ts-text {
+  font-size: 13px; line-height: 1.5; color: var(--slate-700);
+}
+@media (min-width: 720px) { .trust-strip .ts-text { font-size: 13.5px; } }
+.trust-strip .ts-text b { color: var(--ink); font-weight: 600; }
+
+/* ============== Footer ============== */
 .foot {
   text-align: center; padding: 32px 20px 56px;
   font-size: 12.5px; color: var(--slate-500); line-height: 1.7;
 }
 .foot a { color: var(--slate-500); text-decoration: underline; }
 .foot a:hover { color: var(--teal-700); }
+
+.empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--slate-500); font-size: 14px;
+}
 </style>
 </head>
 <body>
@@ -257,45 +391,32 @@ a:hover { color: var(--teal-800); }
   </nav>
 </header>
 
-<section class="hero">
-  <div class="hero-inner">
-    <div class="eyebrow">Credimed Directory</div>
-    <h1>Verified dental clinics in Mexico.</h1>
-    <p class="lead">
-      Browse partner clinics across Los Algodones and Tijuana. After your treatment,
-      Credimed files the reimbursement claim with your US PPO insurer — most members
-      recover $600&ndash;$1,500.
-    </p>
-    <div class="pills" id="cityPills" role="tablist">
-      <button class="pill active" data-city="all" role="tab">All cities</button>
-      <button class="pill" data-city="los-algodones" role="tab">Los Algodones</button>
-      <button class="pill" data-city="tijuana" role="tab">Tijuana</button>
-    </div>
-  </div>
-</section>
+<div class="page-wrap">
+  <p class="page-eyebrow">Verified clinic directory</p>
+  <h1 class="page-title">Dental clinics in <em>Mexico</em>, vetted for US patients.</h1>
+  <p class="page-sub">Verified clinics across Baja California and Baja California Sur. We've reviewed credentials, patient outcomes, and confirmed every clinic accepts US PPO documentation.</p>
 
-<div class="wrap">
-  <div id="cityCard"></div>
-  <div class="grid" id="grid"></div>
-  <div class="empty" id="empty" style="display:none;">No clinics match this filter yet — check back soon.</div>
+  <div class="search-row">
+    <input class="search-input" id="searchInput" placeholder="Search clinic name, specialty, or city" autocomplete="off">
+  </div>
+
+  <div class="city-filter" id="cityFilter"></div>
 </div>
 
-<section class="howstrip">
-  <div class="howstrip-inner">
-    <div class="howstep">
-      <span class="num">1</span>
-      <div class="txt"><b>Pick a clinic.</b> Browse our verified partners and book directly with the clinic.</div>
-    </div>
-    <div class="howstep">
-      <span class="num">2</span>
-      <div class="txt"><b>Get treatment.</b> Pay the clinic in pesos or dollars and keep your itemized receipt.</div>
-    </div>
-    <div class="howstep">
-      <span class="num">3</span>
-      <div class="txt"><b>We file your claim.</b> Upload the receipt and we handle the rest with your US insurer.</div>
-    </div>
+<div class="listing-body" id="listing"></div>
+
+<div class="trust-strip-wrap">
+  <div class="trust-strip">
+    <span class="ts-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </span>
+    <span class="ts-text">
+      <b>Every clinic is verified by our medical team.</b> We confirm licensing, review patient outcomes, and require treatment plans in English with US ADA procedure codes — so your insurer can process the claim.
+    </span>
   </div>
-</section>
+</div>
+
+<div class="empty" id="empty" style="display:none;">No clinics match this filter yet — check back soon.</div>
 
 <footer class="foot">
   <a href="/">Home</a> &middot;
@@ -307,110 +428,27 @@ a:hover { color: var(--teal-800); }
   Credimed LLC &middot; 30 N Gould St Ste N, Sheridan, WY 82801
 </footer>
 
+<!-- More-cities search dialog -->
+<div class="more-overlay" id="moreOverlay" role="dialog" aria-modal="true" aria-label="Search Baja cities">
+  <div class="more-panel">
+    <div class="more-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="more-search" id="moreSearch" placeholder="Search Baja cities…" autocomplete="off">
+      <button class="more-close" id="moreClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="more-list" id="moreList"></div>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
 
-  /* SVG icon helpers — kept inline so the page is single-file deployable. */
   var ICONS = {
+    verify: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4M12 2l3 3 4-1 1 4 3 3-3 3 1 4-4-1-3 3-3-3-4 1 1-4-3-3 3-3-1-4 4 1z" fill-rule="evenodd" clip-rule="evenodd"/></svg>',
     pin:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
-    star:   '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-    arrow:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
-    check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-    cityL:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6"/></svg>'
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
   };
-
-  var grid     = document.getElementById('grid');
-  var cityPanel = document.getElementById('cityCard');
-  var empty    = document.getElementById('empty');
-  var pills    = document.querySelectorAll('#cityPills .pill');
-  var data     = null;
-
-  /* Read ?city=tijuana from URL so external links can deep-link a filter. */
-  function initialCity() {
-    try {
-      var p = new URLSearchParams(window.location.search);
-      var c = p.get('city');
-      return (c === 'los-algodones' || c === 'tijuana') ? c : 'all';
-    } catch (e) { return 'all'; }
-  }
-
-  function setActivePill(city) {
-    pills.forEach(function (p) {
-      p.classList.toggle('active', p.dataset.city === city);
-    });
-  }
-
-  function renderCityCard(city) {
-    if (city === 'all' || !data) {
-      cityPanel.innerHTML = '';
-      return;
-    }
-    var c = (data.cities || []).find(function (x) { return x.slug === city; });
-    if (!c) { cityPanel.innerHTML = ''; return; }
-    cityPanel.innerHTML =
-      '<div class="city-card">' +
-        '<div class="icon">' + ICONS.cityL + '</div>' +
-        '<div class="body">' +
-          '<h3>' + escapeHtml(c.display) + ', ' + escapeHtml(c.state) + '</h3>' +
-          '<p>' + escapeHtml(c.blurb) + '</p>' +
-        '</div>' +
-      '</div>';
-  }
-
-  function renderClinics(city) {
-    if (!data) return;
-    var clinics = data.clinics || [];
-    var labels  = data.specialtyLabels || {};
-    var filtered = city === 'all'
-      ? clinics
-      : clinics.filter(function (c) { return c.city === city; });
-
-    /* Verified clinics first, then by rating score desc. */
-    filtered.sort(function (a, b) {
-      if (a.credimedVerified !== b.credimedVerified) return a.credimedVerified ? -1 : 1;
-      return (b.rating?.score || 0) - (a.rating?.score || 0);
-    });
-
-    if (filtered.length === 0) {
-      grid.innerHTML = '';
-      empty.style.display = 'block';
-      return;
-    }
-    empty.style.display = 'none';
-    grid.innerHTML = filtered.map(function (c) {
-      var topSpecs = (c.specialties || []).slice(0, 3)
-        .map(function (s) { return labels[s] || s; });
-      var ratingHtml = '';
-      if (c.rating && typeof c.rating.score === 'number') {
-        ratingHtml =
-          '<span class="rating">' + ICONS.star +
-            c.rating.score.toFixed(1) +
-            ' <span class="count">(' + (c.rating.count || 0) + ')</span>' +
-          '</span>';
-      } else {
-        ratingHtml = '<span></span>';
-      }
-      return '' +
-        '<a class="clinic-card" href="/app/clinic.html?id=' + encodeURIComponent(c.id) + '">' +
-          '<div class="clinic-head">' +
-            '<div>' +
-              '<h3 class="clinic-name">' + escapeHtml(c.name) + '</h3>' +
-              '<div class="clinic-city">' + ICONS.pin + escapeHtml(c.cityDisplay) + '</div>' +
-            '</div>' +
-            (c.credimedVerified ? '<span class="verified-badge">' + ICONS.check + 'Verified</span>' : '') +
-          '</div>' +
-          (c.tagline ? '<p class="clinic-tagline">' + escapeHtml(c.tagline) + '</p>' : '') +
-          (topSpecs.length ? '<div class="clinic-meta">' +
-            topSpecs.map(function (s) { return '<span class="tag">' + escapeHtml(s) + '</span>'; }).join('') +
-            '</div>' : '') +
-          '<div class="clinic-foot">' +
-            ratingHtml +
-            '<span class="clinic-cta">View clinic ' + ICONS.arrow + '</span>' +
-          '</div>' +
-        '</a>';
-    }).join('');
-  }
 
   function escapeHtml(s) {
     return String(s == null ? '' : s)
@@ -418,37 +456,295 @@ a:hover { color: var(--teal-800); }
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  function applyFilter(city, pushHistory) {
-    setActivePill(city);
-    renderCityCard(city);
-    renderClinics(city);
-    if (pushHistory) {
-      var url = new URL(window.location.href);
-      if (city === 'all') url.searchParams.delete('city');
-      else url.searchParams.set('city', city);
-      history.replaceState(null, '', url.toString());
+  function renderStars(score) {
+    var arr = [];
+    for (var i = 0; i < 5; i++) {
+      var filled = i < Math.round(score || 0);
+      arr.push('<span style="color:' + (filled ? '#F59E0B' : '#E2E8F0') + ';">★</span>');
     }
+    return arr.join('');
   }
 
-  pills.forEach(function (p) {
-    p.addEventListener('click', function () {
-      applyFilter(p.dataset.city, true);
+  /* The mockup formats certain city headings with the leading article in
+     italic ("<em>Los</em> Algodones"). Mimic that for the cities we have
+     it for; everything else gets the city name italicized whole. */
+  function cityTitle(city) {
+    if (city.slug === 'los-algodones') return '<em>Los</em> Algodones';
+    if (city.slug === 'los-cabos')     return '<em>Los</em> Cabos';
+    if (city.slug === 'la-paz')        return '<em>La</em> Paz';
+    return '<em>' + escapeHtml(city.display) + '</em>';
+  }
+
+  var STATE = {
+    city:   'all',
+    search: '',
+    data:   null
+  };
+
+  /* Initial city from ?city= in URL — only honor known city slugs. */
+  function initialCity() {
+    try {
+      var p = new URLSearchParams(window.location.search);
+      var c = p.get('city');
+      return c ? c : 'all';
+    } catch (e) { return 'all'; }
+  }
+
+  function allCitiesArray() {
+    if (!STATE.data) return [];
+    return (STATE.data.cities || []).concat(STATE.data.secondaryCities || []);
+  }
+
+  function isPrimary(citySlug) {
+    return (STATE.data?.cities || []).some(function (c) { return c.slug === citySlug; });
+  }
+
+  function clinicsByCity(citySlug) {
+    return ((STATE.data || {}).clinics || []).filter(function (c) {
+      return c.city === citySlug;
     });
+  }
+
+  /* ---- Search filter ---- */
+  function matchesSearch(c) {
+    if (!STATE.search) return true;
+    var q = STATE.search.toLowerCase();
+    var hay = [
+      c.name,
+      c.cityDisplay,
+      c.tagline,
+      (c.specialties || []).map(function (s) {
+        return (STATE.data.specialtyLabels || {})[s] || s;
+      }).join(' ')
+    ].join(' ').toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
+  /* ---- City filter pills ---- */
+  function renderCityPills() {
+    if (!STATE.data) return;
+    var box = document.getElementById('cityFilter');
+    var cities = STATE.data.cities || [];
+    var counts = {};
+    (STATE.data.clinics || []).forEach(function (c) {
+      counts[c.city] = (counts[c.city] || 0) + 1;
+    });
+    var html = cities.map(function (c) {
+      return (
+        '<button class="city-pill ' + (STATE.city === c.slug ? 'active' : '') + '" data-city="' + escapeHtml(c.slug) + '">' +
+          escapeHtml(c.display) +
+          ' <span class="count">' + (counts[c.slug] || 0) + '</span>' +
+        '</button>'
+      );
+    }).join('');
+    /* If the user picked a secondary city, surface that pill too. */
+    if (STATE.city !== 'all' && !isPrimary(STATE.city)) {
+      var secondary = (STATE.data.secondaryCities || []).find(function (c) { return c.slug === STATE.city; });
+      if (secondary) {
+        html += (
+          '<button class="city-pill active" data-city="' + escapeHtml(secondary.slug) + '">' +
+            escapeHtml(secondary.display) +
+            ' <span class="count">' + (counts[secondary.slug] || 0) + '</span>' +
+          '</button>'
+        );
+      }
+    }
+    html += (
+      '<button class="city-pill more-pill" id="moreBtn">' +
+        ICONS.search + ' More cities' +
+      '</button>'
+    );
+    box.innerHTML = html;
+    box.querySelectorAll('[data-city]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var slug = b.getAttribute('data-city');
+        STATE.city = (STATE.city === slug) ? 'all' : slug;
+        syncUrl();
+        renderCityPills();
+        renderListing();
+      });
+    });
+    document.getElementById('moreBtn').addEventListener('click', openMoreDialog);
+  }
+
+  function syncUrl() {
+    try {
+      var url = new URL(window.location.href);
+      if (STATE.city === 'all') url.searchParams.delete('city');
+      else url.searchParams.set('city', STATE.city);
+      history.replaceState(null, '', url.toString());
+    } catch (e) {}
+  }
+
+  /* ---- Clinic card ---- */
+  function clinicCardHtml(c, idx) {
+    var variant = (idx % 6) + 1;
+    var labels = (STATE.data || {}).specialtyLabels || {};
+    var specs = (c.specialties || []).slice(0, 3).map(function (s) {
+      return labels[s] || s;
+    });
+    var moreCount = Math.max(0, (c.specialties || []).length - 3);
+    var ratingHtml = '';
+    if (c.rating && typeof c.rating.score === 'number') {
+      ratingHtml =
+        '<div class="cc-rating">' +
+          '<span class="stars">' + renderStars(c.rating.score) + '</span>' +
+          '<span class="num">' + c.rating.score.toFixed(1) + '</span>' +
+          '<span class="dot">·</span>' +
+          '<span>' + (c.rating.count || 0) + ' reviews</span>' +
+        '</div>';
+    }
+    return (
+      '<a class="clinic-card" href="/app/clinic.html?id=' + encodeURIComponent(c.id) + '">' +
+        '<div class="cc-image v' + variant + '">' +
+          (c.credimedVerified
+            ? '<span class="cc-verified">' + ICONS.verify + '<span>Verified</span></span>'
+            : '') +
+          (c.glyph ? '<span class="cc-glyph">' + escapeHtml(c.glyph) + '</span>' : '') +
+        '</div>' +
+        '<div class="cc-body">' +
+          '<h3 class="cc-title">' + escapeHtml(c.name) + '</h3>' +
+          ratingHtml +
+          (c.tagline ? '<p class="cc-quote">' + escapeHtml(c.tagline) + '</p>' : '') +
+          '<div class="cc-specs">' +
+            specs.map(function (s) {
+              return '<span class="cc-spec">' + escapeHtml(s) + '</span>';
+            }).join('') +
+            (moreCount > 0
+              ? '<span class="cc-spec more">+' + moreCount + ' more</span>'
+              : '') +
+          '</div>' +
+        '</div>' +
+      '</a>'
+    );
+  }
+
+  /* ---- Listing (grouped by city, verified first within each city) ---- */
+  function renderListing() {
+    if (!STATE.data) return;
+    var listing = document.getElementById('listing');
+    var emptyEl = document.getElementById('empty');
+
+    var cities = allCitiesArray();
+    var anyShown = false;
+
+    var html = cities.map(function (city) {
+      if (STATE.city !== 'all' && STATE.city !== city.slug) return '';
+      var items = clinicsByCity(city.slug)
+        .filter(matchesSearch)
+        /* Verified clinics first, then by rating desc. Same ordering
+           used everywhere in the app for consistency. */
+        .sort(function (a, b) {
+          if (a.credimedVerified !== b.credimedVerified) return a.credimedVerified ? -1 : 1;
+          return (b.rating?.score || 0) - (a.rating?.score || 0);
+        });
+      if (items.length === 0) return '';
+      anyShown = true;
+      var n = items.length;
+      var ix = 0;
+      return (
+        '<section class="city-section">' +
+          '<div class="city-heading">' +
+            '<h2>' + cityTitle(city) + '</h2>' +
+            '<span class="city-meta">' + escapeHtml(city.state || '') + ' · ' + n + ' ' + (n === 1 ? 'clinic' : 'clinics') + '</span>' +
+          '</div>' +
+          '<div class="clinic-grid">' +
+            items.map(function (c) { return clinicCardHtml(c, ix++); }).join('') +
+          '</div>' +
+        '</section>'
+      );
+    }).join('');
+
+    listing.innerHTML = html;
+    emptyEl.style.display = anyShown ? 'none' : 'block';
+  }
+
+  /* ---- More-cities dialog ---- */
+  function openMoreDialog() {
+    var overlay = document.getElementById('moreOverlay');
+    overlay.classList.add('open');
+    var input = document.getElementById('moreSearch');
+    input.value = '';
+    renderMoreList('');
+    setTimeout(function () { input.focus(); }, 50);
+  }
+  function closeMoreDialog() {
+    document.getElementById('moreOverlay').classList.remove('open');
+  }
+  function renderMoreList(query) {
+    var list = document.getElementById('moreList');
+    var q = (query || '').trim().toLowerCase();
+    var cities = allCitiesArray();
+    var counts = {};
+    (STATE.data.clinics || []).forEach(function (c) {
+      counts[c.city] = (counts[c.city] || 0) + 1;
+    });
+    var items = cities.filter(function (c) {
+      if (!q) return true;
+      return (c.display || '').toLowerCase().indexOf(q) !== -1
+          || (c.stateDisplay || '').toLowerCase().indexOf(q) !== -1;
+    });
+    if (items.length === 0) {
+      list.innerHTML =
+        '<div class="more-empty">No cities match "' + escapeHtml(query) + '". We\'re expanding — request your city at <a href="mailto:hello@credimed.us">hello@credimed.us</a>.</div>';
+      return;
+    }
+    list.innerHTML = items.map(function (c) {
+      var n = counts[c.slug] || 0;
+      return (
+        '<button class="more-item" data-pick-city="' + escapeHtml(c.slug) + '">' +
+          '<span class="mi-mark">' + ICONS.pin + '</span>' +
+          '<span>' +
+            '<div class="mi-name">' + escapeHtml(c.display) + '</div>' +
+            '<div class="mi-meta">' + escapeHtml(c.stateDisplay || c.state || '') + '</div>' +
+          '</span>' +
+          '<span class="mi-count">' + n + ' ' + (n === 1 ? 'clinic' : 'clinics') + '</span>' +
+        '</button>'
+      );
+    }).join('');
+    list.querySelectorAll('[data-pick-city]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        STATE.city = btn.getAttribute('data-pick-city');
+        closeMoreDialog();
+        syncUrl();
+        renderCityPills();
+        renderListing();
+      });
+    });
+  }
+
+  /* ---- Search input ---- */
+  document.getElementById('searchInput').addEventListener('input', function (e) {
+    STATE.search = e.target.value;
+    renderListing();
   });
 
-  /* Fetch the JSON. The path is absolute from site root so this page works
-     both at /app/directory.html and (if proxied later) at /clinics/. */
+  /* ---- Dialog close handlers ---- */
+  document.getElementById('moreClose').addEventListener('click', closeMoreDialog);
+  document.getElementById('moreOverlay').addEventListener('click', function (e) {
+    if (e.target === this) closeMoreDialog();
+  });
+  document.getElementById('moreSearch').addEventListener('input', function (e) {
+    renderMoreList(e.target.value);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeMoreDialog();
+  });
+
+  /* ---- Bootstrap ---- */
+  STATE.city = initialCity();
   fetch('/clinics.json', { cache: 'no-cache' })
     .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
-    .then(function (json) {
-      data = json;
-      applyFilter(initialCity(), false);
+    .then(function (data) {
+      STATE.data = data;
+      renderCityPills();
+      renderListing();
     })
     .catch(function (err) {
       console.error('[directory] failed to load clinics.json:', err);
-      grid.innerHTML = '';
-      empty.style.display = 'block';
-      empty.textContent = "We couldn't load the clinic list right now. Please refresh in a moment.";
+      var emptyEl = document.getElementById('empty');
+      emptyEl.style.display = 'block';
+      emptyEl.textContent = "We couldn't load the clinic list right now. Please refresh in a moment.";
     });
 })();
 </script>

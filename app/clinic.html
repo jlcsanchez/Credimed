@@ -7,33 +7,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D9488">
 
+<link rel="stylesheet" href="/app/styles/tokens.css">
 <style>
 :root {
-  --teal-50:#F0FDFA; --teal-100:#CCFBF1; --teal-300:#5EEAD4; --teal-500:#14B8A6;
-  --teal-600:#0D9488; --teal-700:#0B8278; --teal-800:#0A7A70; --teal-900:#134E4A;
-  --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
-  --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155;
-  --slate-800:#1E293B; --slate-900:#0F172A;
-  --cream:#FAF6EF; --cream-2:#F1ECE0;
-  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #134e4a 55%, #0D9488 100%);
-  --serif: "Iowan Old Style", "Apple Garamond", Georgia, "Times New Roman", serif;
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --cream: #FAF6EF;
+  --cream-2: #F1ECE0;
+  --ink: var(--slate-900);
+  --muted: var(--slate-500);
 }
-* { box-sizing: border-box; }
 html, body {
+  background: var(--cream);
+  font-family: var(--font-ui);
+  color: var(--ink);
   margin: 0; padding: 0;
-  font-family: var(--font-ui); color: var(--slate-900);
-  background: var(--cream); -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
   overflow-x: hidden; max-width: 100vw;
 }
+* { box-sizing: border-box; }
 a { color: var(--teal-700); text-decoration: none; }
 a:hover { color: var(--teal-800); }
-.sr { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
 
-/* ---- Top bar (consistent with directory.html) ---- */
+/* ---- Top bar ---- */
 .topbar {
   background: rgba(15,23,42,0.97);
-  backdrop-filter: blur(8px);
   position: sticky; top: 0; z-index: 50;
   padding: 14px 20px;
   display: flex; align-items: center; justify-content: space-between;
@@ -62,154 +58,248 @@ a:hover { color: var(--teal-800); }
   .topbar nav a:not(.cta) { display: none; }
 }
 
-/* ---- Breadcrumb ---- */
-.crumbs {
-  max-width: 880px; margin: 0 auto; padding: 18px 20px 0;
-  font-size: 13px; color: var(--slate-500);
-}
-.crumbs a { color: var(--slate-500); }
-.crumbs a:hover { color: var(--teal-700); }
-.crumbs .sep { margin: 0 6px; color: var(--slate-300); }
+/* ---- Page wrap + back link ---- */
+.page-wrap { max-width: 1080px; margin: 0 auto; padding: 18px 24px 56px; }
+@media (min-width: 720px) { .page-wrap { padding: 28px 56px 80px; } }
 
-/* ---- Header card ---- */
-.wrap { max-width: 880px; margin: 0 auto; padding: 14px 20px 56px; }
-.head-card {
-  background: #fff; border: 1px solid var(--cream-2); border-radius: 16px;
-  padding: 24px 24px 22px;
-  display: grid; grid-template-columns: 1fr; gap: 16px;
+.profile-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500; color: var(--slate-600);
+  text-decoration: none; padding: 6px 0;
+  margin-bottom: 14px;
+}
+.profile-back:hover { color: var(--ink); }
+.profile-back svg { width: 14px; height: 14px; }
+
+/* ---- Hero gradient + glyph ---- */
+.profile-hero {
+  position: relative;
+  height: 240px;
+  background: linear-gradient(135deg, var(--teal-700), var(--teal-900));
+  overflow: hidden;
+  border-radius: 16px;
+  margin-bottom: 0;
+}
+@media (min-width: 720px) { .profile-hero { height: 320px; } }
+.profile-hero::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(94,234,212,0.3), transparent 55%),
+    radial-gradient(circle at 15% 80%, rgba(13,148,136,0.45), transparent 60%);
+}
+.profile-hero::after {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 16px);
+}
+.profile-hero .city-tag {
+  position: absolute; top: 16px; left: 16px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 11px; border-radius: 999px;
+  background: rgba(255,255,255,0.16); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.22);
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em;
+  color: #fff; text-transform: uppercase;
+}
+@media (min-width: 720px) { .profile-hero .city-tag { top: 24px; left: 24px; } }
+.profile-hero .city-tag svg { width: 12px; height: 12px; }
+.profile-hero .glyph {
+  position: absolute; right: -20px; bottom: -40px;
+  font-family: var(--font-display); font-weight: 700; font-style: italic;
+  font-size: 220px; line-height: 1; letter-spacing: -0.04em;
+  color: rgba(255,255,255,0.12);
 }
 @media (min-width: 720px) {
-  .head-card { grid-template-columns: 1fr auto; align-items: start; }
+  .profile-hero .glyph { font-size: 320px; right: -30px; bottom: -60px; }
 }
-.head-info h1 {
-  font-family: var(--serif);
-  font-size: 30px; line-height: 1.15; letter-spacing: -0.01em;
-  margin: 0 0 8px; font-weight: 600;
-}
-@media (max-width: 640px) { .head-info h1 { font-size: 24px; } }
-.head-info .meta {
-  display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center;
-  font-size: 13px; color: var(--slate-600); margin-bottom: 6px;
-}
-.head-info .meta .item { display: inline-flex; align-items: center; gap: 6px; }
-.head-info .meta svg { width: 13px; height: 13px; color: var(--slate-400); }
-.head-info .meta .verified {
-  color: var(--teal-700); font-weight: 700;
-}
-.head-info .meta .verified svg { color: var(--teal-700); }
-.head-info .tagline {
-  margin: 12px 0 0; font-size: 15px; line-height: 1.55; color: var(--slate-700);
-  border-left: 3px solid var(--teal-600); padding-left: 12px;
-}
-.head-cta {
-  background: var(--cream); border: 1px solid var(--cream-2); border-radius: 12px;
-  padding: 16px;
-  display: flex; flex-direction: column; gap: 10px;
-  min-width: 220px;
-}
-.head-cta .lbl {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--slate-500);
-}
-.head-cta .est {
-  font-family: var(--serif); font-size: 22px; color: var(--slate-900); font-weight: 600;
-  letter-spacing: -0.01em;
-}
-.head-cta .sub { font-size: 12px; color: var(--slate-500); line-height: 1.4; }
-.btn-primary {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 12px 18px; border-radius: 10px; background: var(--teal-600); color: #fff;
-  font-weight: 700; font-size: 14px; text-decoration: none; border: 0; cursor: pointer;
-  font-family: inherit;
-}
-.btn-primary:hover { background: var(--teal-700); color: #fff; }
 
-/* ---- Sections ---- */
-.section {
-  background: #fff; border: 1px solid var(--cream-2); border-radius: 14px;
-  padding: 22px 24px; margin-top: 14px;
+/* ---- Profile body grid ---- */
+.profile-body {
+  margin-top: -32px; position: relative; z-index: 2;
 }
-.section h2 {
-  font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--slate-500); margin: 0 0 14px;
+@media (min-width: 960px) {
+  .profile-body {
+    margin-top: 32px;
+    display: grid; grid-template-columns: 1fr 360px; gap: 40px;
+    align-items: start;
+  }
 }
-.tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag {
-  padding: 6px 12px; border-radius: 99px;
-  background: var(--slate-100); color: var(--slate-700);
-  font-size: 13px; font-weight: 600;
-}
-.tag.teal { background: var(--teal-50); color: var(--teal-800); border: 1px solid var(--teal-100); }
 
-.contact-row { display: grid; gap: 12px; grid-template-columns: 1fr; }
-@media (min-width: 600px) { .contact-row { grid-template-columns: 1fr 1fr; } }
-.contact-cell {
-  display: flex; gap: 12px; align-items: flex-start;
-  padding: 12px 14px; border: 1px solid var(--cream-2); border-radius: 10px;
+.profile-card {
+  background: #fff; border-radius: 16px;
+  padding: 22px 24px; border: 1px solid var(--cream-2);
+  box-shadow: 0 4px 18px -8px rgba(15,23,42,0.06);
 }
-.contact-cell .ico {
-  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+@media (min-width: 960px) { .profile-card-main { padding: 32px; } }
+
+.profile-verified {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px 5px 9px; border-radius: 999px;
   background: var(--teal-50); border: 1px solid var(--teal-100);
-  color: var(--teal-700); display: flex; align-items: center; justify-content: center;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--teal-800); text-transform: uppercase;
+  margin-bottom: 12px;
 }
-.contact-cell .ico svg { width: 16px; height: 16px; }
-.contact-cell .body { flex: 1; min-width: 0; }
-.contact-cell .body .lbl {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--slate-500); margin-bottom: 2px;
-}
-.contact-cell .body .val {
-  font-size: 14px; color: var(--slate-900); word-break: break-all;
-}
-.contact-cell .body .val a { color: var(--teal-700); font-weight: 600; }
+.profile-verified svg { width: 13px; height: 13px; color: var(--teal-600); }
 
-/* ---- How Credimed integrates strip ---- */
-.howstrip {
-  background: var(--cream); padding: 24px 20px;
-  border-top: 1px solid var(--cream-2); border-bottom: 1px solid var(--cream-2);
-  margin: 32px 0 0;
+.profile-name {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 28px; line-height: 1.15; letter-spacing: -0.015em;
+  margin: 0 0 10px;
 }
-.howstrip-inner {
-  max-width: 880px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr; gap: 14px;
-}
-@media (min-width: 700px) { .howstrip-inner { grid-template-columns: repeat(3, 1fr); } }
-.howstep { display: flex; gap: 12px; align-items: flex-start; }
-.howstep .num {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: var(--teal-600); color: #fff; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 13px;
-}
-.howstep .txt { font-size: 13px; line-height: 1.5; color: var(--slate-700); }
-.howstep .txt b { color: var(--slate-900); }
+@media (min-width: 720px) { .profile-name { font-size: 38px; margin-bottom: 14px; } }
 
-.bottom-cta {
-  max-width: 880px; margin: 32px auto 0; padding: 0 20px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  flex-wrap: wrap;
+.profile-rating {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13.5px; color: var(--slate-600);
+  margin-bottom: 18px;
 }
-.bottom-cta .lead {
-  font-family: var(--serif); font-size: 22px; line-height: 1.2;
-  color: var(--slate-900); margin: 0; font-weight: 600;
+.profile-rating .stars { color: #F59E0B; font-weight: 600; letter-spacing: -0.01em; font-size: 15px; }
+.profile-rating .num { color: var(--ink); font-weight: 700; font-size: 15px; }
+.profile-rating .dot { color: var(--slate-300); }
+
+.profile-quote {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 17px; line-height: 1.5; color: var(--slate-700);
+  margin: 0 0 22px;
+  padding-left: 14px; border-left: 2px solid var(--teal-300);
+}
+@media (min-width: 720px) { .profile-quote { font-size: 19px; margin-bottom: 28px; } }
+
+.profile-section {
+  padding: 18px 0; border-top: 1px solid var(--cream-2);
+}
+.profile-section:first-of-type { border-top: none; padding-top: 0; }
+.profile-section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--slate-500); margin: 0 0 12px;
 }
 
+.specialty-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+@media (min-width: 720px) { .specialty-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.specialty-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--cream); border: 1px solid var(--cream-2);
+  font-size: 13px; font-weight: 500; color: var(--slate-800);
+}
+.specialty-pill svg {
+  width: 14px; height: 14px; color: var(--teal-600); flex-shrink: 0;
+}
+
+.detail-row {
+  display: flex; gap: 14px; padding: 10px 0;
+  font-size: 13.5px;
+}
+.detail-row + .detail-row { border-top: 1px dashed var(--cream-2); }
+.detail-row .di {
+  width: 20px; height: 20px; flex-shrink: 0; color: var(--teal-600);
+  margin-top: 1px;
+}
+.detail-row .di svg { width: 18px; height: 18px; }
+.detail-row .dl { color: var(--slate-500); width: 88px; flex-shrink: 0; }
+.detail-row .dv { color: var(--ink); font-weight: 500; flex: 1; word-break: break-word; }
+.detail-row .dv b { font-weight: 600; }
+.detail-row .dv a { color: var(--teal-700); font-weight: 600; }
+
+/* ---- CTA card (sticky on PC, normal flow on mobile) ---- */
+.profile-cta {
+  background: var(--ink); color: #fff;
+  border-radius: 16px; padding: 24px;
+  position: relative; overflow: hidden;
+  margin-top: 16px;
+}
+@media (min-width: 960px) {
+  .profile-cta {
+    position: sticky; top: 24px; padding: 28px;
+    margin-top: 0;
+  }
+}
+.profile-cta::before {
+  content: ""; position: absolute; inset: -50% -50% auto auto;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(94,234,212,0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.profile-cta-eyebrow {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--teal-300);
+  margin: 0 0 8px; position: relative;
+}
+.profile-cta h3 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 22px; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 0 0 8px; position: relative;
+}
+@media (min-width: 720px) { .profile-cta h3 { font-size: 24px; } }
+.profile-cta p {
+  font-size: 13.5px; line-height: 1.55;
+  color: rgba(255,255,255,0.7); margin: 0 0 18px;
+  position: relative;
+}
+.cta-stat {
+  display: flex; align-items: baseline; gap: 6px;
+  padding: 14px 0; margin: 14px 0 18px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  position: relative;
+}
+.cta-stat .num {
+  font-family: var(--font-display); font-weight: 700; font-style: italic;
+  font-size: 26px; color: var(--teal-300); letter-spacing: -0.01em;
+}
+.cta-stat .lbl { font-size: 12px; color: rgba(255,255,255,0.65); }
+.cta-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px 16px; border-radius: 12px;
+  background: #fff; color: var(--ink);
+  font-family: inherit; font-size: 14.5px; font-weight: 700;
+  border: none; cursor: pointer; text-decoration: none;
+  letter-spacing: -0.005em; position: relative;
+  transition: all 140ms ease;
+}
+.cta-btn:hover { background: var(--teal-300); color: var(--ink); }
+.cta-btn svg { width: 16px; height: 16px; }
+.cta-trust {
+  display: flex; gap: 14px; justify-content: center;
+  margin-top: 14px;
+  font-size: 11px; color: rgba(255,255,255,0.5);
+  position: relative;
+}
+.cta-trust span { display: inline-flex; align-items: center; gap: 4px; }
+.cta-trust svg { width: 11px; height: 11px; }
+
+/* ---- Footer ---- */
 .foot {
   text-align: center; padding: 32px 20px 56px;
   font-size: 12.5px; color: var(--slate-500); line-height: 1.7;
 }
 .foot a { color: var(--slate-500); text-decoration: underline; }
 .foot a:hover { color: var(--teal-700); }
+.foot .disclaimer {
+  display: block; margin-top: 8px; max-width: 720px;
+  margin-left: auto; margin-right: auto;
+  font-size: 11px; color: var(--slate-400);
+}
 
+/* ---- Empty / loading states ---- */
 .empty-state {
   max-width: 600px; margin: 60px auto; padding: 28px;
   background: #fff; border: 1px solid var(--cream-2); border-radius: 14px;
   text-align: center;
 }
 .empty-state h2 {
-  font-family: var(--serif); font-size: 22px; margin: 0 0 8px; color: var(--slate-900);
+  font-family: var(--font-display); font-size: 22px; margin: 0 0 8px; color: var(--ink);
 }
 .empty-state p { color: var(--slate-600); font-size: 14px; margin: 0 0 18px; }
+.empty-state a {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 11px 18px; border-radius: 10px; background: var(--teal-600); color: #fff;
+  font-weight: 700; font-size: 14px; text-decoration: none;
+}
+.empty-state a:hover { background: var(--teal-700); color: #fff; }
 </style>
 </head>
 <body>
@@ -225,27 +315,42 @@ a:hover { color: var(--teal-800); }
   </nav>
 </header>
 
-<div id="content">
-  <!-- Rendered by JS once clinics.json loads -->
+<div class="page-wrap" id="pageWrap">
   <div class="empty-state" id="loadingState">
     <h2>Loading clinic…</h2>
     <p>One moment.</p>
   </div>
 </div>
 
+<footer class="foot">
+  <a href="/">Home</a> &middot;
+  <a href="/app/directory.html">All clinics</a> &middot;
+  <a href="/how-it-works.html">How it works</a> &middot;
+  <a href="/legal/privacy.html">Privacy</a> &middot;
+  <a href="/legal/terms.html">Terms</a>
+  <br>
+  Credimed LLC &middot; 30 N Gould St Ste N, Sheridan, WY 82801
+  <span class="disclaimer">
+    Listings reflect publicly available information. Credimed is not affiliated with this clinic unless explicitly marked &ldquo;Credimed Verified&rdquo; — that badge means we have reviewed credentials and confirmed the clinic accepts our claim filing process.
+  </span>
+</footer>
+
 <script>
 (function () {
   'use strict';
 
   var ICONS = {
+    back:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+    verify: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4M12 2l3 3 4-1 1 4 3 3-3 3 1 4-4-1-3 3-3-3-4 1 1-4-3-3 3-3-1-4 4 1z" fill-rule="evenodd" clip-rule="evenodd"/></svg>',
     pin:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
-    star:   '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-    arrow:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
-    check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
     phone:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-    chat:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
     globe:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
-    home:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>'
+    hours:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+    chat:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    arrow:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+    lock:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
   };
 
   function escapeHtml(s) {
@@ -254,7 +359,15 @@ a:hover { color: var(--teal-800); }
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  /* Read ?id=clnc_xxx from URL */
+  function renderStars(score) {
+    var arr = [];
+    for (var i = 0; i < 5; i++) {
+      var filled = i < Math.round(score || 0);
+      arr.push('<span style="color:' + (filled ? '#F59E0B' : '#E2E8F0') + ';">★</span>');
+    }
+    return arr.join('');
+  }
+
   function getClinicId() {
     try {
       var p = new URLSearchParams(window.location.search);
@@ -262,181 +375,193 @@ a:hover { color: var(--teal-800); }
     } catch (e) { return ''; }
   }
 
-  var content = document.getElementById('content');
+  var pageWrap = document.getElementById('pageWrap');
 
   function renderNotFound(msg) {
-    content.innerHTML =
+    pageWrap.innerHTML =
       '<div class="empty-state">' +
         '<h2>Clinic not found</h2>' +
         '<p>' + escapeHtml(msg || "We couldn't find that clinic in our directory.") + '</p>' +
-        '<a class="btn-primary" href="/app/directory.html">Browse all clinics ' + ICONS.arrow + '</a>' +
+        '<a href="/app/directory.html">Browse all clinics ' + ICONS.arrow + '</a>' +
       '</div>';
   }
 
   function renderClinic(clinic, data) {
-    var labels  = data.specialtyLabels || {};
-    var fLabels = data.facilityLabels || {};
-    var cityObj = (data.cities || []).find(function (c) { return c.slug === clinic.city; });
+    var labels = data.specialtyLabels || {};
+    var allCities = (data.cities || []).concat(data.secondaryCities || []);
+    var cityObj = allCities.find(function (c) { return c.slug === clinic.city; });
+    var cityLabel = cityObj
+      ? clinic.cityDisplay + ', ' + (cityObj.state || '')
+      : clinic.cityDisplay;
 
-    var languageDisplay = (clinic.languages || []).map(function (l) {
-      return l === 'es' ? 'Spanish' : l === 'en' ? 'English' : l;
-    });
+    /* CTA target: route through /app/login.html with clinicId attribution.
+       login.html persists clinic.id to CredimedState, so claim-review.html
+       can pre-fill the dental clinic card from /clinics.json without
+       round-tripping. */
+    var ctaHref = '/app/login.html?clinicId=' + encodeURIComponent(clinic.id);
 
-    var verifiedBadge = clinic.credimedVerified
-      ? '<span class="item verified">' + ICONS.check + 'Credimed Verified</span>'
-      : '';
+    document.title = 'Credimed — ' + clinic.name;
 
-    var ratingStr = '';
-    if (clinic.rating && typeof clinic.rating.score === 'number') {
-      ratingStr = '<span class="item">' + ICONS.star +
-        '<span style="color:var(--slate-700);font-weight:600;">' +
-        clinic.rating.score.toFixed(1) +
-        '</span>&nbsp;<span style="color:var(--slate-500);">(' +
-        (clinic.rating.count || 0) + ' reviews)</span></span>';
+    /* Specialties grid */
+    var specsHtml = (clinic.specialties || []).map(function (s) {
+      return '<div class="specialty-pill">' + ICONS.check + '<span>' + escapeHtml(labels[s] || s) + '</span></div>';
+    }).join('');
+
+    /* Detail rows — render only fields the JSON provides */
+    var detailRows = [];
+    if (clinic.address) {
+      detailRows.push(
+        '<div class="detail-row">' +
+          '<span class="di">' + ICONS.pin + '</span>' +
+          '<span class="dl">Address</span>' +
+          '<span class="dv">' + escapeHtml(clinic.address) + '</span>' +
+        '</div>'
+      );
     }
-
-    var contactCells = [];
     if (clinic.phone) {
-      contactCells.push(
-        '<div class="contact-cell">' +
-          '<div class="ico">' + ICONS.phone + '</div>' +
-          '<div class="body">' +
-            '<div class="lbl">Phone</div>' +
-            '<div class="val"><a href="tel:' + escapeHtml(clinic.phone.replace(/\s+/g, '')) + '">' + escapeHtml(clinic.phone) + '</a></div>' +
-          '</div>' +
+      detailRows.push(
+        '<div class="detail-row">' +
+          '<span class="di">' + ICONS.phone + '</span>' +
+          '<span class="dl">Phone</span>' +
+          '<span class="dv"><a href="tel:' + escapeHtml(clinic.phone.replace(/\s+/g, '')) + '"><b>' + escapeHtml(clinic.phone) + '</b></a></span>' +
         '</div>'
       );
     }
     if (clinic.whatsapp) {
       var wa = clinic.whatsapp.replace(/[^\d]/g, '');
-      contactCells.push(
-        '<div class="contact-cell">' +
-          '<div class="ico">' + ICONS.chat + '</div>' +
-          '<div class="body">' +
-            '<div class="lbl">WhatsApp</div>' +
-            '<div class="val"><a href="https://wa.me/' + escapeHtml(wa) + '" target="_blank" rel="noopener">' + escapeHtml(clinic.whatsapp) + '</a></div>' +
-          '</div>' +
+      detailRows.push(
+        '<div class="detail-row">' +
+          '<span class="di">' + ICONS.chat + '</span>' +
+          '<span class="dl">WhatsApp</span>' +
+          '<span class="dv"><a href="https://wa.me/' + escapeHtml(wa) + '" target="_blank" rel="noopener">' + escapeHtml(clinic.whatsapp) + '</a></span>' +
         '</div>'
       );
     }
     if (clinic.website) {
-      contactCells.push(
-        '<div class="contact-cell">' +
-          '<div class="ico">' + ICONS.globe + '</div>' +
-          '<div class="body">' +
-            '<div class="lbl">Website</div>' +
-            '<div class="val"><a href="' + escapeHtml(clinic.website) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(clinic.website.replace(/^https?:\/\//, '')) + '</a></div>' +
-          '</div>' +
+      var displayUrl = clinic.website.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      detailRows.push(
+        '<div class="detail-row">' +
+          '<span class="di">' + ICONS.globe + '</span>' +
+          '<span class="dl">Website</span>' +
+          '<span class="dv"><a href="' + escapeHtml(clinic.website) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(displayUrl) + '</a></span>' +
         '</div>'
       );
     }
-    if (clinic.address) {
-      contactCells.push(
-        '<div class="contact-cell">' +
-          '<div class="ico">' + ICONS.home + '</div>' +
-          '<div class="body">' +
-            '<div class="lbl">Address</div>' +
-            '<div class="val">' + escapeHtml(clinic.address) + '</div>' +
-          '</div>' +
+    if (clinic.hours) {
+      detailRows.push(
+        '<div class="detail-row">' +
+          '<span class="di">' + ICONS.hours + '</span>' +
+          '<span class="dl">Hours</span>' +
+          '<span class="dv">' + escapeHtml(clinic.hours) + '</span>' +
+        '</div>'
+      );
+    }
+    if (clinic.languagesDisplay || (clinic.languages && clinic.languages.length)) {
+      var langs = clinic.languagesDisplay
+        || clinic.languages.map(function (l) {
+          return l === 'es' ? 'Spanish' : l === 'en' ? 'English' : l;
+        }).join(' · ');
+      detailRows.push(
+        '<div class="detail-row">' +
+          '<span class="di">' + ICONS.globe + '</span>' +
+          '<span class="dl">Languages</span>' +
+          '<span class="dv">' + escapeHtml(langs) + '</span>' +
         '</div>'
       );
     }
 
-    /* CTA → /app/login.html?next=documents&clinicId=xxx — login page reads
-       'next' to route the user into the documents flow after sign-in.
-       claim-review.html (and any later flow page) reads ?clinicId from
-       the query and persists it via CredimedState so it follows the
-       claim through to the Lambda. */
-    var ctaHref = '/app/login.html?clinicId=' + encodeURIComponent(clinic.id);
+    /* "What patients have paid here" — only render if we have data */
+    var paidRows = [];
+    if (clinic.avgPaidUSD) {
+      paidRows.push(
+        '<div class="detail-row">' +
+          '<span class="di">' + ICONS.check + '</span>' +
+          '<span class="dl">Avg. paid</span>' +
+          '<span class="dv"><b>$' + escapeHtml(String(clinic.avgPaidUSD).toLocaleString ? clinic.avgPaidUSD.toLocaleString() : clinic.avgPaidUSD) + ' USD</b> across recent claims</span>' +
+        '</div>'
+      );
+    }
+    if (clinic.avgRefundUSD) {
+      paidRows.push(
+        '<div class="detail-row">' +
+          '<span class="di">' + ICONS.check + '</span>' +
+          '<span class="dl">Avg. refund</span>' +
+          '<span class="dv"><b>$' + escapeHtml(clinic.avgRefundUSD) + ' USD</b> reimbursed by insurer</span>' +
+        '</div>'
+      );
+    }
 
-    document.title = 'Credimed — ' + clinic.name;
+    var ratingHtml = '';
+    if (clinic.rating && typeof clinic.rating.score === 'number') {
+      ratingHtml =
+        '<div class="profile-rating">' +
+          '<span class="stars">' + renderStars(clinic.rating.score) + '</span>' +
+          '<span class="num">' + clinic.rating.score.toFixed(1) + '</span>' +
+          '<span class="dot">·</span>' +
+          '<span>' + (clinic.rating.count || 0) + ' verified reviews</span>' +
+        '</div>';
+    }
 
-    content.innerHTML =
-      '<nav class="crumbs" aria-label="Breadcrumb">' +
-        '<a href="/app/directory.html">Directory</a>' +
-        '<span class="sep">/</span>' +
-        '<a href="/app/directory.html?city=' + encodeURIComponent(clinic.city) + '">' + escapeHtml(clinic.cityDisplay) + '</a>' +
-        '<span class="sep">/</span>' +
-        '<span>' + escapeHtml(clinic.name) + '</span>' +
-      '</nav>' +
-      '<div class="wrap">' +
-        '<section class="head-card">' +
-          '<div class="head-info">' +
-            '<h1>' + escapeHtml(clinic.name) + '</h1>' +
-            '<div class="meta">' +
-              '<span class="item">' + ICONS.pin + escapeHtml(clinic.cityDisplay) +
-                (cityObj ? ', ' + escapeHtml(cityObj.state) : '') + '</span>' +
-              ratingStr +
-              verifiedBadge +
-            '</div>' +
-            (clinic.tagline ? '<p class="tagline">' + escapeHtml(clinic.tagline) + '</p>' : '') +
-          '</div>' +
-          '<div class="head-cta">' +
-            '<div class="lbl">Want this filed with your insurer?</div>' +
-            '<div class="est">Get your refund estimate</div>' +
-            '<div class="sub">2 minutes &middot; we file your claim within 24 hours of payment.</div>' +
-            '<a class="btn-primary" href="' + ctaHref + '">Estimate my refund ' + ICONS.arrow + '</a>' +
-          '</div>' +
-        '</section>' +
+    /* CTA card — first word of the clinic name lives inside the stat
+       label so the patient sees "$1,040–$1,260 avg. refund at Tijuana". */
+    var firstWord = (clinic.name || '').split(' ')[0] || 'this clinic';
 
-        (clinic.specialties && clinic.specialties.length ?
-        '<section class="section">' +
-          '<h2>Specialties</h2>' +
-          '<div class="tag-row">' +
-            clinic.specialties.map(function (s) {
-              return '<span class="tag teal">' + escapeHtml(labels[s] || s) + '</span>';
-            }).join('') +
-          '</div>' +
-        '</section>' : '') +
+    pageWrap.innerHTML =
+      '<a class="profile-back" href="/app/directory.html">' + ICONS.back + '<span>Back to directory</span></a>' +
 
-        (clinic.facilities && clinic.facilities.length ?
-        '<section class="section">' +
-          '<h2>Facilities &amp; amenities</h2>' +
-          '<div class="tag-row">' +
-            clinic.facilities.map(function (f) {
-              return '<span class="tag">' + escapeHtml(fLabels[f] || f) + '</span>';
-            }).join('') +
-          '</div>' +
-        '</section>' : '') +
-
-        (languageDisplay.length ?
-        '<section class="section">' +
-          '<h2>Languages spoken</h2>' +
-          '<div class="tag-row">' +
-            languageDisplay.map(function (l) {
-              return '<span class="tag">' + escapeHtml(l) + '</span>';
-            }).join('') +
-          '</div>' +
-        '</section>' : '') +
-
-        '<section class="section">' +
-          '<h2>Contact the clinic directly</h2>' +
-          '<div class="contact-row">' + contactCells.join('') + '</div>' +
-        '</section>' +
+      '<div class="profile-hero">' +
+        '<span class="city-tag">' + ICONS.pin + '<span>' + escapeHtml(cityLabel) + '</span></span>' +
+        (clinic.glyph ? '<span class="glyph">' + escapeHtml(clinic.glyph) + '</span>' : '') +
       '</div>' +
 
-      '<section class="howstrip">' +
-        '<div class="howstrip-inner">' +
-          '<div class="howstep"><span class="num">1</span><div class="txt"><b>Book directly with the clinic.</b> Use the contact info above. Credimed isn’t a booking platform.</div></div>' +
-          '<div class="howstep"><span class="num">2</span><div class="txt"><b>Get treatment.</b> Pay the clinic and keep your itemized receipt.</div></div>' +
-          '<div class="howstep"><span class="num">3</span><div class="txt"><b>We file your claim.</b> Upload the receipt and we handle the rest with your US insurer.</div></div>' +
+      '<div class="profile-body">' +
+        '<div class="profile-card profile-card-main">' +
+          (clinic.credimedVerified
+            ? '<span class="profile-verified">' + ICONS.verify + '<span>Credimed Verified</span></span>'
+            : '') +
+          '<h1 class="profile-name">' + escapeHtml(clinic.name) + '</h1>' +
+          ratingHtml +
+          (clinic.tagline
+            ? '<p class="profile-quote">"' + escapeHtml(clinic.tagline) + '"</p>'
+            : '') +
+
+          (specsHtml ?
+            '<div class="profile-section">' +
+              '<p class="profile-section-label">Specialties</p>' +
+              '<div class="specialty-grid">' + specsHtml + '</div>' +
+            '</div>' : '') +
+
+          (detailRows.length ?
+            '<div class="profile-section">' +
+              '<p class="profile-section-label">Practice details</p>' +
+              detailRows.join('') +
+            '</div>' : '') +
+
+          (paidRows.length ?
+            '<div class="profile-section">' +
+              '<p class="profile-section-label">What patients have paid here</p>' +
+              paidRows.join('') +
+            '</div>' : '') +
         '</div>' +
-      '</section>' +
 
-      '<div class="bottom-cta">' +
-        '<p class="lead">Ready to claim your reimbursement?</p>' +
-        '<a class="btn-primary" href="' + ctaHref + '">Estimate my refund ' + ICONS.arrow + '</a>' +
-      '</div>' +
-
-      '<footer class="foot">' +
-        '<a href="/">Home</a> &middot; ' +
-        '<a href="/app/directory.html">All clinics</a> &middot; ' +
-        '<a href="/how-it-works.html">How it works</a> &middot; ' +
-        '<a href="/legal/privacy.html">Privacy</a> &middot; ' +
-        '<a href="/legal/terms.html">Terms</a><br>' +
-        'Credimed LLC &middot; 30 N Gould St Ste N, Sheridan, WY 82801<br>' +
-        '<span style="color:var(--slate-400);font-size:11px;">Listings reflect publicly available information. Credimed is not affiliated with this clinic unless explicitly marked &ldquo;Credimed Verified&rdquo; — that badge means we have reviewed credentials and confirmed the clinic accepts our claim filing process.</span>' +
-      '</footer>';
+        '<aside class="profile-cta">' +
+          '<p class="profile-cta-eyebrow">Got work done here?</p>' +
+          '<h3>See what your insurer owes you back.</h3>' +
+          '<p>Free instant estimate. No commitment. We file the claim only if you decide to move forward.</p>' +
+          (clinic.avgRefundUSD ?
+            '<div class="cta-stat">' +
+              '<span class="num">$' + escapeHtml(clinic.avgRefundUSD) + '</span>' +
+              '<span class="lbl">avg. refund at ' + escapeHtml(firstWord) + '</span>' +
+            '</div>' : '') +
+          '<a class="cta-btn" href="' + ctaHref + '">' +
+            '<span>Estimate my refund</span>' + ICONS.arrow +
+          '</a>' +
+          '<div class="cta-trust">' +
+            '<span>' + ICONS.shield + ' HIPAA-aligned</span>' +
+            '<span>' + ICONS.lock + ' 256-bit encrypted</span>' +
+          '</div>' +
+        '</aside>' +
+      '</div>';
   }
 
   var id = getClinicId();
