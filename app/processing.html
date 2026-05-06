@@ -656,7 +656,7 @@ applyMode('live');
     </div>
     <p class="proc-eyebrow">Working on it</p>
     <h1>Matching your PPO plan</h1>
-    <p class="label-now" id="procLabelPc">Looking up Aetna PPO 2000 fee schedules&hellip;</p>
+    <p class="label-now" id="procLabelPc">Looking up your insurer&apos;s fee schedules&hellip;</p>
     <div class="proc-track"><div class="proc-fill" id="procFillPc" style="width:49%"></div></div>
     <div class="proc-pct"><span>Step 2 of 4</span><span class="num" id="procPctPc">49%</span></div>
     <ul class="proc-steps" id="procStepsPc">
@@ -671,6 +671,28 @@ applyMode('live');
 
 <script src="connector.js"></script>
 <script src="auto-logoff.js"></script>
+<script>
+/* Replace the generic placeholder with the patient's actual insurer
+   name once the page mounts. Read from localStorage directly (state.js
+   isn't loaded on this page, but the persisted CredimedState blob is
+   the same JSON shape: { insurance: { insurer: '...' }, ... }).
+   Falls back to "your insurer" if nothing is stored or the parse
+   fails — no breakage if state has been cleared. */
+(function () {
+  try {
+    var raw = localStorage.getItem('credimed:state');
+    if (!raw) return;
+    var state = JSON.parse(raw);
+    var insurer = (state && state.insurance && state.insurance.insurer) || '';
+    insurer = String(insurer).trim();
+    if (!insurer) return;
+    var el = document.getElementById('procLabelPc');
+    if (el) {
+      el.textContent = 'Looking up ' + insurer + ' fee schedules…';
+    }
+  } catch (e) { /* keep the generic placeholder */ }
+})();
+</script>
 </body>
 </html>
 
