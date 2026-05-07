@@ -135,12 +135,61 @@ a:hover { color: var(--teal-800); }
 .profile-verified {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 5px 11px 5px 9px; border-radius: 999px;
-  background: var(--teal-50); border: 1px solid var(--teal-100);
   font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em;
-  color: var(--teal-800); text-transform: uppercase;
-  margin-bottom: 12px;
+  text-transform: uppercase; margin-bottom: 12px;
 }
-.profile-verified svg { width: 13px; height: 13px; color: var(--teal-600); }
+.profile-verified svg { width: 13px; height: 13px; }
+.profile-verified.is-partner {
+  background: var(--teal-50); border: 1px solid var(--teal-100);
+  color: var(--teal-800);
+}
+.profile-verified.is-partner svg { color: var(--teal-600); }
+.profile-verified.is-listed {
+  background: var(--cream); border: 1px solid var(--cream-2);
+  color: var(--slate-700);
+}
+.profile-verified.is-listed svg { color: var(--slate-500); }
+
+/* "Claim this listing" callout — only renders on listed (non-partner)
+   clinics. Targets the clinic owner: convert public listing into an
+   active partnership + earn the QR stand for the front desk. */
+.claim-listing {
+  margin: 16px 0 24px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border: 1px dashed #F59E0B;
+  display: flex; align-items: center; gap: 14px;
+}
+.claim-listing .ci-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #92400E;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.claim-listing .ci-icon svg { width: 18px; height: 18px; }
+.claim-listing .ci-body { flex: 1; min-width: 0; }
+.claim-listing .ci-title {
+  font-size: 13.5px; font-weight: 700; color: #78350F;
+  margin: 0 0 4px;
+}
+.claim-listing .ci-sub {
+  font-size: 12.5px; line-height: 1.45; color: #78350F;
+  margin: 0;
+}
+.claim-listing .ci-cta {
+  flex-shrink: 0;
+  padding: 9px 14px; border-radius: 10px;
+  background: #92400E; color: #fff;
+  font-size: 12.5px; font-weight: 700;
+  text-decoration: none; white-space: nowrap;
+}
+.claim-listing .ci-cta:hover { background: #78350F; color: #fff; }
+@media (max-width: 600px) {
+  .claim-listing { flex-direction: column; align-items: flex-start; }
+  .claim-listing .ci-cta { width: 100%; text-align: center; }
+}
 
 .profile-name {
   font-family: var(--font-display); font-weight: 700;
@@ -331,7 +380,7 @@ a:hover { color: var(--teal-800); }
   <br>
   Credimed LLC &middot; 30 N Gould St Ste N, Sheridan, WY 82801
   <span class="disclaimer">
-    Listings reflect publicly available information. Credimed is not affiliated with this clinic unless explicitly marked &ldquo;Credimed Verified&rdquo; — that badge means we have reviewed credentials and confirmed the clinic accepts our claim filing process.
+    Public business directory listings reflect information from third-party sources (whatclinic.com, Google Maps, etc.). Credimed is not affiliated with a clinic unless explicitly marked &ldquo;Credimed Partner&rdquo; — that badge means the clinic has signed up with us, we have reviewed credentials, and they accept our claim filing process. Are you a clinic owner and want to be removed from the directory? Email <a href="mailto:partners@credimed.us">partners@credimed.us</a>.
   </span>
 </footer>
 
@@ -516,11 +565,48 @@ a:hover { color: var(--teal-800); }
 
       '<div class="profile-body">' +
         '<div class="profile-card profile-card-main">' +
-          (clinic.credimedVerified
-            ? '<span class="profile-verified">' + ICONS.verify + '<span>Credimed Verified</span></span>'
-            : '') +
+          // Status badge — Partner / Listed / nothing.
+          // Backwards-compat with legacy credimedVerified boolean.
+          (function () {
+            var s = clinic.credimedStatus
+              || (clinic.credimedVerified === true ? 'partner'
+                : clinic.credimedVerified === false ? 'listed'
+                : null);
+            if (s === 'partner') {
+              return '<span class="profile-verified is-partner">' + ICONS.verify + '<span>Credimed Partner</span></span>';
+            }
+            if (s === 'listed') {
+              return '<span class="profile-verified is-listed">' + ICONS.pin + '<span>Listed</span></span>';
+            }
+            return '';
+          })() +
           '<h1 class="profile-name">' + escapeHtml(clinic.name) + '</h1>' +
           ratingHtml +
+          // "Claim this listing" callout for non-partner entries — the
+          // owner of this clinic should convert the public listing into
+          // an active partnership and get a Credimed-branded QR stand
+          // for their front desk.
+          (function () {
+            var s = clinic.credimedStatus
+              || (clinic.credimedVerified === true ? 'partner'
+                : clinic.credimedVerified === false ? 'listed'
+                : null);
+            if (s !== 'listed') return '';
+            return (
+              '<div class="claim-listing">' +
+                '<span class="ci-icon">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' +
+                  '</svg>' +
+                '</span>' +
+                '<div class="ci-body">' +
+                  '<p class="ci-title">Are you the owner of this clinic?</p>' +
+                  '<p class="ci-sub">Become a Credimed Partner — get pre-qualified US PPO patients sent your way + a free QR stand for your front desk.</p>' +
+                '</div>' +
+                '<a class="ci-cta" href="mailto:partners@credimed.us?subject=' + encodeURIComponent('Claim listing: ' + clinic.name) + '">Claim listing</a>' +
+              '</div>'
+            );
+          })() +
           (clinic.tagline
             ? '<p class="profile-quote">"' + escapeHtml(clinic.tagline) + '"</p>'
             : '') +
