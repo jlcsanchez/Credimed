@@ -2,10 +2,10 @@
   "_meta": {
     "schemaVersion": 3,
     "lastUpdated": "2026-05-07",
-    "note": "Directory entries are sourced from public business directories (whatclinic.com, etc.) and marked credimedStatus='listed' until the clinic responds to our partnership outreach. Clinics that confirm partnership become credimedStatus='partner' (badge: 'Credimed Partner'). Status='listed' entries are public info only — Credimed has not verified credentials, English-language paperwork, or US PPO compatibility. Phone numbers may be call-tracking numbers (US 805 area code) that forward to the actual clinic.",
+    "note": "Directory entries are sourced from public business directories (whatclinic.com, etc.) and marked credimedStatus='listed' until the clinic responds to our partnership outreach. Clinics that confirm partnership become credimedStatus='partner' (badge: 'Credimed Partner'). Status='listed' entries are public info only \u2014 Credimed has not verified credentials, English-language paperwork, or US PPO compatibility. Phone numbers may be call-tracking numbers (US 805 area code) that forward to the actual clinic.",
     "statuses": {
-      "partner":  "Active Credimed partner — accepted invitation, sent QR stand, sends patients our way",
-      "listed":   "Public business listing only — not vetted, no partnership confirmed"
+      "partner": "Active Credimed partner \u2014 accepted invitation, sent QR stand, sends patients our way",
+      "listed": "Public business listing only \u2014 not vetted, no partnership confirmed"
     },
     "verifyBeforeLaunch": false
   },
@@ -24,7 +24,7 @@
       "state": "BC",
       "stateDisplay": "Baja California",
       "country": "Mexico",
-      "blurb": "Border town across from Yuma, AZ — known as the dental capital of Mexico. 350+ dentists in 4 walkable blocks."
+      "blurb": "Border town across from Yuma, AZ \u2014 known as the dental capital of Mexico. 350+ dentists in 4 walkable blocks."
     },
     {
       "slug": "los-cabos",
@@ -32,7 +32,7 @@
       "state": "BCS",
       "stateDisplay": "Baja California Sur",
       "country": "Mexico",
-      "blurb": "Resort destination. Cabo San Lucas + San José del Cabo corridor."
+      "blurb": "Resort destination. Cabo San Lucas + San Jos\u00e9 del Cabo corridor."
     }
   ],
   "secondaryCities": [
@@ -81,11 +81,23 @@
       "phone": "+1 (805) 765-8134",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
-      "languagesDisplay": "English · Spanish",
-      "specialties": ["dental-implants", "crowns", "teeth-whitening", "root-canal"],
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": "English \u00b7 Spanish",
+      "specialties": [
+        "dental-implants",
+        "crowns",
+        "teeth-whitening",
+        "root-canal"
+      ],
       "facilities": [],
-      "rating": { "score": 5.0, "count": 7, "source": "whatclinic.com" },
+      "rating": {
+        "score": 5.0,
+        "count": 7,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -104,11 +116,21 @@
       "phone": "+1 (805) 394-3897",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "teeth-whitening"],
+      "specialties": [
+        "dental-implants",
+        "teeth-whitening"
+      ],
       "facilities": [],
-      "rating": { "score": 4.9, "count": 22, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.9,
+        "count": 22,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -127,11 +149,21 @@
       "phone": "+1 (805) 635-2405",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
-      "languagesDisplay": "English · Spanish",
-      "specialties": ["dental-implants", "cosmetic-dentistry"],
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": "English \u00b7 Spanish",
+      "specialties": [
+        "dental-implants",
+        "cosmetic-dentistry"
+      ],
       "facilities": [],
-      "rating": { "score": 5.0, "count": 19, "source": "whatclinic.com" },
+      "rating": {
+        "score": 5.0,
+        "count": 19,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -150,11 +182,24 @@
       "phone": "+1 (805) 301-5326",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
-      "languagesDisplay": "English · Spanish",
-      "specialties": ["dental-implants", "extractions", "oral-surgery", "veneers", "orthodontics"],
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": "English \u00b7 Spanish",
+      "specialties": [
+        "dental-implants",
+        "extractions",
+        "oral-surgery",
+        "veneers",
+        "orthodontics"
+      ],
       "facilities": [],
-      "rating": { "score": 5.0, "count": 40, "source": "whatclinic.com" },
+      "rating": {
+        "score": 5.0,
+        "count": 40,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -173,11 +218,21 @@
       "phone": "+1 (805) 849-5375",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "oral-surgery"],
+      "specialties": [
+        "dental-implants",
+        "oral-surgery"
+      ],
       "facilities": [],
-      "rating": { "score": 5.0, "count": 11, "source": "whatclinic.com" },
+      "rating": {
+        "score": 5.0,
+        "count": 11,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -196,11 +251,21 @@
       "phone": "+1 (805) 691-0522",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["teeth-whitening", "oral-surgery"],
+      "specialties": [
+        "teeth-whitening",
+        "oral-surgery"
+      ],
       "facilities": [],
-      "rating": { "score": 4.8, "count": 8, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.8,
+        "count": 8,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -219,11 +284,24 @@
       "phone": "+1 (805) 779-8390",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "dentures", "bridges", "crowns", "extractions"],
+      "specialties": [
+        "dental-implants",
+        "dentures",
+        "bridges",
+        "crowns",
+        "extractions"
+      ],
       "facilities": [],
-      "rating": { "score": 5.0, "count": 9, "source": "whatclinic.com" },
+      "rating": {
+        "score": 5.0,
+        "count": 9,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -242,11 +320,22 @@
       "phone": null,
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "dentures", "crowns"],
+      "specialties": [
+        "dental-implants",
+        "dentures",
+        "crowns"
+      ],
       "facilities": [],
-      "rating": { "score": 4.9, "count": 6, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.9,
+        "count": 6,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -265,9 +354,18 @@
       "phone": "+1 (805) 723-2617",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "root-canal", "dentures", "crowns", "bridges"],
+      "specialties": [
+        "dental-implants",
+        "root-canal",
+        "dentures",
+        "crowns",
+        "bridges"
+      ],
       "facilities": [],
       "rating": null,
       "credimedStatus": "listed",
@@ -288,11 +386,21 @@
       "phone": "+1 (805) 515-3736",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "dentures"],
+      "specialties": [
+        "dental-implants",
+        "dentures"
+      ],
       "facilities": [],
-      "rating": { "score": 5.0, "count": 6, "source": "whatclinic.com" },
+      "rating": {
+        "score": 5.0,
+        "count": 6,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -311,11 +419,20 @@
       "phone": "+1 (928) 767-8126",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants"],
+      "specialties": [
+        "dental-implants"
+      ],
       "facilities": [],
-      "rating": { "score": 4.9, "count": 32, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.9,
+        "count": 32,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -334,9 +451,18 @@
       "phone": "+1 (805) 303-2408",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "root-canal", "dentures", "crowns", "orthodontics"],
+      "specialties": [
+        "dental-implants",
+        "root-canal",
+        "dentures",
+        "crowns",
+        "orthodontics"
+      ],
       "facilities": [],
       "rating": null,
       "credimedStatus": "listed",
@@ -357,11 +483,20 @@
       "phone": "+1 (805) 819-7417",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
-      "languagesDisplay": "English · Spanish",
-      "specialties": ["dental-implants"],
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": "English \u00b7 Spanish",
+      "specialties": [
+        "dental-implants"
+      ],
       "facilities": [],
-      "rating": { "score": 4.5, "count": 1, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.5,
+        "count": 1,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -380,9 +515,17 @@
       "phone": "+1 (805) 590-5964",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "cosmetic-dentistry", "orthodontics", "teeth-whitening"],
+      "specialties": [
+        "dental-implants",
+        "cosmetic-dentistry",
+        "orthodontics",
+        "teeth-whitening"
+      ],
       "facilities": [],
       "rating": null,
       "credimedStatus": "listed",
@@ -403,11 +546,21 @@
       "phone": "+1 (805) 273-8626",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dentures", "teeth-whitening"],
+      "specialties": [
+        "dentures",
+        "teeth-whitening"
+      ],
       "facilities": [],
-      "rating": { "score": 4.9, "count": 6, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.9,
+        "count": 6,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -426,11 +579,21 @@
       "phone": "+1 (805) 429-2335",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "teeth-whitening"],
+      "specialties": [
+        "dental-implants",
+        "teeth-whitening"
+      ],
       "facilities": [],
-      "rating": { "score": 4.5, "count": 2, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.5,
+        "count": 2,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -449,11 +612,22 @@
       "phone": "+1 (805) 254-7419",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "orthodontics", "crowns"],
+      "specialties": [
+        "dental-implants",
+        "orthodontics",
+        "crowns"
+      ],
       "facilities": [],
-      "rating": { "score": 5.0, "count": 1, "source": "whatclinic.com" },
+      "rating": {
+        "score": 5.0,
+        "count": 1,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -472,11 +646,20 @@
       "phone": "+1 (805) 849-5015",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants"],
+      "specialties": [
+        "dental-implants"
+      ],
       "facilities": [],
-      "rating": { "score": 4.8, "count": 5, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.8,
+        "count": 5,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -495,11 +678,22 @@
       "phone": "+1 (805) 622-2599",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "cosmetic-dentistry", "oral-surgery"],
+      "specialties": [
+        "dental-implants",
+        "cosmetic-dentistry",
+        "oral-surgery"
+      ],
       "facilities": [],
-      "rating": { "score": 4.7, "count": 6, "source": "whatclinic.com" },
+      "rating": {
+        "score": 4.7,
+        "count": 6,
+        "source": "whatclinic.com"
+      },
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
@@ -518,11 +712,585 @@
       "phone": "+1 (805) 719-7463",
       "website": null,
       "hours": null,
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "languagesDisplay": null,
-      "specialties": ["dental-implants", "dentures", "root-canal", "crowns", "fillings"],
+      "specialties": [
+        "dental-implants",
+        "dentures",
+        "root-canal",
+        "crowns",
+        "fillings"
+      ],
       "facilities": [],
-      "rating": { "score": 5.0, "count": 12, "source": "whatclinic.com" },
+      "rating": {
+        "score": 5.0,
+        "count": 12,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_tij_001",
+      "slug": "liberty-dental-clinic",
+      "name": "Liberty Dental Clinic",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "glyph": "L",
+      "address": "Av. Francisco I. Madero 8251, Suite A-5, Tijuana, 22000",
+      "phone": "+1 (805) 804-5440",
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "veneers",
+        "general-dentistry"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 4.8,
+        "count": 59,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_tij_002",
+      "slug": "circle-dental-mexico",
+      "name": "Circle Dental Mexico",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "glyph": "C",
+      "address": "Paseo del Centenario 9580, Zona Urbana R\u00edo Tijuana, Tijuana, 22010",
+      "phone": "+1 (805) 600-8772",
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "bridges",
+        "oral-surgery",
+        "general-dentistry"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 5.0,
+        "count": 3,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_tij_003",
+      "slug": "border-smiles",
+      "name": "Border Smiles",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "glyph": "B",
+      "address": "Benito Ju\u00e1rez 7825-10, Zona Centro, Tijuana, 22000",
+      "phone": "+1 (805) 323-9440",
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "general-dentistry",
+        "dental-implants",
+        "veneers",
+        "root-canal"
+      ],
+      "facilities": [],
+      "rating": null,
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_tij_004",
+      "slug": "american-bio-dental-center",
+      "name": "American Bio-Dental Center",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "glyph": "A",
+      "address": "Blvd. Agua Caliente 4558, Suite CC-1B, Tijuana, 22014",
+      "phone": null,
+      "website": "https://americanbiodental.com",
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "veneers",
+        "dentures"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 5.0,
+        "count": 1,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_tij_005",
+      "slug": "tooth-doctors",
+      "name": "Tooth Doctors",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "glyph": "T",
+      "address": "Paseo del Centenario 9580 Piso 22, Suite 05-B, New City Medical Plaza, Tijuana, 22010",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "general-dentistry",
+        "dental-implants",
+        "veneers"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 5.0,
+        "count": 1,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_tij_006",
+      "slug": "smile-dental-clinic",
+      "name": "Smile Dental Clinic",
+      "city": "tijuana",
+      "cityDisplay": "Tijuana",
+      "glyph": "S",
+      "address": "Hermenegildo Galeana 8133, Oficina 504, Zona Centro, Tijuana, 22000",
+      "phone": "+1 (619) 209-8194",
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "all-on-4",
+        "veneers",
+        "root-canal",
+        "dentures",
+        "orthodontics"
+      ],
+      "facilities": [],
+      "rating": null,
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_001",
+      "slug": "advanced-cabo-dentistry",
+      "name": "Advanced Cabo Dentistry",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "A",
+      "address": "Carretera Transpeninsular S/N, Mira Vista 40MLS #18-2760, San Jos\u00e9 del Cabo, BCS 23477",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "crowns",
+        "oral-surgery",
+        "general-dentistry"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 4.9,
+        "count": 23,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_002",
+      "slug": "prodental",
+      "name": "Prodental",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "P",
+      "address": "Ignacio Zaragoza 935, Colonia Centro, San Jos\u00e9 del Cabo, 23400",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "crowns",
+        "cosmetic-dentistry",
+        "general-dentistry"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 5.0,
+        "count": 3,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_003",
+      "slug": "ortodoncia-integral-los-cabos",
+      "name": "Ortodoncia Integral Los Cabos",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "O",
+      "address": "Plaza El Card\u00f3n Local 11, Carretera Transpeninsular Km 32, San Jos\u00e9 del Cabo, 23406",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "orthodontics",
+        "teeth-whitening",
+        "invisalign",
+        "oral-surgery"
+      ],
+      "facilities": [],
+      "rating": null,
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_004",
+      "slug": "paradise-dental-los-cabos",
+      "name": "Paradise Dental Los Cabos",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "P",
+      "address": "Plaza Puerto Para\u00edso, 2nd Floor, Stores 285/287, Terrace 19, Los Cabos, 23479",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "crowns",
+        "veneers",
+        "invisalign",
+        "dentures",
+        "root-canal"
+      ],
+      "facilities": [],
+      "rating": null,
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_005",
+      "slug": "cosmetic-smile",
+      "name": "Cosmetic Smile",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "C",
+      "address": "Plaza Paseo Los Arcos, Colonia Cabo Bello, Cabo San Lucas, 23450",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "general-dentistry",
+        "bridges"
+      ],
+      "facilities": [],
+      "rating": null,
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_006",
+      "slug": "cabo-soft-care-dental-clinic",
+      "name": "Cabo Soft Care Dental Clinic",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "C",
+      "address": "Plazas Doradas Building Local 10 & 11, Carretera Transpeninsular, Los Cabos",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "teeth-whitening",
+        "extractions",
+        "cosmetic-dentistry"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 4.5,
+        "count": 2,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_007",
+      "slug": "cosmetic-dental-spa",
+      "name": "Cosmetic Dental Spa",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "C",
+      "address": "Leona Vicario s/n, between I. Green and L\u00f3pez Mateos, Cabo San Lucas, BCS",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "cosmetic-dentistry",
+        "teeth-whitening",
+        "general-dentistry"
+      ],
+      "facilities": [],
+      "rating": null,
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_008",
+      "slug": "cabo-san-lucas-dental-clinic",
+      "name": "Cabo San Lucas Dental Clinic",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "C",
+      "address": "Av. Cabo San Lucas 3716, between Ni\u00f1os H\u00e9roes y Constituci\u00f3n, Cabo San Lucas, 23450",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": "English \u00b7 Spanish",
+      "specialties": [
+        "dental-implants",
+        "teeth-whitening",
+        "veneers",
+        "crowns",
+        "root-canal",
+        "oral-surgery"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 5.0,
+        "count": 6,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_009",
+      "slug": "cabo-smile-design",
+      "name": "Cabo Smile Design",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "C",
+      "address": "Blvd. Antonio Mijares, Plaza Jos\u00e9 Green L-9, San Jos\u00e9 del Cabo, 23400",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "cosmetic-dentistry",
+        "teeth-whitening",
+        "general-dentistry"
+      ],
+      "facilities": [],
+      "rating": {
+        "score": 4.5,
+        "count": 1,
+        "source": "whatclinic.com"
+      },
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_010",
+      "slug": "amerimed-hospital-cabo-san-lucas",
+      "name": "Amerimed Hospital Cabo San Lucas",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "A",
+      "address": "Blvd. L\u00e1zaro C\u00e1rdenas s/n, Local 1, Col. El M\u00e9dano, Cabo San Lucas, 23410",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "crowns",
+        "extractions",
+        "general-dentistry"
+      ],
+      "facilities": [],
+      "rating": null,
+      "credimedStatus": "listed",
+      "source": "whatclinic",
+      "addedAt": "2026-05-07",
+      "tagline": null,
+      "avgPaidUSD": null,
+      "avgRefundUSD": null
+    },
+    {
+      "id": "clnc_cab_011",
+      "slug": "amerimed-hospital-san-jos\u00e9-del-cabo",
+      "name": "Amerimed Hospital San Jos\u00e9 del Cabo",
+      "city": "los-cabos",
+      "cityDisplay": "Los Cabos",
+      "glyph": "A",
+      "address": "Paseo de las Misiones s/n, Plaza Cabo Le, San Jos\u00e9 del Cabo",
+      "phone": null,
+      "website": null,
+      "hours": null,
+      "languages": [
+        "en",
+        "es"
+      ],
+      "languagesDisplay": null,
+      "specialties": [
+        "dental-implants",
+        "crowns",
+        "general-dentistry"
+      ],
+      "facilities": [],
+      "rating": null,
       "credimedStatus": "listed",
       "source": "whatclinic",
       "addedAt": "2026-05-07",
