@@ -4,24 +4,24 @@
  * Cognito User Pool — Post Confirmation trigger. Fires once per user,
  * immediately after the user is confirmed (auto-confirmed by the
  * Pre-Sign-Up Lambda OR confirmed via emailed code). Sends the
- * `welcome` email through SES.
+ * `welcome` email through whichever provider EMAIL_PROVIDER selects
+ * (Resend / SMTP / SES) — see ./sendEmail.js.
  *
  * Why a separate Lambda instead of inlining into the Pre-Sign-Up
  * Lambda:
- *   - Pre-Sign-Up runs BEFORE the account is confirmed; SES.send
+ *   - Pre-Sign-Up runs BEFORE the account is confirmed; sending early
  *     could race and double-send if the user is rejected later.
  *   - Post-Confirmation only fires on a successfully created user,
  *     making it the natural point for a "welcome" message.
  *   - Per AWS best practice — Pre-Sign-Up is for validation +
  *     auto-confirm, Post-Confirmation is for downstream side effects.
  *
- * Required env vars:
- *   AWS_REGION    — us-west-2 (set automatically by Lambda)
- *   FROM_EMAIL    — verified SES sender, e.g. "Credimed <support@credimed.us>"
- *
- * Required IAM permissions on the Lambda execution role:
- *   ses:SendEmail
- *   ses:SendRawEmail
+ * Required env vars (same set as every other email-sending Lambda):
+ *   EMAIL_PROVIDER   — 'resend' (preferred) | 'smtp' | 'ses'
+ *   FROM_EMAIL       — verified sender, e.g. "Credimed <ceo@credimed.us>"
+ *   RESEND_API_KEY   — when EMAIL_PROVIDER=resend
+ *   SMTP_USER/PASS   — when EMAIL_PROVIDER=smtp
+ *   AWS_REGION       — when EMAIL_PROVIDER=ses (set automatically by Lambda)
  *
  * Cognito wiring (one-time, in Cognito console):
  *   User pool > User pool properties > Lambda triggers > Post confirmation
@@ -29,16 +29,14 @@
  *
  * HIPAA note: this email contains zero PHI — only the user's first
  * name (which they typed at signup) and a generic welcome. No claim
- * data, no insurer name, no health information. SMTP transit
- * downgrade risk is therefore moot.
+ * data, no insurer name, no health information.
  */
 
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
-import { buildEmail } from './email/templates.js';
-
-const REGION     = process.env.AWS_REGION || 'us-west-2';
-const FROM_EMAIL = process.env.FROM_EMAIL || 'Credimed <support@credimed.us>';
-const ses        = new SESClient({ region: REGION });
+/* Import path matches the deployed file structure (see DEPLOY-EMAIL-LAMBDAS.md):
+     index.mjs                 ← this handler at zip root
+     email/sendEmail.js        ← shared module copied into a subfolder
+   so the runtime resolves './email/sendEmail.js' from index.mjs. */
+import { sendEmailSafely } from './email/sendEmail.js';
 
 export const handler = async (event) => {
   const { triggerSource } = event;
@@ -72,40 +70,13 @@ export const handler = async (event) => {
     return event;
   }
 
-  try {
-    const { subject, html, text } = buildEmail('welcome', { firstName });
-
-    const result = await ses.send(new SendEmailCommand({
-      Source: FROM_EMAIL,
-      Destination: { ToAddresses: [email] },
-      Message: {
-        Subject: { Data: subject, Charset: 'UTF-8' },
-        Body: {
-          Html: { Data: html, Charset: 'UTF-8' },
-          Text: { Data: text, Charset: 'UTF-8' }
-        }
-      }
-    }));
-
-    console.log(JSON.stringify({
-      event: 'welcome_email_sent',
-      to: email,
-      userSub: attrs.sub,
-      messageId: result.MessageId,
-      timestamp: new Date().toISOString()
-    }));
-  } catch (err) {
-    /* Welcome email failure is non-blocking. Log and continue —
-       the user is already confirmed, blocking their sign-in over
-       a missed email is bad UX. */
-    console.error(JSON.stringify({
-      event: 'welcome_email_failed',
-      to: email,
-      userSub: attrs.sub,
-      error: err.message,
-      timestamp: new Date().toISOString()
-    }));
-  }
+  /* sendEmailSafely never throws — it logs failures and returns null
+     so a provider outage doesn't block Cognito's signup flow. */
+  await sendEmailSafely({
+    to: email,
+    eventType: 'welcome',
+    data: { firstName }
+  });
 
   return event;
 };
