@@ -1,0 +1,11 @@
+{
+  "name": "credimed-email",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Shared email sender for Credimed Lambdas. Supports Resend, SMTP (Workspace), and SES via the EMAIL_PROVIDER env var.",
+  "dependencies": {
+    "resend": "^4.0.0",
+    "nodemailer": "^6.9.16"
+  }
+}
