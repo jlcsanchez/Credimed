@@ -428,14 +428,20 @@ async function createClaim(userId, body, isAdminUser) {
     return { ok: true, claimId, createdAt: now, status: item.status.S, paymentMode };
   } catch (err) {
     if (err.name !== "ConditionalCheckFailedException") throw err;
-    // A row already exists for this claimId. Treat same-user re-submits
-    // as idempotent success (returns the existing row); cross-user
-    // collisions as 409.
+    // A row already exists for this claimId. Three cases:
+    //   1. Same user re-submits → idempotent success (returns existing).
+    //   2. Different user already owns it → 409 conflict.
+    //   3. Row was created by the webhook (markClaimPaid's UpdateItem
+    //      creates the row from scratch with paymentStatus=paid when
+    //      Stripe fires before save-claim's POST lands) — no userId
+    //      on the row yet. Merge our PHI + non-PHI fields into the
+    //      existing row so neither writer loses data.
     const existing = await db.send(new GetItemCommand({
       TableName: TABLE,
       Key: { claimId: { S: claimId } }
     }));
-    if (existing.Item?.userId?.S === userId) {
+    const existingUserId = existing.Item?.userId?.S;
+    if (existingUserId === userId) {
       return {
         ok: true,
         claimId,
@@ -445,7 +451,75 @@ async function createClaim(userId, body, isAdminUser) {
         idempotent: true
       };
     }
-    return { error: "claimId already in use", code: 409 };
+    if (existingUserId) {
+      return { error: "claimId already in use", code: 409 };
+    }
+    // Webhook-only row — merge our fields. Build a dynamic UpdateItem
+    // from the same `item` we tried to PutItem, minus the PK. Use
+    // ExpressionAttributeNames for every field so DynamoDB reserved
+    // words (status, etc.) don't break the expression.
+    const updateExpr  = [];
+    const exprNames   = {};
+    const exprValues  = {};
+    for (const [key, val] of Object.entries(item)) {
+      if (key === "claimId") continue;
+      exprNames[`#${key}`]  = key;
+      exprValues[`:${key}`] = val;
+      updateExpr.push(`#${key} = :${key}`);
+    }
+    await db.send(new UpdateItemCommand({
+      TableName: TABLE,
+      Key: { claimId: { S: claimId } },
+      UpdateExpression: `SET ${updateExpr.join(", ")}`,
+      ExpressionAttributeNames:  exprNames,
+      ExpressionAttributeValues: exprValues
+    }));
+
+    // The webhook fired before us, so its patient-email attempt at
+    // markClaimPaid time read an empty row and silently skipped
+    // (no PHI to decrypt). Now that we've merged in the encrypted
+    // email + firstName, fire the patient confirmation ourselves
+    // and also the admin alert. Both fire-and-forget; emails never
+    // roll back the persistence.
+    if (ADMIN_NOTIFY_EMAIL) {
+      sendEmailSafely({
+        to: ADMIN_NOTIFY_EMAIL,
+        eventType: "adminNewClaimAlert",
+        data: {
+          claimId,
+          plan:           body.plan,
+          paymentMode,
+          city:           body.city,
+          clinicId:       body.clinicId,
+          paidAmountUSD:  body.paidAmountUSD
+        }
+      }).catch(() => {});
+    }
+    const wasPaidByWebhook = existing.Item?.paymentStatus?.S === "paid";
+    const recipientEmail   = body.email && String(body.email).trim();
+    if (wasPaidByWebhook && recipientEmail) {
+      const amountCents = existing.Item?.paidAmountCents?.N
+        ? Number(existing.Item.paidAmountCents.N)
+        : null;
+      sendEmailSafely({
+        to: recipientEmail,
+        eventType: "paymentReceivedAndFiled",
+        data: {
+          firstName:  body.firstName || "",
+          claimId,
+          amountPaid: amountCents != null ? `$${(amountCents / 100).toFixed(2)}` : null
+        }
+      }).catch(() => {});
+    }
+
+    return {
+      ok: true,
+      claimId,
+      createdAt: now,
+      status: item.status.S,
+      paymentMode,
+      mergedWithWebhookRow: true
+    };
   }
 }
 
