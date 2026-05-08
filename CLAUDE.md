@@ -23,6 +23,20 @@ the entire session.
 Lesson: when he says "do it like X," READ X first, COPY X's pattern,
 then move on.
 
+### Admin identity — leave it alone
+
+`ceo@credimed.us` is THE admin. Singular. Do not create `ceo+test1@`,
+`admin@`, or any other admin variant. Do not move admin status off
+ceo@credimed.us. Do not propose alternate admin emails for testing.
+
+If something needs admin permissions for a test, give ceo@credimed.us
+the permission and verify there. Anything else (forwarding rules,
+group membership, IAM grants) goes on ceo@credimed.us — period.
+
+This was reaffirmed May 8 after I created ceo+test1@ as a test admin
+in an earlier session and the noise made operations harder. Don't
+repeat that.
+
 ## AWS Lambda function names (us-west-2)
 
 The Lambda function names in AWS DO NOT match the source filenames in
