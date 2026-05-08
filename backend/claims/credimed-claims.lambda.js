@@ -384,9 +384,10 @@ async function createClaim(userId, body, isAdminUser) {
     }));
 
     // Fire-and-forget admin notification. Never blocks or rolls back
-    // the patient response — if SES is throttled or down, the claim
-    // still lands in DynamoDB and the patient still sees their
-    // confirmation page. Operators can backfill from the admin queue.
+    // the patient response — if the email provider is throttled or
+    // down, the claim still lands in DynamoDB and the patient still
+    // sees their confirmation page. Operators can backfill from the
+    // admin queue.
     if (ADMIN_NOTIFY_EMAIL) {
       sendEmailSafely({
         to: ADMIN_NOTIFY_EMAIL,
@@ -404,11 +405,11 @@ async function createClaim(userId, body, isAdminUser) {
 
     // Test Mode bypass — fire the same patient confirmation email the
     // Stripe webhook would have sent on a real payment_intent.succeeded.
-    // Lets admins fully validate the email path (template render, SES
-    // delivery, copy) without burning real card charges + refunds.
-    // Paid amount string mirrors the pricing tier the patient picked,
-    // tagged "$X.00 (test mode)" so it's never confused with a real
-    // receipt in the inbox.
+    // Lets admins fully validate the email path (template render,
+    // provider delivery, copy) without burning real card charges +
+    // refunds. Paid amount string mirrors the pricing tier the patient
+    // picked, tagged "$X.00 (test mode)" so it's never confused with
+    // a real receipt in the inbox.
     if (paymentMode === "test") {
       const tierAmount = PLAN_FEE_USD[body.plan] || PLAN_FEE_USD.standard;
       const recipientEmail = body.email && String(body.email).trim();
@@ -770,6 +771,14 @@ export const handler = async (event) => {
   // Local response() binds the per-request event so corsHeaders can
   // echo the right Origin without threading event through every call.
   const response = (statusCode, body) => buildResponse(statusCode, body, event);
+  console.log(JSON.stringify({
+    event: "handler_enter",
+    routeKey: event.routeKey,
+    method:   event.requestContext?.http?.method,
+    path:     event.requestContext?.http?.path,
+    rawPath:  event.rawPath,
+    hasAuth:  !!event.requestContext?.authorizer?.jwt?.claims
+  }));
   try {
     const method = event.requestContext?.http?.method || "GET";
     if (method === "OPTIONS") return response(204, {});

@@ -92,9 +92,20 @@
   }
 
   function generateClaimId() {
+    // If there's a pending in-flight id AND that id already belongs to
+    // a claim that was submitted, drop it — the user is starting a NEW
+    // claim, not resuming the one they just paid for. Without this the
+    // payment screen reuses the previous PaymentIntent (already
+    // `succeeded`) and Stripe Elements renders empty.
+    var pendingId = get('pendingClaimId');
+    var existing  = get('claim', null);
+    if (pendingId && existing && existing.id === pendingId && existing.submittedAt) {
+      set('pendingClaimId', null);
+      pendingId = null;
+    }
+
     // Reuse the in-flight id if one exists (so the same id flows through
     // documents → plan → agreement → payment during a single claim).
-    var pendingId = get('pendingClaimId');
     if (pendingId) return pendingId;
 
     // Backward-compat: older sessions stored the in-flight id on claim.id.

@@ -116,16 +116,38 @@ patient emails, so its ARN must be reachable from both Lambda roles.
 
 ### 4. Bundle and upload
 
-From `backend/claims/`:
+The handler imports `sendEmailSafely` from the shared `email/` module
+(used for `adminNewClaimAlert` on every POST and the test-mode
+`paymentReceivedAndFiled` to the patient). The zip therefore needs:
+
+- the handler renamed to `index.mjs` at the zip root
+- the `email/` folder copied in as a sibling (so the import path
+  `../email/sendEmail.js` resolves — see note below)
+- a root `package.json` with `"type": "module"` and the `resend` /
+  `nodemailer` deps that `sendEmail.js` lazy-imports at runtime
 
 ```bash
 cd backend/claims
-npm install
-zip -r credimed-claims.zip credimed-claims.lambda.js node_modules package.json
+mkdir -p deploy && cp credimed-claims.lambda.js deploy/index.mjs
+cp -r ../email deploy/
+# Inside index.mjs change "../email/sendEmail.js" → "./email/sendEmail.js"
+# (the source uses ../ because that's the repo layout; deployment
+#  flattens the handler to the root, so the relative path shifts.)
+cd deploy && npm init -y && npm pkg set type=module && npm install \
+  @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb @aws-sdk/client-kms \
+  resend nodemailer
+zip -r ../credimed-claims.zip .
 ```
 
-Upload the zip in the Lambda Code section. Set the handler to
-`credimed-claims.lambda.handler`.
+Upload `credimed-claims.zip` via the Lambda Code section. Set the
+handler to `index.handler`.
+
+> Why `resend` + `nodemailer` even though `EMAIL_PROVIDER=resend`?
+> `sendEmail.js` lazy-imports whichever provider the env var picks.
+> If the package isn't in the zip, the dynamic `import('resend')`
+> throws module-not-found, `sendEmailSafely` swallows it, and the
+> patient + admin emails silently disappear while the claim still
+> writes to DynamoDB.
 
 ### 5. Environment variables
 
@@ -134,8 +156,16 @@ Configuration → Environment variables:
 | Key                       | Value                                         | Required |
 |---------------------------|-----------------------------------------------|----------|
 | `KMS_KEY_ID`              | ARN of the `alias/credimed-phi` key (step 2b) | yes — POST fails without it |
+| `ADMIN_NOTIFY_EMAIL`      | `ceo@credimed.us`                             | yes — required for `adminNewClaimAlert` to fire |
+| `EMAIL_PROVIDER`          | `resend` (must match the welcome Lambda)      | yes — defaults to `ses` (sandboxed) without it |
+| `RESEND_API_KEY`          | `re_…` (only when `EMAIL_PROVIDER=resend`)    | yes when provider=resend |
+| `FROM_EMAIL`              | `Credimed <ceo@credimed.us>`                  | yes — must be a verified sender |
 | `STRIPE_REFUND_ENABLED`   | `false` (flip to `true` on)                   | no — defaults off |
 | `STRIPE_SECRET_KEY`       | `sk_test_…` or `sk_live_…`                    | only when `STRIPE_REFUND_ENABLED=true` |
+
+The email vars must match the welcome Lambda's vars exactly —
+otherwise welcome arrives via Resend at signup but the admin alert
+on a real claim gets lost in the SES sandbox.
 
 (The AWS_REGION env var is auto-set by Lambda — don't override it.)
 

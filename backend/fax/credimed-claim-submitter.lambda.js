@@ -37,7 +37,6 @@
  *   s3:GetObject                  on s3://credimed-edi-archive
  *   s3:PutObject                  on s3://credimed-edi-archive
  *                                 (we save the bundled PDF for HIPAA audit)
- *   ses:SendEmail                 on the verified domain
  *
  * Env vars:
  *   KMS_KEY_ID            arn of the credimed-phi key (same as credimed-claims)
@@ -48,17 +47,20 @@
  *   FAX_PASSWORD          westfax only (if used)
  *   FAX_SENDER_NUMBER     +1XXXXXXXXXX, your account's fax
  *   FAX_FEEDBACK_EMAIL    where the provider sends per-fax delivery reports
- *   FROM_EMAIL            "Credimed <support@credimed.us>"
+ *
+ * Patient-facing email is intentionally NOT sent from this Lambda.
+ * The webhook's `paymentReceivedAndFiled` (fired at payment time)
+ * already tells the patient "we've filed your claim with your insurer";
+ * a second "submitted to {carrier}" message would conflict with that
+ * wording. Carrier-response notifications fire later from the admin
+ * status-update path in credimed-claims.
  *
  * Failure semantics:
  *   - PDF generation throws  → 500, status unchanged, retry safe
- *   - Carrier fax not in JSON → 422, status="needs_attention",
- *                                admin gets email
- *   - Fax provider 4xx       → 422, status="needs_attention",
- *                                admin gets email (likely bad data)
+ *   - Carrier fax not in JSON → 422, status="needs_attention"
+ *   - Fax provider 4xx       → 422, status="needs_attention"
  *   - Fax provider 5xx       → 502, retried by Lambda async config
  *                                up to 3 times, then needs_attention
- *   - Email send fails       → logged, doesn't block fax success
  */
 
 import {
@@ -69,7 +71,6 @@ import {
 import { KMSClient, DecryptCommand } from "@aws-sdk/client-kms";
 import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { PDFDocument } from "pdf-lib";
 import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
@@ -85,11 +86,9 @@ const __dirname  = dirname(__filename);
 const db  = new DynamoDBClient({ region: "us-west-2" });
 const kms = new KMSClient({ region: "us-west-2" });
 const s3  = new S3Client({ region: "us-west-2" });
-const ses = new SESClient({ region: "us-west-2" });
 
 const TABLE          = "credimed-claims";
 const ARCHIVE_BUCKET = process.env.ARCHIVE_BUCKET || "credimed-edi-archive";
-const FROM_EMAIL     = process.env.FROM_EMAIL     || "Credimed <support@credimed.us>";
 
 const ALLOWED_ORIGINS = new Set([
   "https://credimed.us",
@@ -319,33 +318,6 @@ async function persistFaxResult(claimId, faxResult, bundleS3Key) {
   await db.send(new UpdateItemCommand(cmd));
 }
 
-async function emailPatient(claim, carrierName) {
-  if (!claim.email) return;
-  try {
-    await ses.send(new SendEmailCommand({
-      Source: FROM_EMAIL,
-      Destination: { ToAddresses: [claim.email] },
-      Message: {
-        Subject: { Data: `Your dental claim was submitted to ${carrierName}` },
-        Body: {
-          Html: { Data:
-            `<p>Hi ${claim.firstName || "there"},</p>` +
-            `<p>Good news — Credimed just submitted your dental claim ` +
-            `<strong>${claim.claimId}</strong> to <strong>${carrierName}</strong>.</p>` +
-            `<p>Carriers typically respond within 2–6 weeks. We'll email you the moment ` +
-            `${carrierName} processes the claim.</p>` +
-            `<p>You can track status anytime at ` +
-            `<a href="https://credimed.us/app/claim.html?id=${claim.claimId}">credimed.us</a>.</p>` +
-            `<p>— Credimed</p>`
-          }
-        }
-      }
-    }));
-  } catch (err) {
-    console.warn("[ses] email patient failed:", err.message);
-  }
-}
-
 function audit(event, fields) {
   const ctx = event.requestContext || {};
   console.log(JSON.stringify({
@@ -440,15 +412,9 @@ export const handler = async (event) => {
     //    sending the fax via WestFax web portal)
     await persistFaxResult(claimId, faxResult, bundleKey);
 
-    // 9. Email patient on success (only when a real fax was sent; in
-    //    stub mode the admin will trigger the email after marking faxed)
-    if (faxResult.ok) {
-      await emailPatient(claim, lookup.info.displayName);
-    }
-
-    // 10. Generate a presigned download URL for the bundle so the admin
-    //     can grab it directly from the API response (handy in stub
-    //     mode for the manual upload-to-WestFax step).
+    // 9. Generate a presigned download URL for the bundle so the admin
+    //    can grab it directly from the API response (handy in stub
+    //    mode for the manual upload-to-WestFax step).
     const bundleDownloadUrl = await presignedDownloadUrl(bundleKey);
 
     audit(event, {

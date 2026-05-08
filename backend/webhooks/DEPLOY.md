@@ -119,10 +119,20 @@ The Lambda console doesn't `npm install` automatically. Two ways:
 cd backend/webhooks
 mkdir -p deploy && cp credimed-stripe-webhook.lambda.js deploy/index.mjs
 cp -r ../email deploy/
-cd deploy && npm init -y && npm install stripe @aws-sdk/client-dynamodb @aws-sdk/client-kms @aws-sdk/client-ses
+cd deploy && npm init -y && npm install \
+  stripe \
+  @aws-sdk/client-dynamodb @aws-sdk/client-kms @aws-sdk/client-ses \
+  resend nodemailer
 zip -r ../webhook-deploy.zip .
 # Upload webhook-deploy.zip via Lambda console → Code → Upload from .zip
 ```
+
+`resend` and `nodemailer` are required by `email/sendEmail.js` because
+it lazy-imports whichever provider `EMAIL_PROVIDER` selects at runtime.
+Without them in the zip the dynamic `import('resend')` throws a module-
+not-found error that `sendEmailSafely` swallows — the webhook returns
+200 to Stripe but no patient email ever goes out. (Same trap applies
+to `credimed-claims`; check its DEPLOY.md too.)
 
 For Option B, fix the `package.json` to include `"type": "module"` so
 ESM imports work.
@@ -175,7 +185,14 @@ Lambda → `credimed-stripe-webhook` → **Configuration** →
 | ----------------------- | ------------------------------------------- |
 | `STRIPE_SECRET_KEY`     | same `sk_test_*` or `sk_live_*` as payment Lambda |
 | `STRIPE_WEBHOOK_SECRET` | leave blank for now — added in Step 7       |
-| `FROM_EMAIL`            | `Credimed <hello@credimed.us>`              |
+| `EMAIL_PROVIDER`        | `resend` (or `smtp` / `ses` — must match the welcome Lambda) |
+| `RESEND_API_KEY`        | `re_...` (only when `EMAIL_PROVIDER=resend`) |
+| `FROM_EMAIL`            | `Credimed <ceo@credimed.us>`                |
+
+The email vars must match what the welcome Lambda already uses,
+otherwise the patient gets the welcome email through Resend on
+signup but no payment-received email after paying — which is the
+exact discrepancy this guide is trying to prevent.
 
 Save.
 

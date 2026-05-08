@@ -1439,6 +1439,13 @@ function wireScope(scope){
           S.set('insurance', {});
           S.set('agreement', null);
           S.set('payment', {});
+          // Drop the in-flight claim id so generateClaimId() mints a
+          // fresh CMX-YYYY-XXXXXX. Without this the next flow reuses
+          // the just-submitted claim's id and the new payment hits a
+          // PaymentIntent that's already `succeeded` — Stripe Elements
+          // renders an empty form and save-claim never gets a fresh
+          // row to encrypt.
+          S.set('pendingClaimId', null);
         }
       } catch (err) {}
       // Let the link's href navigate naturally after state reset.
