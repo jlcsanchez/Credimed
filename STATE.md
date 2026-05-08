@@ -160,17 +160,21 @@ and `sendEmailSafely` swallows it silently. Bit us in May 2026; see
 
 ## Recently fixed (don't redo)
 
-- **save-claim ESM import bug** (May 8, evening): the deploy script
-  used `sed` to rewrite `'../email/sendEmail.js'` → `'./email/sendEmail.js'`
-  in `deploy/index.mjs`, but `credimed-claims.lambda.js` source uses
-  DOUBLE quotes (`"../email/sendEmail.js"`) so the sed didn't match.
-  Result: Lambda crashed at INIT with `Cannot find module
-  '/var/email/sendEmail.js'` (relative `..` from `/var/task/index.mjs`
-  resolves to `/var/`). The webhook source happens to use single
-  quotes — that's why webhook worked but save-claim/get-claims didn't.
-  Fix: re-deploy with two sed passes (one per quote style). Going
-  forward, the deploy script in `backend/claims/DEPLOY.md` runs both
-  sed lines.
+- **save-claim/get-claims ESM import bug** (May 8, evening, two
+  rounds): when the handler is renamed to `index.mjs` at the zip
+  root + the `email/` folder is copied as a sibling, every import
+  pointing at `../email/*.js` resolves to `/var/` and crashes at
+  INIT with `Cannot find module`. Two narrow sed passes (one for
+  `sendEmail.js`, one for `templates.js`) wasted half a session;
+  the durable fix is a SINGLE broad sed that targets the prefix
+  `../email/` so every current and future file in that folder is
+  caught:
+  ```bash
+  sed -i 's|"\.\./email/|"./email/|g' deploy/index.mjs
+  sed -i "s|'\.\./email/|'./email/|g" deploy/index.mjs
+  ```
+  Lesson for any future Lambda that imports from a sibling shared
+  module: rewrite the prefix, never the full filename.
 - **Resend migration** (May 7-8): all email Lambdas now use the shared
   `sendEmail.js` provider abstraction; welcome email validated end-to-end
 - **resend npm dep bundling** (May 8): claims-deploy.zip + webhook-deploy.zip
