@@ -46,6 +46,32 @@ Required env vars on each:
 - `ADMIN_NOTIFY_EMAIL=ceo@credimed.us` (without it the admin alert is silently skipped — see line 390 of `credimed-claims.lambda.js`)
 - `KMS_KEY_ID=arn:aws:kms:us-west-2:...:key/...` (PHI encryption)
 
+## KMS key for PHI encryption
+
+Single canonical KMS key for encrypting patient PHI (firstName, email,
+etc.) at rest in `credimed-claims` DynamoDB table:
+
+- Alias: `alias/credimed-phi`
+- KeyId: `69039537-ecd7-4139-b589-11945ae811f1`
+- ARN: `arn:aws:kms:us-west-2:525237381183:key/69039537-ecd7-4139-b589-11945ae811f1`
+- Region: us-west-2
+
+A second key (`alias/credimed-phi-key`, KeyId `e41660e6-...`) was
+created accidentally in an earlier session and scheduled for deletion
+on 2026-05-14. **Don't recreate that alias** — it had no data
+encrypted with it.
+
+The 3 Lambdas that touch PHI all have an inline IAM policy named
+`credimed-kms-phi` granting kms:Encrypt + Decrypt + GenerateDataKey
+on this key only:
+- `credimed-save-claim` (Encrypt on POST /claims)
+- `credimed-get-claims` (Decrypt on GET /claims and GET /admin/claims)
+- `credimed-stripe-webhook` (Decrypt on payment_intent.succeeded)
+
+If you ever rotate the key, update KMS_KEY_ID env var on save-claim
++ get-claims (webhook doesn't need the env var — Decrypt resolves the
+key from the ciphertext blob).
+
 ## Email Lambda zip-deploy gotcha
 
 `backend/email/sendEmail.js` lazy-imports whichever provider
