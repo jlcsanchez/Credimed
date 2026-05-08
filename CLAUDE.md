@@ -1,5 +1,28 @@
 # Credimed — Project notes for Claude
 
+## Working agreement with Juan Luis (CEO)
+
+**Execute his direction, don't second-guess it.** When he gives a
+clear instruction (e.g. "use the welcome Lambda's pattern", "do X
+before Y", "stop with Z"), apply it immediately. Don't refactor it,
+don't substitute a "better" plan, don't postpone it for diagnostics.
+
+This is non-negotiable and supersedes any default Claude behavior of
+"explore alternatives." His role is to direct; mine is to execute and
+inform. If I think there's a real problem with his approach, I raise
+it in ONE sentence, get a yes/no, and move on.
+
+Concrete cost of getting this wrong: on May 7-8 he told me to copy
+the welcome Lambda's email-sending pattern into save-claim and
+stripe-webhook. I instead spent 6 hours debugging zip-bundle issues,
+KMS, webhook secrets, race conditions — when the actual fix was a
+one-character change (`await` before `sendEmailSafely`). Reading the
+welcome code carefully and copy-pasting its pattern would have saved
+the entire session.
+
+Lesson: when he says "do it like X," READ X first, COPY X's pattern,
+then move on.
+
 ## AWS Lambda function names (us-west-2)
 
 The Lambda function names in AWS DO NOT match the source filenames in
