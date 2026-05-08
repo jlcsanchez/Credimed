@@ -388,8 +388,14 @@ async function createClaim(userId, body, isAdminUser) {
     // down, the claim still lands in DynamoDB and the patient still
     // sees their confirmation page. Operators can backfill from the
     // admin queue.
+    //
+    // We DO `await` so Lambda doesn't freeze the runtime before the
+    // HTTP call to Resend completes. Without await, the promise
+    // sometimes loses to the runtime's freeze cycle and the email
+    // silently disappears. sendEmailSafely never throws (it logs +
+    // returns null on failure) so awaiting is risk-free.
     if (ADMIN_NOTIFY_EMAIL) {
-      sendEmailSafely({
+      await sendEmailSafely({
         to: ADMIN_NOTIFY_EMAIL,
         eventType: "adminNewClaimAlert",
         data: {
@@ -400,7 +406,7 @@ async function createClaim(userId, body, isAdminUser) {
           clinicId:       body.clinicId,
           paidAmountUSD:  body.paidAmountUSD
         }
-      }).catch(() => { /* sendEmailSafely never throws, but belt-and-suspenders */ });
+      });
     }
 
     // Test Mode bypass — fire the same patient confirmation email the
@@ -414,7 +420,7 @@ async function createClaim(userId, body, isAdminUser) {
       const tierAmount = PLAN_FEE_USD[body.plan] || PLAN_FEE_USD.standard;
       const recipientEmail = body.email && String(body.email).trim();
       if (recipientEmail) {
-        sendEmailSafely({
+        await sendEmailSafely({
           to: recipientEmail,
           eventType: "paymentReceivedAndFiled",
           data: {
@@ -422,7 +428,7 @@ async function createClaim(userId, body, isAdminUser) {
             claimId,
             amountPaid: `$${tierAmount}.00 (test mode)`
           }
-        }).catch(() => { /* fire-and-forget */ });
+        });
       }
     }
     return { ok: true, claimId, createdAt: now, status: item.status.S, paymentMode };
@@ -482,7 +488,7 @@ async function createClaim(userId, body, isAdminUser) {
     // and also the admin alert. Both fire-and-forget; emails never
     // roll back the persistence.
     if (ADMIN_NOTIFY_EMAIL) {
-      sendEmailSafely({
+      await sendEmailSafely({
         to: ADMIN_NOTIFY_EMAIL,
         eventType: "adminNewClaimAlert",
         data: {
@@ -493,7 +499,7 @@ async function createClaim(userId, body, isAdminUser) {
           clinicId:       body.clinicId,
           paidAmountUSD:  body.paidAmountUSD
         }
-      }).catch(() => {});
+      });
     }
     const wasPaidByWebhook = existing.Item?.paymentStatus?.S === "paid";
     const recipientEmail   = body.email && String(body.email).trim();
@@ -501,7 +507,7 @@ async function createClaim(userId, body, isAdminUser) {
       const amountCents = existing.Item?.paidAmountCents?.N
         ? Number(existing.Item.paidAmountCents.N)
         : null;
-      sendEmailSafely({
+      await sendEmailSafely({
         to: recipientEmail,
         eventType: "paymentReceivedAndFiled",
         data: {
@@ -509,7 +515,7 @@ async function createClaim(userId, body, isAdminUser) {
           claimId,
           amountPaid: amountCents != null ? `$${(amountCents / 100).toFixed(2)}` : null
         }
-      }).catch(() => {});
+      });
     }
 
     return {
