@@ -160,6 +160,17 @@ and `sendEmailSafely` swallows it silently. Bit us in May 2026; see
 
 ## Recently fixed (don't redo)
 
+- **save-claim ESM import bug** (May 8, evening): the deploy script
+  used `sed` to rewrite `'../email/sendEmail.js'` → `'./email/sendEmail.js'`
+  in `deploy/index.mjs`, but `credimed-claims.lambda.js` source uses
+  DOUBLE quotes (`"../email/sendEmail.js"`) so the sed didn't match.
+  Result: Lambda crashed at INIT with `Cannot find module
+  '/var/email/sendEmail.js'` (relative `..` from `/var/task/index.mjs`
+  resolves to `/var/`). The webhook source happens to use single
+  quotes — that's why webhook worked but save-claim/get-claims didn't.
+  Fix: re-deploy with two sed passes (one per quote style). Going
+  forward, the deploy script in `backend/claims/DEPLOY.md` runs both
+  sed lines.
 - **Resend migration** (May 7-8): all email Lambdas now use the shared
   `sendEmail.js` provider abstraction; welcome email validated end-to-end
 - **resend npm dep bundling** (May 8): claims-deploy.zip + webhook-deploy.zip
