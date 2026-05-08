@@ -72,6 +72,63 @@ If you ever rotate the key, update KMS_KEY_ID env var on save-claim
 + get-claims (webhook doesn't need the env var — Decrypt resolves the
 key from the ciphertext blob).
 
+## Email provider switching (Resend ↔ SES ↔ SMTP)
+
+`backend/email/sendEmail.js` is a single-source abstraction over 3
+providers, picked at runtime by `EMAIL_PROVIDER` (`resend` / `smtp` /
+`ses`). Switching providers is one env var per Lambda — no code
+change, no redeploy required as long as the npm packages for both the
+old and the new provider are already in the zip (they are by default
+because the deploy script installs all three).
+
+**Current state:** `EMAIL_PROVIDER=resend` on all email-sending Lambdas.
+Resend is the canonical primary — better deliverability score,
+modern API, no sandbox. AWS rejected SES production access twice in
+2026; we may retry later for cost reasons (Resend $20/mo @ 50K, SES
+$0.10/1K) but Resend stays primary unless costs justify a swap.
+
+**Migrate Resend → SES (when/if AWS approves production access):**
+
+Pre-flight (do once, not per-Lambda):
+1. SES Console → Verified identities → confirm `credimed.us` is still
+   in `Verified` state and "Sending statistics" shows production access.
+2. Add `ses:SendEmail` + `ses:SendRawEmail` to each Lambda role's
+   inline policy. Resource: `arn:aws:ses:us-west-2:*:identity/credimed.us`.
+   The KMS policy stays — that's separate.
+
+Switch:
+```bash
+for FN in credimed-cognito-postconfirmation-welcome \
+          credimed-stripe-webhook \
+          credimed-save-claim \
+          credimed-get-claims; do
+  CURRENT=$(aws lambda get-function-configuration \
+    --function-name $FN --region us-west-2 \
+    --query 'Environment.Variables' --output json)
+  NEW=$(echo "$CURRENT" | jq '. + {EMAIL_PROVIDER: "ses"}')
+  aws lambda update-function-configuration \
+    --function-name $FN --region us-west-2 \
+    --environment "Variables=$NEW"
+  aws lambda wait function-updated \
+    --function-name $FN --region us-west-2
+done
+```
+
+Validate by sending one signup → confirm welcome email arrived.
+Rollback is the same loop with `{EMAIL_PROVIDER: "resend"}` — zero
+downtime on rollback because in-flight invocations finish on the
+old provider.
+
+**Migrate Resend → SMTP (Workspace fallback if Resend has an outage):**
+
+Pre-flight: generate a Gmail app password for `ceo@credimed.us`
+(Workspace admin → Security → 2-step verification → App passwords).
+
+Switch: same loop above but the env-var diff is bigger:
+```bash
+NEW=$(echo "$CURRENT" | jq '. + {EMAIL_PROVIDER: "smtp", SMTP_HOST: "smtp.gmail.com", SMTP_PORT: "465", SMTP_USER: "ceo@credimed.us", SMTP_PASS: "<app-password>"}')
+```
+
 ## Email Lambda zip-deploy gotcha
 
 `backend/email/sendEmail.js` lazy-imports whichever provider
