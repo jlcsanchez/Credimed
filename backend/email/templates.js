@@ -269,34 +269,101 @@ const templates = {
     };
   },
 
-  /* Combined receipt + filed confirmation — fires once from the Stripe
-     webhook the moment payment succeeds. Replaces the old paymentReceived
-     and claimSubmitted pair (they fired back-to-back from the same event,
-     which felt like noise to the patient). The 24h-later "in review"
-     email is scheduled separately via EventBridge.
-     amountPaid is the fee charged (string, formatted); optional. */
-  paymentReceivedAndFiled({ firstName, claimId, amountPaid }) {
-    const amt = amountPaid || null;
+  /* Claim summary — fires from save-claim once the row is persisted.
+     Replaces the old paymentReceivedAndFiled (which duplicated the
+     Stripe receipt). This email is the value-add: the patient sees
+     EXACTLY what we'll file with the insurer (their info + visit
+     + procedures + estimated reimbursement) and has a 24-hour window
+     to reply with corrections before we submit.
+
+     Critical legal note in the body: the money-back guarantee covers
+     claims we can't recover after one free resubmission. It does NOT
+     cover claims the insurer rejects because the patient didn't catch
+     missing/incorrect info during this review window. Spelling that
+     out here protects against post-rejection refund disputes.
+
+     All fields are optional except firstName + claimId; the template
+     skips any row whose value is missing so partial data still
+     renders cleanly. */
+  claimFiledSummary({
+    firstName, lastName, claimId, amountPaid,
+    insurer, memberId, plan, groupNumber, dob,
+    providerName, providerCity, dateOfService, procedures,
+    paidAmountOriginal, paidCurrency, paidAmountUSD,
+    estimateMin, estimateMax,
+    reviewByLabel
+  }) {
+    const row = (label, value) => value
+      ? `<tr><td style="padding:4px 16px 4px 0;color:#64748b;font-size:13px;font-weight:500;white-space:nowrap;vertical-align:top;">${label}</td><td style="padding:4px 0;color:#0f172a;font-size:14px;font-weight:600;">${value}</td></tr>`
+      : '';
+    const fullName = [firstName, lastName].filter(Boolean).join(' ');
+    const procList = Array.isArray(procedures) ? procedures.filter(Boolean).join(', ') : (procedures || '');
+    const paidStr = (paidAmountOriginal && paidCurrency)
+      ? `${paidAmountOriginal} ${paidCurrency}${paidAmountUSD ? ` (~$${Number(paidAmountUSD).toFixed(2)} USD)` : ''}`
+      : (paidAmountUSD ? `$${Number(paidAmountUSD).toFixed(2)} USD` : '');
+    const estimateStr = (estimateMin != null && estimateMax != null)
+      ? `$${estimateMin}–$${estimateMax} USD`
+      : '';
+    const insurerLabel = insurer || 'your insurer';
+
+    const patientTable = `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 16px;border-collapse:collapse;"><tbody>${row('Name', fullName)}${row('Date of birth', dob)}${row('Insurer', insurer)}${row('Member ID', memberId)}${row('Group #', groupNumber)}</tbody></table>`;
+
+    const visitTable = `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 16px;border-collapse:collapse;"><tbody>${row('Clinic', providerName ? providerName + (providerCity ? ` · ${providerCity}` : '') : '')}${row('Date of service', dateOfService)}${row('Procedures', procList)}${row('You paid', paidStr)}</tbody></table>`;
+
     return {
-      subject: `Payment received and claim filed · ${claimId}`,
+      subject: `Review your claim within 24h · ${claimId}`,
       html: shell({
-        subject: `Payment received and claim filed · ${claimId}`,
-        preheader: 'Your fee is locked in and your claim is on its way to your insurer.',
-        statusLabel: 'Filed',
-        headline: 'Payment received. Claim filed.',
-        subhead: "Your fee is locked in and your claim has been filed with your insurer. You don't need to do anything else right now.",
-        amount: amt,
-        amountLabel: amt ? 'Fee paid' : undefined,
-        bodyText: `<p style="margin:0 0 12px;">${greet(firstName)}</p><p style="margin:0 0 12px;">What happens next:</p><ol style="margin:0 0 12px;padding-left:18px;line-height:1.6;"><li>Your insurer reviews your claim (usually 3–6 weeks)</li><li>If they approve it, the refund check is mailed directly to you</li><li>We email you at every status change so you're never wondering</li></ol><p style="margin:0;">No action needed. We'll be in touch within 24 hours when your insurer acknowledges receipt.</p>`,
+        subject: `Review your claim within 24h · ${claimId}`,
+        preheader: 'Confirm your information before we file with your insurer.',
+        statusLabel: 'Awaiting your review',
+        headline: 'Your claim summary.',
+        subhead: `This is exactly what we will file with ${insurerLabel}. Please review carefully — you have 24 hours to reply with any corrections.`,
+        amount: amountPaid || null,
+        amountLabel: amountPaid ? 'Credimed fee paid' : undefined,
+        bodyText:
+          `<p style="margin:0 0 18px;">${greet(firstName)}</p>` +
+          `<p style="margin:0 0 8px;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Your information</p>` +
+          patientTable +
+          `<p style="margin:0 0 8px;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Your visit</p>` +
+          visitTable +
+          (estimateStr ? `<p style="margin:0 0 18px;padding:12px 14px;background:#f0fdf4;border-left:3px solid #15803d;color:#14532d;font-size:14px;border-radius:4px;"><b>Estimated reimbursement from ${insurerLabel}:</b> ${estimateStr}<br/><span style="font-size:12px;color:#475569;">Final amount depends on your insurer's review and any remaining deductible.</span></p>` : '') +
+          `<p style="margin:0 0 12px;padding:14px;background:#fffbeb;border:1px solid #fbbf24;color:#78350f;font-size:14px;border-radius:6px;line-height:1.55;"><b>⏰ Review window: 24 hours.</b><br/>If anything is incorrect or missing, reply to this email${reviewByLabel ? ` by ${reviewByLabel}` : ' within the next 24 hours'} and we will fix it before filing with ${insurerLabel}.<br/><br/><b style="color:#9a3412;">Important:</b> if ${insurerLabel} rejects your claim because of missing or incorrect information that could have been caught during this review window, the Credimed service fee is <b>non-refundable</b>. Our money-back guarantee covers eligible claims we can't recover after one free resubmission — not claims rejected because the patient information we filed was incomplete.</p>` +
+          `<p style="margin:0;">Once the 24-hour window passes, we file the claim with ${insurerLabel} and email you the moment they acknowledge receipt.</p>`,
         claimId,
-        ctaLabel: 'View claim',
-        ctaUrl: dashboardUrl,
-        helperText: 'Track status anytime from your dashboard. Reply to this email if anything looks off.',
+        ctaLabel: 'Reply with corrections',
+        ctaUrl: `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Correction needed for ' + claimId)}`,
+        helperText: `Or view the full claim from your dashboard.`,
         unsubToken: claimId
       }),
       text:
-        `${greet(firstName)}\n\nPayment received and your claim is filed with your insurer.${amt ? `\n\nFee paid: ${amt}` : ''}\n\nWhat happens next:\n1. Your insurer reviews the claim (3–6 weeks typical)\n2. If approved, the refund is mailed directly to you\n3. We email you at every status change\n\nReference: ${claimId}\nView: ${dashboardUrl}\n\nQuestions? ${SUPPORT_EMAIL}`
+        `${greet(firstName)}\n\n` +
+        `Your claim summary — please review within 24 hours.\n\n` +
+        `YOUR INFORMATION\n` +
+        (fullName ? `Name: ${fullName}\n` : '') +
+        (dob ? `DOB: ${dob}\n` : '') +
+        (insurer ? `Insurer: ${insurer}\n` : '') +
+        (memberId ? `Member ID: ${memberId}\n` : '') +
+        (groupNumber ? `Group #: ${groupNumber}\n` : '') +
+        `\nYOUR VISIT\n` +
+        (providerName ? `Clinic: ${providerName}${providerCity ? ' · ' + providerCity : ''}\n` : '') +
+        (dateOfService ? `Date: ${dateOfService}\n` : '') +
+        (procList ? `Procedures: ${procList}\n` : '') +
+        (paidStr ? `You paid: ${paidStr}\n` : '') +
+        (estimateStr ? `\nEstimated reimbursement: ${estimateStr} USD (final amount depends on your insurer)\n` : '') +
+        `\n⏰ REVIEW WITHIN 24 HOURS\n` +
+        `If anything above is incorrect or missing, reply to this email${reviewByLabel ? ` by ${reviewByLabel}` : ' within 24 hours'} and we'll fix it before filing.\n\n` +
+        `IMPORTANT: if ${insurerLabel} rejects your claim because of missing or incorrect information that could have been caught during this review window, the Credimed service fee is non-refundable. Our money-back guarantee covers eligible claims we can't recover after one free resubmission — not claims rejected for incomplete patient-provided information.\n\n` +
+        `Reference: ${claimId}\n` +
+        `Reply: ${SUPPORT_EMAIL}`
     };
+  },
+
+  /* DEPRECATED — kept as a thin alias so any old caller (or in-flight
+     EventBridge schedule) doesn't crash. Routes to claimFiledSummary
+     with whatever fields the caller did pass. Remove once we confirm
+     no scheduler events still reference this name. */
+  paymentReceivedAndFiled(data) {
+    return templates.claimFiledSummary(data);
   },
 
   statusInReview({ firstName, claimId }) {

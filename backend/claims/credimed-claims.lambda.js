@@ -409,28 +409,47 @@ async function createClaim(userId, body, isAdminUser) {
       });
     }
 
-    // Test Mode bypass — fire the same patient confirmation email the
-    // Stripe webhook would have sent on a real payment_intent.succeeded.
-    // Lets admins fully validate the email path (template render,
-    // provider delivery, copy) without burning real card charges +
-    // refunds. Paid amount string mirrors the pricing tier the patient
-    // picked, tagged "$X.00 (test mode)" so it's never confused with
-    // a real receipt in the inbox.
-    if (paymentMode === "test") {
+    // Patient claim summary — the value-add email. Fires from save-claim
+    // (not the webhook) because save-claim has the body data plaintext;
+    // the webhook would have to multi-decrypt PHI to compose the same
+    // summary. Doing it here also eliminates the save-claim ↔ webhook
+    // race we hit on May 8 (webhook reading an empty row before
+    // save-claim's PutItem committed).
+    //
+    // Test Mode bypass marks the fee with "(test mode)" so the patient
+    // never confuses a sandbox receipt with a real one.
+    const recipientEmail = body.email && String(body.email).trim();
+    if (recipientEmail) {
       const tierAmount = PLAN_FEE_USD[body.plan] || PLAN_FEE_USD.standard;
-      const recipientEmail = body.email && String(body.email).trim();
-      if (recipientEmail) {
-        await sendEmailSafely({
-          to: recipientEmail,
-          eventType: "paymentReceivedAndFiled",
-          data: {
-            firstName:  body.firstName || "",
-            claimId,
-            amountPaid: `$${tierAmount}.00 (test mode)`
-          }
-        });
-      }
+      const feeLabel = paymentMode === "test"
+        ? `$${tierAmount}.00 (test mode)`
+        : `$${tierAmount}.00`;
+      await sendEmailSafely({
+        to: recipientEmail,
+        eventType: "claimFiledSummary",
+        data: {
+          firstName:           body.firstName || "",
+          lastName:            body.lastName  || "",
+          claimId,
+          amountPaid:          feeLabel,
+          insurer:             body.insurer,
+          memberId:            body.memberId,
+          plan:                body.plan,
+          groupNumber:         body.groupNumber,
+          dob:                 body.dob,
+          providerName:        body.providerName,
+          providerCity:        body.providerCity,
+          dateOfService:       body.dateOfService,
+          procedures:          body.procedures || body.procedure,
+          paidAmountOriginal:  body.paidAmountOriginal,
+          paidCurrency:        body.paidCurrency,
+          paidAmountUSD:       body.paidAmountUSD,
+          estimateMin:         body.estimateMin,
+          estimateMax:         body.estimateMax
+        }
+      });
     }
+
     return { ok: true, claimId, createdAt: now, status: item.status.S, paymentMode };
   } catch (err) {
     if (err.name !== "ConditionalCheckFailedException") throw err;
@@ -501,19 +520,34 @@ async function createClaim(userId, body, isAdminUser) {
         }
       });
     }
-    const wasPaidByWebhook = existing.Item?.paymentStatus?.S === "paid";
-    const recipientEmail   = body.email && String(body.email).trim();
-    if (wasPaidByWebhook && recipientEmail) {
-      const amountCents = existing.Item?.paidAmountCents?.N
-        ? Number(existing.Item.paidAmountCents.N)
-        : null;
+    const recipientEmail = body.email && String(body.email).trim();
+    if (recipientEmail) {
+      const tierAmount = PLAN_FEE_USD[body.plan] || PLAN_FEE_USD.standard;
+      const feeLabel   = paymentMode === "test"
+        ? `$${tierAmount}.00 (test mode)`
+        : `$${tierAmount}.00`;
       await sendEmailSafely({
         to: recipientEmail,
-        eventType: "paymentReceivedAndFiled",
+        eventType: "claimFiledSummary",
         data: {
-          firstName:  body.firstName || "",
+          firstName:           body.firstName || "",
+          lastName:            body.lastName  || "",
           claimId,
-          amountPaid: amountCents != null ? `$${(amountCents / 100).toFixed(2)}` : null
+          amountPaid:          feeLabel,
+          insurer:             body.insurer,
+          memberId:            body.memberId,
+          plan:                body.plan,
+          groupNumber:         body.groupNumber,
+          dob:                 body.dob,
+          providerName:        body.providerName,
+          providerCity:        body.providerCity,
+          dateOfService:       body.dateOfService,
+          procedures:          body.procedures || body.procedure,
+          paidAmountOriginal:  body.paidAmountOriginal,
+          paidCurrency:        body.paidCurrency,
+          paidAmountUSD:       body.paidAmountUSD,
+          estimateMin:         body.estimateMin,
+          estimateMax:         body.estimateMax
         }
       });
     }

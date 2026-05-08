@@ -252,34 +252,13 @@ export const handler = async (event) => {
             currency: pi.currency,
             dbUpdated: updated
           });
-          // Notify the patient. Only send if this was a fresh transition
-          // (updated=true). Stripe retries shouldn't double-send. The
-          // combined "payment received + filed" email replaces the old
-          // pair (paymentReceived + claimSubmitted) which fired back-to-
-          // back from this same event. The follow-up "in review" email
-          // is scheduled 24h later via EventBridge Scheduler.
+          // The patient `claimFiledSummary` email fires from save-claim
+          // (it has the body data plaintext, no need to multi-decrypt
+          // PHI here). Webhook only marks the row paid + schedules the
+          // 24h follow-up. Removing the send-from-webhook eliminates
+          // the save-claim ↔ webhook race we hit on May 8.
           if (updated) {
-            const claimRow = await db.send(new GetItemCommand({
-              TableName: TABLE,
-              Key: { claimId: { S: claimId } }
-            }));
-            if (claimRow.Item) {
-              const email = await decryptField(claimRow.Item.email?.S);
-              const firstName = await decryptField(claimRow.Item.firstName?.S);
-              const amountPaid = pi.amount
-                ? `$${(pi.amount / 100).toFixed(2)}`
-                : null;
-              if (email) {
-                await sendEmailSafely({
-                  to: email,
-                  eventType: 'paymentReceivedAndFiled',
-                  data: { firstName: firstName || '', claimId, amountPaid }
-                });
-              }
-              // Fire-and-forget; failure is non-blocking on the webhook
-              // response (Stripe must still see 200).
-              await scheduleInReviewEmail(claimId);
-            }
+            await scheduleInReviewEmail(claimId);
           }
         }
         break;
