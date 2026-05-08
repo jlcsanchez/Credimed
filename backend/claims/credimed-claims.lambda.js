@@ -771,6 +771,14 @@ export const handler = async (event) => {
   // Local response() binds the per-request event so corsHeaders can
   // echo the right Origin without threading event through every call.
   const response = (statusCode, body) => buildResponse(statusCode, body, event);
+  console.log(JSON.stringify({
+    event: "handler_enter",
+    routeKey: event.routeKey,
+    method:   event.requestContext?.http?.method,
+    path:     event.requestContext?.http?.path,
+    rawPath:  event.rawPath,
+    hasAuth:  !!event.requestContext?.authorizer?.jwt?.claims
+  }));
   try {
     const method = event.requestContext?.http?.method || "GET";
     if (method === "OPTIONS") return response(204, {});
