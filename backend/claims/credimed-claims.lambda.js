@@ -907,7 +907,20 @@ export const handler = async (event) => {
       try { body = event.body ? JSON.parse(event.body) : null; }
       catch { return response(400, { error: "Invalid JSON body" }); }
       const result = await createClaim(userId, body, adminUser);
-      if (result.error) return response(result.code || 400, { error: result.error });
+      if (result.error) {
+        // Surface the validation/KMS/Dynamo error so the silent-400
+        // path is debuggable from CloudWatch instead of needing a
+        // redeploy each time we want visibility into a failed claim.
+        console.error(JSON.stringify({
+          event: "create_claim_error",
+          userId,
+          error: result.error,
+          code: result.code,
+          claimId: body?.claimId,
+          bodyKeys: body ? Object.keys(body) : null
+        }));
+        return response(result.code || 400, { error: result.error });
+      }
       audit(event, {
         event: "create_claim",
         userId,
